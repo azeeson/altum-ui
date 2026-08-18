@@ -15,9 +15,9 @@
 .DS_Store
 Thumbs.db
 
-# Build
+# Build (только корень: `types/` иначе прячет и `src/types`)
 dist/
-types/
+/types/
 dist-storybook/
 dist-test-types/
 
