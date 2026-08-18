@@ -6,7 +6,7 @@ import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Modal',
+	title: 'altum/Components/Modal',
 	component: Modal,
 	tags: ['autodocs'],
 	parameters: componentParameters(
@@ -186,7 +186,7 @@ export const StickySections: Story<ModalProps> = {
 			</>
 		);
 	},
-	parameters: story('Липкие Header/Footer при прокрутке длинного Body.'),
+	parameters: story('Sticky Header/Footer при прокрутке длинного Body.'),
 };
 
 export const FormFooter: Story<ModalProps> = {

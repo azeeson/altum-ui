@@ -47,7 +47,7 @@ const CITY_OPTIONS = [
 ];
 
 export default {
-	title: 'altum-ui/Components/SuggestField',
+	title: 'altum/Components/SuggestField',
 	component: SuggestField,
 	tags: ['autodocs'],
 	parameters: componentParameters(

@@ -1,4 +1,4 @@
-# Компоненты altum-ui
+# Компоненты altum
 
 Краткий справочник публичного API. Установка и точки входа — [README](../README.md). Токены — [THEMING.md](./THEMING.md). Раскладка — [LAYOUT.md](./LAYOUT.md). Иконки — [ICONS.md](./ICONS.md).
 

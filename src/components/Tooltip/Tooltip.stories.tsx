@@ -9,7 +9,7 @@ import {IconGear} from '../../icons/icons/IconGear';
 import {componentParameters, story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Tooltip',
+	title: 'altum/Components/Tooltip',
 	component: Tooltip,
 	tags: ['autodocs'],
 	parameters: componentParameters('Всплывающая подсказка при наведении на дочерний элемент.'),

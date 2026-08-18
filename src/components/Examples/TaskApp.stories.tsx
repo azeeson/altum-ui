@@ -311,10 +311,10 @@ const TaskAppDemo = () => {
 };
 
 export default {
-	title: 'altum-ui/Examples/Task App',
+	title: 'altum/Examples/Task App',
 	component: TaskAppDemo,
 	tags: ['autodocs'],
-	parameters: componentParameters('Пример приложения управления задачами на компонентах altum-ui.'),
+	parameters: componentParameters('Пример приложения управления задачами на компонентах altum.'),
 	argTypes: {},
 } satisfies Meta<typeof TaskAppDemo>;
 

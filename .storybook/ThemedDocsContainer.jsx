@@ -16,7 +16,7 @@ function resolveThemeMode(context) {
 }
 
 /**
- * Страницы документации: ThemeProvider altum-ui (document) + тема хрома docs Storybook,
+ * Страницы документации: ThemeProvider altum (document) + тема хрома docs Storybook,
  * синхронизированы с Theme в тулбаре и сохраняются в localStorage.
  */
 export const ThemedDocsContainer = (props) => {

@@ -6,7 +6,7 @@ import {Checkbox} from '../components/Checkbox/Checkbox';
 import {Text} from '../components/Text/Text';
 
 const meta = {
-	title: 'altum-ui/Test/Interaction',
+	title: 'altum/Test/Interaction',
 	parameters: {
 		layout: 'padded',
 		docs: {disable: true},

@@ -61,7 +61,7 @@ import styles from './AppExamples.stories.module.css';
  * Без autodocs: сложные JSX-closures (таблица, Tabs content) вешают source serializer.
  */
 export default {
-	title: 'altum-ui/Examples/App Examples',
+	title: 'altum/Examples/App Examples',
 	parameters: {
 		layout: 'padded',
 		controls: {disable: true},

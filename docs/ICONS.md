@@ -1,15 +1,15 @@
-# Иконки в altum-ui
+# Иконки в altum
 
 Компоненты принимают иконку как `ReactNode` — свой SVG или элемент из набора библиотеки.
 
 ```tsx
-import {ButtonIcon} from 'altum-ui';
-import {IconSearch} from 'altum-ui/icons';
+import {ButtonIcon} from 'altum';
+import {IconSearch} from 'altum/icons';
 
 <ButtonIcon aria-label="Поиск" icon={<IconSearch />} />
 ```
 
-Набор **не** входит в главный barrel — только `altum-ui/icons`. Просмотр: Storybook → **Icons**.
+Набор **не** входит в главный barrel — только `altum/icons`. Просмотр: Storybook → **Icons**.
 
 ### Контракт для кастомных SVG
 
@@ -19,4 +19,4 @@ import {IconSearch} from 'altum-ui/icons';
 | Цвет | `fill="currentColor"` |
 | Доступность | На `ButtonIcon` всегда `aria-label` |
 
-Продуктовые иконки лучше держать в приложении — так не раздувается бандл, если набор `altum-ui/icons` не нужен целиком.
+Продуктовые иконки лучше держать в приложении — так не раздувается бандл, если набор `altum/icons` не нужен целиком.

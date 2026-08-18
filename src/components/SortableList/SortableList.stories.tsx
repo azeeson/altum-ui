@@ -14,7 +14,7 @@ import {IconChecklist} from '../../icons/icons/IconChecklist';
 import {componentParameters, story} from '../../storybook/meta';
 
 const meta = {
-	title: 'altum-ui/Components/SortableList',
+	title: 'altum/Components/SortableList',
 	component: SortableList,
 	tags: ['autodocs'],
 	parameters: {

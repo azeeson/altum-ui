@@ -31,7 +31,7 @@ export interface ValidationRules {
  * @returns `values`, `errors`, `register`, `hasErrors`, `setValues`.
  *
  * @example
- * import {useForm} from 'altum-ui/hooks';
+ * import {useForm} from 'altum/hooks';
  *
  * const {values, errors, register, hasErrors} = useForm({email: ''});
  * <TextField {...register('email', {required: 'Обязательно'})} error={errors.email} />

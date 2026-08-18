@@ -1,4 +1,4 @@
-# Тесты altum-ui
+# Тесты altum
 
 Playwright-тесты против статического Storybook.
 
@@ -61,14 +61,14 @@ npx playwright install chromium
 - **SortableList** — перестановка перетаскиванием
 - **Tabs / Accordion / SegmentedControl** — смена активного раздела
 - **TextField / TextareaField / Fieldset / FieldLabel** — базовый ввод и разметка
-- **MaskedField** — маска, caret, paste, clear; harness — `altum-ui/Test/MaskedField`
+- **MaskedField** — маска, caret, paste, clear; harness — `altum/Test/MaskedField`
 - **actions-extra** — ButtonIcon, ButtonGroup, OverflowActions, OverflowGroup, ActionSheetTrigger, Link, SkipLink, Steps
 - **media-calendar** — галерея, lightbox, crop, upload, FileList, Rating, ColorSwatchGroup, Calendar, DateRangePicker, DayStrip, CalendarBoard, TimePicker
 - **content-charts** — SwipeToAction, PullToRefresh, Timeline, ScrollArea, Item, Card, Bubble, Alert, FocusTrap, charts
 - **content-primitives** — Avatar, Badge, Box, Container/Page, Grid, Layout (Stack/Inline/Split/ControlRow), Skeleton/Spinner, FormMessage, EmptyState, Text, Title, Separator/Spacer, VisuallyHidden, RelativeTime, Kbd, Marker, Media, AspectRatio, Attachment, DescriptionList, StatBadge, SafeArea, GrabHandle
 - **hooks** — `useForm` (валидация) и константа `MOBILE_MEDIA_QUERY`
 - **fields-extra** — PasswordField, SearchField, NumberField, PinInput, Slider, DatePicker, TimePickerField, SuggestField, Switch, SelectionGroup
-- **base** — семейные базы из `src/base/` через стенд `altum-ui/Test/Base` (FieldBase Clear, ButtonBase, ToggleControlBase, DialogBase, ChartBase, MediaRowBase, ListOptionBase)
+- **base** — семейные базы из `src/base/` через стенд `altum/Test/Base` (FieldBase Clear, ButtonBase, ToggleControlBase, DialogBase, ChartBase, MediaRowBase, ListOptionBase)
 
 `visitStory` падает, если iframe показывает оверлей ошибки Storybook или `pageerror`. Визуальные снапшоты всех stories (`all-stories`) поэтому тоже проверяют, что компонент монтируется. Семейные базы `{Family}Base` живут в `src/base/` без каталожных stories: поведение — `tests/behavior/base.spec.ts`, визуально — `Test/Base` и публичные обёртки.
 

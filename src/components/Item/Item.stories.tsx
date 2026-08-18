@@ -19,7 +19,7 @@ const BOX_VARIANTS = [
 ] as const;
 
 export default {
-	title: 'altum-ui/Components/Item',
+	title: 'altum/Components/Item',
 	component: Item,
 	tags: ['autodocs'],
 	parameters: componentParameters(

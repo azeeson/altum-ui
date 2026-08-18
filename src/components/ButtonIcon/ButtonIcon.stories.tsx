@@ -8,7 +8,7 @@ import {IconCross} from '../../icons/icons/IconCross';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/ButtonIcon',
+	title: 'altum/Components/ButtonIcon',
 	component: ButtonIcon,
 	tags: ['autodocs'],
 	parameters: componentParameters('Кнопка с иконкой без текста для компактных действий в интерфейсе.'),

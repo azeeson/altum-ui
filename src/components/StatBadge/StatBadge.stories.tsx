@@ -5,7 +5,7 @@ import {Inline, Stack} from '../Layout/Layout';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/StatBadge',
+	title: 'altum/Components/StatBadge',
 	component: StatBadge,
 	tags: ['autodocs'],
 	parameters: componentParameters('Компактный бейдж со статистикой: метка и числовое значение.'),

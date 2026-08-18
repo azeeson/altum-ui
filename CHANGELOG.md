@@ -1,6 +1,6 @@
 # Changelog
 
-Все заметные изменения в **altum-ui**.
+Все заметные изменения в **altum**.
 
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/).
 
@@ -16,7 +16,7 @@ React + TypeScript UI-библиотека: CSS Modules, дизайн-токен
 
 ### Добавлено
 
-- Точки входа: `altum-ui` (компоненты, **`ThemeProvider`**, **`LocaleProvider`**, словари `ru` / `en`), `altum-ui/hooks`, `altum-ui/utils`, `altum-ui/icons`.
+- Точки входа: `altum` (компоненты, **`ThemeProvider`**, **`LocaleProvider`**, словари `ru` / `en`), `altum/hooks`, `altum/utils`, `altum/icons`.
 - **`ThemeProvider`** — светлая/тёмная тема, CSS custom properties (`--altum-*`), `applyTo` `wrapper` \| `document`.
 - **`LocaleProvider`** / **`useLocale`** / **`useT`** — встроенные строки интерфейса.
 - Каталог компонентов: кнопки и действия, поля и выбор, оверлеи (`Overlay`, **Modal**, **Sheet**, **Dropdown**, **Tooltip**, **Popover**), навигация, таблицы и списки, раскладка (`Layout`, **Stack**, **Inline**, **Split**, **Grid**), медиа, графики, обратная связь, mobile-жесты.

@@ -19,7 +19,7 @@ const VARIANTS = [
 ] as const;
 
 export default {
-	title: 'altum-ui/Components/Badge',
+	title: 'altum/Components/Badge',
 	component: Badge,
 	tags: ['autodocs'],
 	parameters: componentParameters('Индикатор уведомлений в виде счётчика или точки поверх дочернего элемента.'),

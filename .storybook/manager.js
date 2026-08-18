@@ -44,7 +44,7 @@ persistThemeToManagerStore(initialTheme);
 seedConfigTheme(initialTheme);
 addons.setConfig({theme: initialTheme});
 
-addons.register('altum-ui/theme-persist', (api) => {
+addons.register('altum/theme-persist', (api) => {
 	let applying = false;
 
 	function applyTheme(mode) {

@@ -53,7 +53,7 @@ const storyNote = (description: string) => ({
  * (Tabs items, CommandPalette groups) через formatComplexDataStructure и зависает.
  */
 export default {
-	title: 'altum-ui/Examples/Compositions',
+	title: 'altum/Examples/Compositions',
 	parameters: {
 		layout: 'padded',
 		controls: {disable: true},

@@ -4,7 +4,7 @@ import {Accordion, type AccordionProps} from './Accordion';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Accordion',
+	title: 'altum/Components/Accordion',
 	component: Accordion,
 	tags: ['autodocs'],
 	parameters: componentParameters(

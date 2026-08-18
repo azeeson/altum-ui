@@ -36,7 +36,7 @@ const TabExample: React.FC<Pick<TabsProps, 'variant' | 'orientation'>> = (props)
 );
 
 export default {
-	title: 'altum-ui/Components/Tabs',
+	title: 'altum/Components/Tabs',
 	component: Tabs,
 	tags: ['autodocs'],
 	parameters: componentParameters('Вкладки для переключения между связанными разделами контента.'),

@@ -1,18 +1,18 @@
-# altum-ui
+# altum
 
 Библиотека React + TypeScript-компонентов: CSS Modules, дизайн-токены через `ThemeProvider`, адаптация оверлеев под мобильный sheet, плавающие лейблы. Без Tailwind, Radix и headless UI.
 
 **Peer-зависимости:** React 18 или 19. Только ESM.
 
 ```bash
-npm install altum-ui react react-dom
+npm install altum react react-dom
 ```
 
 ```tsx
-import {Button, Modal, ThemeProvider, LocaleProvider} from 'altum-ui';
-import {useMediaQuery} from 'altum-ui/hooks';
-import {cn} from 'altum-ui/utils';
-import {IconSearch} from 'altum-ui/icons';
+import {Button, Modal, ThemeProvider, LocaleProvider} from 'altum';
+import {useMediaQuery} from 'altum/hooks';
+import {cn} from 'altum/utils';
+import {IconSearch} from 'altum/icons';
 
 export function App() {
 	return (
@@ -29,10 +29,10 @@ export function App() {
 
 | Импорт | Содержимое |
 |--------|------------|
-| `altum-ui` | Компоненты, `ThemeProvider`, `LocaleProvider`, словари `ru` / `en` |
-| `altum-ui/hooks` | Универсальные хуки (`useMediaQuery`, `useOutsideClick`, …) |
-| `altum-ui/utils` | Хелперы (`cn`, `composeRefs`, listbox/якорь, стек оверлеев) |
-| `altum-ui/icons` | Каталог иконок (не реэкспортируется из главного барреля) |
+| `altum` | Компоненты, `ThemeProvider`, `LocaleProvider`, словари `ru` / `en` |
+| `altum/hooks` | Универсальные хуки (`useMediaQuery`, `useOutsideClick`, …) |
+| `altum/utils` | Хелперы (`cn`, `composeRefs`, listbox/якорь, стек оверлеев) |
+| `altum/icons` | Каталог иконок (не реэкспортируется из главного барреля) |
 
 Стили подключаются вместе с JS-модулем. Оберните приложение в `ThemeProvider`. Для порталов (`Modal`, `Sheet`, выпадающие панели) используйте `applyTo="document"`. Императивным тостам нужен смонтированный `NotificationProvider`.
 

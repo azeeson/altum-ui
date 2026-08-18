@@ -6,7 +6,7 @@ import {IconCross} from '../../icons/icons/IconCross';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Utilities/VisuallyHidden',
+	title: 'altum/Utilities/VisuallyHidden',
 	component: VisuallyHidden,
 	tags: ['autodocs'],
 	parameters: componentParameters(

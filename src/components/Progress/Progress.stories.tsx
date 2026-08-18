@@ -5,7 +5,7 @@ import {Stack} from '../Layout/Layout';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Progress',
+	title: 'altum/Components/Progress',
 	component: Progress,
 	tags: ['autodocs'],
 	parameters: componentParameters(

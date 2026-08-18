@@ -83,7 +83,7 @@ const FILTERABLE_GROUPS: ActionListGroup[] = [
 ];
 
 export default {
-	title: 'altum-ui/Components/ContextMenu',
+	title: 'altum/Components/ContextMenu',
 	component: ContextMenu,
 	tags: ['autodocs'],
 	parameters: componentParameters(

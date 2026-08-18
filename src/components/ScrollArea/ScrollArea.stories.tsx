@@ -10,7 +10,7 @@ const rowStyle: React.CSSProperties = {
 };
 
 export default {
-	title: 'altum-ui/Components/ScrollArea',
+	title: 'altum/Components/ScrollArea',
 	component: ScrollArea,
 	tags: ['autodocs'],
 	parameters: componentParameters(

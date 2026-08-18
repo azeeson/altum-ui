@@ -10,7 +10,7 @@ import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/ControlRow',
+	title: 'altum/Components/ControlRow',
 	component: ControlRow,
 	tags: ['autodocs'],
 	parameters: componentParameters(

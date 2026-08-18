@@ -8,7 +8,7 @@ import {Switch} from '../Switch/Switch';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/FieldLabel',
+	title: 'altum/Components/FieldLabel',
 	component: FieldLabel,
 	tags: ['autodocs'],
 	parameters: componentParameters(

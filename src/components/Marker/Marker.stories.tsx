@@ -6,7 +6,7 @@ import {IconSearch} from '../../icons/icons/IconSearch';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Marker',
+	title: 'altum/Components/Marker',
 	component: Marker,
 	tags: ['autodocs'],
 	parameters: componentParameters(

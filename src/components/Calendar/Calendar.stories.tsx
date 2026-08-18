@@ -4,7 +4,7 @@ import {Calendar} from './Calendar';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Calendar',
+	title: 'altum/Components/Calendar',
 	component: Calendar.Root,
 	tags: ['autodocs'],
 	parameters: componentParameters(

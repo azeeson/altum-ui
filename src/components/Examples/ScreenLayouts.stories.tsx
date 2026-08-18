@@ -51,7 +51,7 @@ import {Story} from '../../storybook/meta';
 import styles from './ScreenLayouts.stories.module.css';
 
 export default {
-	title: 'altum-ui/Examples/Screen Layouts',
+	title: 'altum/Examples/Screen Layouts',
 	parameters: {
 		layout: 'padded',
 		controls: {disable: true},

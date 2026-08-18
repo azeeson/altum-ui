@@ -11,7 +11,7 @@ type StoryArgs = {
 };
 
 export default {
-	title: 'altum-ui/Components/Dropdown',
+	title: 'altum/Components/Dropdown',
 	component: Dropdown,
 	tags: ['autodocs'],
 	parameters: componentParameters('Выпадающая панель, привязанная к элементу-триггеру, с настройкой ширины. На экранах ≤768px использует Sheet.'),

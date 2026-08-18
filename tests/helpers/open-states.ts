@@ -12,35 +12,35 @@ export interface OpenStateScenario {
 /** Стори с заранее открытым состоянием (портальные оверлеи) */
 export const STATIC_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 	{
-		storyId: 'altum-ui-test-visualopenstates--modal-open',
+		storyId: 'altum-test-visualopenstates--modal-open',
 		snapshot: 'open-modal.png',
 	},
 	{
-		storyId: 'altum-ui-test-visualopenstates--confirm-dialog-destructive-open',
+		storyId: 'altum-test-visualopenstates--confirm-dialog-destructive-open',
 		snapshot: 'open-confirm-dialog-destructive.png',
 	},
 	{
-		storyId: 'altum-ui-test-visualopenstates--confirm-dialog-default-open',
+		storyId: 'altum-test-visualopenstates--confirm-dialog-default-open',
 		snapshot: 'open-confirm-dialog-default.png',
 	},
 	{
-		storyId: 'altum-ui-test-visualopenstates--sheet-sidebar-open',
+		storyId: 'altum-test-visualopenstates--sheet-sidebar-open',
 		snapshot: 'open-drawer.png',
 	},
 	{
-		storyId: 'altum-ui-test-visualopenstates--image-lightbox-open',
+		storyId: 'altum-test-visualopenstates--image-lightbox-open',
 		snapshot: 'open-image-lightbox.png',
 	},
 	{
-		storyId: 'altum-ui-test-visualopenstates--color-dropdown-open',
+		storyId: 'altum-test-visualopenstates--color-dropdown-open',
 		snapshot: 'open-dropdown.png',
 	},
 	{
-		storyId: 'altum-ui-test-visualopenstates--tooltip-visible',
+		storyId: 'altum-test-visualopenstates--tooltip-visible',
 		snapshot: 'open-tooltip.png',
 	},
 	{
-		storyId: 'altum-ui-test-visualopenstates--sheet-open',
+		storyId: 'altum-test-visualopenstates--sheet-open',
 		snapshot: 'open-sheet.png',
 	},
 ];
@@ -48,7 +48,7 @@ export const STATIC_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 /** Playground-стори — открываем popup интеракцией */
 export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 	{
-		storyId: 'altum-ui-components-dropdown--playground',
+		storyId: 'altum-components-dropdown--playground',
 		snapshot: 'open-dropdown-playground.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /Открыть/i}).click();
@@ -56,7 +56,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-select--playground',
+		storyId: 'altum-components-select--playground',
 		snapshot: 'open-select-playground.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /Город/i}).click();
@@ -64,7 +64,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-customselect--playground',
+		storyId: 'altum-components-customselect--playground',
 		snapshot: 'open-select-filterable.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /Москва|Выберите город/i}).click();
@@ -73,7 +73,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-customselect--playground',
+		storyId: 'altum-components-customselect--playground',
 		snapshot: 'open-combobox-playground.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /Москва|Выберите город/i}).click();
@@ -81,7 +81,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-customselect--compound-multiple',
+		storyId: 'altum-components-customselect--compound-multiple',
 		snapshot: 'open-combobox-compare.png',
 		prepare: async (page) => {
 			await page.getByRole('combobox').first().click();
@@ -89,7 +89,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-datepicker--playground',
+		storyId: 'altum-components-datepicker--playground',
 		snapshot: 'open-datepicker-playground.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /\d{2}\.\d{2}\.\d{4}/}).click();
@@ -97,7 +97,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-timepicker--field-variant',
+		storyId: 'altum-components-timepicker--field-variant',
 		snapshot: 'open-timepicker-field.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /\d{1,2}:\d{2}/}).or(page.getByRole('combobox')).first().click();
@@ -106,7 +106,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-timepicker--field-custom-minute',
+		storyId: 'altum-components-timepicker--field-custom-minute',
 		snapshot: 'open-timepicker-custom-minute.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /\d{1,2}:\d{2}/}).or(page.getByRole('combobox')).first().click();
@@ -118,7 +118,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-modal--playground',
+		storyId: 'altum-components-modal--playground',
 		snapshot: 'open-modal-playground.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /Показать диалог/i}).click();
@@ -126,7 +126,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-confirmdialog--playground',
+		storyId: 'altum-components-confirmdialog--playground',
 		snapshot: 'open-confirm-dialog-playground.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /Удалить список/i}).click();
@@ -134,7 +134,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-imagelightbox--playground',
+		storyId: 'altum-components-imagelightbox--playground',
 		snapshot: 'open-imagelightbox-playground.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /Открыть lightbox/i}).click();
@@ -142,7 +142,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-tooltip--playground',
+		storyId: 'altum-components-tooltip--playground',
 		snapshot: 'open-tooltip-playground.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: 'Наведи на меня'}).hover();
@@ -150,7 +150,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-backdrop--playground',
+		storyId: 'altum-components-backdrop--playground',
 		snapshot: 'open-backdrop-playground.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /Показать backdrop/i}).click();
@@ -158,7 +158,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-notification--playground',
+		storyId: 'altum-components-notification--playground',
 		snapshot: 'open-notification-playground.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /Показать уведомление/i}).click();
@@ -166,7 +166,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-accordion--playground',
+		storyId: 'altum-components-accordion--playground',
 		snapshot: 'open-accordion-playground.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /тарифный план/i}).click();
@@ -174,7 +174,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-sheet--sidebar-mode',
+		storyId: 'altum-components-sheet--sidebar-mode',
 		snapshot: 'open-drawer-right.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /Открыть sidebar/i}).click();
@@ -182,7 +182,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-tooltip--variants',
+		storyId: 'altum-components-tooltip--variants',
 		snapshot: 'open-tooltip-positions.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: 'Верх'}).hover();
@@ -190,7 +190,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-sheet--playground',
+		storyId: 'altum-components-sheet--playground',
 		snapshot: 'open-sheet-playground.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /Открыть Sheet/i}).click();
@@ -198,7 +198,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-popover--playground',
+		storyId: 'altum-components-popover--playground',
 		snapshot: 'open-popover-playground.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /Открыть popover/i}).click();
@@ -206,7 +206,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-ui-components-commandpalette--playground',
+		storyId: 'altum-components-commandpalette--playground',
 		snapshot: 'open-commandpalette-playground.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /Открыть палитру/i}).click();

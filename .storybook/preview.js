@@ -34,7 +34,7 @@ export const parameters = {
 		storySort: {
 			method: 'alphabetical',
 			order: [
-				'altum-ui',
+				'altum',
 				[
 					'Components',
 					'Mobile',

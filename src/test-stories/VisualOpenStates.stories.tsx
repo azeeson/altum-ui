@@ -11,7 +11,7 @@ import {ButtonIcon} from '../components/ButtonIcon/ButtonIcon';
 import {Text} from '../components/Text/Text';
 
 const meta = {
-	title: 'altum-ui/Test/VisualOpenStates',
+	title: 'altum/Test/VisualOpenStates',
 	parameters: {
 		layout: 'padded',
 		docs: {disable: true},

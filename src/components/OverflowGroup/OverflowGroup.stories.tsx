@@ -34,7 +34,7 @@ const BUTTON_LABELS = [
 ];
 
 export default {
-	title: 'altum-ui/Components/OverflowGroup',
+	title: 'altum/Components/OverflowGroup',
 	component: OverflowGroup,
 	tags: ['autodocs'],
 	parameters: componentParameters(

@@ -46,7 +46,7 @@ async function pasteIntoInput(input: Locator, text: string): Promise<void> {
 
 test.describe('MaskedField — отображение и оверлей маски', () => {
 	test('пустое поле не показывает литералы маски как значение', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await expectFormatted(input, '');
@@ -54,7 +54,7 @@ test.describe('MaskedField — отображение и оверлей маск
 	});
 
 	test('фокус показывает aria-hidden направляющие оверлея маски', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await input.focus();
@@ -66,7 +66,7 @@ test.describe('MaskedField — отображение и оверлей маск
 	});
 
 	test('input и оверлей маски используют один UI font-family', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await input.focus();
@@ -95,7 +95,7 @@ test.describe('MaskedField — отображение и оверлей маск
 	});
 
 	test('content box оверлея маски совпадает с началом текста input', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await input.focus();
@@ -131,14 +131,14 @@ test.describe('MaskedField — отображение и оверлей маск
 	});
 
 	test('maskAsPlaceholder задаёт placeholder из маски', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--mask-as-placeholder');
+		await visitStory(page, 'altum-test-maskedfield--mask-as-placeholder');
 
 		const input = page.getByTestId('masked-input');
 		await expect(input).toHaveAttribute('placeholder', '__.__.____');
 	});
 
 	test('форматированное значение соответствует маске после ввода', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await typeDigits(input, '912');
@@ -149,7 +149,7 @@ test.describe('MaskedField — отображение и оверлей маск
 
 test.describe('MaskedField — ввод по маске', () => {
 	test('вводит полный номер телефона по маске', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await typeDigits(input, '9123456789');
@@ -159,7 +159,7 @@ test.describe('MaskedField — ввод по маске', () => {
 	});
 
 	test('вводит дату по маске', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--date-controlled');
+		await visitStory(page, 'altum-test-maskedfield--date-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await typeDigits(input, '15072024');
@@ -169,7 +169,7 @@ test.describe('MaskedField — ввод по маске', () => {
 	});
 
 	test('вводит время по маске', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--time-controlled');
+		await visitStory(page, 'altum-test-maskedfield--time-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await typeDigits(input, '0930');
@@ -179,7 +179,7 @@ test.describe('MaskedField — ввод по маске', () => {
 	});
 
 	test('игнорирует цифры сверх ёмкости маски', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await typeDigits(input, '91234567890123');
@@ -189,7 +189,7 @@ test.describe('MaskedField — ввод по маске', () => {
 	});
 
 	test('игнорирует буквы и разделители во вводе', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await input.focus();
@@ -205,7 +205,7 @@ test.describe('MaskedField — ввод по маске', () => {
 
 test.describe('MaskedField — удаление и продолжение ввода', () => {
 	test('стирает через литералы Backspace и продолжает ввод', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await typeDigits(input, '9123');
@@ -227,7 +227,7 @@ test.describe('MaskedField — удаление и продолжение вво
 	});
 
 	test('несколько Backspace из заполненного значения сокращают цифры', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await page.getByTestId('fill-full').click();
@@ -247,7 +247,7 @@ test.describe('MaskedField — удаление и продолжение вво
 
 test.describe('MaskedField — правка в середине строки', () => {
 	test('Backspace удаляет цифру в середине и сохраняет каретку', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await page.getByTestId('fill-full').click();
@@ -266,7 +266,7 @@ test.describe('MaskedField — правка в середине строки', (
 	});
 
 	test('вводит цифру в середине значения', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await page.getByTestId('fill-partial').click();
@@ -283,7 +283,7 @@ test.describe('MaskedField — правка в середине строки', (
 	});
 
 	test('удаляет выделенный диапазон в середине через Backspace', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await page.getByTestId('fill-full').click();
@@ -301,7 +301,7 @@ test.describe('MaskedField — правка в середине строки', (
 		await expectFormatted(input, getFormattedValue('93456789', PHONE_MASK));
 	});
 	test('Delete удаляет следующую цифру через литералы', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await page.getByTestId('fill-full').click();
@@ -320,7 +320,7 @@ test.describe('MaskedField — правка в середине строки', (
 
 test.describe('MaskedField — вставка, префикс, усечение', () => {
 	test('вставка чистых цифр заполняет маску', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await pasteIntoInput(input, '9123456789');
@@ -330,7 +330,7 @@ test.describe('MaskedField — вставка, префикс, усечение'
 	});
 
 	test('вставка форматированного телефона снимает литералы и статический префикс', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await pasteIntoInput(input, '+7 (912) 345-67-89');
@@ -340,7 +340,7 @@ test.describe('MaskedField — вставка, префикс, усечение'
 	});
 
 	test('ввод ведущей цифры кода страны не дублирует префикс', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await typeDigits(input, '79123456789');
@@ -350,7 +350,7 @@ test.describe('MaskedField — вставка, префикс, усечение'
 	});
 
 	test('вставка обрезается до ёмкости цифр маски', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await pasteIntoInput(input, '91234567890123456789');
@@ -362,7 +362,7 @@ test.describe('MaskedField — вставка, префикс, усечение'
 
 test.describe('MaskedField — очистка, controlled, каретка, a11y', () => {
 	test('кнопка очистки сбрасывает цифры и значение', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--with-clear');
+		await visitStory(page, 'altum-test-maskedfield--with-clear');
 
 		const input = page.getByTestId('masked-input');
 		await expectDigits(page, '9123456789');
@@ -378,7 +378,7 @@ test.describe('MaskedField — очистка, controlled, каретка, a11y'
 	});
 
 	test('controlled-пресеты синхронизируют отображение снаружи', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 
@@ -396,7 +396,7 @@ test.describe('MaskedField — очистка, controlled, каретка, a11y'
 	});
 
 	test('controlled-значение с форматированной строкой очищается для отображения', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await page.getByTestId('fill-formatted-value').click();
@@ -407,7 +407,7 @@ test.describe('MaskedField — очистка, controlled, каретка, a11y'
 	});
 
 	test('каретка уходит в конец при вводе в конце', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await typeDigits(input, '912');
@@ -418,7 +418,7 @@ test.describe('MaskedField — очистка, controlled, каретка, a11y'
 	});
 
 	test('клик ограничивает каретку, которая попала бы за отображаемое значение', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByTestId('masked-input');
 		await page.getByTestId('fill-partial').click();
@@ -435,7 +435,7 @@ test.describe('MaskedField — очистка, controlled, каретка, a11y'
 	});
 
 	test('отдаёт роль textbox и подписанный контрол', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--phone-controlled');
+		await visitStory(page, 'altum-test-maskedfield--phone-controlled');
 
 		const input = page.getByRole('textbox', {name: /Телефон/i});
 		await expect(input).toBeVisible();
@@ -445,7 +445,7 @@ test.describe('MaskedField — очистка, controlled, каретка, a11y'
 
 test.describe('MaskedField — disabled и readOnly', () => {
 	test('disabled игнорирует ввод и Backspace', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--disabled-and-read-only');
+		await visitStory(page, 'altum-test-maskedfield--disabled-and-read-only');
 
 		const input = page.getByTestId('masked-input-disabled');
 		await expect(page.getByTestId('masked-digits-disabled')).toHaveText('9123456789');
@@ -459,7 +459,7 @@ test.describe('MaskedField — disabled и readOnly', () => {
 	});
 
 	test('readOnly игнорирует ввод и Backspace', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-maskedfield--disabled-and-read-only');
+		await visitStory(page, 'altum-test-maskedfield--disabled-and-read-only');
 
 		const input = page.getByTestId('masked-input-readonly');
 		await expect(page.getByTestId('masked-digits-readonly')).toHaveText('9123456789');

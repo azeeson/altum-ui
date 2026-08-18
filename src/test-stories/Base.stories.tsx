@@ -11,7 +11,7 @@ import {IconClipboard} from '../icons/icons/IconClipboard';
 import {Layout} from '../components/Layout/Layout';
 
 const meta = {
-	title: 'altum-ui/Test/Base',
+	title: 'altum/Test/Base',
 	parameters: {
 		layout: 'padded',
 		docs: {disable: true},

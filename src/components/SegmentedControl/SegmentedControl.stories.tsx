@@ -37,7 +37,7 @@ const MULTI_LINE_OPTIONS = [
 ];
 
 export default {
-	title: 'altum-ui/Components/SegmentedControl',
+	title: 'altum/Components/SegmentedControl',
 	component: SegmentedControl,
 	tags: ['autodocs'],
 	parameters: componentParameters('Переключатель сегментов для выбора одного значения из набора опций.'),

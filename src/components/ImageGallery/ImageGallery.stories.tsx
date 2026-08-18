@@ -33,7 +33,7 @@ const DEMO_IMAGES = [
 ];
 
 export default {
-	title: 'altum-ui/Components/ImageGallery',
+	title: 'altum/Components/ImageGallery',
 	component: ImageGallery,
 	tags: ['autodocs'],
 	parameters: componentParameters(

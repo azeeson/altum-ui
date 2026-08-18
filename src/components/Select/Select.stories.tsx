@@ -19,7 +19,7 @@ const options = [
 ];
 
 export default {
-	title: 'altum-ui/Components/Select',
+	title: 'altum/Components/Select',
 	component: Select.Root,
 	tags: ['autodocs'],
 	parameters: componentParameters('Составной Select с явными Trigger и Panel.'),

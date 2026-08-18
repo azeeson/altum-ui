@@ -36,7 +36,7 @@ const DEMO_IMAGES = [
 ];
 
 export default {
-	title: 'altum-ui/Components/ImageLightbox',
+	title: 'altum/Components/ImageLightbox',
 	component: ImageLightbox,
 	tags: ['autodocs'],
 	parameters: componentParameters(

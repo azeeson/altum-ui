@@ -1,9 +1,9 @@
 import { create } from '@storybook/theming';
 
-/** Хром docs Storybook — светлая тема, в линии с токенами altum-ui */
+/** Хром docs Storybook — светлая тема, в линии с токенами altum */
 export const altumLightDocs = create({
   base: 'light',
-  brandTitle: 'altum-ui',
+  brandTitle: 'altum',
   brandUrl: undefined,
   colorPrimary: '#64748b',
   colorSecondary: '#475569',
@@ -25,10 +25,10 @@ export const altumLightDocs = create({
   inputBorderRadius: 8,
 });
 
-/** Хром docs Storybook — тёмная тема, в линии с токенами altum-ui */
+/** Хром docs Storybook — тёмная тема, в линии с токенами altum */
 export const altumDarkDocs = create({
   base: 'dark',
-  brandTitle: 'altum-ui',
+  brandTitle: 'altum',
   brandUrl: undefined,
   colorPrimary: '#94a3b8',
   colorSecondary: '#64748b',

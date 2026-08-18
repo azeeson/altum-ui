@@ -7,7 +7,7 @@ import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Sheet',
+	title: 'altum/Components/Sheet',
 	component: Sheet,
 	tags: ['autodocs'],
 	parameters: componentParameters(

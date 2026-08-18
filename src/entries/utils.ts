@@ -1,4 +1,4 @@
-/** Точка входа сабпути: публичные хелперы (`altum-ui/utils`). */
+/** Точка входа сабпути: публичные хелперы (`altum/utils`). */
 export {toCssSize} from '../utils/cssSize';
 export {moveArrayItem} from '../utils/arrayMove';
 export {getTranslateXFromTransform} from '../utils/transform';

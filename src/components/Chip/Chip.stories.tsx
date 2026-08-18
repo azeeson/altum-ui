@@ -9,7 +9,7 @@ import {IconBell} from '../../icons/icons/IconBell';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Chip',
+	title: 'altum/Components/Chip',
 	component: Chip,
 	tags: ['autodocs'],
 	parameters: componentParameters(

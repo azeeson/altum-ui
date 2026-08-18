@@ -9,7 +9,7 @@ import styles from './UploadZone.stories.module.css';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/UploadZone',
+	title: 'altum/Components/UploadZone',
 	component: UploadZone,
 	tags: ['autodocs'],
 	parameters: componentParameters('Зона загрузки файлов с drag-and-drop и render-prop для кастомного триггера.'),

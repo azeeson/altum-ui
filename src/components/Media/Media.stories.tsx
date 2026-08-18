@@ -26,7 +26,7 @@ const posterSvg = 'data:image/svg+xml,' + encodeURIComponent(
 );
 
 export default {
-	title: 'altum-ui/Components/Media',
+	title: 'altum/Components/Media',
 	component: Media,
 	tags: ['autodocs'],
 	parameters: componentParameters(

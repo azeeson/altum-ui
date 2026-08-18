@@ -24,7 +24,7 @@ const ROLE_OPTIONS = [
 ];
 
 export default {
-	title: 'altum-ui/Components/Fieldset',
+	title: 'altum/Components/Fieldset',
 	component: Fieldset,
 	tags: ['autodocs'],
 	parameters: componentParameters('Секция формы с legend, описанием и единым отступом между полями.'),

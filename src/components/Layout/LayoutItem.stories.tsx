@@ -10,7 +10,7 @@ import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/LayoutItem',
+	title: 'altum/Components/LayoutItem',
 	component: LayoutItem,
 	tags: ['autodocs'],
 	parameters: componentParameters(

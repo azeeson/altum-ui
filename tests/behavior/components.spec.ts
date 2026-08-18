@@ -3,7 +3,7 @@ import {visitStory} from '../helpers/storybook';
 
 test.describe('TextField', () => {
 	test('принимает введённое значение', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-textfield--playground');
+		await visitStory(page, 'altum-components-textfield--playground');
 
 		const input = page.getByRole('textbox').first();
 		await input.fill('Hello altum');
@@ -13,7 +13,7 @@ test.describe('TextField', () => {
 
 test.describe('TextareaField', () => {
 	test('принимает многострочный ввод', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-textareafield--playground');
+		await visitStory(page, 'altum-components-textareafield--playground');
 
 		const textarea = page.getByRole('textbox');
 		await textarea.fill('Line 1\nLine 2');
@@ -23,7 +23,7 @@ test.describe('TextareaField', () => {
 
 test.describe('SegmentedControl', () => {
 	test('переключает активный сегмент', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-segmentedcontrol--playground');
+		await visitStory(page, 'altum-components-segmentedcontrol--playground');
 
 		const segments = page.getByRole('radio');
 		const count = await segments.count();
@@ -37,7 +37,7 @@ test.describe('SegmentedControl', () => {
 
 test.describe('Fieldset', () => {
 	test('рендерит легенду и поля', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-fieldset--playground');
+		await visitStory(page, 'altum-components-fieldset--playground');
 
 		await expect(page.getByText('Контактные данные')).toBeVisible();
 		await expect(page.getByRole('textbox').first()).toBeVisible();
@@ -46,7 +46,7 @@ test.describe('Fieldset', () => {
 
 test.describe('FieldLabel', () => {
 	test('рендерит лейбл и контент в вертикальной раскладке', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-fieldlabel--playground');
+		await visitStory(page, 'altum-components-fieldlabel--playground');
 
 		await expect(page.getByText('Эл. почта')).toBeVisible();
 		await expect(page.getByText('alex@example.com')).toBeVisible();

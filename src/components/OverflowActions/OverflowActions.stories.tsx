@@ -15,7 +15,7 @@ import {IconStar} from '../../icons/icons/IconStar';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/OverflowActions',
+	title: 'altum/Components/OverflowActions',
 	component: OverflowActions,
 	tags: ['autodocs'],
 	parameters: componentParameters(

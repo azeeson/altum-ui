@@ -6,7 +6,7 @@ import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Collapse',
+	title: 'altum/Components/Collapse',
 	component: Collapse,
 	tags: ['autodocs'],
 	parameters: componentParameters('Плавное раскрытие и сворачивание по высоте (`open`).'),

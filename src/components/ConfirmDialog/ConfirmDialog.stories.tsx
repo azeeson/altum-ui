@@ -5,7 +5,7 @@ import {Button} from '../Button/Button';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/ConfirmDialog',
+	title: 'altum/Components/ConfirmDialog',
 	component: ConfirmDialog,
 	tags: ['autodocs'],
 	parameters: componentParameters('Диалог подтверждения для деструктивных и критичных действий.'),

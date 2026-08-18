@@ -9,7 +9,7 @@ import {Box} from '../Box/Box';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Utilities/ThemeProvider',
+	title: 'altum/Utilities/ThemeProvider',
 	component: ThemeProvider,
 	tags: ['autodocs'],
 	parameters: componentParameters(

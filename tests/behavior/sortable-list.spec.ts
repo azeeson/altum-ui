@@ -3,7 +3,7 @@ import {visitStory} from '../helpers/storybook';
 
 test.describe('SortableList', () => {
 	test('меняет порядок элементов через drag and drop', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-sortablelist--grab-anywhere');
+		await visitStory(page, 'altum-components-sortablelist--grab-anywhere');
 
 		const items = page.getByRole('listitem');
 		await expect(items).toHaveCount(5);

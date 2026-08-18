@@ -84,7 +84,7 @@ export function translate(
 
 	if (typeof value !== 'string') {
 		if (process.env.NODE_ENV !== 'production') {
-			console.warn(`[altum-ui] Нет перевода: ${key}`);
+			console.warn(`[altum] Нет перевода: ${key}`);
 		}
 		return key;
 	}

@@ -4,7 +4,7 @@ import {PinInput, PinInputProps} from './PinInput';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/PinInput',
+	title: 'altum/Components/PinInput',
 	component: PinInput,
 	tags: ['autodocs'],
 	parameters: componentParameters('PIN / OTP ввод.'),

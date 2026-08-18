@@ -1,4 +1,4 @@
-# Layout-компоненты altum-ui
+# Layout-компоненты altum
 
 Гайд: **что выбрать** и **зачем**, для панели `Layout` и flex-примитивов (`Stack`, `Inline`, `Split`, `ControlRow`, `LayoutItem`).
 
@@ -16,7 +16,7 @@ import {
   Grid,
   Container,
   Page,
-} from 'altum-ui';
+} from 'altum';
 ```
 
 Связанные: **FieldBase** — см. [COMPONENTS.md](./COMPONENTS.md).

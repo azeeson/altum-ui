@@ -4,7 +4,7 @@ import {Title, TitleProps} from './Title';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Title',
+	title: 'altum/Components/Title',
 	component: Title,
 	tags: ['autodocs'],
 	parameters: componentParameters('Заголовок с уровнями H1–H4 и настройкой начертания.'),

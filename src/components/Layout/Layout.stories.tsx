@@ -40,7 +40,7 @@ const contentLines = (count: number) => (
 );
 
 export default {
-	title: 'altum-ui/Components/Layout',
+	title: 'altum/Components/Layout',
 	component: Layout,
 	tags: ['autodocs'],
 	parameters: componentParameters(

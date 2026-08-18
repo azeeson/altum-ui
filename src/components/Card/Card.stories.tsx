@@ -7,7 +7,7 @@ import {Stack} from '../Layout/Layout';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Card',
+	title: 'altum/Components/Card',
 	component: Card,
 	tags: ['autodocs'],
 	parameters: componentParameters('Контейнер с опциональным заголовком, подвалом и эффектом при наведении.'),

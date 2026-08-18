@@ -4,7 +4,7 @@ import {Radio, RadioGroup, RadioProps} from './Radio';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Radio',
+	title: 'altum/Components/Radio',
 	component: Radio,
 	tags: ['autodocs'],
 	parameters: componentParameters('Переключатель для выбора одного значения из группы опций.'),

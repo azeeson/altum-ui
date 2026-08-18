@@ -3,7 +3,7 @@ import {visitStory} from '../helpers/storybook';
 
 test.describe('Modal', () => {
 	test('открывает диалог и блокирует взаимодействие с фоном', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-interaction--modal-blocks-background');
+		await visitStory(page, 'altum-test-interaction--modal-blocks-background');
 
 		await page.getByTestId('open-modal').click();
 		const dialog = page.getByRole('dialog');
@@ -20,7 +20,7 @@ test.describe('Modal', () => {
 	});
 
 	test('закрывается кнопкой футера в playground-стори', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-modal--playground');
+		await visitStory(page, 'altum-components-modal--playground');
 
 		await page.getByRole('button', {name: /Показать диалог/i}).click();
 		const dialog = page.getByRole('dialog');
@@ -31,7 +31,7 @@ test.describe('Modal', () => {
 	});
 
 	test('закрывается по Escape', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-modal--playground');
+		await visitStory(page, 'altum-components-modal--playground');
 
 		await page.getByRole('button', {name: /Показать диалог/i}).click();
 		await expect(page.getByRole('dialog')).toBeVisible();
@@ -42,7 +42,7 @@ test.describe('Modal', () => {
 
 	/** После закрытия страница должна получать клики (без призрачного scrim). */
 	test('отдаёт клики после закрытия по Escape', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-interaction--modal-blocks-background');
+		await visitStory(page, 'altum-test-interaction--modal-blocks-background');
 
 		await page.getByTestId('open-modal').click();
 		await expect(page.getByRole('dialog')).toBeVisible();
@@ -57,7 +57,7 @@ test.describe('Modal', () => {
 
 test.describe('Backdrop', () => {
 	test('блокирует клики по контенту ниже в стори variants', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-backdrop--variants');
+		await visitStory(page, 'altum-components-backdrop--variants');
 
 		const containers = page.locator('div').filter({hasText: 'Контент под слоем'});
 		await expect(containers.first()).toBeVisible();
@@ -72,7 +72,7 @@ test.describe('Backdrop', () => {
 
 test.describe('Sheet', () => {
 	test('открывается из playground', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-sheet--playground');
+		await visitStory(page, 'altum-components-sheet--playground');
 
 		await page.getByRole('button').first().click();
 		await expect(page.getByRole('dialog')).toBeVisible();
@@ -81,7 +81,7 @@ test.describe('Sheet', () => {
 
 test.describe('Tooltip', () => {
 	test('показывается при наведении', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-tooltip--playground');
+		await visitStory(page, 'altum-components-tooltip--playground');
 
 		const trigger = page.getByRole('button', {name: 'Наведи на меня'});
 		await trigger.hover();
@@ -90,7 +90,7 @@ test.describe('Tooltip', () => {
 
 	/** Быстрое наведение по стеку не должно оставлять несколько нарисованных подсказок. */
 	test('оставляет не больше одной подсказки в стеке иконок', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-tooltip--icon-stack-mutex');
+		await visitStory(page, 'altum-components-tooltip--icon-stack-mutex');
 
 		const home = page.getByRole('button', {name: 'Главная'});
 		const search = page.getByRole('button', {name: 'Поиск'});

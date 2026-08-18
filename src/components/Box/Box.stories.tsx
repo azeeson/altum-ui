@@ -471,7 +471,7 @@ function SurfaceControls() {
 }
 
 export default {
-	title: 'altum-ui/Components/Box',
+	title: 'altum/Components/Box',
 	component: Box,
 	tags: ['autodocs'],
 	parameters: componentParameters(

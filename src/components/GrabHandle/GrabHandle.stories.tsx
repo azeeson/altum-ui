@@ -5,7 +5,7 @@ import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Mobile/GrabHandle',
+	title: 'altum/Mobile/GrabHandle',
 	component: GrabHandle,
 	tags: ['autodocs'],
 	parameters: componentParameters(

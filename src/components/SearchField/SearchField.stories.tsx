@@ -5,7 +5,7 @@ import {Button} from '../Button/Button';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/SearchField',
+	title: 'altum/Components/SearchField',
 	component: SearchField,
 	tags: ['autodocs'],
 	parameters: componentParameters(

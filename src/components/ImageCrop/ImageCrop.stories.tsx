@@ -7,7 +7,7 @@ import {Button} from '../Button/Button';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/ImageCrop',
+	title: 'altum/Components/ImageCrop',
 	component: ImageCrop,
 	tags: ['autodocs'],
 	parameters: componentParameters(

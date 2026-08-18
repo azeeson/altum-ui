@@ -53,7 +53,7 @@ const breakpointHint = [
 ].join(' · ');
 
 export default {
-	title: 'altum-ui/Components/Grid',
+	title: 'altum/Components/Grid',
 	component: Grid,
 	tags: ['autodocs'],
 	parameters: componentParameters(

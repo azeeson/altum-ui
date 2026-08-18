@@ -6,7 +6,7 @@ import {Stack} from '../Layout/Layout';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/DateRangePicker',
+	title: 'altum/Components/DateRangePicker',
 	component: DateRangePicker,
 	tags: ['autodocs'],
 	parameters: componentParameters(

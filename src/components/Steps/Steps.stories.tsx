@@ -10,7 +10,7 @@ import {componentParameters, story, Story} from '../../storybook/meta';
 const STEPS = [{title: 'Авторизация'}, {title: 'Загрузка документов'}, {title: 'Подписание договора'},];
 
 export default {
-	title: 'altum-ui/Components/Steps',
+	title: 'altum/Components/Steps',
 	component: Steps,
 	tags: ['autodocs'],
 	parameters: componentParameters('Пошаговый индикатор прогресса для многоэтапных процессов.'),

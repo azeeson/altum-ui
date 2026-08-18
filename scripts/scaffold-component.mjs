@@ -83,7 +83,7 @@ import {${name}, type ${name}Props} from './${name}';
 import {componentParameters, story, type Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/${name}',
+	title: 'altum/Components/${name}',
 	component: ${name},
 	tags: ['autodocs'],
 	parameters: componentParameters('${name}.'),

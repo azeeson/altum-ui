@@ -6,7 +6,7 @@ import {Stack} from '../Layout/Layout';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Alert',
+	title: 'altum/Components/Alert',
 	component: Alert,
 	tags: ['autodocs'],
 	parameters: componentParameters(

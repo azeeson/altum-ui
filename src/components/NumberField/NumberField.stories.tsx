@@ -6,7 +6,7 @@ import {FieldLabel} from '../FieldLabel/FieldLabel';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/NumberField',
+	title: 'altum/Components/NumberField',
 	component: NumberField,
 	tags: ['autodocs'],
 	parameters: componentParameters('Числовое поле с кнопками ± на ButtonGroup и ограничениями min/max.'),

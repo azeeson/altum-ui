@@ -3,7 +3,7 @@ import {visitStory} from '../helpers/storybook';
 
 test.describe('Dropdown', () => {
 	test('открывает панель по клику на триггер и показывает контент', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-dropdown--playground');
+		await visitStory(page, 'altum-components-dropdown--playground');
 
 		const trigger = page.getByRole('button', {name: /Открыть/i});
 		await expect(trigger).toHaveAttribute('aria-expanded', 'false');
@@ -26,7 +26,7 @@ test.describe('Dropdown', () => {
 	});
 
 	test('закрывается по клику снаружи', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-dropdown--playground');
+		await visitStory(page, 'altum-components-dropdown--playground');
 
 		await page.getByRole('button', {name: /Открыть/i}).click();
 		await expect(page.getByText('Содержимое выпадающей панели')).toBeVisible();
@@ -38,7 +38,7 @@ test.describe('Dropdown', () => {
 
 test.describe('Select', () => {
 	test('открывает listbox и выбирает опцию', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-select--playground');
+		await visitStory(page, 'altum-components-select--playground');
 
 		const trigger = page.getByRole('button', {name: /Город/i});
 		await trigger.click();
@@ -52,7 +52,7 @@ test.describe('Select', () => {
 	});
 
 	test('filterable-стори фильтрует опции', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-customselect--playground');
+		await visitStory(page, 'altum-components-customselect--playground');
 
 		await page.getByRole('button', {name: /Москва|Выберите город/i}).click();
 		const filter = page.getByRole('searchbox');
@@ -66,7 +66,7 @@ test.describe('Select', () => {
 
 test.describe('CustomSelect', () => {
 	test('оставляет панель открытой и переключает чипы', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-customselect--compound-multiple');
+		await visitStory(page, 'altum-components-customselect--compound-multiple');
 
 		await page.getByRole('combobox').click();
 		await expect(page.getByRole('listbox')).toBeVisible();
@@ -82,7 +82,7 @@ test.describe('CustomSelect', () => {
 
 test.describe('Checkbox', () => {
 	test('переключается в playground-стори', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-checkbox--playground');
+		await visitStory(page, 'altum-components-checkbox--playground');
 
 		const checkbox = page.getByRole('checkbox', {name: /Запомнить меня/i});
 		await expect(checkbox).not.toBeChecked();
@@ -95,14 +95,14 @@ test.describe('Checkbox', () => {
 	});
 
 	test('принимает controlled-состояние checked', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-interaction--checkbox-forced-checked');
+		await visitStory(page, 'altum-test-interaction--checkbox-forced-checked');
 
 		const checkbox = page.getByTestId('forced-checkbox');
 		await expect(checkbox).toBeChecked();
 	});
 
 	test('controlled-харнесс обновляет вывод', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-interaction--checkbox-controlled');
+		await visitStory(page, 'altum-test-interaction--checkbox-controlled');
 
 		const state = page.getByTestId('checkbox-state');
 
@@ -114,7 +114,7 @@ test.describe('Checkbox', () => {
 
 test.describe('Switch', () => {
 	test('переключается по клику', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-switch--playground');
+		await visitStory(page, 'altum-components-switch--playground');
 
 		const toggle = page.getByRole('switch').first();
 		const initial = await toggle.isChecked();
@@ -129,7 +129,7 @@ test.describe('Switch', () => {
 
 test.describe('Radio', () => {
 	test('группа выбирает одну опцию', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-radio--group');
+		await visitStory(page, 'altum-components-radio--group');
 
 		const optionB = page.getByRole('radio', {name: 'PayPal'});
 		const optionC = page.getByRole('radio', {name: 'ЮKassa'});
@@ -146,7 +146,7 @@ test.describe('Radio', () => {
 
 test.describe('Tabs', () => {
 	test('переключает активную панель вкладки', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-tabs--playground');
+		await visitStory(page, 'altum-components-tabs--playground');
 
 		const tabs = page.getByRole('tab');
 		const count = await tabs.count();
@@ -161,7 +161,7 @@ test.describe('Tabs', () => {
 
 test.describe('Accordion', () => {
 	test('раскрывает секцию по клику', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-accordion--playground');
+		await visitStory(page, 'altum-components-accordion--playground');
 
 		const trigger = page.getByRole('button', {name: /тарифный план/i});
 		await trigger.click();

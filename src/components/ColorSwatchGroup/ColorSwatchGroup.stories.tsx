@@ -14,7 +14,7 @@ const LIST_COLORS = [
 ];
 
 export default {
-	title: 'altum-ui/Components/ColorSwatchGroup',
+	title: 'altum/Components/ColorSwatchGroup',
 	component: ColorSwatchGroup,
 	tags: ['autodocs'],
 	parameters: componentParameters('Группа цветовых образцов для выбора одного цвета из палитры.'),

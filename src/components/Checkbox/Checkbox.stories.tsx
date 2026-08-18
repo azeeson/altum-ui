@@ -4,7 +4,7 @@ import {Checkbox, CheckboxGroup, CheckboxProps} from './Checkbox';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Checkbox',
+	title: 'altum/Components/Checkbox',
 	component: Checkbox,
 	tags: ['autodocs'],
 	parameters: componentParameters('Флажок для одиночного выбора или группы связанных опций.'),

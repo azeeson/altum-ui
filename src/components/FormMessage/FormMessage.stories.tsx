@@ -6,7 +6,7 @@ import {Stack} from '../Layout/Layout';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/FormMessage',
+	title: 'altum/Components/FormMessage',
 	component: FormMessage,
 	tags: ['autodocs'],
 	parameters: componentParameters(

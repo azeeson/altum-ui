@@ -21,7 +21,7 @@ const listItems = (count: number, prefix = 'Элемент') => (
 );
 
 export default {
-	title: 'altum-ui/Mobile/PullToRefresh',
+	title: 'altum/Mobile/PullToRefresh',
 	component: PullToRefresh,
 	tags: ['autodocs'],
 	parameters: componentParameters(

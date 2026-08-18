@@ -6,7 +6,7 @@ import {TextField} from '../TextField/TextField';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Utilities/FocusTrap',
+	title: 'altum/Utilities/FocusTrap',
 	component: FocusTrap,
 	tags: ['autodocs'],
 	parameters: componentParameters(

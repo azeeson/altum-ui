@@ -4,7 +4,7 @@ import {Button, ButtonProps} from './Button';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Button',
+	title: 'altum/Components/Button',
 	component: Button,
 	tags: ['autodocs'],
 	parameters: componentParameters('Кнопка с вариантами оформления, размерами, иконками и состоянием загрузки.'),

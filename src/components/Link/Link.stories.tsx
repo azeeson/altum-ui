@@ -7,7 +7,7 @@ import {Box} from '../Box/Box';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Link',
+	title: 'altum/Components/Link',
 	component: Link,
 	tags: ['autodocs'],
 	parameters: componentParameters(

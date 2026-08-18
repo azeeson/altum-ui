@@ -67,7 +67,7 @@ function demoTasks(anchor: Date): CalendarBoardTask[] {
 }
 
 export default {
-	title: 'altum-ui/Components/CalendarBoard',
+	title: 'altum/Components/CalendarBoard',
 	component: CalendarBoard.Provider,
 	tags: ['autodocs'],
 	parameters: componentParameters(

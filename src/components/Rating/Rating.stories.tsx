@@ -6,7 +6,7 @@ import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Rating',
+	title: 'altum/Components/Rating',
 	component: Rating,
 	tags: ['autodocs'],
 	parameters: componentParameters(

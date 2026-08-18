@@ -1,6 +1,6 @@
-# Темизация altum-ui
+# Темизация altum
 
-altum-ui использует **CSS custom properties** для всех дизайн-токенов. Компоненты ссылаются на переменные вроде `var(--altum-color-brand)` и `var(--altum-color-field-border)` — цвета темы никогда не хардкодятся.
+altum использует **CSS custom properties** для всех дизайн-токенов. Компоненты ссылаются на переменные вроде `var(--altum-color-brand)` и `var(--altum-color-field-border)` — цвета темы никогда не хардкодятся.
 
 ## Быстрый старт
 
@@ -290,7 +290,7 @@ Primary- и danger-кнопки остаются на `--altum-color-brand-*` / 
 `ThemeProvider` поставляется с классом `.dark`, который перемапливает все токены. Переключение через хук:
 
 ```tsx
-import { useTheme } from 'altum-ui';
+import { useTheme } from 'altum';
 
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();

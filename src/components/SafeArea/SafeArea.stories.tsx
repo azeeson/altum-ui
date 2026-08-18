@@ -13,7 +13,7 @@ const demoSurface: React.CSSProperties = {
 };
 
 export default {
-	title: 'altum-ui/Mobile/SafeArea',
+	title: 'altum/Mobile/SafeArea',
 	component: SafeArea,
 	tags: ['autodocs'],
 	parameters: componentParameters(

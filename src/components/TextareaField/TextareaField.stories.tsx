@@ -5,7 +5,7 @@ import {TextField} from '../TextField/TextField';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/TextareaField',
+	title: 'altum/Components/TextareaField',
 	component: TextareaField,
 	tags: ['autodocs'],
 	parameters: componentParameters('Многострочное текстовое поле с меткой, валидацией и настраиваемым числом строк.'),

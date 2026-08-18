@@ -3,7 +3,7 @@ import {visitStory} from '../helpers/storybook';
 
 test.describe('Popover', () => {
 	test('открывается по клику на триггер и закрывается по Escape', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-popover--playground');
+		await visitStory(page, 'altum-components-popover--playground');
 		await page.getByRole('button', {name: /Открыть popover/i}).click();
 		await expect(page.getByText('Описание или форма внутри всплывающей панели')).toBeVisible();
 		await page.keyboard.press('Escape');
@@ -13,7 +13,7 @@ test.describe('Popover', () => {
 
 test.describe('DropdownMenu', () => {
 	test('открывает меню с иконки-триггера', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-dropdownmenu--playground');
+		await visitStory(page, 'altum-components-dropdownmenu--playground');
 		await page.getByRole('button', {name: /Меню действий/i}).click();
 		await expect(page.getByRole('listbox').or(page.getByRole('menu'))).toBeVisible({timeout: 5000});
 		await page.keyboard.press('Escape');
@@ -22,7 +22,7 @@ test.describe('DropdownMenu', () => {
 
 test.describe('ContextMenu', () => {
 	test('открывается по правому клику', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-contextmenu--playground');
+		await visitStory(page, 'altum-components-contextmenu--playground');
 		const surface = page.getByText(/Правый клик/i);
 		await expect(surface).toBeVisible();
 		await surface.click({button: 'right'});
@@ -32,7 +32,7 @@ test.describe('ContextMenu', () => {
 
 test.describe('ConfirmDialog', () => {
 	test('открывается с триггера и закрывается по отмене', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-confirmdialog--playground');
+		await visitStory(page, 'altum-components-confirmdialog--playground');
 		await page.getByRole('button', {name: /Удалить список/i}).click();
 		await expect(page.getByRole('dialog')).toBeVisible();
 		await page.getByRole('button', {name: /Отмена/i}).click();
@@ -42,7 +42,7 @@ test.describe('ConfirmDialog', () => {
 
 test.describe('CommandPalette', () => {
 	test('открывает палитру, выполняет команду и закрывается по Escape', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-commandpalette--playground');
+		await visitStory(page, 'altum-components-commandpalette--playground');
 		await page.getByRole('button', {name: /Открыть палитру/i}).click();
 		await expect(page.getByRole('dialog')).toBeVisible();
 		await page.getByRole('option', {name: /Открыть файл/i}).click();
@@ -56,7 +56,7 @@ test.describe('CommandPalette', () => {
 
 test.describe('Collapse', () => {
 	test('переключает контент', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-collapse--playground');
+		await visitStory(page, 'altum-components-collapse--playground');
 		await page.getByRole('button', {name: /Показать спойлер/i}).click();
 		await expect(page.getByText('Плавный раскрывающийся текст под спойлером!')).toBeVisible();
 	});
@@ -64,7 +64,7 @@ test.describe('Collapse', () => {
 
 test.describe('Tooltip', () => {
 	test('показывается при наведении', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-tooltip--playground');
+		await visitStory(page, 'altum-components-tooltip--playground');
 		await page.getByRole('button', {name: 'Наведи на меня'}).hover();
 		await expect(page.getByText('Полезная подсказка сверху')).toBeVisible();
 	});

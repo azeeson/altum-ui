@@ -131,7 +131,7 @@ const ORDER_COLUMNS: Column<OrderRow>[] = [
 ];
 
 export default {
-	title: 'altum-ui/Components/Table',
+	title: 'altum/Components/Table',
 	component: Table,
 	tags: ['autodocs'],
 	parameters: componentParameters(

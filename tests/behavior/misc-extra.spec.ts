@@ -3,7 +3,7 @@ import {visitStory} from '../helpers/storybook';
 
 test.describe('Button', () => {
 	test('состояния disabled и loading не активируются', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-button--all-variants');
+		await visitStory(page, 'altum-components-button--all-variants');
 		await expect(page.getByRole('button', {name: 'Заблокировано'})).toBeDisabled();
 		await expect(page.getByRole('button', {name: /Сохранение/i})).toHaveAttribute('aria-busy', 'true');
 	});
@@ -11,7 +11,7 @@ test.describe('Button', () => {
 
 test.describe('Chip', () => {
 	test('удаляет чип', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-chip--removable');
+		await visitStory(page, 'altum-components-chip--removable');
 		await expect(page.getByText('React')).toBeVisible();
 		await page.getByRole('button', {name: /Удалить React/i}).click();
 		await expect(page.getByText('React')).toHaveCount(0);
@@ -20,7 +20,7 @@ test.describe('Chip', () => {
 
 test.describe('Notification', () => {
 	test('показывает тост из playground', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-notification--playground');
+		await visitStory(page, 'altum-components-notification--playground');
 		await page.getByRole('button', {name: /Показать уведомление/i}).click();
 		await expect(page.getByText(/Успешн|уведомлен/i).first()).toBeVisible({timeout: 5000});
 	});
@@ -28,7 +28,7 @@ test.describe('Notification', () => {
 
 test.describe('Sidebar', () => {
 	test('выбирает пункт навигации', async ({page}) => {
-		await visitStory(page, 'altum-ui-components-sidebar--playground');
+		await visitStory(page, 'altum-components-sidebar--playground');
 		const orders = page.getByRole('button', {name: /Заказы/});
 		await expect(page.getByRole('button', {name: 'Обзор'})).toHaveAttribute('aria-current', 'page');
 		await orders.click();

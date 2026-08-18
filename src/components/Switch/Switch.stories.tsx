@@ -4,7 +4,7 @@ import {Switch, SwitchProps} from './Switch';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Switch',
+	title: 'altum/Components/Switch',
 	component: Switch,
 	tags: ['autodocs'],
 	parameters: componentParameters('Переключатель вкл/выкл для булевых настроек.'),

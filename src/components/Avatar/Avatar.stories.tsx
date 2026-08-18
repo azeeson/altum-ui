@@ -4,7 +4,7 @@ import {Avatar, AvatarGroup, AvatarProps} from './Avatar';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Avatar',
+	title: 'altum/Components/Avatar',
 	component: Avatar,
 	tags: ['autodocs'],
 	parameters: componentParameters('Аватар пользователя с инициалами или изображением, а также группа аватаров.'),

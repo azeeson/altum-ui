@@ -42,7 +42,7 @@ const UseFormDemo = () => {
 };
 
 export default {
-	title: 'altum-ui/Hooks/useForm',
+	title: 'altum/Hooks/useForm',
 	component: UseFormDemo,
 	tags: ['autodocs'],
 	parameters: componentParameters('Хук простой валидации полей формы.'),

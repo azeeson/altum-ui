@@ -12,7 +12,7 @@ const longMessage = [
 ].join(' ');
 
 export default {
-	title: 'altum-ui/Components/Bubble',
+	title: 'altum/Components/Bubble',
 	component: Bubble,
 	tags: ['autodocs'],
 	parameters: componentParameters(

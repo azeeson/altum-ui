@@ -3,7 +3,7 @@ import {visitStory} from '../helpers/storybook';
 
 test.describe('FieldBase', () => {
 	test('очищает введённое значение через Clear', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-base--field-base-clear');
+		await visitStory(page, 'altum-test-base--field-base-clear');
 		const input = page.getByLabel('Сумма');
 		await input.fill('1200');
 		await expect(page.getByText('Введите сумму')).toHaveCount(0);
@@ -15,7 +15,7 @@ test.describe('FieldBase', () => {
 
 test.describe('ButtonBase', () => {
 	test('отдаёт недоступную кнопку и ссылку', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-base--button-base-states');
+		await visitStory(page, 'altum-test-base--button-base-states');
 		await expect(page.getByRole('button', {name: 'Действие'})).toBeEnabled();
 		await expect(page.getByRole('button', {name: 'Недоступно'})).toBeDisabled();
 		await expect(page.getByRole('link', {name: 'Ссылка'})).toHaveAttribute('href', '#base-link');
@@ -24,7 +24,7 @@ test.describe('ButtonBase', () => {
 
 test.describe('ToggleControlBase', () => {
 	test('переключает нативный input с лейбла', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-base--toggle-control-base-label');
+		await visitStory(page, 'altum-test-base--toggle-control-base-label');
 		const checkbox = page.getByRole('checkbox', {name: 'Согласен'});
 		await expect(checkbox).not.toBeChecked();
 		await page.getByText('Согласен').click();
@@ -34,7 +34,7 @@ test.describe('ToggleControlBase', () => {
 
 test.describe('DialogBase', () => {
 	test('закрывается кнопкой Close в Header', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-base--dialog-base-chrome');
+		await visitStory(page, 'altum-test-base--dialog-base-chrome');
 		await expect(page.getByRole('heading', {name: 'Заголовок'})).toBeVisible();
 		await page.getByRole('button', {name: /Закрыть|Close/i}).click();
 		await expect(page.getByText('Диалог закрыт')).toBeVisible();
@@ -43,7 +43,7 @@ test.describe('DialogBase', () => {
 
 test.describe('ChartBase', () => {
 	test('рендерит серии легенды', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-base--chart-base-legend');
+		await visitStory(page, 'altum-test-base--chart-base-legend');
 		await expect(page.getByLabel('Демо-график')).toBeVisible();
 		await expect(page.getByText('Серия A')).toBeVisible();
 		await expect(page.getByText('Серия B')).toBeVisible();
@@ -52,7 +52,7 @@ test.describe('ChartBase', () => {
 
 test.describe('MediaRowBase', () => {
 	test('рендерит полиморфный корень article', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-base--media-row-base-article');
+		await visitStory(page, 'altum-test-base--media-row-base-article');
 		const article = page.locator('article');
 		await expect(article).toBeVisible();
 		await expect(article.getByText('Заголовок строки')).toBeVisible();
@@ -62,7 +62,7 @@ test.describe('MediaRowBase', () => {
 
 test.describe('ListOptionBase', () => {
 	test('помечает выбранную опцию', async ({page}) => {
-		await visitStory(page, 'altum-ui-test-base--list-option-base-selected');
+		await visitStory(page, 'altum-test-base--list-option-base-selected');
 		await expect(page.getByRole('button', {name: 'Выбранная опция'})).toHaveAttribute(
 			'aria-selected',
 			'true',

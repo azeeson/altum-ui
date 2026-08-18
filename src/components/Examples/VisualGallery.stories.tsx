@@ -241,7 +241,7 @@ const SWATCH_COLORS = [
 	'#64748b'
 ];
 
-const CODE_SNIPPET = `import { Button } from 'altum-ui';
+const CODE_SNIPPET = `import { Button } from 'altum';
 
 <Button variant="primary">Сохранить</Button>`;
 
@@ -423,7 +423,7 @@ function VisualGalleryDemo() {
 						placeholder и primary fill на sheet особенно чувствительны в dark.
 					</p>
 					<Text size='xs' color='muted'>
-						altum-ui / Примеры / Визуальная галерея
+						altum / Примеры / Визуальная галерея
 					</Text>
 				</header>
 
@@ -1925,7 +1925,7 @@ function VisualGalleryDemo() {
 }
 
 export default {
-	title: 'altum-ui/Examples/Визуальная галерея',
+	title: 'altum/Examples/Визуальная галерея',
 	parameters: {
 		layout: 'fullscreen',
 		controls: {disable: true},
@@ -1934,7 +1934,7 @@ export default {
 			disable: true,
 			description: {
 				component:
-					'Одностраничная визуальная галерея: матрицы вариантов и композиции для QA гармонии altum-ui.',
+					'Одностраничная визуальная галерея: матрицы вариантов и композиции для QA гармонии altum.',
 			},
 		},
 	},

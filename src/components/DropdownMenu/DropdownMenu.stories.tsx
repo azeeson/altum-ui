@@ -49,7 +49,7 @@ const BASE_GROUPS: ActionListGroup[] = [
 ];
 
 export default {
-	title: 'altum-ui/Components/DropdownMenu',
+	title: 'altum/Components/DropdownMenu',
 	component: DropdownMenu,
 	tags: ['autodocs'],
 	parameters: componentParameters(

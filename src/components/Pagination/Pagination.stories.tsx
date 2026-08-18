@@ -4,7 +4,7 @@ import {Pagination, PaginationProps} from './Pagination';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Pagination',
+	title: 'altum/Components/Pagination',
 	component: Pagination,
 	tags: ['autodocs'],
 	parameters: componentParameters('Постраничная навигация для списков и таблиц.'),

@@ -11,7 +11,7 @@ import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Stack',
+	title: 'altum/Components/Stack',
 	component: Stack,
 	tags: ['autodocs'],
 	parameters: componentParameters(

@@ -5,7 +5,7 @@ import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Utilities/SkipLink',
+	title: 'altum/Utilities/SkipLink',
 	component: SkipLink,
 	tags: ['autodocs'],
 	parameters: componentParameters(

@@ -28,7 +28,7 @@ const ITEMS = [
 ];
 
 export default {
-	title: 'altum-ui/Components/DescriptionList',
+	title: 'altum/Components/DescriptionList',
 	component: DescriptionList,
 	tags: ['autodocs'],
 	parameters: componentParameters(

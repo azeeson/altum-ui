@@ -4,7 +4,7 @@ import {DatePicker, DatePickerProps} from './DatePicker';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/DatePicker',
+	title: 'altum/Components/DatePicker',
 	component: DatePicker,
 	tags: ['autodocs'],
 	parameters: componentParameters('Поле выбора даты с выпадающим календарём.'),

@@ -14,7 +14,7 @@ const VARIANTS: SpinnerVariant[] = [
 ];
 
 export default {
-	title: 'altum-ui/Components/Spinner',
+	title: 'altum/Components/Spinner',
 	component: Spinner,
 	tags: ['autodocs'],
 	parameters: componentParameters(

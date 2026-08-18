@@ -5,7 +5,7 @@ import {Stack, Inline} from '../Layout/Layout';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Skeleton',
+	title: 'altum/Components/Skeleton',
 	component: Skeleton,
 	tags: ['autodocs'],
 	parameters: componentParameters(

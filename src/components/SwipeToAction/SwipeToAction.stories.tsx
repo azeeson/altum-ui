@@ -20,7 +20,7 @@ import {IconStar} from '../../icons/icons/IconStar';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Mobile/SwipeToAction',
+	title: 'altum/Mobile/SwipeToAction',
 	component: SwipeToAction,
 	tags: ['autodocs'],
 	parameters: componentParameters(

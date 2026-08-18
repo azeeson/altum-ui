@@ -6,7 +6,7 @@ import {Inline, Stack} from '../components/Layout/Layout';
 import {Text} from '../components/Text/Text';
 
 const meta = {
-	title: 'altum-ui/Test/MaskedField',
+	title: 'altum/Test/MaskedField',
 	parameters: {
 		layout: 'padded',
 		docs: {disable: true},

@@ -19,7 +19,7 @@ const demoPanelStyle: React.CSSProperties = {
 };
 
 export default {
-	title: 'altum-ui/Components/Overlay',
+	title: 'altum/Components/Overlay',
 	component: Overlay,
 	tags: ['autodocs'],
 	parameters: {

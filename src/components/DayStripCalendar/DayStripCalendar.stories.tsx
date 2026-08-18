@@ -10,7 +10,7 @@ import {formatMonthYear, isSameDay} from '../Calendar/Calendar.utils';
 import {useLocale} from '../LocaleProvider/LocaleProvider';
 
 export default {
-	title: 'altum-ui/Components/DayStripCalendar',
+	title: 'altum/Components/DayStripCalendar',
 	component: DayStripCalendar,
 	tags: ['autodocs'],
 	parameters: {

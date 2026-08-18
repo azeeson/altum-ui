@@ -4,7 +4,7 @@ import {PasswordField, PasswordFieldProps} from './PasswordField';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/PasswordField',
+	title: 'altum/Components/PasswordField',
 	component: PasswordField,
 	tags: ['autodocs'],
 	parameters: componentParameters(

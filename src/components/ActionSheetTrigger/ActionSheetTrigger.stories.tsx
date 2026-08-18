@@ -9,7 +9,7 @@ import {IconTrash} from '../../icons/icons/IconTrash';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/ActionSheetTrigger',
+	title: 'altum/Components/ActionSheetTrigger',
 	component: ActionSheetTrigger,
 	tags: ['autodocs'],
 	parameters: componentParameters(

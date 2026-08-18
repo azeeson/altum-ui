@@ -5,7 +5,7 @@ import {Button} from '../Button/Button';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Backdrop',
+	title: 'altum/Components/Backdrop',
 	component: Backdrop,
 	tags: ['autodocs'],
 	parameters: componentParameters('Затемнение фона для модалок, лайтбоксов и других overlay-слоёв.'),

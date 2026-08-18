@@ -9,7 +9,7 @@ import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Inline',
+	title: 'altum/Components/Inline',
 	component: Inline,
 	tags: ['autodocs'],
 	parameters: componentParameters(

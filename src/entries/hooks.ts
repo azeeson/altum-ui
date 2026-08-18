@@ -1,4 +1,4 @@
-/** Точка входа сабпути: универсальные хуки (`altum-ui/hooks`). */
+/** Точка входа сабпути: универсальные хуки (`altum/hooks`). */
 export {useOutsideClick} from '../hooks/useOutsideClick';
 export type {UseOutsideClickOptions} from '../hooks/useOutsideClick';
 

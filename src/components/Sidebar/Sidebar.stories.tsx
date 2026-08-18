@@ -77,7 +77,7 @@ function SidebarNavigation({value, onChange}: Pick<SidebarProps, 'value' | 'onCh
 }
 
 export default {
-	title: 'altum-ui/Components/Sidebar',
+	title: 'altum/Components/Sidebar',
 	component: Sidebar,
 	tags: ['autodocs'],
 	parameters: componentParameters('Составная боковая навигация с десктопным rail и мобильным Sheet.'),

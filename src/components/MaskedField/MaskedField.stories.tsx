@@ -6,7 +6,7 @@ import {Button} from '../Button/Button';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/MaskedField',
+	title: 'altum/Components/MaskedField',
 	component: MaskedField,
 	tags: ['autodocs'],
 	parameters: componentParameters('Текстовое поле с маской ввода для дат, телефонов и других форматов.'),

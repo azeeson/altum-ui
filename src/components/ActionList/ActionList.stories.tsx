@@ -52,7 +52,7 @@ const GROUPS: ActionListGroup[] = [
 ];
 
 export default {
-	title: 'altum-ui/Components/ActionList',
+	title: 'altum/Components/ActionList',
 	component: ActionList,
 	tags: ['autodocs'],
 	parameters: {

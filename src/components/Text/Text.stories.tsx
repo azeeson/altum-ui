@@ -4,7 +4,7 @@ import {Text, TextProps} from './Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Text',
+	title: 'altum/Components/Text',
 	component: Text,
 	tags: ['autodocs'],
 	parameters: componentParameters('Текстовый элемент с размерами, начертаниями и семантическими цветами.'),

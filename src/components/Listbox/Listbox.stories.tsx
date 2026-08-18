@@ -65,7 +65,7 @@ const JSX_OPTIONS = [
 ];
 
 export default {
-	title: 'altum-ui/Components/Listbox',
+	title: 'altum/Components/Listbox',
 	component: Listbox,
 	tags: ['autodocs'],
 	parameters: componentParameters(

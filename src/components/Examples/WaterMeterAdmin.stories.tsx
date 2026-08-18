@@ -737,7 +737,7 @@ const WaterMeterAdminDemo = () => {
 };
 
 export default {
-	title: 'altum-ui/Examples/Water Meter Admin',
+	title: 'altum/Examples/Water Meter Admin',
 	component: WaterMeterAdminDemo,
 	tags: ['autodocs'],
 	parameters: componentParameters(

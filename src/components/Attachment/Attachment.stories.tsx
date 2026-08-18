@@ -27,7 +27,7 @@ const attachmentContent = (
 );
 
 export default {
-	title: 'altum-ui/Components/Attachment',
+	title: 'altum/Components/Attachment',
 	component: Attachment,
 	tags: ['autodocs'],
 	parameters: componentParameters(

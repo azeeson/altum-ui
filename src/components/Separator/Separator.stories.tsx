@@ -6,7 +6,7 @@ import {Inline, Stack} from '../Layout/Layout';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Separator',
+	title: 'altum/Components/Separator',
 	component: Separator,
 	tags: ['autodocs'],
 	parameters: componentParameters(

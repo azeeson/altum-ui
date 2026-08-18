@@ -8,7 +8,7 @@ import {componentParameters, story, Story} from '../../storybook/meta';
 import styles from './SelectionGroup.stories.module.css';
 
 export default {
-	title: 'altum-ui/Components/SelectionGroup',
+	title: 'altum/Components/SelectionGroup',
 	component: SelectionGroup.Root,
 	tags: ['autodocs'],
 	parameters: componentParameters(

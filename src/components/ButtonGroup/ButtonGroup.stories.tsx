@@ -20,7 +20,7 @@ const VARIANTS: ButtonVariant[] = [
 ];
 
 export default {
-	title: 'altum-ui/Components/ButtonGroup',
+	title: 'altum/Components/ButtonGroup',
 	component: ButtonGroup,
 	tags: ['autodocs'],
 	parameters: {

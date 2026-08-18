@@ -4,7 +4,7 @@ import {LineChart, LineChartProps} from './LineChart';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/LineChart',
+	title: 'altum/Components/LineChart',
 	component: LineChart,
 	tags: ['autodocs'],
 	parameters: componentParameters('Линейный график с поддержкой нескольких наборов данных.'),

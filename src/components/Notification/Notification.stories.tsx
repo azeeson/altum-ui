@@ -20,7 +20,7 @@ const POSITIONS: NotificationPosition[] = [
 ];
 
 export default {
-	title: 'altum-ui/Components/Notification',
+	title: 'altum/Components/Notification',
 	component: Notification,
 	tags: ['autodocs'],
 	parameters: componentParameters('Стек всплывающих уведомлений с типами, действиями и автоскрытием.'),

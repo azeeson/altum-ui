@@ -25,7 +25,7 @@ const OFFSETS = [
 ];
 
 export default {
-	title: 'altum-ui/Components/RelativeTime',
+	title: 'altum/Components/RelativeTime',
 	component: RelativeTime,
 	tags: ['autodocs'],
 	parameters: componentParameters(

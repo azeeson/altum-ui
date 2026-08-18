@@ -4,7 +4,7 @@ import {Kbd, KbdGroup, KbdProps} from './Kbd';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Kbd',
+	title: 'altum/Components/Kbd',
 	component: Kbd,
 	tags: ['autodocs'],
 	parameters: componentParameters(

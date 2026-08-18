@@ -57,10 +57,10 @@ const IconGallery = () => (
 );
 
 export default {
-	title: 'altum-ui/Icons/Gallery',
+	title: 'altum/Icons/Gallery',
 	component: IconGallery,
 	tags: ['autodocs'],
-	parameters: componentParameters(`Галерея всех SVG-иконок библиотеки altum-ui (${ICONS.length}).`),
+	parameters: componentParameters(`Галерея всех SVG-иконок библиотеки altum (${ICONS.length}).`),
 	argTypes: {},
 } satisfies Meta<typeof IconGallery>;
 

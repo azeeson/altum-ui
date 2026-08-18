@@ -11,7 +11,7 @@ import {Dropdown} from '../Dropdown/Dropdown';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/TextField',
+	title: 'altum/Components/TextField',
 	component: TextField,
 	tags: ['autodocs'],
 	parameters: componentParameters('Однострочное текстовое поле с меткой, иконками, очисткой, ошибками и размерами.'),

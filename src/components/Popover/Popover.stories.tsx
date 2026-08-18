@@ -14,7 +14,7 @@ type StoryArgs = {
 };
 
 export default {
-	title: 'altum-ui/Components/Popover',
+	title: 'altum/Components/Popover',
 	component: Popover,
 	tags: ['autodocs'],
 	parameters: {

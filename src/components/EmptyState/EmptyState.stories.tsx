@@ -6,7 +6,7 @@ import {IconChecklist} from '../../icons/icons/IconChecklist';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/EmptyState',
+	title: 'altum/Components/EmptyState',
 	component: EmptyState,
 	tags: ['autodocs'],
 	parameters: componentParameters('Заглушка для пустых списков и разделов с иконкой, текстом и действием.'),

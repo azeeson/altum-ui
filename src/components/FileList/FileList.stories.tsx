@@ -35,7 +35,7 @@ const STATUS_ITEMS: FileListItemProps[] = [
 ];
 
 export default {
-	title: 'altum-ui/Components/FileList',
+	title: 'altum/Components/FileList',
 	component: FileList,
 	tags: ['autodocs'],
 	parameters: componentParameters(

@@ -39,7 +39,7 @@ const CITY_OPTIONS: CustomSelectOption[] = [
 ];
 
 export default {
-	title: 'altum-ui/Components/CustomSelect',
+	title: 'altum/Components/CustomSelect',
 	component: CustomSelect.Root,
 	tags: ['autodocs'],
 	parameters: componentParameters(

@@ -6,7 +6,7 @@ import {Stack} from '../Layout/Layout';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Slider',
+	title: 'altum/Components/Slider',
 	component: Slider,
 	tags: ['autodocs'],
 	parameters: componentParameters(

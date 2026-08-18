@@ -47,7 +47,7 @@ const SIZES: ContainerSize[] = [
 ];
 
 export default {
-	title: 'altum-ui/Components/Container',
+	title: 'altum/Components/Container',
 	component: Container,
 	tags: ['autodocs'],
 	parameters: componentParameters('Контентная колонка и Page-оболочка.'),

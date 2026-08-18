@@ -4,7 +4,7 @@ import {TimePicker, TimePickerField, TimePickerProps} from './TimePicker';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/TimePicker',
+	title: 'altum/Components/TimePicker',
 	component: TimePicker,
 	tags: ['autodocs'],
 	parameters: componentParameters('Выбор времени в формате ЧЧ:ММ — отдельный компонент или поле с меткой.'),

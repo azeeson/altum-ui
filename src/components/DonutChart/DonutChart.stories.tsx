@@ -27,7 +27,7 @@ const SEGMENTS = [
 ];
 
 export default {
-	title: 'altum-ui/Components/DonutChart',
+	title: 'altum/Components/DonutChart',
 	component: DonutChart,
 	tags: ['autodocs'],
 	parameters: componentParameters(

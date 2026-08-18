@@ -32,7 +32,7 @@ storybook-static
 /playwright/.cache/
 
 # Local npm pack artifacts
-altum-ui-*.tgz
+altum-*.tgz
 
 .cursorrules
 .cursor

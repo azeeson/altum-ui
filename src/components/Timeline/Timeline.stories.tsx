@@ -3,7 +3,7 @@ import {Timeline, TimelineProps} from './Timeline';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Timeline',
+	title: 'altum/Components/Timeline',
 	component: Timeline,
 	tags: ['autodocs'],
 	parameters: componentParameters('История событий и статусов.'),

@@ -7,7 +7,7 @@ import {Button} from '../Button/Button';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/CommandPalette',
+	title: 'altum/Components/CommandPalette',
 	component: CommandPalette,
 	tags: ['autodocs'],
 	parameters: {

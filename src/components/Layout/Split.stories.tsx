@@ -9,7 +9,7 @@ import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Components/Split',
+	title: 'altum/Components/Split',
 	component: Split,
 	tags: ['autodocs'],
 	parameters: componentParameters(

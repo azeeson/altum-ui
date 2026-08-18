@@ -41,7 +41,7 @@ const DATASETS = [
 ];
 
 export default {
-	title: 'altum-ui/Components/BarChart',
+	title: 'altum/Components/BarChart',
 	component: BarChart,
 	tags: ['autodocs'],
 	parameters: componentParameters(

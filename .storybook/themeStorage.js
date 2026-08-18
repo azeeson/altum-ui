@@ -1,6 +1,6 @@
 /** Общее сохранение темы Storybook (manager и preview делят same-origin localStorage). */
 
-export const THEME_STORAGE_KEY = 'altum-ui.storybook.theme';
+export const THEME_STORAGE_KEY = 'altum.storybook.theme';
 
 /**
  * @returns {'light' | 'dark'}

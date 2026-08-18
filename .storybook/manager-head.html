@@ -1,7 +1,7 @@
 <script>
 	(function () {
 		try {
-			var mode = localStorage.getItem('altum-ui.storybook.theme');
+			var mode = localStorage.getItem('altum.storybook.theme');
 			if (mode !== 'dark' && mode !== 'light') mode = 'light';
 			document.documentElement.setAttribute('data-altum-manager-theme', mode);
 			document.documentElement.style.background =

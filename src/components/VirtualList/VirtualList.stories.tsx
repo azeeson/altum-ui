@@ -33,7 +33,7 @@ function createRows(count: number): Row[] {
 }
 
 export default {
-	title: 'altum-ui/Components/VirtualList',
+	title: 'altum/Components/VirtualList',
 	component: VirtualList,
 	tags: ['autodocs'],
 	parameters: {

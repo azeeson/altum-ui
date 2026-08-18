@@ -457,7 +457,7 @@ const ComponentShowcaseDemo = () => {
 									>
 										<Sidebar.Header>
 											<Sidebar.Title>
-												altum-ui
+												altum
 											</Sidebar.Title>
 											<Sidebar.Collapse />
 										</Sidebar.Header>
@@ -1151,7 +1151,7 @@ const ComponentShowcaseDemo = () => {
 								margin: 0,
 								whiteSpace: 'pre-wrap'
 							}}>
-							{'npm i altum-ui\nnpx storybook'}
+							{'npm i altum\nnpx storybook'}
 						</Text>
 					</Box>
 				</div>
@@ -1363,7 +1363,7 @@ const ComponentShowcaseDemo = () => {
 			<DemoHeader
 				crumbs='Примеры / Витрина компонентов'
 				title='Витрина компонентов'
-				description='Витрина компонентов altum-ui, включая недавние добавления'
+				description='Витрина компонентов altum, включая недавние добавления'
 				actions={(
 					<Button
 						size='sm'
@@ -1497,11 +1497,11 @@ const ComponentShowcaseDemo = () => {
 };
 
 export default {
-	title: 'altum-ui/Examples/Component Showcase',
+	title: 'altum/Examples/Component Showcase',
 	component: ComponentShowcaseDemo,
 	tags: ['autodocs'],
 	parameters: componentParameters(
-		'Витрина компонентов altum-ui: макет, формы, действия, данные, состояния, чат/AI, медиа.',
+		'Витрина компонентов altum: макет, формы, действия, данные, состояния, чат/AI, медиа.',
 	),
 	argTypes: {},
 } satisfies Meta<typeof ComponentShowcaseDemo>;

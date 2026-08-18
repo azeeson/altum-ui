@@ -12,7 +12,7 @@ const placeholder: React.CSSProperties = {
 };
 
 export default {
-	title: 'altum-ui/Components/AspectRatio',
+	title: 'altum/Components/AspectRatio',
 	component: AspectRatio,
 	tags: ['autodocs'],
 	parameters: componentParameters(

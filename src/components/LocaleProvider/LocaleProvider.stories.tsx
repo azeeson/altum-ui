@@ -8,7 +8,7 @@ import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
-	title: 'altum-ui/Utilities/LocaleProvider',
+	title: 'altum/Utilities/LocaleProvider',
 	component: LocaleProvider,
 	tags: ['autodocs'],
 	parameters: componentParameters(
