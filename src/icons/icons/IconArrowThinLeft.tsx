@@ -1,0 +1,28 @@
+import React from 'react';
+
+interface IconProps extends React.SVGProps<SVGSVGElement> {
+	/** Размер в px (или любой css‑единица) */
+	size?: number | string;
+	/** Цвет заливки */
+	color?: string;
+}
+
+export const IconArrowThinLeft: React.FC<IconProps> = ({
+	size = 24,
+	color = 'currentColor',
+	...props
+}) => (
+	<svg
+		width={size}
+		height={size}
+		fill={color}
+		viewBox='0 0 92 92'
+		{...props}
+	>
+		<path
+			id='XMLID_546_'
+			d='M84,46c0,2.2-1.8,4-4,4H21.6l18.1,18.2c1.6,1.6,1.6,4.1,0,5.7C39,74.6,38,75,36.9,75c-1,0-2.1-0.4-2.8-1.2
+	l-24.9-25c-1.6-1.6-1.6-4.1,0-5.6l24.9-25c1.6-1.6,4.1-1.6,5.7,0c1.6,1.6,1.6,4.1,0,5.7L21.6,42H80C82.2,42,84,43.8,84,46z'
+		/>
+	</svg>
+);

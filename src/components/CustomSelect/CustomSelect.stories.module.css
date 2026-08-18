@@ -1,0 +1,41 @@
+.triggerWrap {
+  display: inline-block;
+}
+
+.chipTrigger {
+  display: inline-flex;
+  box-sizing: border-box;
+
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--altum-g-space-2);
+
+  min-width: 16rem;
+  min-height: 2.5rem;
+
+  padding: var(--altum-g-space-2) var(--altum-g-space-3);
+
+  border: 1px solid var(--altum-color-input-border);
+  border-radius: var(--altum-g-radius-md);
+
+  color: var(--altum-color-input-text);
+  background: var(--altum-color-input-bg);
+
+  cursor: pointer;
+
+  transition: var(--altum-transition-smooth);
+}
+
+.chipTrigger:focus-visible {
+  border-color: var(--altum-color-input-border-focus);
+  outline: none;
+
+  box-shadow: 0 0 0 1px var(--altum-color-input-border-focus);
+}
+
+.placeholder {
+  font-size: var(--altum-g-font-size-base);
+
+  color: var(--altum-color-muted);
+}
+

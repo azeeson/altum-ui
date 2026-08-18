@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "jsx": "react-jsx",
+    
+    /* Типы генерируются отдельно: scripts/bundle-types.mjs (rollup-plugin-dts) */
+    "declaration": false,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*", "ambient/**/*.d.ts"]
+}

@@ -1,0 +1,20 @@
+.searchField {
+  max-width: 100%;
+  &::-webkit-search-decoration,
+  &::-webkit-search-cancel-button,
+  &::-webkit-search-results-button,
+  &::-webkit-search-results-decoration {
+    display: none;
+
+    -webkit-appearance: none;
+    appearance: none;
+  }
+}
+
+/* Скрываем нативный clear у input[type=search] — очистка через FieldBase.Clear */
+
+.searchIcon {
+  flex-shrink: 0;
+
+  color: var(--altum-field-label);
+}

@@ -1,0 +1,599 @@
+.root {
+  display: flex;
+  box-sizing: border-box;
+
+  flex-direction: column;
+  gap: var(--altum-g-space-4);
+
+  width: 100%;
+  min-width: 0;
+
+  font-family: var(--altum-g-font-family-ui);
+
+  color: var(--altum-color-input-text);
+
+  & .header {
+    display: flex;
+
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--altum-g-space-3);
+
+    min-height: var(--altum-control-height-sm);
+  }
+
+  & .title {
+    flex: 1 1 auto;
+
+    min-width: 0;
+
+    font-size: var(--altum-g-font-size-base);
+    font-weight: var(--altum-g-font-weight-semibold);
+    line-height: 1.3;
+
+    color: var(--altum-color-ink-default);
+  }
+
+  & .nav {
+    display: inline-flex;
+
+    align-items: center;
+    gap: var(--altum-g-space-1);
+  }
+
+  & .navBtn {
+    display: inline-flex;
+
+    justify-content: center;
+    align-items: center;
+
+    width: var(--altum-control-height-sm);
+    height: var(--altum-control-height-sm);
+
+    margin: 0;
+    padding: 0;
+
+    border: 1px solid var(--altum-color-border);
+    border-radius: var(--altum-g-radius-sm);
+
+    color: var(--altum-color-text-secondary);
+    background: var(--altum-color-surface);
+
+    cursor: pointer;
+    appearance: none;
+
+    transition: var(--altum-transition-smooth);
+
+    &:hover:not(:disabled) {
+      color: var(--altum-color-input-text);
+      background: var(--altum-color-surface-hover);
+    }
+
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: var(--altum-focus-ring-offset);
+    }
+  }
+
+  & .viewSwitch {
+    flex: 0 0 auto;
+  }
+
+  & .body {
+    min-width: 0;
+  }
+
+  & .month {
+    display: flex;
+
+    flex-direction: column;
+    gap: var(--altum-g-space-2);
+
+    min-width: 0;
+  }
+
+  & .weekdayRow {
+    display: grid;
+
+    gap: var(--altum-g-space-1);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+
+    padding: 0 var(--altum-g-space-1);
+  }
+
+  & .weekdayLabel {
+    font-size: var(--altum-g-font-size-2xs);
+    font-weight: var(--altum-g-font-weight-medium);
+    line-height: var(--altum-g-line-height-2xs);
+    text-align: center;
+
+    color: var(--altum-color-muted);
+  }
+
+  & .monthWeeks {
+    display: flex;
+
+    flex-direction: column;
+    gap: var(--altum-g-space-1);
+  }
+
+  & .weekRow {
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+    gap: 0;
+
+    min-width: 0;
+  }
+
+  & .weekDays {
+    display: grid;
+
+    gap: var(--altum-g-space-1);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+
+    min-height: calc(var(--altum-g-space-9) * 2 + var(--altum-g-space-4));
+  }
+
+  & .dayCell {
+    box-sizing: border-box;
+
+    min-width: 0;
+    min-height: calc(var(--altum-g-space-9) * 2 + var(--altum-g-space-4));
+  }
+
+  & .dayCellSurface {
+    display: flex;
+
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--altum-g-space-1);
+
+    padding: var(--altum-g-space-1);
+    padding-bottom: calc(var(--altum-g-space-1) + var(--altum-calendar-board-span-height, 0px));
+
+    border: 1px solid var(--altum-color-border);
+    border-radius: var(--altum-g-radius-sm);
+
+    background: var(--altum-color-bg);
+
+    transition: var(--altum-transition-smooth);
+  }
+
+  & .dayNumberBtn {
+    display: inline-flex;
+
+    justify-content: flex-start;
+    align-items: center;
+
+    width: fit-content;
+
+    margin: 0;
+    padding: 0;
+
+    border: none;
+    border-radius: var(--altum-g-radius-sm);
+
+    color: inherit;
+    background-color: transparent;
+
+    cursor: pointer;
+    appearance: none;
+    &:hover .dayNumber {
+      color: var(--altum-color-brand-tint-text);
+    }
+
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: var(--altum-focus-ring-offset);
+    }
+  }
+
+  & .dayOutside {
+    opacity: var(--altum-opacity-disabled);
+  }
+
+  & .dayToday {
+    border-color: var(--altum-color-brand);
+  }
+
+  & .daySelected {
+    border-color: var(--altum-color-input-border-focus);
+
+    background: color-mix(in srgb, var(--altum-color-brand) 8%, var(--altum-color-bg));
+    box-shadow: inset 0 0 0 1px var(--altum-color-input-border-focus);
+  }
+
+  & .dayNumber {
+    font-size: var(--altum-g-font-size-2xs);
+    font-weight: var(--altum-g-font-weight-semibold);
+    line-height: 1.2;
+
+    color: var(--altum-color-ink-muted);
+  }
+
+  & .dayChips {
+    display: flex;
+
+    flex-direction: column;
+    gap: var(--altum-control-inset);
+
+    min-width: 0;
+  }
+
+  & .dayMore {
+    padding-left: var(--altum-g-space-1);
+
+    font-size: var(--altum-g-font-size-xs);
+    line-height: var(--altum-g-line-height-xs);
+
+    color: var(--altum-color-muted);
+  }
+
+  & .spanTrack {
+    position: absolute;
+    right: 0;
+    bottom: var(--altum-g-space-1);
+    left: 0;
+    z-index: var(--altum-g-z-raised-above);
+
+    display: flex;
+    box-sizing: border-box;
+
+    flex-direction: column;
+    gap: var(--altum-control-inset);
+
+    height: var(--altum-calendar-board-span-height, 0px);
+
+    pointer-events: none;
+  }
+
+  & .spanLane {
+    display: grid;
+
+    gap: var(--altum-g-space-1);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+
+    height: var(--altum-g-space-5);
+    min-height: var(--altum-g-space-5);
+
+    pointer-events: none;
+  }
+
+  & .spanSlot {
+    display: flex;
+    box-sizing: border-box;
+
+    min-width: 0;
+    height: 100%;
+
+    padding: 0 var(--altum-calendar-span-pad, 1px);
+
+    pointer-events: auto;
+    & > * {
+      flex: 1 1 auto;
+
+      min-width: 0;
+    }
+  }
+
+  & .chip {
+    display: flex;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    align-items: center;
+    gap: var(--altum-g-space-1);
+
+    max-width: 100%;
+
+    padding: var(--altum-control-inset) calc(var(--altum-g-space-1) + var(--altum-control-inset));
+
+    border: none;
+    border-radius: var(--altum-g-radius-sm);
+
+    font-family: inherit;
+    font-size: var(--altum-g-font-size-xs);
+    font-weight: var(--altum-g-font-weight-medium);
+    line-height: var(--altum-g-line-height-xs);
+    text-align: left;
+
+    color: var(--altum-color-input-text);
+    background-color: color-mix(in srgb, var(--altum-calendar-board-task-color, var(--altum-color-brand)) 14%, var(--altum-color-dropdown-bg));
+
+    transition: var(--altum-transition-smooth);
+  }
+
+  & .chipClickable {
+    cursor: pointer;
+  }
+
+  & .chipDot {
+    flex-shrink: 0;
+
+    width: var(--altum-calendar-dot-size, 6px);
+    height: var(--altum-calendar-dot-size, 6px);
+
+    border-radius: 50%;
+
+    background-color: var(--altum-calendar-board-dot-color, var(--altum-color-brand));
+  }
+
+  & .chipTitle {
+    overflow: hidden;
+
+    min-width: 0;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  & .chipCompleted {
+    opacity: var(--altum-opacity-disabled);
+    & .chipTitle {
+      text-decoration: line-through;
+    }
+  }
+
+  & .year {
+    display: grid;
+
+    gap: var(--altum-g-space-4);
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+
+  & .yearMonth {
+    min-width: 0;
+  }
+
+  & .yearMonthCard {
+    display: flex;
+    box-sizing: border-box;
+
+    flex-direction: column;
+    gap: var(--altum-g-space-2);
+
+    width: 100%;
+
+    margin: 0;
+    padding: var(--altum-g-space-3);
+
+    border: 1px solid var(--altum-color-border);
+    border-radius: var(--altum-g-radius);
+
+    background: var(--altum-color-bg);
+  }
+
+  & .yearMonthCurrent {
+    border-color: var(--altum-color-brand);
+  }
+
+  & .yearMonthLabelBtn {
+    align-self: flex-start;
+
+    margin: 0;
+    padding: 0;
+
+    border: none;
+    border-radius: var(--altum-g-radius-sm);
+
+    font-family: inherit;
+    font-size: var(--altum-g-font-size-sm);
+    font-weight: var(--altum-g-font-weight-semibold);
+    line-height: var(--altum-g-line-height-sm);
+
+    color: var(--altum-color-ink-default);
+    background-color: transparent;
+
+    cursor: pointer;
+    appearance: none;
+
+    transition: var(--altum-transition-smooth);
+    &:hover {
+      color: var(--altum-color-brand-tint-text);
+    }
+
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: var(--altum-focus-ring-offset);
+    }
+  }
+
+  & .yearWeekdayRow {
+    display: grid;
+
+    gap: var(--altum-control-inset);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  & .yearWeek {
+    display: grid;
+
+    gap: var(--altum-control-inset);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  & .yearWeeks {
+    display: flex;
+
+    flex-direction: column;
+    gap: var(--altum-control-inset);
+  }
+
+  & .yearWeekday {
+    font-size: var(--altum-g-font-size-3xs);
+    line-height: var(--altum-g-line-height-xs);
+    text-align: center;
+
+    color: var(--altum-color-muted);
+  }
+
+  & .yearDayWrap {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    min-width: 0;
+  }
+
+  & .yearDay {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    min-height: calc(var(--altum-g-space-5) + var(--altum-control-inset));
+
+    margin: 0;
+    padding: 0;
+
+    border: none;
+    border-radius: var(--altum-g-radius-sm);
+
+    font-family: inherit;
+    font-size: var(--altum-g-font-size-xs);
+    line-height: 1.2;
+    text-align: center;
+
+    color: var(--altum-color-input-text);
+    background: transparent;
+
+    cursor: pointer;
+    appearance: none;
+
+    transition: var(--altum-transition-smooth);
+    &:disabled {
+      cursor: default;
+    }
+  }
+
+  & .yearDayOutside {
+    color: transparent;
+
+    pointer-events: none;
+  }
+
+  & .yearDayToday {
+    font-weight: var(--altum-g-font-weight-bold);
+
+    box-shadow: inset 0 0 0 1px var(--altum-color-brand);
+  }
+
+  & .yearDayHasTask {
+    font-weight: var(--altum-g-font-weight-semibold);
+
+    color: var(--altum-color-brand-tint-text);
+    background-color: var(--altum-color-brand-tint);
+    &:hover {
+      color: var(--altum-color-brand-tint-text);
+      background-color: var(--altum-color-brand-tint-hover);
+    }
+
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: var(--altum-focus-ring-offset);
+    }
+  }
+
+  & .yearTooltipList {
+    max-width: 14rem;
+
+    margin: 0;
+    padding: 0 0 0 var(--altum-g-space-4);
+
+    text-align: left;
+    white-space: normal;
+    & li + li {
+      margin-top: var(--altum-calendar-list-gap, 2px);
+    }
+  }
+}
+
+/* --- Месяц --- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- Chip --- */
+
+
+
+
+
+.chipClickable:hover,
+.chipHighlighted {
+  background-color: color-mix(in srgb, var(--altum-calendar-board-task-color, var(--altum-color-brand)) 28%, var(--altum-color-dropdown-bg));
+  filter: brightness(0.97);
+}
+
+
+
+
+
+
+
+/* --- Год --- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

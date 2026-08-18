@@ -1,0 +1,55 @@
+.root {
+  /* Шкала шрифта совпадает с размерами FieldBase (sm→lg). */
+  --altum-pin-input-cell-size: var(--altum-control-height-md);
+  --altum-pin-input-font-size: var(--altum-g-font-size-base);
+  width: 100%;
+
+  font-family: inherit;
+
+  &.sm {
+    --altum-pin-input-cell-size: var(--altum-control-height-sm);
+    --altum-pin-input-font-size: var(--altum-g-font-size-2xs);
+  }
+
+  &.md {
+    --altum-pin-input-cell-size: var(--altum-control-height-md);
+    --altum-pin-input-font-size: var(--altum-g-font-size-base);
+  }
+
+  &.lg {
+    --altum-pin-input-cell-size: var(--altum-control-height-lg);
+    --altum-pin-input-font-size: var(--altum-g-font-size-lg);
+  }
+
+  & .group {
+    display: inline-flex;
+
+    flex-wrap: wrap;
+    gap: var(--altum-g-space-2);
+  }
+
+  & .groupError .cell {
+    border-color: var(--altum-color-status-error);
+  }
+
+  & .groupError .cell:focus-visible {
+    border-color: var(--altum-color-status-error);
+
+    box-shadow: 0 0 0 1px var(--altum-color-status-error);
+  }
+
+  & .cell {
+    box-sizing: border-box;
+
+    width: var(--altum-pin-input-cell-size);
+    min-width: var(--altum-pin-input-cell-size);
+    height: var(--altum-pin-input-cell-size);
+
+    padding: 0;
+
+    font-size: var(--altum-pin-input-font-size);
+    font-weight: var(--altum-g-font-weight-semibold);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+}

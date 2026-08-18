@@ -1,0 +1,187 @@
+.root {
+  width: 100%;
+
+  font-family: inherit;
+
+  & .meta {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--altum-g-space-3);
+
+    margin-bottom: var(--altum-g-space-2);
+  }
+
+  & .label {
+    font-size: var(--altum-g-font-size-sm);
+    font-weight: var(--altum-g-font-weight-medium, 500);
+
+    color: var(--altum-color-field-text);
+  }
+
+  & .valueText {
+    font-size: var(--altum-g-font-size-sm);
+    font-variant-numeric: tabular-nums;
+
+    color: var(--altum-field-label);
+  }
+
+  & .progressLine {
+    overflow: hidden;
+
+    width: 100%;
+    height: var(--altum-g-space-2);
+
+    border-radius: var(--altum-g-radius-sm);
+
+    background-color: var(--altum-color-panel-border);
+
+    &.sm {
+      height: var(--altum-g-space-1);
+    }
+
+    &.lg {
+      height: var(--altum-g-space-3);
+    }
+
+    &.tone_primary .progressBar {
+      background-color: var(--altum-color-brand);
+    }
+
+    &.tone_success .progressBar {
+      background-color: var(--altum-color-status-success);
+    }
+
+    &.tone_warning .progressBar {
+      background-color: var(--altum-color-status-warning);
+    }
+
+    &.tone_error .progressBar {
+      background-color: var(--altum-color-status-error);
+    }
+
+    &.tone_info .progressBar {
+      background-color: var(--altum-color-status-info);
+    }
+
+    &.indeterminate .progressBar {
+      width: 40%;
+
+      animation: progressIndeterminate 1.2s ease-in-out infinite;
+    }
+  }
+
+  & .progressBar {
+    height: 100%;
+
+    border-radius: var(--altum-g-radius-sm);
+
+    background-color: var(--altum-color-brand);
+
+    transition: width 0.3s ease;
+  }
+}
+
+@keyframes progressIndeterminate {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+.circleRoot {
+  display: inline-flex;
+
+  flex-direction: column;
+  align-items: center;
+  gap: var(--altum-g-space-2);
+
+  &.tone_primary .progressCircleBar {
+    stroke: var(--altum-color-brand);
+  }
+
+  &.tone_success .progressCircleBar {
+    stroke: var(--altum-color-status-success);
+  }
+
+  &.tone_warning .progressCircleBar {
+    stroke: var(--altum-color-status-warning);
+  }
+
+  &.tone_error .progressCircleBar {
+    stroke: var(--altum-color-status-error);
+  }
+
+  &.tone_info .progressCircleBar {
+    stroke: var(--altum-color-status-info);
+  }
+
+  & .progressCircle {
+    transform: rotate(-90deg);
+  }
+
+  & .circleIndeterminate {
+    animation: progressSpin 0.9s linear infinite;
+  }
+
+  & .progressCircleTrack {
+    fill: none;
+    stroke: var(--altum-color-panel-border);
+    stroke-width: 4;
+  }
+
+  & .progressCircleBar {
+    fill: none;
+    stroke: var(--altum-color-brand);
+    stroke-width: 4;
+    stroke-linecap: round;
+
+    transition: stroke-dashoffset 0.3s ease;
+  }
+
+  & .circleMeta {
+    display: flex;
+
+    flex-direction: column;
+    align-items: center;
+    gap: var(--altum-g-space-1);
+
+    text-align: center;
+  }
+
+  & .circleValue {
+    font-size: var(--altum-g-font-size-sm);
+    font-weight: var(--altum-g-font-weight-semibold, 600);
+    font-variant-numeric: tabular-nums;
+
+    color: var(--altum-color-field-text);
+  }
+
+  & .circleLabel {
+    font-size: var(--altum-g-font-size-xs);
+
+    color: var(--altum-field-label);
+  }
+}
+
+@keyframes progressSpin {
+  to {
+    transform: rotate(270deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root .indeterminate .progressBar,
+  .circleRoot .circleIndeterminate {
+    animation: none;
+  }
+
+  .root .indeterminate .progressBar {
+    width: 50%;
+
+    opacity: 0.7;
+  }
+}

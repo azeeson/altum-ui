@@ -1,0 +1,259 @@
+.tabsContainer {
+  display: flex;
+
+  flex-direction: column;
+
+  width: 100%;
+
+  font-family: var(--altum-g-font-family-ui);
+
+  &.vertical {
+    flex-direction: row;
+    align-items: stretch;
+    gap: var(--altum-g-space-4);
+
+    & .tabsHeader {
+      overflow: visible;
+
+      flex-direction: column;
+      align-items: stretch;
+
+      width: max-content;
+      min-width: 140px;
+
+      padding-right: var(--altum-g-space-3);
+
+      border-right: 1px solid var(--altum-color-panel-border);
+      border-bottom: none;
+    }
+
+    & .tab {
+      justify-content: flex-start;
+
+      width: 100%;
+
+      padding: var(--altum-g-space-2) var(--altum-g-space-3);
+
+      border-radius: var(--altum-g-radius-sm);
+    }
+
+    & .active::after {
+      top: 0;
+      right: -1px;
+      bottom: 0;
+      left: auto;
+
+      width: 2px;
+      height: auto;
+    }
+
+    &.pill .tabsHeader {
+      flex-direction: column;
+
+      width: auto;
+
+      padding-right: var(--altum-g-space-1);
+
+      border-right: none;
+    }
+  }
+
+  &.pill {
+    & .tabsHeader {
+      display: inline-flex;
+      box-sizing: border-box;
+
+      align-items: stretch;
+      gap: var(--altum-g-space-1);
+
+      max-width: 100%;
+
+      padding: var(--altum-g-space-1);
+
+      border-bottom: none;
+      border-radius: var(--altum-g-radius);
+
+      background-color: var(--altum-color-panel-bg);
+    }
+
+    & .tab {
+      position: static;
+
+      flex: 1 1 auto;
+      justify-content: center;
+
+      min-width: 0;
+
+      padding: var(--altum-g-space-2) var(--altum-g-space-4);
+
+      border-radius: calc(var(--altum-g-radius) - 2px);
+
+      font-size: var(--altum-g-font-size-base);
+      font-weight: var(--altum-g-font-weight-medium, 500);
+      line-height: 1.25;
+      text-align: center;
+      white-space: nowrap;
+
+      &:focus-visible {
+        border-radius: calc(var(--altum-g-radius) - 2px);
+        outline-offset: var(--altum-focus-ring-offset);
+      }
+    }
+
+    & .active {
+      font-weight: var(--altum-g-font-weight-medium, 500);
+
+      color: var(--altum-color-field-text);
+      background-color: var(--altum-color-bg);
+      box-shadow: var(--altum-shadow-brand);
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+}
+
+.tabsHeader {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  gap: var(--altum-g-space-4);
+
+  margin-bottom: var(--altum-g-space-4);
+
+  border-bottom: 1px solid var(--altum-color-border);
+
+  scrollbar-width: thin;
+}
+
+.tab {
+  position: relative;
+
+  display: inline-flex;
+
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--altum-g-space-2);
+
+  min-height: var(--altum-control-height-sm);
+
+  padding: var(--altum-g-space-2) var(--altum-g-space-1);
+
+  border: none;
+
+  font-family: inherit;
+  font-size: var(--altum-g-font-size-base);
+  font-weight: var(--altum-g-font-weight-medium);
+
+  color: var(--altum-field-label);
+  background-color: transparent;
+
+  cursor: pointer;
+  appearance: none;
+
+  transition: var(--altum-transition-smooth);
+
+  &:hover:not(:disabled) {
+    color: var(--altum-color-field-text);
+  }
+
+  &:focus-visible {
+    border-radius: var(--altum-g-radius-sm);
+    outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+    outline-offset: var(--altum-focus-ring-offset);
+  }
+
+  & .tabLabel {
+    min-width: 0;
+  }
+
+  & .tabBadge {
+    display: inline-flex;
+
+    justify-content: center;
+    align-items: center;
+
+    min-width: var(--altum-badge-size-md);
+    height: var(--altum-badge-size-md);
+
+    padding: 0 var(--altum-g-space-1);
+
+    border-radius: var(--altum-g-radius-pill);
+
+    font-size: var(--altum-badge-font-size);
+    font-weight: var(--altum-g-font-weight-bold);
+    line-height: 1;
+
+    color: var(--altum-color-text-secondary);
+    background-color: var(--altum-color-option-hover);
+  }
+
+  &.active {
+    font-weight: var(--altum-g-font-weight-semibold);
+
+    color: var(--altum-color-ink-default);
+
+    &::after {
+      position: absolute;
+      right: 0;
+      bottom: -1px;
+      left: 0;
+
+      content: '';
+
+      height: 2px;
+
+      border-radius: 2px;
+
+      background-color: var(--altum-color-brand);
+    }
+
+    & .tabBadge {
+      color: var(--altum-color-brand);
+      background-color: color-mix(in srgb, var(--altum-color-brand) 18%, transparent);
+    }
+  }
+
+  & .tabBadgeDot {
+    flex-shrink: 0;
+
+    width: var(--altum-g-space-2);
+    height: var(--altum-g-space-2);
+
+    border-radius: 50%;
+
+    background-color: var(--altum-color-status-error);
+  }
+
+  &.disabled {
+    opacity: var(--altum-opacity-disabled);
+
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+.tabPanel {
+  flex: 1;
+
+  min-width: 0;
+
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tabPanel {
+    animation: none;
+  }
+}

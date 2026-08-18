@@ -1,0 +1,611 @@
+/**
+ * Общий chrome поля и поверхность контрола для TextField / Select / TextareaField / CustomSelect.
+ */
+
+.root {
+  --altum-field-padding-inline-sm: var(--altum-g-space-3);
+  --altum-field-padding-inline-md: var(--altum-g-space-4);
+  --altum-field-padding-inline-lg: var(--altum-g-space-5);
+  --altum-field-padding-inline: var(--altum-field-padding-inline-md);
+  --altum-field-padding-start: var(--altum-field-padding-inline);
+  --altum-field-padding-end: var(--altum-field-padding-inline);
+  --altum-field-pad-top: var(--altum-field-pad-top-md);
+  --altum-field-pad-bottom: var(--altum-field-pad-bottom-md);
+  --altum-field-label-raised-top: var(--altum-g-space-2);
+  /* Affix-иконки масштабируются с size поля (md по умолчанию). */
+  --altum-field-icon-size: var(--altum-control-icon-size-md);
+  --altum-field-font-size: var(--altum-g-font-size-base);
+  --altum-field-size-height: var(--altum-control-height-md);
+  /* Однострочный chrome = высота контрола при любом labelPlacement. */
+  --altum-field-chrome-height: var(--altum-field-size-height);
+  --altum-field-control-height: var(--altum-field-chrome-height);
+  --altum-field-line-height: calc(var(--altum-field-chrome-height) - 2px);
+  --altum-field-input-size: var(--altum-field-size-height);
+  --altum-field-control-border: var(--altum-color-field-border);
+  --altum-field-control-shadow: none;
+  --altum-field-control-bg: var(--altum-color-field-bg);
+  --altum-field-control-color: var(--altum-color-field-text);
+  --altum-field-control-opacity: 1;
+  --altum-field-label-color: var(--altum-field-label);
+  /* Одинаковый inset: Prefix T/B/L, Postfix T/B/R. */
+  --altum-field-affix-inset: var(--altum-g-space-2);
+  --altum-field-affix-size: calc(var(--altum-field-input-size) - 2px - 2 * var(--altum-field-affix-inset));
+  /* Симметричный промежуток между значением и prefix/postfix-аффиксами. */
+  --altum-field-affix-gap: var(--altum-g-space-2);
+  --altum-field-postfix-gap: var(--altum-field-affix-gap);
+  --altum-field-prefix-gap: var(--altum-field-affix-gap);
+  /* Ширина postfix-действий без Clear (шеврон, eye, спиннеры). */
+  --altum-field-postfix-actions-width: var(--altum-field-affix-size);
+  --altum-field-prefix-actions-width: var(--altum-field-affix-size);
+  position: relative;
+
+  display: inline-block;
+  box-sizing: border-box;
+
+  flex-shrink: 1;
+  /* Не max-content / flex-shrink: 0 — иначе чипы раздувают поле. */
+  min-width: 0;
+  max-width: 100%;
+
+  font-family: var(--altum-g-font-family-ui);
+  &.widthXxs,
+  &.widthXs,
+  &.widthSm,
+  &.widthMd,
+  &.widthLg,
+  &.widthXl,
+  &.widthFull {
+    flex-shrink: 1;
+
+    min-width: 0;
+  }
+
+  &:hover:not(.disabled):not(.readOnly) {
+    --altum-field-control-border: var(--altum-color-border-hover);
+  }
+
+  & .postfixWrapper {
+    right: var(--altum-field-affix-inset);
+    left: auto;
+  }
+
+  &:has([data-type='error']) .helperText {
+    display: none;
+  }
+
+  &.sm {
+    --altum-field-label-raised-top: var(--altum-g-space-1);
+    --altum-field-pad-top: var(--altum-field-pad-top-sm);
+    --altum-field-pad-bottom: var(--altum-field-pad-bottom-sm);
+    --altum-field-padding-inline: var(--altum-field-padding-inline-sm);
+    --altum-field-font-size: var(--altum-g-font-size-2xs);
+    --altum-field-icon-size: var(--altum-control-icon-size-sm);
+    --altum-field-size-height: var(--altum-control-height-sm);
+    --altum-field-affix-gap: var(--altum-g-space-2);
+    --altum-field-prefix-gap: var(--altum-field-affix-gap);
+    --altum-field-postfix-gap: var(--altum-field-affix-gap);
+  }
+
+  &.lg {
+    --altum-field-label-raised-top: calc(var(--altum-g-space-2) + var(--altum-g-space-1));
+    --altum-field-pad-top: var(--altum-field-pad-top-lg);
+    --altum-field-pad-bottom: var(--altum-field-pad-bottom-lg);
+    --altum-field-padding-inline: var(--altum-field-padding-inline-lg);
+    --altum-field-font-size: var(--altum-g-font-size-lg);
+    --altum-field-icon-size: var(--altum-control-icon-size-lg);
+    --altum-field-affix-gap: var(--altum-g-space-3);
+    --altum-field-prefix-gap: var(--altum-field-affix-gap);
+    --altum-field-postfix-gap: var(--altum-field-affix-gap);
+    --altum-field-size-height: var(--altum-control-height-lg);
+  }
+
+  &.widthXxs {
+    box-sizing: border-box;
+
+    width: 100%;
+    min-width: 0;
+    max-width: var(--altum-field-width-xxs);
+  }
+
+  &.widthXs {
+    box-sizing: border-box;
+
+    width: 100%;
+    min-width: 0;
+    max-width: var(--altum-field-width-xs);
+  }
+
+  &.widthSm {
+    box-sizing: border-box;
+
+    width: 100%;
+    min-width: 0;
+    max-width: var(--altum-field-width-sm);
+  }
+
+  &.widthMd {
+    box-sizing: border-box;
+
+    width: 100%;
+    min-width: 0;
+    max-width: var(--altum-field-width-md);
+  }
+
+  &.widthLg {
+    box-sizing: border-box;
+
+    width: 100%;
+    min-width: 0;
+    max-width: var(--altum-field-width-lg);
+  }
+
+  &.widthXl {
+    box-sizing: border-box;
+
+    width: 100%;
+    min-width: 0;
+    max-width: var(--altum-field-width-xl);
+  }
+
+  &.widthFull {
+    display: block;
+    box-sizing: border-box;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  &.placementOutside {
+    --altum-field-chrome-height: var(--altum-field-size-height);
+    --altum-field-control-height: var(--altum-field-chrome-height);
+    --altum-field-line-height: calc(var(--altum-field-chrome-height) - 2px);
+  }
+  &.placementNone {
+    --altum-field-chrome-height: var(--altum-field-size-height);
+    --altum-field-control-height: var(--altum-field-chrome-height);
+    --altum-field-line-height: calc(var(--altum-field-chrome-height) - 2px);
+  }
+
+  &[data-label-placement='outside'] .controlSurface,
+  &[data-label-placement='none'] .controlSurface {
+    padding-top: 0;
+    padding-bottom: 0;
+
+    line-height: var(--altum-field-line-height);
+  }
+
+  &[data-label-placement='outside'] .controlSurface::placeholder,
+  &[data-label-placement='none'] .controlSurface::placeholder {
+    color: var(--altum-field-placeholder, var(--altum-field-label));
+    opacity: 1;
+  }
+
+  &[data-label-placement='outside'] .controlSurface:focus::placeholder,
+  &[data-label-placement='outside'] .controlSurface:focus-visible::placeholder,
+  &[data-label-placement='none'] .controlSurface:focus::placeholder,
+  &[data-label-placement='none'] .controlSurface:focus-visible::placeholder {
+    color: transparent;
+  }
+
+  &.error {
+    --altum-field-control-border: var(--altum-color-status-error);
+    --altum-field-label-color: var(--altum-color-status-error);
+    & .fieldBody:focus-within,
+    &.focused,
+    &.isOpen {
+      --altum-field-control-border: var(--altum-color-status-error);
+      --altum-field-control-shadow: 0 0 0 1px var(--altum-color-status-error);
+    }
+
+    & .inputLabel {
+      color: var(--altum-color-status-error) !important;
+    }
+  }
+
+  &.disabled {
+    --altum-field-control-bg: var(--altum-color-option-hover);
+    --altum-field-control-color: var(--altum-field-label);
+    --altum-field-control-opacity: var(--altum-field-disabled-opacity);
+    --altum-field-label-color: var(--altum-field-label);
+    & .inputLabel,
+    & .labelOutside {
+      opacity: var(--altum-opacity-disabled);
+    }
+
+    & .prefixWrapper,
+    & .postfixWrapper {
+      opacity: 0.5;
+    }
+  }
+
+  &.readOnly {
+    --altum-field-label-color: var(--altum-field-label-readonly);
+    & .fieldBody:focus-within .inputLabel,
+    &.hasValue .inputLabel,
+    &.isOpen .inputLabel,
+    &.focused .inputLabel {
+      color: var(--altum-field-label-readonly);
+    }
+  }
+
+  & .fieldBody {
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+    &:has(.prefixWrapper) {
+      --altum-field-padding-start: calc(
+        var(--altum-field-affix-inset) + var(--altum-field-prefix-actions-width) + var(--altum-field-prefix-gap)
+      );
+    }
+
+    &:has(.postfixWrapper) {
+      --altum-field-input-end-space: calc(
+        var(--altum-field-affix-inset) + var(--altum-field-postfix-actions-width)
+      );
+      --altum-field-padding-end: calc(var(--altum-field-input-end-space) + var(--altum-control-inset));
+    }
+
+    &:has(.postfixWrapper):has(.clearBtn:not(.clearBtnHidden)) {
+      --altum-field-input-end-space: calc(
+        var(--altum-field-affix-inset)
+        + var(--altum-field-affix-size)
+        + var(--altum-field-postfix-gap)
+        + var(--altum-field-postfix-actions-width)
+      );
+      --altum-field-padding-end: calc(var(--altum-field-input-end-space) + var(--altum-control-inset));
+    }
+
+    &:has(.postfixWrapper > .clearBtn:only-child:not(.clearBtnHidden)) {
+      --altum-field-input-end-space: calc(var(--altum-field-affix-inset) + var(--altum-field-affix-size));
+      --altum-field-padding-end: calc(var(--altum-field-input-end-space) + var(--altum-control-inset));
+    }
+
+    &:has(.postfixWrapper > .clearBtnHidden:only-child) {
+      --altum-field-input-end-space: 0px;
+      --altum-field-padding-end: var(--altum-field-padding-inline);
+    }
+
+    &:has(textarea) .prefixWrapper,
+    &:has(textarea) .postfixWrapper,
+    &:has([contenteditable='true']) .prefixWrapper,
+    &:has([contenteditable='true']) .postfixWrapper {
+      bottom: auto;
+
+      align-items: center;
+
+      height: var(--altum-field-affix-size);
+    }
+
+    &:has(textarea) .affixButton,
+    &:has(textarea) .affixIcon,
+    &:has([contenteditable='true']) .affixButton,
+    &:has([contenteditable='true']) .affixIcon {
+      align-self: center;
+    }
+  }
+
+  & .labelOutside {
+    display: block;
+
+    margin: 0 0 var(--altum-field-label-gap, var(--altum-g-space-1));
+    padding: 0;
+
+    font-size: var(--altum-form-label-size);
+    font-weight: var(--altum-form-label-weight);
+    line-height: var(--altum-form-label-line-height);
+
+    color: var(--altum-field-label-color, var(--altum-color-muted));
+  }
+
+  & .prefixWrapper {/* Без composes affixSlot с геометрией — иначе top/width миксина
+     могут перебить inset в бандле потребителя. */
+    position: absolute;
+    top: var(--altum-field-affix-inset);
+    bottom: var(--altum-field-affix-inset);
+
+    display: flex;
+    box-sizing: border-box;
+
+    justify-content: center;
+    align-items: stretch;
+    gap: var(--altum-field-postfix-gap, var(--altum-g-space-1));
+
+    width: auto;
+    min-width: 0;
+    height: auto;
+    min-height: 0;
+
+    color: var(--altum-color-muted);
+
+    pointer-events: none;
+
+    transform: none;
+  }
+  & .postfixWrapper {/* Без composes affixSlot с геометрией — иначе top/width миксина
+     могут перебить inset в бандле потребителя. */
+    position: absolute;
+    top: var(--altum-field-affix-inset);
+    bottom: var(--altum-field-affix-inset);
+
+    display: flex;
+    box-sizing: border-box;
+
+    justify-content: center;
+    align-items: stretch;
+    gap: var(--altum-field-postfix-gap, var(--altum-g-space-1));
+
+    width: auto;
+    min-width: 0;
+    height: auto;
+    min-height: 0;
+
+    color: var(--altum-color-muted);
+
+    pointer-events: none;
+
+    transform: none;
+  }
+
+  & .prefixWrapper {
+    left: var(--altum-field-affix-inset);
+
+    gap: 0;
+  }
+
+  & .affixButton {
+    box-sizing: border-box;
+
+    flex-shrink: 0;
+    align-self: stretch;
+
+    width: auto !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 1;
+
+    padding: 0 !important;
+
+    color: var(--altum-color-muted);
+  }
+
+  & .affixIcon {
+    display: inline-flex;
+    box-sizing: border-box;
+
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+    align-self: stretch;
+
+    width: auto;
+    height: auto;
+    aspect-ratio: 1;
+
+    color: var(--altum-color-muted);
+
+    pointer-events: none;
+  }
+
+  & .inputLabel {
+    position: absolute;
+    top: 50%;
+    right: var(--altum-field-padding-end);
+    left: var(--altum-field-padding-start);
+    z-index: var(--altum-g-z-raised);
+
+    overflow: hidden;
+
+    max-width: calc(100% - var(--altum-field-padding-start) - var(--altum-field-padding-end));
+
+    font-size: var(--altum-field-font-size);
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    color: var(--altum-field-label-color);
+
+    pointer-events: none;
+
+    transform: translate3d(0, -50%, 0);
+    transform-origin: left top;
+    backface-visibility: hidden;
+
+    transition: var(--altum-transition-smooth);
+  }
+
+  & .helperText {
+    display: block;
+
+    margin-top: var(--altum-field-message-gap, var(--altum-g-space-1));
+    margin-left: var(--altum-form-helper-indent, var(--altum-g-space-1));
+
+    font-size: var(--altum-form-helper-size, var(--altum-g-font-size-xs));
+    line-height: var(--altum-form-helper-line-height, var(--altum-g-line-height-xs));
+
+    color: var(--altum-color-ink-muted);
+  }
+
+  & .errorText {
+    display: block;
+
+    margin-top: var(--altum-field-message-gap, var(--altum-g-space-1));
+    margin-left: var(--altum-form-helper-indent, var(--altum-g-space-1));
+
+    font-size: var(--altum-form-helper-size, var(--altum-g-font-size-xs));
+    line-height: var(--altum-form-helper-line-height, var(--altum-g-line-height-xs));
+
+    color: var(--altum-color-ink-danger);
+  }
+}
+
+/* Явные width-* — min-width/flex-shrink уже на .root */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* outside / none: значение по центру; токены высоты уже заданы на .root */
+
+
+
+.fieldBody:focus-within,
+.focused,
+.isOpen {
+  --altum-field-control-border: var(--altum-color-border-hover);
+  --altum-field-control-shadow: 0 0 0 1px var(--altum-color-border-hover);
+}
+
+
+
+/* Сохранить индикатор фокуса на невалидных полях (кольцо ошибки, не цвет idle-фокуса). */
+
+
+
+
+
+
+
+
+
+/*
+ * Резерв с конца: inset + actions. Clear внутри Postfix добавляет свой слот + gap.
+ * Только Clear (`:only-child`) — без actions-width и без лишнего gap.
+ */
+
+/* Clear учитываем только когда видим — иначе мёртвый gutter перед eye/chevron/± */
+
+/* Postfix только с скрытым Clear — обычный inline padding */
+
+
+
+
+
+/*
+ * Многострочные controls (TextareaField): не тянуть affix
+ * на всю высоту — иначе Clear оказывается по вертикали в центре поля.
+ */
+
+
+
+.prefixWrapper button,
+.postfixWrapper button,
+.affixButton {
+  pointer-events: all;
+}
+
+
+
+
+
+.affixIcon svg,
+.prefixWrapper svg,
+.postfixWrapper svg {
+  flex-shrink: 0;
+
+  width: var(--altum-field-icon-size);
+  height: var(--altum-field-icon-size);
+}
+
+/* Выше специфичности, чем Button.btn → inlineFlexCenter (display: inline-flex). */
+
+.postfixWrapper .clearBtn.clearBtnHidden {
+  display: none;
+}
+
+
+
+.fieldBody:focus-within .inputLabel,
+.fieldBody:has(input:not(:placeholder-shown)) .inputLabel,
+.fieldBody:has(textarea:not(:placeholder-shown)) .inputLabel,
+.hasValue .inputLabel,
+.isOpen .inputLabel,
+.focused .inputLabel {
+  top: var(--altum-field-label-raised-top);
+
+  /* Приподнятая полоса остаётся одной строкой с многоточием над значением.
+   * Расширяем pre-scale бокс, чтобы визуальная обрезка совпадала с доступной верхней полосой. */
+  right: auto;
+
+  max-width: calc(
+    (100% - var(--altum-field-padding-start) - var(--altum-field-padding-end)) / 0.78
+  );
+
+  color: var(--altum-field-label-color, var(--altum-color-border-hover));
+
+  /* translateZ(0) — без субпиксельного «underline»-артефакта на scale */
+  transform: translate3d(0, 0, 0) scale(0.78);
+}
+
+.fieldBody:focus-within .inputLabel,
+.isOpen .inputLabel,
+.focused .inputLabel {
+  color: var(--altum-color-border-hover);
+}
+
+.controlSurface {
+  box-sizing: border-box;
+
+  width: 100%;
+
+  padding: var(--altum-field-pad-top) var(--altum-field-padding-end) var(--altum-field-pad-bottom) var(--altum-field-padding-start);
+
+  /* Полный border — не только color: иначе чужой `border: none` из mixin съест рамку. */
+  border: 1px solid var(--altum-field-control-border, var(--altum-color-field-border));
+  border-radius: var(--altum-g-radius);
+  outline: none;
+
+  font-family: inherit;
+  font-size: var(--altum-field-font-size, var(--altum-g-font-size-base));
+  line-height: 1.25;
+
+  color: var(--altum-field-control-color, var(--altum-color-field-text));
+  opacity: var(--altum-field-control-opacity, 1);
+  background-color: var(--altum-field-control-bg, var(--altum-color-field-bg));
+  box-shadow: var(--altum-field-control-shadow, none);
+
+  transition: var(--altum-transition-smooth);
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  &::placeholder,
+  &:focus::placeholder {
+    color: transparent;
+  }
+}
+
+.controlSurfaceReadOnly {
+  border-style: dashed;
+  border-color: var(--altum-field-border-readonly);
+
+  color: var(--altum-color-field-text);
+  background-color: var(--altum-field-bg-readonly);
+  box-shadow: none;
+
+  cursor: default;
+
+  &:focus-visible {
+    border-color: var(--altum-field-border-readonly);
+
+    box-shadow: inset 0 0 0 1px var(--altum-field-border-readonly-ring);
+  }
+}

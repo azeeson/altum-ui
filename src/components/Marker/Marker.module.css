@@ -1,0 +1,113 @@
+.marker {
+  display: flex;
+  box-sizing: border-box;
+
+  justify-content: center;
+  align-items: center;
+  gap: var(--altum-g-space-2);
+
+  width: 100%;
+  min-width: 0;
+
+  font-family: var(--altum-g-font-family-ui);
+
+  color: var(--altum-color-muted);
+
+  & .inner {
+    display: inline-flex;
+
+    align-items: center;
+    gap: var(--altum-g-space-2);
+
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  &.default .inner,
+  &.note .inner {
+    padding: var(--altum-g-space-1) var(--altum-g-space-2);
+
+    border-radius: var(--altum-g-radius);
+  }
+
+  &.note .inner {
+    color: var(--altum-color-brand-tint-text);
+    background: var(--altum-color-brand-tint);
+  }
+
+  &.row .inner {
+    justify-content: flex-start;
+
+    width: 100%;
+
+    padding: var(--altum-g-space-2) var(--altum-g-space-3);
+
+    border: 1px solid var(--altum-color-border);
+    border-radius: var(--altum-g-radius);
+
+    color: var(--altum-color-input-text);
+    background: var(--altum-color-surface);
+  }
+
+  &.separator {
+    gap: var(--altum-g-space-3);
+  }
+
+  & .line {
+    flex: 1 1 auto;
+
+    min-width: var(--altum-g-space-4);
+    height: 1px;
+
+    background: var(--altum-color-border);
+  }
+
+  & .icon {
+    display: inline-flex;
+
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+
+    color: inherit;
+  }
+
+  & .content {
+    min-width: 0;
+
+    font-size: var(--altum-g-font-size-2xs);
+    font-weight: var(--altum-g-font-weight-medium);
+    line-height: 1.35;
+  }
+
+  & .shimmer {
+    color: transparent;
+    background: linear-gradient(
+      90deg,
+      var(--altum-color-muted) 0%,
+      color-mix(in srgb, var(--altum-color-input-text) 70%, transparent) 50%,
+      var(--altum-color-muted) 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    animation: shimmer 1.4s ease-in-out infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      color: var(--altum-color-muted);
+      background: none;
+
+      animation: none;
+    }
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}

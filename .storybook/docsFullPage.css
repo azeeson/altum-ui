@@ -1,0 +1,56 @@
+/* Темы full-page docs — хром Storybook часто жёстко задаёт светлый фон. */
+html,
+body {
+	background: var(--altum-color-bg, #f8fafc) !important;
+	color: var(--altum-color-text, inherit);
+}
+
+.sbdocs.sbdocs-wrapper,
+.sbdocs-preview,
+.docs-story,
+.sbdocs-content,
+div[scale] {
+	background: transparent !important;
+}
+
+.sbdocs-title,
+.sbdocs-p,
+.sbdocs-li,
+.sbdocs-ul,
+.sbdocs-ol,
+.sbdocs-a,
+.sbdocs-h1,
+.sbdocs-h2,
+.sbdocs-h3,
+.sbdocs-h4,
+.sbdocs-h5,
+.sbdocs-h6 {
+	color: var(--altum-color-text, inherit) !important;
+}
+
+.sbdocs-a {
+	color: var(--altum-color-link-color, var(--altum-color-text)) !important;
+}
+
+.sbdocs-table tbody tr:nth-of-type(2n),
+.sbdocs-table thead {
+	background: var(--altum-color-surface-hover, transparent) !important;
+}
+
+.sbdocs-table td,
+.sbdocs-table th {
+	border-color: var(--altum-color-border, rgba(127, 127, 127, 0.25)) !important;
+	color: var(--altum-color-text, inherit) !important;
+}
+
+.docblock-argstable,
+.docblock-argstable-body,
+.docblock-argstable-head {
+	color: var(--altum-color-text, inherit);
+}
+
+.docblock-code-toggle,
+.sbdocs .docblock-source {
+	background: var(--altum-color-surface, transparent) !important;
+	border-color: var(--altum-color-border, rgba(127, 127, 127, 0.25)) !important;
+}

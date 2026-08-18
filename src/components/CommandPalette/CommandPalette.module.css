@@ -1,0 +1,68 @@
+.panel {
+  position: relative;
+  z-index: var(--altum-g-z-raised);
+
+  display: flex;
+  overflow: hidden;
+
+  flex-direction: column;
+  align-self: flex-start;
+
+  width: min(100%, var(--altum-command-palette-max-width));
+  max-height: min(72vh, var(--altum-command-palette-max-height));
+
+  margin-top: var(--altum-g-space-8);
+
+  pointer-events: auto;
+
+  & .header {
+    display: flex;
+
+    flex-shrink: 0;
+    flex-direction: column;
+    gap: var(--altum-g-space-2);
+
+    padding: var(--altum-g-space-3) var(--altum-g-space-3) var(--altum-g-space-2);
+
+    border-bottom: 1px solid var(--altum-color-dropdown-border);
+  }
+
+  & .title {
+    margin: 0;
+
+    font-size: var(--altum-g-font-size-2xs);
+    font-weight: var(--altum-g-font-weight-semibold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+
+    color: var(--altum-color-text-secondary);
+  }
+
+  & .search {
+    min-height: var(--altum-control-height-sm);
+
+    margin: 0;
+
+    font-size: var(--altum-g-font-size-sm);
+    line-height: var(--altum-g-line-height-sm);
+
+    appearance: none;
+
+    &::placeholder {
+      color: var(--altum-field-label);
+    }
+
+    &:focus-visible {
+      --altum-field-control-border: var(--altum-color-border-hover);
+      --altum-field-control-shadow: 0 0 0 1px var(--altum-color-border-hover);
+    }
+  }
+
+  & .list {
+    flex: 1 1 auto;
+
+    min-height: 0;
+
+    background: transparent;
+  }
+}

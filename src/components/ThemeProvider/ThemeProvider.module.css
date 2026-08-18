@@ -1,0 +1,646 @@
+.themeProvider {
+  --altum-g-radius: 8px;
+  --altum-g-radius-sm: 4px;
+  --altum-g-radius-md: var(--altum-g-radius);
+  --altum-g-radius-lg: 12px;
+  --altum-g-radius-pill: 9999px;
+  --altum-g-font-family-ui: system-ui, -apple-system, sans-serif;
+  --altum-g-font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --altum-g-font-weight-normal: 400;
+  --altum-g-font-weight-medium: 500;
+  --altum-g-font-weight-semibold: 600;
+  --altum-g-font-weight-bold: 700;
+
+  --altum-g-font-size-3xs: 10px;
+  --altum-g-font-size-2xs: 12px;
+  --altum-g-line-height-2xs: 1.35;
+  /* Шкала подписей: xs (11) намеренно меньше, чем 2xs (12). */
+  --altum-g-font-size-xs: 11px;
+  --altum-g-line-height-xs: 1.35;
+  --altum-g-font-size-sm: 13px;
+  --altum-g-line-height-sm: 1.35;
+  --altum-g-font-size-base: 14px;
+  --altum-g-line-height-base: 1.45;
+  --altum-g-font-size-lg: 16px;
+  --altum-g-line-height-lg: 1.4;
+  --altum-g-font-size-xl: 18px;
+  --altum-g-line-height-xl: 1.35;
+  --altum-g-font-size-2xl: 20px;
+  --altum-g-font-size-3xl: 24px;
+  --altum-g-font-size-4xl: 32px;
+
+  /* Алиасы для обратной совместимости */
+  --altum-g-line-height-snug: var(--altum-g-line-height-xs);
+  --altum-g-line-height-relaxed: var(--altum-g-line-height-base);
+
+  /* Цветовые примитивы — семантика ниже читает их, а не сырой HEX. */
+  --altum-g-color-white: #ffffff;
+  --altum-g-color-black: #000000;
+  --altum-g-color-slate-50: #f8fafc;
+  --altum-g-color-slate-100: #f1f5f9;
+  --altum-g-color-slate-200: #e2e8f0;
+  --altum-g-color-slate-300: #cbd5e1;
+  --altum-g-color-slate-400: #94a3b8;
+  --altum-g-color-slate-500: #64748b;
+  --altum-g-color-slate-600: #475569;
+  --altum-g-color-slate-700: #334155;
+  --altum-g-color-slate-800: #1e293b;
+  --altum-g-color-slate-900: #0f172a;
+  --altum-g-color-gray-600: #4b5563;
+  --altum-g-color-red-50: #fef2f2;
+  --altum-g-color-red-100: #fee2e2;
+  --altum-g-color-red-300: #fca5a5;
+  --altum-g-color-red-400: #f87171;
+  --altum-g-color-red-600: #dc2626;
+  --altum-g-color-red-700: #b91c1c;
+  --altum-g-color-red-800: #991b1b;
+  --altum-g-color-red-900: #7f1d1d;
+  --altum-g-color-blue-500: #3b82f6;
+  --altum-g-color-emerald-500: #10b981;
+  --altum-g-color-green-600: #16a34a;
+  --altum-g-color-amber-500: #f59e0b;
+  --altum-g-color-amber-600: #d97706;
+  --altum-g-color-violet-500: #8b5cf6;
+  --altum-g-color-teal-500: #14b8a6;
+  --altum-g-color-brand: var(--altum-g-color-slate-600);
+  --altum-g-color-brand-hover: var(--altum-g-color-slate-700);
+  --altum-g-color-brand-active: var(--altum-g-color-slate-800);
+
+  /* Chrome диалога / списка / тоггла / фокуса */
+  --altum-dialog-header-padding: var(--altum-g-space-4) var(--altum-g-space-4) var(--altum-g-space-3);
+  --altum-dialog-body-padding: var(--altum-g-space-4);
+  --altum-dialog-footer-padding: var(--altum-g-space-3) var(--altum-g-space-4) var(--altum-g-space-4);
+  --altum-dialog-title-size: var(--altum-g-font-size-lg);
+  --altum-dialog-title-weight: var(--altum-g-font-weight-semibold);
+  --altum-dialog-body-size: var(--altum-g-font-size-base);
+  --altum-dialog-max-width-sm: 420px;
+  --altum-dialog-max-width-md: 500px;
+  --altum-dialog-max-width-lg: 600px;
+  --altum-dialog-max-height: 85vh;
+  --altum-motion-overlay: 0.2s;
+  --altum-list-max-height: 280px;
+  --altum-option-padding-y: var(--altum-g-space-2);
+  --altum-option-padding-x: var(--altum-g-space-3);
+  /* Лестница боксов Checkbox / Radio (sm / md / lg). */
+  --altum-toggle-box-size-sm: 16px;
+  --altum-toggle-box-size: 20px;
+  --altum-toggle-box-size-lg: 24px;
+  --altum-toggle-label-gap: var(--altum-g-space-3);
+  --altum-toggle-stack-gap: var(--altum-g-space-3);
+  --altum-toggle-check-width: 4px;
+  --altum-toggle-check-height: 8px;
+  --altum-toggle-check-stroke: 2px;
+  --altum-toggle-check-width-sm: 3px;
+  --altum-toggle-check-height-sm: 6px;
+  --altum-toggle-check-stroke-sm: 1.5px;
+  --altum-toggle-check-width-lg: 5px;
+  --altum-toggle-check-height-lg: 9px;
+  --altum-toggle-dash-width: 8px;
+  --altum-toggle-dash-height: 2px;
+  --altum-toggle-dash-width-sm: 6px;
+  --altum-toggle-dash-height-sm: 1.5px;
+  --altum-toggle-dash-width-lg: 10px;
+  --altum-toggle-task-check-height: 7px;
+  --altum-toggle-radio-dot: 6px;
+  --altum-toggle-radio-dot-sm: 4px;
+  --altum-toggle-radio-dot-lg: 8px;
+  --altum-toggle-align-nudge: 0.15em;
+  --altum-control-inset: 2px;
+  /* Общий контракт фокуса: семейство outline (тогглы/чипы) ≈ масса двойного кольца кнопки. */
+  --altum-focus-ring-width: 2px;
+  --altum-focus-ring-offset: 1px;
+  --altum-focus-ring-color: var(--altum-color-input-border-focus);
+  /* Двойное кольцо кнопки: внутренняя зона + внешний brand (внешнее совпадает с массой focus-ring). */
+  --altum-button-focus-inner: 1px;
+  --altum-button-focus-outer: 3px;
+  --altum-color-button-focus-inner: var(--altum-button-focus-inner);
+  --altum-color-button-focus-outer: var(--altum-button-focus-outer);
+  --altum-opacity-disabled: 0.5;
+  /* У отключённых полей контент остаётся читаемее. */
+  --altum-field-disabled-opacity: 0.8;
+  --altum-overlay-close-size: 28px;
+  /* Idle/hover diskClose — читаемо на светлых и тёмных шапках оверлея без опоры на hover. */
+  --altum-overlay-close-fg: var(--altum-g-color-white);
+  --altum-overlay-close-bg: color-mix(in srgb, var(--altum-color-field-text) 32%, var(--altum-color-dropdown-bg));
+  --altum-overlay-close-bg-hover: color-mix(in srgb, var(--altum-color-field-text) 44%, var(--altum-color-dropdown-bg));
+  --altum-overlay-arrow-size: 8px;
+  --altum-field-label-gap: var(--altum-g-space-1);
+  --altum-field-message-gap: var(--altum-g-space-1);
+  /*
+   * Вертикальные отступы плавающего лейбла (оптические; документированные исключения из чистых пар 4pt).
+   * Считаются из --altum-space-* + --altum-control-inset, чтобы оставаться на лестнице токенов.
+   */
+  --altum-field-pad-top-sm: calc(var(--altum-g-space-3) + var(--altum-control-inset));
+  --altum-field-pad-bottom-sm: calc(var(--altum-g-space-1) + var(--altum-control-inset));
+  --altum-field-pad-top-md: var(--altum-g-space-5);
+  --altum-field-pad-bottom-md: var(--altum-g-space-2);
+  --altum-field-pad-top-lg: var(--altum-g-space-6);
+  --altum-field-pad-bottom-lg: calc(var(--altum-g-space-2) + var(--altum-control-inset));
+  /* Общая типографика форм (внешние лейблы, легенды, подсказки). */
+  --altum-form-label-size: var(--altum-g-font-size-sm);
+  --altum-form-label-weight: var(--altum-g-font-weight-medium);
+  --altum-form-label-line-height: var(--altum-g-line-height-sm);
+  --altum-form-legend-size: var(--altum-g-font-size-base);
+  --altum-form-legend-weight: var(--altum-g-font-weight-semibold);
+  --altum-form-legend-line-height: var(--altum-g-line-height-sm);
+  --altum-form-helper-size: var(--altum-g-font-size-xs);
+  --altum-form-helper-line-height: var(--altum-g-line-height-xs);
+  --altum-form-helper-indent: var(--altum-g-space-1);
+  /* Иконки аффиксов / выбора — общие для FieldBase, ButtonGroup, Segmented. */
+  --altum-control-icon-size-sm: 14px;
+  --altum-control-icon-size-md: 18px;
+  --altum-control-icon-size-lg: 22px;
+  /* Компактный chrome счётчика (Badge / Tabs). */
+  --altum-badge-size-sm: 16px;
+  --altum-badge-size-md: 18px;
+  --altum-badge-font-size: var(--altum-g-font-size-3xs);
+  /* Счётчики `standalone` sm остаются читаемыми (1–2 цифры). */
+  --altum-badge-font-size-sm: var(--altum-g-font-size-xs);
+  /* Overlay-бейдж выступает за угол триггера (запас раскладки + translate). */
+  /* 4px + 2px micro = прежний оптический вынос 6px, выраженный токенами. */
+  --altum-badge-overhang: calc(var(--altum-g-space-1) + var(--altum-control-inset));
+
+  /* Токены поверхности / статуса вместо surface-миксинов */
+  --altum-color-fill-primary-bg: var(--altum-color-brand);
+  --altum-color-fill-primary-fg: var(--altum-color-brand-text);
+  --altum-color-fill-floating-bg: var(--altum-color-dropdown-bg);
+  --altum-color-fill-floating-fg: var(--altum-color-input-text);
+  --altum-surface-secondary-bg: var(--altum-color-surface);
+  --altum-surface-secondary-border: var(--altum-color-border);
+  --altum-surface-secondary-shadow: var(--altum-shadow-surface);
+  --altum-surface-control-bg: var(--altum-color-field-bg);
+  --altum-surface-control-border: var(--altum-color-field-border);
+  --altum-surface-control-fg: var(--altum-color-field-text);
+  --altum-color-ink-default: var(--altum-color-input-text);
+  --altum-color-ink-muted: var(--altum-color-muted);
+  --altum-color-ink-danger: var(--altum-color-status-error);
+  --altum-color-status-success-bg: color-mix(in srgb, var(--altum-color-status-success) 14%, transparent);
+  --altum-color-status-success-border: color-mix(in srgb, var(--altum-color-status-success) 42%, transparent);
+  --altum-color-status-success-fg: var(--altum-color-status-success-strong);
+  --altum-color-status-info-bg: color-mix(in srgb, var(--altum-color-status-info) 14%, transparent);
+  --altum-color-status-info-border: color-mix(in srgb, var(--altum-color-status-info) 42%, transparent);
+  --altum-color-status-info-fg: var(--altum-color-status-info);
+  --altum-color-status-warning-bg: color-mix(in srgb, var(--altum-color-status-warning) 16%, transparent);
+  --altum-color-status-warning-border: color-mix(in srgb, var(--altum-color-status-warning) 45%, transparent);
+  --altum-color-status-warning-fg: var(--altum-color-status-warning-strong);
+  --altum-color-status-danger-bg: var(--altum-color-danger-bg-secondary-active);
+  --altum-color-status-danger-border: color-mix(in srgb, var(--altum-color-danger-text-secondary) 35%, transparent);
+  --altum-color-status-danger-fg: var(--altum-color-danger-text-secondary);
+
+  --altum-transition-smooth: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Отступы — сетка 8pt */
+  --altum-g-space-1: 4px;
+  --altum-g-space-2: 8px;
+  --altum-g-space-3: 12px;
+  --altum-g-space-4: 16px;
+  --altum-g-space-5: 20px;
+  --altum-g-space-6: 24px;
+  --altum-g-space-7: 28px;
+  --altum-g-space-8: 32px;
+  --altum-g-space-9: 36px;
+
+  /*
+   * Высоты контролов — сетка 4pt; согласованы с chrome FieldBase,
+   * чтобы Button стоял вровень с полями.
+   */
+  --altum-control-height-xs: 28px;
+  --altum-control-height-sm: 32px;
+  --altum-control-height-md: 44px;
+  --altum-control-height-lg: 52px;
+
+  /*
+   * Трек / бегунок Switch — из toggle-box + control-inset.
+   * Высоты совпадают с --altum-toggle-box-size-*; ширины держат пропорцию ~1.75–1.8.
+   */
+  --altum-switch-track-width-sm: 28px;
+  --altum-switch-track-height-sm: var(--altum-toggle-box-size-sm);
+  --altum-switch-thumb-size-sm: calc(var(--altum-toggle-box-size-sm) - 2 * var(--altum-control-inset));
+  --altum-switch-track-width-md: 36px;
+  --altum-switch-track-height-md: var(--altum-toggle-box-size);
+  --altum-switch-thumb-size-md: calc(var(--altum-toggle-box-size) - 2 * var(--altum-control-inset));
+  --altum-switch-track-width-lg: 44px;
+  --altum-switch-track-height-lg: var(--altum-toggle-box-size-lg);
+  --altum-switch-thumb-size-lg: calc(var(--altum-toggle-box-size-lg) - 2 * var(--altum-control-inset));
+
+  /* Слои z-index (снизу → вверх) */
+  --altum-g-z-below: -1;
+  --altum-g-z-raised: 1;
+  --altum-g-z-raised-above: 2;
+  --altum-g-z-control: 5;
+  --altum-g-z-local: 10;
+  --altum-g-z-upload: 50;
+  --altum-g-z-overlay: 1000;
+  --altum-g-z-modal: 1100;
+  /* Подсказки выше модалки, чтобы якоря работали внутри диалогов. */
+  --altum-g-z-tooltip: 1150;
+  --altum-g-z-dropdown: 1200;
+  --altum-g-z-lightbox: 1250;
+  --altum-g-z-notification: 1300;
+  --altum-g-z-skip: 10000;
+
+  --altum-field-width-xxs: 80px;
+  --altum-field-width-xs: 120px;
+  --altum-field-width-sm: 160px;
+  --altum-field-width-md: 280px;
+  --altum-field-width-lg: 400px;
+  --altum-field-width-xl: 520px;
+  --altum-chart-legend-min-width: 140px;
+  --altum-popover-min-width: 180px;
+  --altum-popover-max-width: 360px;
+  --altum-popover-tooltip-max-width: 280px;
+  --altum-container-max-sm: 640px;
+  --altum-container-max-md: 768px;
+  --altum-container-max-lg: 960px;
+  --altum-container-max-xl: 1200px;
+  --altum-image-crop-size: 280px;
+  --altum-image-crop-panel-max: 560px;
+  --altum-image-crop-stage-max: 480px;
+  --altum-image-gallery-viewport-min: 200px;
+  --altum-image-gallery-thumb-width: 72px;
+  --altum-image-gallery-thumb-height: 54px;
+  --altum-day-strip-max-width: 560px;
+  --altum-day-strip-day-min: 56px;
+  --altum-notification-anchor-inset: 56px;
+  --altum-notification-stack-front: 64px;
+  --altum-rating-size-sm: 16px;
+  --altum-rating-size-md: 22px;
+  --altum-rating-size-lg: 28px;
+  --altum-command-palette-max-width: 560px;
+  --altum-command-palette-max-height: 520px;
+  --altum-button-group-item-min-sm: var(--altum-g-space-6);
+  --altum-button-group-item-min-md: var(--altum-g-space-7);
+  --altum-button-group-item-min-lg: var(--altum-g-space-8);
+
+  /* Overlay purpose → sideOffset (якорь) */
+  --altum-overlay-offset-tooltip: 8px;
+  --altum-overlay-offset-popover: 8px;
+  --altum-overlay-offset-dropdown: 4px;
+  --altum-overlay-offset-modal: 0px;
+  --altum-overlay-offset-sheet: 0px;
+  --altum-overlay-offset-lightbox: 0px;
+  --altum-overlay-offset-notification: 0px;
+
+  /* --- СВЕТЛАЯ ТЕМА --- */
+  /* Primary — сильнее secondary slate, чтобы enabled ≠ disabled/muted. */
+  --altum-color-brand: var(--altum-g-color-brand);
+  --altum-color-brand-hover: var(--altum-g-color-brand-hover);
+  --altum-color-brand-active: var(--altum-g-color-brand-active);
+  --altum-color-brand-text: var(--altum-g-color-white);
+  --altum-color-brand-disabled: color-mix(in srgb, var(--altum-color-brand) 32%, var(--altum-color-surface, #ffffff));
+  --altum-color-brand-text-disabled: color-mix(in srgb, var(--altum-color-brand-text) 55%, var(--altum-color-text-secondary, #4b5563));
+  --altum-color-brand-border: rgba(255, 255, 255, 0.1);
+  --altum-shadow-brand: 0 1px 2px rgba(71, 85, 105, 0.12);
+
+  /* Tinted accent — бледная заливка акцента (Apple-style ~12%) + контрастный яркий текст */
+  --altum-color-brand-tint: color-mix(in srgb, var(--altum-color-brand) 12%, transparent);
+  --altum-color-brand-tint-hover: color-mix(in srgb, var(--altum-color-brand) 18%, transparent);
+  --altum-color-brand-tint-active: color-mix(in srgb, var(--altum-color-brand) 24%, transparent);
+  --altum-color-brand-tint-text: var(--altum-color-brand);
+  --altum-color-brand-tint-border: color-mix(in srgb, var(--altum-color-brand) 22%, transparent);
+
+  /* Рамки кнопок — светлая тема (чуть акцентнее общих токенов) */
+  --altum-color-button-border-primary: rgba(30, 41, 59, 0.45);
+  --altum-color-button-border-primary-disabled: transparent;
+  --altum-color-button-border-secondary: var(--altum-g-color-slate-300);
+  --altum-color-button-border-tinted: color-mix(in srgb, var(--altum-color-brand) 28%, transparent);
+  --altum-color-button-border-danger: rgba(153, 27, 27, 0.35);
+  --altum-color-button-border-danger-secondary: var(--altum-g-color-red-300);
+
+  /* Вторичный */
+  --altum-color-surface: var(--altum-g-color-white);
+  --altum-color-surface-hover: var(--altum-g-color-slate-50);
+  --altum-color-surface-active: var(--altum-g-color-slate-100);
+  --altum-color-text-secondary: var(--altum-g-color-gray-600);
+  /* Рамки панелей совпадают с рамками полей (slate-200). */
+  --altum-color-border: var(--altum-g-color-slate-200);
+  --altum-shadow-surface: 0 1px 2px rgba(0, 0, 0, 0.02);
+  /* Лестница возвышения (алиасы семантических теней). */
+  --altum-shadow-sm: var(--altum-shadow-surface);
+  --altum-shadow-md: var(--altum-shadow-dropdown);
+  --altum-shadow-lg: 0 16px 48px color-mix(in srgb, var(--altum-color-input-text) 16%, transparent);
+
+  /* Опасность — WCAG AA на залитых кнопках */
+  --altum-color-danger-bg-solid: var(--altum-g-color-red-600);
+  --altum-color-danger-bg-hover: var(--altum-g-color-red-700);
+  --altum-color-danger-bg-active: var(--altum-g-color-red-800);
+  --altum-color-danger-text: var(--altum-g-color-white);
+  --altum-color-danger-shadow: 0 1px 2px rgba(220, 38, 38, 0.08);
+
+  /* Опасность, вторичный */
+  --altum-color-danger-bg-secondary: var(--altum-g-color-white);
+  --altum-color-danger-bg-secondary-hover: var(--altum-g-color-red-50);
+  --altum-color-danger-bg-secondary-active: var(--altum-g-color-red-100);
+  --altum-color-danger-text-secondary: var(--altum-g-color-red-600);
+  --altum-color-danger-text-secondary-hover: var(--altum-g-color-red-700);
+  --altum-color-danger-shadow-secondary: 0 1px 2px rgba(0, 0, 0, 0.02);
+
+  /* Danger tinted — как prm-tint, от акцента опасности */
+  --altum-color-danger-tint-bg: color-mix(in srgb, var(--altum-color-danger-bg-solid) 12%, transparent);
+  --altum-color-danger-tint-bg-hover: color-mix(in srgb, var(--altum-color-danger-bg-solid) 18%, transparent);
+  --altum-color-danger-tint-bg-active: color-mix(in srgb, var(--altum-color-danger-bg-solid) 24%, transparent);
+  --altum-color-danger-tint-text: var(--altum-color-danger-bg-hover);
+  --altum-color-button-border-danger-tinted: color-mix(in srgb, var(--altum-color-danger-bg-solid) 28%, transparent);
+
+  /* Семантика статусов */
+  --altum-color-status-info: var(--altum-g-color-blue-500);
+  --altum-color-status-success: var(--altum-g-color-emerald-500);
+  --altum-color-status-success-strong: var(--altum-g-color-green-600);
+  --altum-color-status-warning: var(--altum-g-color-amber-500);
+  --altum-color-status-warning-strong: var(--altum-g-color-amber-600);
+  --altum-color-status-error: var(--altum-g-color-red-600);
+  --altum-color-chart-4: var(--altum-g-color-violet-500);
+  --altum-color-chart-5: var(--altum-g-color-teal-500);
+
+  /* Оверлеи и затемнения */
+  --altum-overlay-scrim: rgba(15, 23, 42, 0.6);
+  --altum-overlay-scrim-strong: rgba(15, 23, 42, 0.72);
+  --altum-overlay-on-scrim: var(--altum-g-color-white);
+  --altum-overlay-control-bg: rgba(255, 255, 255, 0.12);
+  --altum-overlay-control-border: rgba(255, 255, 255, 0.18);
+  --altum-overlay-control-hover: rgba(255, 255, 255, 0.2);
+  --altum-overlay-content-bg: rgba(15, 23, 42, 0.35);
+  --altum-overlay-content-border: rgba(255, 255, 255, 0.12);
+  --altum-overlay-text-muted: rgba(255, 255, 255, 0.85);
+
+  /* Контролы формы */
+  --altum-color-input-bg: var(--altum-g-color-white);
+  --altum-color-input-text: var(--altum-g-color-slate-900);
+  --altum-color-input-border: var(--altum-g-color-slate-200);
+  --altum-color-input-border-focus: var(--altum-g-color-slate-500);
+  --altum-color-muted: var(--altum-g-color-slate-500);
+  --altum-color-input-bg-readonly: var(--altum-g-color-slate-50);
+  --altum-color-input-border-readonly: var(--altum-g-color-slate-400);
+  --altum-color-input-border-readonly-ring: rgba(100, 116, 139, 0.28);
+  --altum-color-input-label-readonly: var(--altum-g-color-slate-500);
+  --altum-color-control-bg-readonly: var(--altum-g-color-slate-50);
+  --altum-color-control-border-readonly: var(--altum-g-color-slate-400);
+  --altum-color-control-bg: var(--altum-g-color-white);
+  /* Совпадает с chrome поля, чтобы Checkbox/Radio стояли рядом с TextField без «другого металла». */
+  --altum-color-control-border: var(--altum-color-input-border);
+  --altum-color-control-bg-checked: var(--altum-color-brand);
+  --altum-color-control-border-checked: var(--altum-color-brand);
+  --altum-color-control-mark-color: var(--altum-g-color-white);
+  --altum-color-control-text-color: var(--altum-g-color-slate-700);
+  --altum-switch-thumb: var(--altum-g-color-white);
+  /* Выключенный трек чуть сильнее рамки поля — читаемая масса Switch. */
+  --altum-switch-track-off: color-mix(in srgb, var(--altum-color-input-text) 18%, var(--altum-color-control-bg));
+  --altum-color-dropdown-bg: var(--altum-g-color-white);
+  --altum-color-dropdown-border: var(--altum-g-color-slate-200);
+  --altum-shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --altum-color-option-hover: var(--altum-g-color-slate-100);
+  --altum-color-upload-bg: var(--altum-g-color-slate-50);
+  --altum-color-upload-border: var(--altum-g-color-slate-300);
+  --altum-color-bg: var(--altum-g-color-slate-50);
+  --altum-color-text: var(--altum-g-color-slate-900);
+  /* Плейсхолдер держит массу около AA относительно фона зоны (было 72% — слишком мягко с muted-лейблами). */
+  --altum-color-input-placeholder: color-mix(in srgb, var(--altum-color-muted) 88%, transparent);
+
+  /* Сортируемый список */
+  --altum-sortable-item-bg: var(--altum-color-surface);
+  --altum-sortable-item-bg-hover: var(--altum-color-surface-hover);
+  --altum-sortable-item-bg-dragging: var(--altum-color-surface);
+  --altum-sortable-item-border: var(--altum-color-border);
+  --altum-sortable-item-border-dragging: var(--altum-color-input-border-focus);
+  --altum-sortable-radius: var(--altum-g-radius);
+  --altum-sortable-handle-color: var(--altum-color-muted);
+  --altum-sortable-shadow-dragging: var(--altum-shadow-dropdown);
+  --altum-sortable-transition-fast: box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  --altum-sortable-transition-move: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /*
+   * Слой chrome элементов — компоненты читают эти токены; варианты Box могут переопределить.
+   * Базовые значения = текущий визуальный эталон (алиасы примитивов выше).
+   */
+  --altum-color-field-bg: var(--altum-color-input-bg);
+  --altum-color-field-text: var(--altum-color-input-text);
+  --altum-color-field-border: var(--altum-color-input-border);
+  --altum-color-border-hover: var(--altum-color-input-border-focus);
+  --altum-field-label: var(--altum-color-muted);
+  --altum-field-placeholder: var(--altum-color-input-placeholder);
+  --altum-field-bg-readonly: var(--altum-color-input-bg-readonly);
+  --altum-field-border-readonly: var(--altum-color-input-border-readonly);
+  --altum-field-border-readonly-ring: var(--altum-color-input-border-readonly-ring);
+  --altum-field-label-readonly: var(--altum-color-input-label-readonly);
+
+  --altum-color-button-secondary-bg: var(--altum-color-surface);
+  --altum-color-button-secondary-bg-hover: var(--altum-color-surface-hover);
+  --altum-color-button-secondary-bg-active: var(--altum-color-surface-active);
+  --altum-color-button-secondary-border: var(--altum-color-button-border-secondary);
+  --altum-color-button-secondary-text: var(--altum-color-text-secondary);
+  --altum-color-button-secondary-shadow: var(--altum-shadow-surface);
+
+  --altum-color-button-tinted-bg: var(--altum-color-brand-tint);
+  --altum-color-button-tinted-bg-hover: var(--altum-color-brand-tint-hover);
+  --altum-color-button-tinted-bg-active: var(--altum-color-brand-tint-active);
+  --altum-color-button-tinted-border: var(--altum-color-button-border-tinted);
+  --altum-color-button-tinted-text: var(--altum-color-brand-tint-text);
+
+  --altum-color-button-ghost-hover-bg: var(--altum-color-option-hover);
+  --altum-color-button-ghost-active-bg: color-mix(in srgb, var(--altum-color-option-hover) 80%, var(--altum-color-input-text));
+  --altum-color-button-ghost-text: var(--altum-color-text-secondary);
+  --altum-color-button-ghost-text-hover: var(--altum-color-input-text);
+
+  --altum-color-chip-secondary-bg: color-mix(in srgb, var(--altum-color-text-secondary) 12%, transparent);
+  --altum-color-chip-secondary-border: var(--altum-color-border);
+  --altum-color-chip-secondary-text: var(--altum-color-text-secondary);
+  --altum-color-chip-secondary-bg-hover: color-mix(in srgb, var(--altum-color-text-secondary) 20%, transparent);
+  --altum-color-chip-secondary-border-hover: color-mix(in srgb, var(--altum-color-border) 70%, var(--altum-color-text-secondary));
+
+  --altum-color-chip-tinted-bg: var(--altum-color-brand-tint);
+  --altum-color-chip-tinted-border: var(--altum-color-brand-tint-border);
+  --altum-color-chip-tinted-text: var(--altum-color-brand-tint-text);
+  --altum-color-chip-tinted-bg-hover: var(--altum-color-brand-tint-hover);
+  --altum-color-chip-tinted-border-hover: color-mix(in srgb, var(--altum-color-brand-tint-text) 35%, transparent);
+
+  /* Общий выбранный chrome — brand (exclusive) vs neutral (мягкий). */
+  --altum-color-selection-fill: var(--altum-color-brand);
+  --altum-color-selection-fill-fg: var(--altum-color-brand-text);
+  --altum-color-selection-fill-emphasis: var(--altum-color-brand-hover);
+  --altum-color-selection-neutral-fill: color-mix(in srgb, var(--altum-color-text-secondary) 22%, transparent);
+  --altum-color-selection-neutral-border: color-mix(in srgb, var(--altum-color-text-secondary) 45%, var(--altum-color-border));
+  --altum-color-selection-neutral-slider: color-mix(in srgb, var(--altum-color-text-secondary) 12%, var(--altum-color-button-secondary-bg));
+
+  --altum-color-segmented-primary-slider-bg: var(--altum-color-selection-fill-emphasis);
+  --altum-color-segmented-secondary-track-bg: var(--altum-color-button-secondary-bg);
+  --altum-color-segmented-secondary-track-border: var(--altum-color-button-secondary-border);
+  --altum-color-segmented-secondary-slider-bg: var(--altum-color-selection-neutral-slider);
+  --altum-color-segmented-tinted-track-bg: var(--altum-color-button-tinted-bg);
+  --altum-color-segmented-tinted-track-border: var(--altum-color-button-tinted-border);
+  --altum-color-segmented-tinted-slider-bg: var(--altum-color-button-secondary-bg);
+  --altum-color-segmented-ghost-track-border: var(--altum-color-button-secondary-border);
+  --altum-color-segmented-ghost-slider-bg: var(--altum-color-button-ghost-active-bg);
+
+  --altum-color-panel-bg: var(--altum-color-surface);
+  --altum-color-panel-border: var(--altum-color-border);
+  --altum-color-panel-bg-hover: var(--altum-color-surface-hover);
+
+  --altum-color-type: var(--altum-color-input-text);
+  --altum-color-type-secondary: var(--altum-color-text-secondary);
+  --altum-color-type-tertiary: var(--altum-color-muted);
+  --altum-color-type-muted: var(--altum-color-muted);
+  --altum-color-type-disabled: var(--altum-color-muted);
+
+  /* Чернила иллюстрации EmptyState (сильнее лейблов полей). */
+  --altum-color-empty-icon: var(--altum-color-text-secondary);
+
+  --altum-color-link-color: var(--altum-color-brand);
+  --altum-color-link-color-hover: var(--altum-color-brand-hover);
+  --altum-color-link-secondary: var(--altum-color-text-secondary);
+  --altum-color-link-secondary-hover: var(--altum-color-input-text);
+  --altum-color-link-muted: var(--altum-color-muted);
+  --altum-color-link-muted-hover: var(--altum-color-text-secondary);
+  --altum-color-link-danger: var(--altum-color-status-error);
+  --altum-color-link-danger-hover: color-mix(in srgb, var(--altum-color-status-error) 82%, var(--altum-color-input-text));
+  --altum-color-link-focus-ring: var(--altum-focus-ring-color);
+
+  --altum-radius-control: var(--altum-g-radius);
+  --altum-input-border-color: var(--altum-color-field-border);
+  --altum-chip-mask: var(--altum-g-color-black);
+
+  font-family: var(--altum-g-font-family-ui);
+
+  color: var(--altum-color-text);
+  background-color: var(--altum-color-bg);
+
+  transition: var(--altum-transition-smooth);
+}
+
+.light {}
+
+.dark {/* --- ТЁМНАЯ ТЕМА --- */
+  --altum-g-color-brand: #6b7f98;
+  --altum-g-color-brand-hover: #7d91a8;
+  --altum-g-color-brand-active: #5b6b82;
+  /* Primary — явнее muted slate / смывки disabled на sheet. */
+  --altum-color-brand: var(--altum-g-color-brand);
+  --altum-color-brand-hover: var(--altum-g-color-brand-hover);
+  --altum-color-brand-active: var(--altum-g-color-brand-active);
+  --altum-color-brand-text: var(--altum-g-color-slate-50);
+  --altum-color-brand-disabled: color-mix(in srgb, var(--altum-color-brand) 28%, var(--altum-color-dropdown-bg, #1e1e24));
+  --altum-color-brand-text-disabled: color-mix(in srgb, var(--altum-color-brand-text) 42%, var(--altum-color-text-secondary, #a3b0c2));
+  --altum-color-brand-border: rgba(255, 255, 255, 0.12);
+  --altum-shadow-brand: 0 1px 3px rgba(0, 0, 0, 0.3);
+  /* Активный сегмент vs трек: явнее, чем один hover */
+  --altum-color-segmented-primary-slider-bg: color-mix(in srgb, var(--altum-color-brand-text) 28%, var(--altum-color-brand));
+  --altum-color-selection-fill: var(--altum-color-brand);
+  --altum-color-selection-fill-fg: var(--altum-color-brand-text);
+  --altum-color-selection-fill-emphasis: var(--altum-color-segmented-primary-slider-bg);
+  --altum-color-selection-neutral-fill: color-mix(in srgb, var(--altum-color-text-secondary) 22%, transparent);
+  --altum-color-selection-neutral-border: color-mix(in srgb, var(--altum-color-text-secondary) 45%, var(--altum-color-border));
+  --altum-color-selection-neutral-slider: color-mix(in srgb, var(--altum-color-text-secondary) 12%, var(--altum-color-button-secondary-bg));
+  --altum-color-segmented-secondary-slider-bg: var(--altum-color-selection-neutral-slider);
+
+  /* Tinted — в dark акцентный текст светлее solid fill */
+  --altum-color-brand-tint: color-mix(in srgb, #94a3b8 14%, transparent);
+  --altum-color-brand-tint-hover: color-mix(in srgb, #94a3b8 20%, transparent);
+  --altum-color-brand-tint-active: color-mix(in srgb, #94a3b8 26%, transparent);
+  --altum-color-brand-tint-text: #cbd5e1;
+  --altum-color-brand-tint-border: color-mix(in srgb, #94a3b8 28%, transparent);
+
+  /* Рамки кнопок — тёмная тема */
+  --altum-color-button-border-primary: rgba(255, 255, 255, 0.14);
+  --altum-color-button-border-primary-disabled: transparent;
+  --altum-color-button-border-secondary: #2d2d34;
+  --altum-color-button-border-tinted: color-mix(in srgb, #94a3b8 32%, transparent);
+  --altum-color-button-border-danger: rgba(255, 255, 255, 0.05);
+  --altum-color-button-border-danger-secondary: #7f1d1d;
+
+  /* Вторичный */
+  --altum-color-surface: #1e1e24;
+  --altum-color-surface-hover: #27272f;
+  --altum-color-surface-active: #141418;
+  /* Вторичные чернила совпадают с ярусом muted/лейбла (один secondary gray). */
+  --altum-color-text-secondary: #a3b0c2;
+  --altum-color-border: #2d2d34;
+  --altum-shadow-surface: 0 1px 2px rgba(0, 0, 0, 0.2);
+
+  /* Опасность — WCAG AA */
+  --altum-color-danger-bg-solid: #991b1b;
+  --altum-color-danger-bg-hover: #b91c1c;
+  --altum-color-danger-bg-active: #7f1d1d;
+  --altum-color-danger-text: #ffffff;
+  --altum-color-danger-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+  /* Опасность, вторичный */
+  --altum-color-danger-bg-secondary: #1e1e24;
+  --altum-color-danger-bg-secondary-hover: #2d1a1a;
+  --altum-color-danger-bg-secondary-active: #3f1a1a;
+  --altum-color-danger-text-secondary: #f87171;
+  --altum-color-danger-text-secondary-hover: #fca5a5;
+  --altum-color-danger-shadow-secondary: 0 1px 2px rgba(0, 0, 0, 0.2);
+
+  /* Danger tinted — в dark светлее сплошной заливки */
+  --altum-color-danger-tint-bg: color-mix(in srgb, #f87171 14%, transparent);
+  --altum-color-danger-tint-bg-hover: color-mix(in srgb, #f87171 20%, transparent);
+  --altum-color-danger-tint-bg-active: color-mix(in srgb, #f87171 26%, transparent);
+  --altum-color-danger-tint-text: #fca5a5;
+  --altum-color-button-border-danger-tinted: color-mix(in srgb, #f87171 32%, transparent);
+
+  /* Семантика статусов */
+  --altum-color-status-info: #60a5fa;
+  --altum-color-status-success: #34d399;
+  --altum-color-status-success-strong: #4ade80;
+  --altum-color-status-warning: #fbbf24;
+  --altum-color-status-warning-strong: #f59e0b;
+  --altum-color-status-error: #f87171;
+  --altum-color-chart-4: #a78bfa;
+  --altum-color-chart-5: #2dd4bf;
+
+  /* Оверлеи и затемнения */
+  --altum-overlay-scrim: rgba(0, 0, 0, 0.65);
+  --altum-overlay-scrim-strong: rgba(0, 0, 0, 0.78);
+  --altum-overlay-on-scrim: #f8fafc;
+  --altum-overlay-control-bg: rgba(255, 255, 255, 0.1);
+  --altum-overlay-control-border: rgba(255, 255, 255, 0.15);
+  --altum-overlay-control-hover: rgba(255, 255, 255, 0.18);
+  --altum-overlay-content-bg: rgba(0, 0, 0, 0.35);
+  --altum-overlay-content-border: rgba(255, 255, 255, 0.1);
+  --altum-overlay-text-muted: rgba(248, 250, 252, 0.85);
+
+  /* Контролы формы */
+  --altum-color-input-bg: #1e1e24;
+  --altum-color-input-text: #f1f5f9;
+  --altum-color-input-border: #2d2d34;
+  --altum-color-input-border-focus: #6b7f98;
+  --altum-color-muted: #a3b0c2;
+  --altum-color-input-bg-readonly: #27272f;
+  --altum-color-input-border-readonly: #475569;
+  --altum-color-input-border-readonly-ring: rgba(163, 176, 194, 0.28);
+  --altum-color-input-label-readonly: #a3b0c2;
+  --altum-color-control-bg-readonly: #27272f;
+  --altum-color-control-border-readonly: #475569;
+  --altum-color-control-bg: #1e1e24;
+  --altum-color-control-border: var(--altum-color-input-border);
+  --altum-color-control-bg-checked: var(--altum-color-brand);
+  --altum-color-control-border-checked: var(--altum-color-brand-hover);
+  --altum-color-control-mark-color: #f1f5f9;
+  --altum-color-control-text-color: #cbd5e1;
+  --altum-switch-thumb: #f8fafc;
+  --altum-switch-track-off: color-mix(in srgb, var(--altum-color-input-text) 22%, var(--altum-color-control-bg));
+  --altum-color-dropdown-bg: #1e1e24;
+  --altum-color-dropdown-border: #2d2d34;
+  --altum-shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --altum-color-option-hover: #27272f;
+  --altum-color-upload-bg: #141417;
+  --altum-color-upload-border: #334155;
+  --altum-color-bg: #131721;
+  --altum-color-text: #f8fafc;
+  --altum-color-input-placeholder: color-mix(in srgb, var(--altum-color-muted) 88%, transparent);
+  /* diskClose: светлый крестик на приподнятом диске (шапка использует --altum-color-dropdown-bg) */
+  --altum-overlay-close-fg: #f1f5f9;
+  --altum-overlay-close-bg: color-mix(in srgb, var(--altum-color-field-text) 18%, var(--altum-color-dropdown-bg));
+  --altum-overlay-close-bg-hover: color-mix(in srgb, var(--altum-color-field-text) 28%, var(--altum-color-dropdown-bg));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .themeProvider,
+  .themeProvider * {
+    scroll-behavior: auto !important;
+
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

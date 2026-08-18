@@ -1,0 +1,109 @@
+.app {
+  min-height: 500px;
+
+  font-family: var(--altum-g-font-family-ui);
+
+  background-color: var(--altum-color-bg);
+}
+
+.header {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 12px 20px;
+
+  border-bottom: 1px solid var(--altum-color-border);
+
+  background-color: var(--altum-color-surface);
+}
+
+.layout {
+  display: flex;
+
+  min-height: calc(500px - 57px);
+}
+
+.sidebar {
+  flex-shrink: 0;
+
+  width: 240px;
+
+  padding: 16px;
+
+  border-right: 1px solid var(--altum-color-border);
+
+  background-color: var(--altum-color-surface);
+}
+
+.colorSection {
+  display: flex;
+
+  flex-direction: column;
+  gap: 8px;
+
+  margin-top: 16px;
+}
+
+.main {
+  display: flex;
+  overflow-y: auto;
+
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+
+  padding: 16px;
+}
+
+.taskList {
+  display: flex;
+
+  flex-direction: column;
+  gap: 12px;
+}
+
+.taskItem {
+  display: flex;
+
+  align-items: center;
+  gap: 12px;
+
+  font-size: var(--altum-g-font-size-base);
+
+  cursor: pointer;
+}
+
+.done {
+  text-decoration: line-through;
+
+  opacity: 0.6;
+}
+
+.calendarRow {
+  display: grid;
+
+  gap: 8px;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.calendarDay {
+  display: flex;
+
+  flex-direction: column;
+  gap: 4px;
+
+  min-height: 64px;
+
+  padding: 8px;
+
+  border: 1px solid var(--altum-color-border);
+  border-radius: var(--altum-g-radius-sm);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+}

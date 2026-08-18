@@ -1,0 +1,16 @@
+.root {
+  box-sizing: border-box;
+
+  width: 100%;
+  min-width: 0;
+}
+
+/** Растянуть в flex-родителе (колонка экрана / mobile shell). */
+.fill {
+  display: flex;
+
+  flex: 1 1 auto;
+  flex-direction: column;
+
+  min-height: 0;
+}

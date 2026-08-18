@@ -1,0 +1,125 @@
+.wrapper {
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+
+  font-family: var(--altum-g-font-family-ui);
+}
+
+.fieldset {
+  box-sizing: border-box;
+
+  min-width: 0;
+
+  margin: 0;
+  padding: 0;
+
+  border: none;
+}
+
+/* Маркеры bleed футера (chrome — Box) */
+
+.default,
+.card,
+.plain {/* без surface-chrome — его даёт Box */
+}
+
+/* --- Шапка --- */
+
+.legend {
+  display: block;
+
+  width: 100%;
+
+  margin: 0 0 var(--altum-field-label-gap, var(--altum-g-space-1));
+  padding: 0;
+
+  font-size: var(--altum-form-legend-size, var(--altum-g-font-size-base));
+  font-weight: var(--altum-form-legend-weight, var(--altum-g-font-weight-semibold));
+  line-height: var(--altum-form-legend-line-height, var(--altum-g-line-height-sm));
+
+  color: var(--altum-color-ink-default);
+}
+
+.description {
+  margin: 0 0 var(--altum-g-space-4);
+
+  font-size: var(--altum-form-label-size, var(--altum-g-font-size-sm));
+  line-height: var(--altum-form-label-line-height, var(--altum-g-line-height-sm));
+
+  color: var(--altum-color-muted);
+  & + .hint {
+    margin-top: calc(-1 * var(--altum-g-space-3));
+  }
+}
+
+.hint {
+  margin: 0 0 var(--altum-g-space-4);
+
+  font-size: var(--altum-form-helper-size, var(--altum-g-font-size-xs));
+  line-height: var(--altum-form-helper-line-height, var(--altum-g-line-height-xs));
+
+  color: var(--altum-color-muted);
+}
+
+.plain .description,
+.plain .hint {
+  margin-bottom: var(--altum-g-space-3);
+}
+
+/* --- Тело --- */
+
+.content {
+  display: flex;
+
+  flex-direction: column;
+  gap: var(--altum-fieldset-gap, var(--altum-g-space-4));
+
+  min-width: 0;
+}
+
+/* --- Футер (снаружи fieldset, чтобы кнопки оставались интерактивными при disabled) --- */
+
+.footer {
+  display: flex;
+
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--altum-g-space-2);
+
+  margin-top: var(--altum-g-space-4);
+  padding-top: var(--altum-g-space-4);
+
+  border-top: 1px solid var(--altum-color-border);
+}
+
+.plain .footer {
+  padding-top: var(--altum-g-space-3);
+
+  border-top: none;
+}
+
+.default .footer,
+.card .footer {
+  margin-right: calc(-1 * var(--altum-g-space-5));
+  margin-bottom: calc(-1 * var(--altum-g-space-5));
+  margin-left: calc(-1 * var(--altum-g-space-5));
+  padding-right: var(--altum-g-space-5);
+  padding-bottom: var(--altum-g-space-5);
+  padding-left: var(--altum-g-space-5);
+}
+
+/* --- Отключённое состояние --- */
+
+.disabled .fieldset {
+  opacity: var(--altum-opacity-disabled);
+
+  cursor: not-allowed;
+}
+
+.disabled .legend,
+.disabled .description,
+.disabled .hint {
+  color: var(--altum-color-muted);
+}

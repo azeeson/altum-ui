@@ -1,0 +1,39 @@
+.modalContent {
+  position: relative;
+
+  display: flex;
+  overflow: hidden;
+
+  flex-direction: column;
+
+  width: 90%;
+  max-width: var(--altum-dialog-max-width-md);
+  max-height: var(--altum-dialog-max-height);
+
+  font-family: var(--altum-g-font-family-ui);
+
+  pointer-events: auto;
+
+  & .modalLayout {
+    min-height: 0;
+  }
+}
+
+.formFooter {
+  width: 100%;
+
+  & .formFooterStatus {
+    font-size: var(--altum-g-font-size-sm);
+    line-height: 1.4;
+
+    color: var(--altum-color-muted);
+  }
+
+  & .formFooterActions {
+    display: flex;
+
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--altum-g-space-3);
+  }
+}

@@ -1,0 +1,22 @@
+.media {
+  background-color: var(--altum-color-option-hover);
+}
+
+.rounded {
+  border-radius: var(--altum-g-radius-md);
+}
+
+.el {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+}
+
+.cover {
+  object-fit: cover;
+}
+
+.contain {
+  object-fit: contain;
+}

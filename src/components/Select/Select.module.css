@@ -1,0 +1,22 @@
+.chipsRow {
+  display: flex;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--altum-g-space-1);
+
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.chip {
+  overflow: hidden;
+
+  flex: 0 1 auto;
+
+  min-width: 0;
+  max-width: 100%;
+}

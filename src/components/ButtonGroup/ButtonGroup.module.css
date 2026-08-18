@@ -1,0 +1,364 @@
+.group.group {
+  /*
+   * Высота = --altum-control-height-* (как Button / Field / SegmentedControl).
+   */
+  --altum-button-group-height: var(--altum-control-height-md);
+  --altum-button-group-font-size: var(--altum-g-font-size-base);
+  display: inline-flex;
+  box-sizing: border-box;
+
+  align-items: stretch;
+  gap: var(--altum-g-space-1);
+
+  max-width: 100%;
+  height: var(--altum-button-group-height);
+
+  padding: var(--altum-control-inset);
+
+  border-radius: var(--altum-g-radius);
+
+  font-size: var(--altum-button-group-font-size);
+  vertical-align: middle;
+
+  transition: var(--altum-transition-smooth);
+
+  &.widthFull {
+    display: flex;
+
+    width: 100%;
+    & > .item {
+      flex: 1 1 0;
+
+      min-width: 0;
+    }
+  }
+
+  /* --- Варианты трека --- */
+
+  &.primary {
+    & .item {
+      color: var(--altum-color-brand-text);
+    }
+
+    & .item:hover:not(:disabled):not(.itemActive) {
+      background-color: color-mix(in srgb, var(--altum-color-brand-hover) 40%, transparent);
+    }
+
+    & .itemActive {
+      color: var(--altum-color-brand-text);
+    }
+
+    & .itemActive::before {
+      background-color: var(--altum-color-brand-hover);
+      box-shadow: var(--altum-shadow-brand);
+    }
+  }
+
+  &.tinted {
+    & .item {
+      color: var(--altum-color-button-tinted-text);
+    }
+
+    & .item:hover:not(:disabled):not(.itemActive) {
+      background-color: color-mix(in srgb, var(--altum-color-button-tinted-bg-hover) 50%, transparent);
+    }
+
+    & .itemActive {
+      color: var(--altum-color-button-tinted-text);
+    }
+
+    & .itemActive::before {
+      background-color: var(--altum-color-button-secondary-bg);
+      box-shadow: var(--altum-shadow-brand);
+    }
+  }
+
+  &.secondary {
+    & .item {
+      color: var(--altum-color-button-secondary-text);
+    }
+
+    & .item:hover:not(:disabled):not(.itemActive) {
+      color: var(--altum-color-button-ghost-text-hover);
+      background-color: var(--altum-color-panel-bg-hover);
+    }
+
+    & .itemActive {
+      color: var(--altum-color-button-ghost-text-hover);
+    }
+
+    & .itemActive::before {
+      /* На светлом треке upload-bg (#f8fafc) почти не отличим от белого */
+      background-color: color-mix(in srgb, var(--altum-color-text-secondary) 12%, var(--altum-color-button-secondary-bg));
+      box-shadow:
+        0 1px 2px color-mix(in srgb, var(--altum-color-text-secondary) 14%, transparent),
+        inset 0 0 0 1px color-mix(in srgb, var(--altum-color-border) 70%, transparent);
+    }
+  }
+
+  &.link {
+    gap: 0;
+
+    padding: 0;
+  }
+
+  &.borderless {
+    border: none;
+  }
+
+  &.statusDanger.primary {
+    background-color: var(--altum-color-danger-bg-solid);
+    box-shadow: var(--altum-color-danger-shadow);
+  }
+
+  &.statusDanger.tinted {
+    border-color: var(--altum-color-button-border-danger-secondary);
+
+    background-color: var(--altum-color-danger-bg-secondary);
+  }
+
+  &.statusDanger.secondary {
+    border-color: var(--altum-color-button-border-danger-secondary);
+
+    background-color: var(--altum-color-danger-bg-secondary);
+  }
+
+  &.statusDanger.ghost {
+    border-color: var(--altum-color-button-border-danger-secondary);
+  }
+
+  /* --- Элементы (переопределяют chrome ButtonBase внутри трека) --- */
+
+  & .item {
+    position: relative;
+
+    overflow: hidden;
+    isolation: isolate;
+
+    align-self: stretch;
+
+    height: 100%;
+    min-height: 0;
+
+    padding: 0 var(--altum-g-space-2);
+
+    border: none;
+    border-radius: calc(var(--altum-g-radius) - 2px);
+
+    font-weight: var(--altum-g-font-weight-medium, 500);
+    line-height: 1;
+
+    color: var(--altum-field-label);
+    opacity: 0.75;
+    background-color: transparent;
+    box-shadow: none;
+    &::before {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+
+      content: '';
+
+      border-radius: inherit;
+
+      opacity: 0;
+      background-color: transparent;
+
+      pointer-events: none;
+
+      transform: scale(0);
+      transform-origin: center center;
+
+      transition:
+        transform 0.22s ease,
+        opacity 0.22s ease,
+        background-color 0.22s ease;
+    }
+
+    &:hover:not(:disabled) {
+      opacity: 1;
+    }
+
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: var(--altum-focus-ring-offset);
+
+      box-shadow: none;
+    }
+
+    &:disabled {
+      opacity: var(--altum-opacity-disabled);
+
+      cursor: not-allowed;
+    }
+  }
+
+  /* Активный фон растёт из центра */
+
+  & .itemContent {
+    position: relative;
+    z-index: 1;
+
+    gap: var(--altum-g-space-1);
+  }
+
+  & .itemActive {
+    opacity: 1;
+    background-color: transparent;
+    box-shadow: none;
+    &::before {
+      opacity: 1;
+
+      transform: scale(1);
+    }
+  }
+
+  &.ghost .item,
+  &.link .item {
+    color: var(--altum-color-button-ghost-text);
+  }
+
+  &.ghost .item:hover:not(:disabled):not(.itemActive),
+  &.link .item:hover:not(:disabled):not(.itemActive) {
+    color: var(--altum-color-button-ghost-text-hover);
+    background-color: var(--altum-color-button-ghost-hover-bg);
+  }
+
+  &.ghost .itemActive,
+  &.link .itemActive {
+    color: var(--altum-color-button-ghost-text-hover);
+  }
+
+  &.ghost .itemActive::before,
+  &.link .itemActive::before {
+    background-color: var(--altum-color-button-ghost-active-bg);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--altum-color-border) 55%, transparent);
+  }
+
+  /* акценты item при status=danger */
+
+  &.statusDanger .item {
+    color: var(--altum-color-danger-text);
+  }
+
+  &.statusDanger.secondary .item,
+  &.statusDanger.tinted .item,
+  &.statusDanger.ghost .item,
+  &.statusDanger.link .item {
+    color: var(--altum-color-danger-text-secondary);
+  }
+
+  &.statusDanger .itemActive {
+    color: var(--altum-color-danger-text);
+  }
+
+  &.statusDanger .itemActive::before {
+    background-color: var(--altum-color-danger-bg-hover);
+    box-shadow: var(--altum-color-danger-shadow);
+  }
+
+  &.statusDanger.secondary .itemActive,
+  &.statusDanger.tinted .itemActive {
+    color: var(--altum-color-danger-text-secondary-hover);
+  }
+
+  &.statusDanger.secondary .itemActive::before,
+  &.statusDanger.tinted .itemActive::before {
+    background-color: var(--altum-color-danger-bg-secondary-hover);
+    box-shadow: var(--altum-color-danger-shadow-secondary);
+  }
+
+  & .icon {
+    position: relative;
+    z-index: 1;
+
+    display: inline-flex;
+
+    justify-content: center;
+    align-items: center;
+
+    line-height: 0;
+  }
+
+  & .label {
+    position: relative;
+    z-index: 1;
+
+    white-space: nowrap;
+  }
+
+  /* Размеры — высота = --altum-control-height-* */
+
+  &.sm {
+    --altum-button-group-height: var(--altum-control-height-sm);
+    --altum-button-group-font-size: var(--altum-g-font-size-2xs);
+
+    padding: var(--altum-control-inset);
+    & .item {
+      min-width: var(--altum-button-group-item-min-sm);
+
+      padding: 0 var(--altum-g-space-1);
+
+      font-size: var(--altum-g-font-size-2xs);
+    }
+
+    & .icon svg {
+      width: var(--altum-control-icon-size-sm);
+      height: var(--altum-control-icon-size-sm);
+    }
+  }
+
+  &.md {
+    --altum-button-group-height: var(--altum-control-height-md);
+    --altum-button-group-font-size: var(--altum-g-font-size-base);
+
+    padding: var(--altum-control-inset);
+    & .item {
+      min-width: var(--altum-button-group-item-min-md);
+
+      padding: 0 var(--altum-g-space-2);
+
+      font-size: var(--altum-g-font-size-base);
+    }
+
+    & .icon svg {
+      width: var(--altum-control-icon-size-md);
+      height: var(--altum-control-icon-size-md);
+    }
+  }
+
+  &.lg {
+    --altum-button-group-height: var(--altum-control-height-lg);
+    --altum-button-group-font-size: var(--altum-g-font-size-lg);
+
+    padding: var(--altum-g-space-1);
+    & .item {
+      min-width: var(--altum-button-group-item-min-lg);
+
+      padding: 0 var(--altum-g-space-3);
+
+      font-size: var(--altum-g-font-size-lg);
+    }
+
+    & .icon svg {
+      width: var(--altum-control-icon-size-lg);
+      height: var(--altum-control-icon-size-lg);
+    }
+  }
+
+  &.disabled {
+    opacity: var(--altum-opacity-disabled);
+
+    cursor: not-allowed;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item::before {
+    transition: none;
+  }
+
+  .itemActive::before {
+    transform: none;
+  }
+}

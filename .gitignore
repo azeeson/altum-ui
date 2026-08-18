@@ -1,0 +1,38 @@
+# Environment files
+.env
+.env.local
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+types/
+dist-storybook/
+dist-test-types/
+
+node_modules/
+*storybook.log
+storybook-static
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Local npm pack artifacts
+altum-ui-*.tgz
+
+.cursorrules
+.cursor

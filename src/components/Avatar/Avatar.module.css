@@ -1,0 +1,94 @@
+.avatar {
+  position: relative;
+
+  display: inline-flex;
+  overflow: hidden;
+
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+
+  border: 2px solid var(--altum-color-surface);
+  border-radius: 50%;
+
+  font-family: inherit;
+  font-weight: var(--altum-g-font-weight-semibold);
+
+  color: var(--altum-color-fill-primary-fg);
+  background-color: var(--altum-color-fill-primary-bg);
+}
+
+.hasStatus {
+  overflow: visible;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  border-radius: 50%;
+}
+
+.avatarIcon {
+  display: inline-flex;
+
+  justify-content: center;
+  align-items: center;
+
+  line-height: 1;
+  &:not(:has(svg)) {
+    max-width: 100%;
+
+    padding-inline: 10%;
+
+    text-align: center;
+  }
+}
+
+/* Инициалы — глифы остаются внутри кругового clip */
+
+.status {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+
+  box-sizing: border-box;
+
+  width: 22%;
+  min-width: 8px;
+  min-height: 8px;
+  aspect-ratio: 1;
+
+  border: 2px solid var(--altum-color-surface);
+  border-radius: 50%;
+}
+
+.status_online {
+  background-color: var(--altum-color-status-success);
+}
+
+.status_offline {
+  background-color: var(--altum-color-border);
+}
+
+.status_busy {
+  background-color: var(--altum-color-status-error);
+}
+
+.status_away {
+  background-color: var(--altum-color-status-warning);
+}
+
+.avatarGroup {
+  display: inline-flex;
+
+  flex-direction: row;
+  & .avatar {
+    margin-left: calc(var(--altum-g-space-2) * -1);
+  }
+
+  & .avatar:first-child {
+    margin-left: 0;
+  }
+}

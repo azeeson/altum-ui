@@ -1,0 +1,20 @@
+.root {
+  &.fullWidth {
+    display: flex;
+
+    width: 100%;
+  }
+
+  & .btnIcon {
+    display: inline-flex;
+
+    justify-content: center;
+    align-items: center;
+
+    font-size: var(--altum-control-icon-size-md);
+  }
+
+  & .spinner {
+    margin-right: var(--altum-g-space-1);
+  }
+}

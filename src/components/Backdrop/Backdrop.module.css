@@ -1,0 +1,56 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+
+  margin: 0;
+  padding: 0;
+
+  border: none;
+
+  background-color: var(--altum-overlay-scrim);
+  -webkit-backdrop-filter: blur(var(--altum-backdrop-blur, 4px));
+  backdrop-filter: blur(var(--altum-backdrop-blur, 4px));
+
+  cursor: default;
+  pointer-events: auto;
+
+  animation: backdropFadeIn 0.2s ease-out;
+
+  &.absolute {
+    position: absolute;
+  }
+
+  &.variantStrong {
+    background-color: var(--altum-overlay-scrim-strong);
+  }
+
+  &.blurSm {
+    --altum-backdrop-blur: 4px;
+  }
+
+  &.blurMd {
+    --altum-backdrop-blur: 8px;
+  }
+
+  &.blurNone {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  &.dismissible {
+    cursor: pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

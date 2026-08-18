@@ -1,0 +1,81 @@
+.listbox {
+  display: flex;
+
+  flex-direction: column;
+  gap: var(--altum-g-space-1);
+
+  margin: 0;
+  padding: var(--altum-g-space-1);
+
+  list-style: none;
+
+  &.listboxGrouped {
+    gap: var(--altum-g-space-2);
+  }
+
+  &.listboxVirtualized {
+    overflow: auto;
+
+    max-height: min(320px, 50vh);
+  }
+
+  & .group {
+    display: flex;
+
+    flex-direction: column;
+    gap: var(--altum-g-space-1);
+  }
+
+  & .groupOptions {
+    display: flex;
+
+    flex-direction: column;
+    gap: var(--altum-g-space-1);
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+  }
+
+  & .groupLabel {
+    padding: var(--altum-g-space-1) var(--altum-g-space-2);
+
+    font-size: var(--altum-g-font-size-2xs);
+    font-weight: var(--altum-g-font-weight-semibold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+
+    color: var(--altum-color-text-secondary);
+  }
+
+  & .emptyState {
+    padding: var(--altum-g-space-3) var(--altum-g-space-4);
+
+    font-size: var(--altum-g-font-size-base);
+    text-align: center;
+
+    color: var(--altum-field-label);
+  }
+
+  & .optionWithCheck {
+    gap: var(--altum-g-space-2);
+  }
+
+  & .optionCheck {
+    display: inline-flex;
+
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+
+    width: 1em;
+
+    font-size: var(--altum-g-font-size-2xs);
+    line-height: 1;
+  }
+
+  & .virtualList {
+    width: 100%;
+  }
+}

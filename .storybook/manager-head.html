@@ -1,0 +1,37 @@
+<script>
+	(function () {
+		try {
+			var mode = localStorage.getItem('altum-ui.storybook.theme');
+			if (mode !== 'dark' && mode !== 'light') mode = 'light';
+			document.documentElement.setAttribute('data-altum-manager-theme', mode);
+			document.documentElement.style.background =
+				mode === 'dark' ? '#131721' : '#f8fafc';
+		} catch (e) {}
+	})();
+</script>
+<style>
+	/* Запасной вариант, если тема Emotion не успевает на reload — стабильные селекторы SB7 */
+	html[data-altum-manager-theme='dark'] body {
+		background: #131721 !important;
+		color: #f8fafc;
+	}
+
+	html[data-altum-manager-theme='dark'] nav.sidebar-container {
+		background: #131721 !important;
+		color: #f8fafc !important;
+	}
+
+	html[data-altum-manager-theme='dark'] nav.sidebar-container input,
+	html[data-altum-manager-theme='dark'] nav.sidebar-container button {
+		color: inherit;
+	}
+
+	html[data-altum-manager-theme='light'] body {
+		background: #f8fafc !important;
+	}
+
+	html[data-altum-manager-theme='light'] nav.sidebar-container {
+		background: #f8fafc !important;
+		color: #0f172a !important;
+	}
+</style>

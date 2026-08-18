@@ -1,0 +1,114 @@
+.event {
+  --altum-calendar-board-event-tint: 18%;
+  --altum-calendar-board-event-tint-active: 30%;
+
+  display: flex;
+  box-sizing: border-box;
+  overflow: hidden;
+  container-type: size;
+
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: var(--altum-control-inset);
+
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+
+  margin: 0;
+  padding: var(--altum-g-space-1) var(--altum-g-space-2);
+
+  border: none;
+  border-radius: var(--altum-g-radius-sm);
+
+  font-family: var(--altum-g-font-family-ui);
+  font-size: var(--altum-g-font-size-2xs);
+  line-height: var(--altum-g-line-height-2xs);
+  text-align: left;
+
+  color: var(--altum-color-input-text);
+  background-color: color-mix(
+    in srgb,
+    var(--altum-calendar-board-event-color, var(--altum-color-brand)) var(--altum-calendar-board-event-tint, 20%),
+    var(--altum-color-dropdown-bg)
+  );
+  box-shadow: inset var(--altum-calendar-board-event-accent-width, 3px) 0 0 0 var(--altum-calendar-board-event-color, var(--altum-color-brand));
+
+  &.clickable {
+    cursor: pointer;
+
+    transition: var(--altum-transition-smooth);
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(
+        in srgb,
+        var(--altum-calendar-board-event-color, var(--altum-color-brand)) var(--altum-calendar-board-event-tint-active, 32%),
+        var(--altum-color-dropdown-bg)
+      );
+      filter: brightness(0.94);
+    }
+
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: var(--altum-focus-ring-offset);
+    }
+  }
+
+  &.highlighted {
+    background-color: color-mix(
+      in srgb,
+      var(--altum-calendar-board-event-color, var(--altum-color-brand)) var(--altum-calendar-board-event-tint-active, 32%),
+      var(--altum-color-dropdown-bg)
+    );
+    filter: brightness(0.94);
+  }
+
+  & .title {
+    overflow: hidden;
+
+    flex: 0 1 auto;
+
+    min-width: 0;
+    max-width: 100%;
+
+    font-size: var(--altum-g-font-size-2xs);
+    font-weight: var(--altum-g-font-weight-semibold);
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    color: var(--altum-color-ink-muted);
+  }
+
+  & .time {
+    overflow: hidden;
+
+    flex: 0 0 auto;
+
+    min-width: 0;
+    max-width: 100%;
+
+    font-size: var(--altum-g-font-size-xs);
+    font-weight: var(--altum-g-font-weight-medium);
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    color: var(--altum-color-muted);
+  }
+}
+
+@container (max-height: 40px) {
+  .time {
+    display: none;
+  }
+}
+
+@container (max-height: 28px) {
+  .title {
+    font-size: var(--altum-g-font-size-xs);
+    line-height: 1.1;
+  }
+}

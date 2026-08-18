@@ -1,0 +1,134 @@
+.fieldLabel {
+  --altum-field-label-width: 140px;
+
+  display: flex;
+
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  font-family: var(--altum-g-font-family-ui);
+}
+
+/* --- Раскладки --- */
+
+.vertical {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--altum-g-space-1);
+  & .content {
+    width: 100%;
+  }
+}
+
+.horizontal {
+  flex-direction: row;
+  gap: var(--altum-g-space-4);
+
+  width: 100%;
+  max-width: 100%;
+  & .label {
+    flex: 0 0 var(--altum-field-label-width);
+
+    width: var(--altum-field-label-width);
+    max-width: 40%;
+  }
+
+  & .content {
+    flex: 1 1 0;
+
+    min-width: 0;
+  }
+
+  &.justify_between {
+    justify-content: space-between;
+  }
+
+  &.justify_between:not(.fixedLabelWidth) .label {
+    flex: 0 1 auto;
+
+    width: auto;
+    max-width: 60%;
+  }
+
+  &.justify_between .content {
+    flex: 0 1 auto;
+
+    width: auto;
+
+    margin-left: auto;
+
+    text-align: end;
+  }
+}
+
+/* Лейбл слева, контент прижат к правому краю */
+
+/* --- Выравнивание по поперечной оси (horizontal) --- */
+
+.align_start.horizontal {
+  align-items: flex-start;
+}
+
+.align_center.horizontal {
+  align-items: center;
+}
+
+.align_baseline.horizontal {
+  align-items: baseline;
+}
+
+.align_baseline.horizontal .label,
+.align_baseline.horizontal .content {
+  line-height: 1.35;
+}
+
+/* --- Лейбл --- */
+
+.label {
+  display: block;
+
+  margin: 0;
+  padding: 0;
+
+  font-size: calc(var(--altum-g-font-size-base) * 0.78);
+  font-weight: var(--altum-g-font-weight-medium);
+  line-height: 1.25;
+
+  color: var(--altum-field-label, var(--altum-color-muted));
+
+  transform-origin: left top;
+
+  transition: var(--altum-transition-smooth);
+}
+
+.sm .label {
+  font-size: calc(var(--altum-g-font-size-2xs) * 0.78);
+}
+
+.lg .label {
+  font-size: calc(var(--altum-g-font-size-lg) * 0.78);
+}
+
+/* --- Контент --- */
+
+.content {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+
+  font-size: var(--altum-g-font-size-base);
+  line-height: 1.35;
+
+  color: var(--altum-color-input-text);
+}
+
+.sm .content {
+  font-size: var(--altum-g-font-size-2xs, var(--altum-g-font-size-xs));
+  line-height: 1.35;
+}
+
+.lg .content {
+  font-size: var(--altum-g-font-size-lg);
+}

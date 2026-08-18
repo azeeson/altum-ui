@@ -1,0 +1,415 @@
+.chip {
+  display: inline-flex;
+  box-sizing: border-box;
+
+  align-items: center;
+  gap: var(--altum-g-space-1);
+
+  max-width: 100%;
+
+  border: 1px solid transparent;
+
+  font-family: var(--altum-g-font-family-ui);
+  font-weight: var(--altum-g-font-weight-medium, 500);
+  user-select: none;
+
+  transition: var(--altum-transition-smooth);
+
+  &.modeChip {
+    border-radius: var(--altum-g-radius-sm);
+  }
+
+  &.modeTag {
+    border-radius: var(--altum-g-radius-pill);
+  }
+
+  &.sm {
+    --altum-chip-remove-size: var(--altum-g-space-4);
+    gap: var(--altum-g-space-1);
+
+    min-height: var(--altum-g-space-5);
+
+    padding: 0 var(--altum-g-space-2);
+
+    font-size: var(--altum-g-font-size-xs);
+    line-height: 1.2;
+
+    & .removeBtn {
+      padding: 1px;
+    }
+  }
+
+  &.md {
+    --altum-chip-remove-size: var(--altum-g-space-5);
+    gap: var(--altum-g-space-1);
+
+    min-height: var(--altum-g-space-6);
+
+    padding: 0 var(--altum-g-space-2);
+
+    font-size: var(--altum-g-font-size-2xs);
+    line-height: 1.25;
+  }
+
+  &.lg {
+    --altum-chip-remove-size: var(--altum-g-space-6);
+    gap: var(--altum-g-space-2);
+
+    min-height: var(--altum-g-space-7);
+
+    padding: 0 var(--altum-g-space-3);
+
+    font-size: var(--altum-g-font-size-sm);
+    line-height: 1.3;
+
+    & .removeBtn {
+      padding: 2px;
+    }
+  }
+
+  &.chipRemovable.sm {
+    padding-right: 2px;
+  }
+
+  &.chipRemovable.md,
+  &.chipRemovable.lg {
+    padding-right: var(--altum-g-space-1);
+  }
+
+  &.primary {
+    border-color: color-mix(in srgb, var(--altum-color-brand-text) 28%, var(--altum-color-brand));
+
+    color: var(--altum-color-fill-primary-fg);
+    background-color: var(--altum-color-fill-primary-bg);
+  }
+
+  &.tinted {
+    border-color: var(--altum-color-chip-tinted-border);
+
+    color: var(--altum-color-chip-tinted-text);
+    background-color: var(--altum-color-chip-tinted-bg);
+  }
+
+  &.secondary {
+    border-color: var(--altum-color-chip-secondary-border);
+
+    color: var(--altum-color-chip-secondary-text);
+    background-color: var(--altum-color-chip-secondary-bg);
+  }
+
+  &.success {
+    border-color: var(--altum-color-status-success-border);
+
+    color: var(--altum-color-status-success-fg);
+    background-color: var(--altum-color-status-success-bg);
+  }
+
+  &.info {
+    border-color: var(--altum-color-status-info-border);
+
+    color: var(--altum-color-status-info-fg);
+    background-color: var(--altum-color-status-info-bg);
+  }
+
+  &.warning {
+    border-color: var(--altum-color-status-warning-border);
+
+    color: var(--altum-color-status-warning-fg);
+    background-color: var(--altum-color-status-warning-bg);
+  }
+
+  &.error {
+    border-color: var(--altum-color-status-danger-border);
+
+    color: var(--altum-color-status-danger-fg);
+    background-color: var(--altum-color-status-danger-bg);
+  }
+
+  &.modeChip:hover:not(:disabled),
+  &.modeTag.clickable:hover:not(:disabled) {
+    filter: brightness(1.06);
+  }
+
+  &.modeChip.primary:hover:not(:disabled),
+  &.modeTag.clickable.primary:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--altum-color-brand-text) 40%, var(--altum-color-brand-hover));
+
+    background-color: var(--altum-color-brand-hover);
+    filter: none;
+  }
+
+  &.modeChip.tinted:hover:not(:disabled),
+  &.modeTag.clickable.tinted:hover:not(:disabled) {
+    border-color: var(--altum-color-chip-tinted-border-hover);
+
+    background-color: var(--altum-color-chip-tinted-bg-hover);
+    filter: none;
+  }
+
+  &.modeChip.secondary:hover:not(:disabled),
+  &.modeTag.clickable.secondary:hover:not(:disabled) {
+    border-color: var(--altum-color-chip-secondary-border-hover);
+
+    background-color: var(--altum-color-chip-secondary-bg-hover);
+    filter: none;
+  }
+
+  &.modeChip.success:hover:not(:disabled),
+  &.modeTag.clickable.success:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--altum-color-status-success) 55%, transparent);
+
+    background-color: color-mix(in srgb, var(--altum-color-status-success) 22%, transparent);
+    filter: none;
+  }
+
+  &.modeChip.info:hover:not(:disabled),
+  &.modeTag.clickable.info:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--altum-color-status-info) 55%, transparent);
+
+    background-color: color-mix(in srgb, var(--altum-color-status-info) 22%, transparent);
+    filter: none;
+  }
+
+  &.modeChip.warning:hover:not(:disabled),
+  &.modeTag.clickable.warning:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--altum-color-status-warning) 58%, transparent);
+
+    background-color: color-mix(in srgb, var(--altum-color-status-warning) 24%, transparent);
+    filter: none;
+  }
+
+  &.modeChip.error:hover:not(:disabled),
+  &.modeTag.clickable.error:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--altum-color-danger-text-secondary) 48%, transparent);
+
+    background-color: color-mix(in srgb, var(--altum-color-danger-text-secondary) 18%, transparent);
+    filter: none;
+  }
+
+  &.active {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 35%, transparent);
+  }
+
+  &.primary.active {
+    border-color: color-mix(in srgb, var(--altum-color-brand-text) 55%, var(--altum-color-brand));
+
+    color: var(--altum-color-selection-fill-fg, var(--altum-color-brand-text));
+    background-color: var(--altum-color-selection-fill-emphasis, var(--altum-color-brand-hover, var(--altum-color-brand)));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--altum-color-brand-text) 25%, transparent);
+  }
+
+  &.tinted.active {
+    border-color: color-mix(in srgb, var(--altum-color-brand-tint-text) 45%, transparent);
+
+    color: var(--altum-color-selection-fill-fg, var(--altum-color-brand-text));
+    background-color: var(--altum-color-selection-fill, var(--altum-color-brand-tint-active));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--altum-color-brand-tint-text) 28%, transparent);
+  }
+
+  &.secondary.active {
+    border-color: var(--altum-color-selection-neutral-border, color-mix(in srgb, var(--altum-color-text-secondary) 45%, var(--altum-color-border)));
+
+    color: var(--altum-color-field-text, var(--altum-color-text-secondary));
+    background-color: var(--altum-color-selection-neutral-fill, color-mix(in srgb, var(--altum-color-text-secondary) 22%, transparent));
+  }
+
+  &.success.active {
+    border-color: color-mix(in srgb, var(--altum-color-status-success) 70%, transparent);
+
+    background-color: color-mix(in srgb, var(--altum-color-status-success) 28%, transparent);
+  }
+
+  &.info.active {
+    border-color: color-mix(in srgb, var(--altum-color-status-info) 70%, transparent);
+
+    background-color: color-mix(in srgb, var(--altum-color-status-info) 28%, transparent);
+  }
+
+  &.warning.active {
+    border-color: color-mix(in srgb, var(--altum-color-status-warning) 72%, transparent);
+
+    background-color: color-mix(in srgb, var(--altum-color-status-warning) 30%, transparent);
+  }
+
+  &.error.active {
+    border-color: color-mix(in srgb, var(--altum-color-danger-text-secondary) 60%, transparent);
+
+    background-color: color-mix(in srgb, var(--altum-color-danger-text-secondary) 24%, transparent);
+  }
+
+  &.clickable {
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: var(--altum-focus-ring-offset);
+    }
+  }
+
+  & .action {
+    display: inline-flex;
+
+    align-items: center;
+    gap: inherit;
+
+    min-width: 0;
+
+    margin: 0;
+    padding: 0;
+
+    border: none;
+
+    font: inherit;
+
+    color: inherit;
+    background: transparent;
+
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: var(--altum-focus-ring-offset);
+    }
+  }
+
+  & .icon {
+    display: inline-flex;
+
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+
+    line-height: 0;
+  }
+
+  & .label {
+    overflow: hidden;
+
+    min-width: 0;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  & .removeBtn {
+    display: inline-flex;
+    box-sizing: border-box;
+
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+
+    width: var(--altum-chip-remove-size, var(--altum-g-space-5));
+    height: var(--altum-chip-remove-size, var(--altum-g-space-5));
+
+    margin: 0;
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    color: inherit;
+    opacity: 0.7;
+    background-color: transparent;
+
+    cursor: pointer;
+    appearance: none;
+
+    transition: var(--altum-transition-smooth);
+
+    &:hover:not(:disabled) {
+      opacity: 1;
+      background-color: color-mix(in srgb, currentColor 12%, transparent);
+    }
+
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: var(--altum-focus-ring-offset);
+
+      opacity: 1;
+    }
+  }
+
+  &.disabled {
+    opacity: var(--altum-opacity-disabled);
+
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+.chipGroup {
+  display: flex;
+
+  flex-wrap: wrap;
+  /* Упаковка влево: последний неполный ряд оставляет пустой хвост.
+     Не используйте space-between / stretch — это расширяет зазоры в последнем ряду. */
+  justify-content: flex-start;
+  align-content: flex-start;
+  align-items: center;
+
+  &.layoutScrollX {
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+
+    flex-wrap: nowrap;
+
+    -webkit-overflow-scrolling: touch;
+
+    & > * {
+      flex-shrink: 0;
+    }
+  }
+
+  &.layoutScrollXFade {
+    /* Мягкие края намекают, что за экраном есть ещё чипы. */
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      var(--altum-chip-mask) var(--altum-g-space-4),
+      var(--altum-chip-mask) calc(100% - var(--altum-g-space-4)),
+      transparent 100%
+    );
+
+    &.fadeStart:not(.fadeEnd) {
+      mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        var(--altum-chip-mask) var(--altum-g-space-4),
+        var(--altum-chip-mask) 100%
+      );
+    }
+
+    &.fadeEnd:not(.fadeStart) {
+      mask-image: linear-gradient(
+        to right,
+        var(--altum-chip-mask) 0,
+        var(--altum-chip-mask) calc(100% - var(--altum-g-space-4)),
+        transparent 100%
+      );
+    }
+
+    &:not(.fadeStart):not(.fadeEnd) {
+      mask-image: none;
+    }
+  }
+
+  &.gapSm {
+    gap: var(--altum-g-space-1);
+    row-gap: var(--altum-g-space-1);
+    column-gap: var(--altum-g-space-1);
+  }
+
+  &.gapMd {
+    gap: var(--altum-g-space-2);
+    row-gap: var(--altum-g-space-2);
+    column-gap: var(--altum-g-space-2);
+  }
+
+  &.gapLg {
+    gap: var(--altum-g-space-3);
+    row-gap: var(--altum-g-space-3);
+    column-gap: var(--altum-g-space-3);
+  }
+}

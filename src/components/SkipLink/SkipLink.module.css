@@ -1,0 +1,30 @@
+.skipLink {
+  position: absolute;
+  top: var(--altum-g-space-4);
+  left: var(--altum-g-space-4);
+  z-index: var(--altum-g-z-skip);
+
+  padding: var(--altum-g-space-2) var(--altum-g-space-4);
+
+  border: 1px solid var(--altum-color-border);
+  border-radius: var(--altum-g-radius-md);
+
+  font-size: var(--altum-g-font-size-base);
+  font-weight: var(--altum-g-font-weight-semibold);
+  text-decoration: none;
+
+  color: var(--altum-color-input-text);
+  background-color: var(--altum-color-surface);
+  box-shadow: var(--altum-shadow-surface);
+
+  transform: translateY(-200%);
+
+  transition: transform 0.2s ease;
+  &:focus,
+  &:focus-visible {
+    outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+    outline-offset: var(--altum-focus-ring-offset);
+
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,96 @@
+.root {
+  --altum-switch-track-width: var(--altum-switch-track-width-md);
+  --altum-switch-track-height: var(--altum-switch-track-height-md);
+  --altum-switch-thumb-size: var(--altum-switch-thumb-size-md);
+  --altum-switch-thumb-travel: calc(
+    var(--altum-switch-track-width) - var(--altum-switch-thumb-size) - 2 * var(--altum-control-inset)
+  );
+
+  &.sm {
+    --altum-switch-track-width: var(--altum-switch-track-width-sm);
+    --altum-switch-track-height: var(--altum-switch-track-height-sm);
+    --altum-switch-thumb-size: var(--altum-switch-thumb-size-sm);
+  }
+
+  &.lg {
+    --altum-switch-track-width: var(--altum-switch-track-width-lg);
+    --altum-switch-track-height: var(--altum-switch-track-height-lg);
+    --altum-switch-thumb-size: var(--altum-switch-thumb-size-lg);
+  }
+
+  &:hover .input:not(:disabled):not([aria-readonly='true']) ~ .switchTrack {
+    background-color: color-mix(in srgb, var(--altum-switch-track-off, var(--altum-color-control-border)) 70%, var(--altum-color-input-text));
+  }
+
+  &:hover .input:checked:not(:disabled):not([aria-readonly='true']) ~ .switchTrack {
+    background-color: var(--altum-color-brand-hover);
+  }
+
+  &:active .input:not(:disabled):not([aria-readonly='true']) ~ .switchTrack {
+    background-color: color-mix(in srgb, var(--altum-switch-track-off, var(--altum-color-control-border)) 55%, var(--altum-color-input-text));
+  }
+
+  &:active .input:checked:not(:disabled):not([aria-readonly='true']) ~ .switchTrack {
+    background-color: var(--altum-color-brand-active);
+  }
+
+  &.readOnly .input:checked ~ .readOnlyTrack {
+    border-style: solid;
+    border-color: var(--altum-color-brand);
+
+    background-color: var(--altum-color-brand);
+  }
+
+  & .input:checked ~ .switchTrack {
+    background-color: var(--altum-color-brand);
+  }
+
+  & .input:checked ~ .switchTrack .switchThumb {
+    transform: translateX(var(--altum-switch-thumb-travel));
+  }
+
+  & .input:focus-visible ~ .switchTrack {
+    outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+    outline-offset: var(--altum-focus-ring-offset);
+  }
+
+  & .switchTrack {
+    position: relative;
+
+    flex-shrink: 0;
+
+    width: var(--altum-switch-track-width);
+    height: var(--altum-switch-track-height);
+
+    border-radius: var(--altum-g-radius-pill);
+
+    background-color: var(--altum-switch-track-off, var(--altum-color-control-border));
+
+    transition: var(--altum-transition-smooth);
+  }
+
+  & .switchThumb {
+    position: absolute;
+    top: var(--altum-control-inset);
+    left: var(--altum-control-inset);
+
+    width: var(--altum-switch-thumb-size);
+    height: var(--altum-switch-thumb-size);
+
+    border-radius: 50%;
+
+    background-color: var(--altum-switch-thumb);
+    box-shadow: var(--altum-shadow-surface);
+
+    transition: var(--altum-transition-smooth);
+  }
+
+  & .readOnlyTrack {
+    box-sizing: border-box;
+
+    border: 1px dashed var(--altum-color-control-border-readonly);
+
+    background-color: var(--altum-color-control-bg-readonly);
+    box-shadow: inset 0 0 0 1px var(--altum-color-control-border-readonly);
+  }
+}

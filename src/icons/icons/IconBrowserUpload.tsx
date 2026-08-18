@@ -1,0 +1,31 @@
+import React from 'react';
+
+interface IconProps extends React.SVGProps<SVGSVGElement> {
+	/** Размер в px (или любой css‑единица) */
+	size?: number | string;
+	/** Цвет заливки */
+	color?: string;
+}
+
+export const IconBrowserUpload: React.FC<IconProps> = ({
+	size = 24,
+	color = 'currentColor',
+	...props
+}) => (
+	<svg
+		width={size}
+		height={size}
+		fill={color}
+		viewBox='0 0 92 92'
+		{...props}
+	>
+		<path
+			id='XMLID_1324_'
+			d='M50,47l0.1,41c0,2.2-1.8,4-4,4c0,0,0,0,0,0c-2.2,0-4-1.8-4-4L42,46.9L30.4,58.5c-1.6,1.6-4.1,1.5-5.7,0
+	c-1.6-1.6-1.5-4.1,0-5.7l18.4-18.3c1.6-1.5,4.1-1.5,5.6,0l18.4,18.3c1.6,1.6,1.6,4.1,0,5.7c-0.8,0.8-1.8,1.2-2.8,1.2
+	c-1,0-2-0.4-2.8-1.2L50,47z M92,4v66.7c0,2.2-1.8,4.3-4,4.3H63.4c-2.2,0-4-1.8-4-4s1.8-4,4-4H84V24H8v43h20.9c2.2,0,4,1.8,4,4
+	s-1.8,4-4,4H4c-2.2,0-4-2.1-4-4.3V4c0-2.2,1.8-4,4-4h84C90.2,0,92,1.8,92,4z M40,17h10V8H40V17z M34,8H24v9h10V8z M8,17h10V8H8V17z
+	 M84,17V8H56v9H84z'
+		/>
+	</svg>
+);

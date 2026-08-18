@@ -1,0 +1,90 @@
+.group {
+  display: flex;
+
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--altum-g-space-2);
+}
+
+.list {
+  display: contents;
+}
+
+.swatch {
+  padding: 0;
+
+  border: 2px solid transparent;
+  border-radius: 50%;
+
+  background-color: var(--altum-swatch-color);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--altum-color-input-text) 8%, transparent);
+
+  cursor: pointer;
+  appearance: none;
+
+  transition: var(--altum-transition-smooth);
+  &:hover:not(:disabled) {
+    transform: scale(1.1);
+  }
+
+  &:focus-visible {
+    outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+    outline-offset: var(--altum-focus-ring-offset);
+  }
+}
+
+.selected {
+  border-color: transparent;
+
+  /* Мягкое одиночное кольцо — без жёсткого двойного ореола на тёмных поверхностях */
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--altum-color-input-text) 14%, transparent),
+    0 0 0 2px color-mix(in srgb, var(--altum-color-bg) 88%, transparent),
+    0 0 0 3.5px color-mix(in srgb, var(--altum-color-text-secondary) 42%, transparent);
+  &:hover:not(:disabled) {
+    transform: scale(1.06);
+  }
+}
+
+.readOnly {
+  padding: var(--altum-g-space-2);
+
+  border: 1px dashed var(--altum-field-border-readonly);
+  border-radius: var(--altum-g-radius);
+
+  background-color: var(--altum-field-bg-readonly);
+
+  cursor: default;
+}
+
+.swatchReadOnly {
+  cursor: default;
+
+  transform: none;
+  &:hover {
+    transform: none;
+  }
+}
+
+.disabled .swatch {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+.sm .swatch {
+  width: var(--altum-g-space-5);
+  height: var(--altum-g-space-5);
+}
+
+.md .swatch {
+  width: var(--altum-g-space-7);
+  height: var(--altum-g-space-7);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swatch:hover:not(:disabled),
+  .selected:hover:not(:disabled) {
+    transform: none;
+  }
+}

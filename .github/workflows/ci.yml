@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run lint:css
+      - run: npm run lint:css-ownership
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm run pack:check
+      - run: npx --yes publint
+
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - uses: actions/cache@v4
+        id: storybook
+        with:
+          path: dist-storybook
+          key: ${{ runner.os }}-storybook-${{ hashFiles('src/**', '.storybook/**', 'package-lock.json') }}
+      - name: Build Storybook
+        if: steps.storybook.outputs.cache-hit != 'true'
+        run: npm run build-storybook
+      - name: Playwright
+        run: npx playwright test
+        env:
+          CI: true

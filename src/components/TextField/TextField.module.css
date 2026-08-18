@@ -1,0 +1,12 @@
+.inputElement {
+  height: var(--altum-field-control-height);
+
+  cursor: text;
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px var(--altum-color-field-bg) inset !important;
+
+    -webkit-text-fill-color: var(--altum-color-field-text) !important;
+  }
+}

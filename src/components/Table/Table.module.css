@@ -1,0 +1,245 @@
+.tableContainer {
+  overflow-x: auto;
+
+  width: 100%;
+
+  border: 1px solid var(--altum-surface-secondary-border);
+  border-radius: var(--altum-g-radius);
+
+  font-family: inherit;
+
+  background-color: var(--altum-surface-secondary-bg);
+  box-shadow: var(--altum-surface-secondary-shadow);
+}
+
+.table {
+  width: 100%;
+
+  font-size: var(--altum-g-font-size-sm);
+  line-height: var(--altum-g-line-height-sm);
+  text-align: left;
+
+  border-collapse: separate;
+  border-spacing: 0;
+  & th {
+    position: relative;
+
+    box-sizing: border-box;
+
+    padding: var(--altum-g-space-3) var(--altum-g-space-4);
+
+    border-bottom: 2px solid var(--altum-color-panel-border);
+
+    font-weight: var(--altum-g-font-weight-semibold);
+    user-select: none;
+
+    color: var(--altum-color-text-secondary);
+    background-color: var(--altum-color-option-hover);
+  }
+
+  & th.sortable {
+    padding: 0;
+
+    cursor: pointer;
+
+    transition: var(--altum-transition-smooth);
+  }
+
+  & th.sortable:hover {
+    color: var(--altum-color-field-text);
+    background-color: var(--altum-color-panel-border);
+  }
+
+  & td {
+    box-sizing: border-box;
+
+    padding: var(--altum-g-space-3) var(--altum-g-space-4);
+
+    border-bottom: 1px solid var(--altum-color-panel-border);
+
+    color: var(--altum-color-field-text);
+    background-color: var(--altum-color-panel-bg);
+  }
+
+  & tr:last-child td {
+    border-bottom: none;
+  }
+
+  & tr:hover td {
+    background-color: var(--altum-color-option-hover);
+  }
+}
+
+.compact th,
+.compact td {
+  padding: var(--altum-g-space-2) var(--altum-g-space-3);
+}
+
+.compact .sortButton {
+  padding: var(--altum-g-space-2) var(--altum-g-space-3);
+}
+
+.sortButton {
+  display: flex;
+
+  align-items: center;
+  gap: var(--altum-g-space-2);
+
+  width: 100%;
+
+  padding: var(--altum-g-space-3) var(--altum-g-space-4);
+
+  border: none;
+
+  font: inherit;
+  text-align: left;
+
+  color: inherit;
+  background-color: transparent;
+
+  cursor: pointer;
+
+  transition: var(--altum-transition-smooth);
+  &:hover:not(:disabled) {
+    color: var(--altum-color-field-text);
+    background-color: var(--altum-color-panel-border);
+  }
+
+  &:focus-visible {
+    outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+    outline-offset: -2px;
+  }
+}
+
+.headerText {
+  display: block;
+
+  padding: var(--altum-g-space-3) var(--altum-g-space-4);
+}
+
+.compact .headerText {
+  padding: var(--altum-g-space-2) var(--altum-g-space-3);
+}
+
+.stickyHeader th {
+  position: sticky;
+  top: 0;
+  z-index: calc(var(--altum-g-z-local) + 1);
+}
+
+.stickyLeft {
+  position: sticky;
+  left: 0;
+  z-index: var(--altum-g-z-local);
+
+  box-shadow: 1px 0 0 var(--altum-color-panel-border);
+}
+
+.stickyRight {
+  position: sticky;
+  right: 0;
+  z-index: var(--altum-g-z-local);
+
+  box-shadow: -1px 0 0 var(--altum-color-panel-border);
+}
+
+.controlCol {
+  width: 40px;
+
+  padding-right: var(--altum-g-space-2) !important;
+  padding-left: var(--altum-g-space-2) !important;
+
+  text-align: center;
+}
+
+.expandBtn {
+  width: 24px;
+  height: 24px;
+
+  border: none;
+
+  font-size: var(--altum-g-font-size-3xs);
+
+  color: var(--altum-field-label);
+  background-color: transparent;
+
+  cursor: pointer;
+  appearance: none;
+
+  transition: transform 0.15s ease;
+}
+
+.expandBtnOpen {
+  transform: rotate(90deg);
+}
+
+.rowExpanded td {
+  background-color: var(--altum-color-option-hover);
+}
+
+.expandedRow td {
+  border-bottom: 1px solid var(--altum-color-panel-border);
+
+  background-color: var(--altum-color-option-hover);
+}
+
+.expandedContent {
+  padding: var(--altum-g-space-3) var(--altum-g-space-4);
+}
+
+.resizeHandle {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  width: 6px;
+  height: 100%;
+
+  cursor: col-resize;
+  touch-action: none;
+  &:hover,
+  &:focus-visible {
+    background-color: var(--altum-color-border-hover);
+  }
+}
+
+.root {
+  width: 100%;
+
+  font-family: inherit;
+}
+
+.toolbar {
+  margin-bottom: var(--altum-g-space-3);
+}
+
+.toolbarInner {
+  width: 100%;
+}
+
+.loading,
+.empty {
+  overflow: hidden;
+
+  border: 1px solid var(--altum-color-panel-border);
+  border-radius: var(--altum-g-radius-md);
+
+  background-color: var(--altum-color-panel-bg);
+}
+
+.empty {
+  padding: var(--altum-g-space-2);
+}
+
+.footer {
+  margin-top: var(--altum-g-space-3);
+  padding-top: var(--altum-g-space-3);
+
+  border-top: 1px solid var(--altum-color-panel-border);
+}
+
+.rowActions {
+  display: flex;
+
+  justify-content: flex-end;
+}

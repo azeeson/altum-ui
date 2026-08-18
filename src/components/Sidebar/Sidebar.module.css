@@ -1,0 +1,254 @@
+.sidebar {
+  --altum-sidebar-width: 260px;
+  --altum-sidebar-width-collapsed: 64px;
+
+  display: flex;
+  overflow: hidden;
+
+  flex-direction: column;
+  /* Высота от flex-родителя (`align-self: stretch`), не 100vh — иначе демо/shell разъезжаются. */
+  align-self: stretch;
+
+  width: var(--altum-sidebar-width);
+  min-height: 0;
+
+  border-right: 1px solid var(--altum-color-border);
+
+  font-family: var(--altum-g-font-family-ui);
+
+  background-color: var(--altum-color-surface);
+
+  transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+
+  & .mobileSidebar {
+    width: 100%;
+    height: 100%;
+
+    border-right: 0;
+  }
+
+  & .collapsed {
+    width: var(--altum-sidebar-width-collapsed);
+    & .menuItem {
+      justify-content: center;
+
+      padding-right: var(--altum-g-space-2);
+      padding-left: var(--altum-g-space-2);
+    }
+
+    & .sidebarHeader {
+      justify-content: center;
+
+      padding-right: var(--altum-g-space-2);
+      padding-left: var(--altum-g-space-2);
+    }
+  }
+
+  & .sidebarHeader {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    padding: var(--altum-g-space-4) var(--altum-g-space-5);
+
+    border-bottom: 1px solid var(--altum-color-border);
+
+    background-color: var(--altum-color-surface);
+  }
+
+  & .sidebarTitle {
+    font-size: var(--altum-g-font-size-lg);
+    font-weight: var(--altum-g-font-weight-bold);
+    white-space: nowrap;
+
+    color: var(--altum-color-input-text);
+  }
+
+  & .toggleBtn {
+    display: inline-flex;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: var(--altum-g-space-1);
+
+    border: none;
+    border-radius: var(--altum-g-radius-sm);
+
+    color: var(--altum-color-muted);
+    background-color: transparent;
+
+    cursor: pointer;
+
+    transition: var(--altum-transition-smooth);
+    &:hover:not(:disabled) {
+      color: var(--altum-color-input-text);
+      background-color: var(--altum-color-option-hover);
+    }
+
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: var(--altum-focus-ring-offset);
+    }
+  }
+
+  & .sidebarMenu {
+    display: flex;
+
+    flex-direction: column;
+    gap: var(--altum-g-space-1);
+
+    padding: var(--altum-g-space-3) var(--altum-g-space-2);
+  }
+
+  & .sidebarContent {
+    min-height: 0;
+  }
+
+  & .mobileTrigger {
+    flex-shrink: 0;
+  }
+
+  & .toggleIcon {
+    display: inline-flex;
+
+    transition: transform 0.2s ease;
+
+    &.toggleIconCollapsed {
+      transform: rotate(180deg);
+    }
+  }
+
+  & .menuItem {
+    display: flex;
+
+    align-items: center;
+    gap: var(--altum-g-space-3);
+
+    width: 100%;
+
+    padding: var(--altum-g-space-2) var(--altum-g-space-3);
+
+    border: none;
+    border-radius: var(--altum-g-radius-sm);
+
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
+
+    color: var(--altum-color-text-secondary);
+    background-color: transparent;
+
+    cursor: pointer;
+
+    transition: var(--altum-transition-smooth);
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: calc(var(--altum-focus-ring-offset) * -1);
+    }
+
+    &:hover:not(:disabled) {
+      color: var(--altum-color-input-text);
+      background-color: var(--altum-color-option-hover);
+    }
+
+    &.active {
+      color: var(--altum-color-brand-text) !important;
+      background-color: var(--altum-color-brand) !important;
+    }
+
+    &.disabled {
+      opacity: var(--altum-opacity-disabled);
+
+      cursor: not-allowed;
+    }
+  }
+
+  & .menuIcon {
+    display: inline-flex;
+
+    justify-content: center;
+    align-items: center;
+
+    min-width: var(--altum-g-space-5);
+
+    font-size: var(--altum-g-font-size-lg);
+  }
+
+  & .menuLabel {
+    flex: 1;
+
+    min-width: 0;
+
+    font-size: var(--altum-g-font-size-sm);
+    font-weight: var(--altum-g-font-weight-medium);
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  & .menuBadge {
+    flex-shrink: 0;
+
+    margin-left: auto;
+  }
+
+  & .group {
+    display: flex;
+
+    flex-direction: column;
+    gap: var(--altum-g-space-1);
+    & + .group {
+      margin-top: var(--altum-g-space-3);
+    }
+  }
+
+  & .groupLabel {
+    padding: var(--altum-g-space-2) var(--altum-g-space-3);
+
+    font-size: var(--altum-g-font-size-xs);
+    font-weight: var(--altum-g-font-weight-semibold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+
+    color: var(--altum-color-muted);
+  }
+
+  & .sidebarFooter {
+    padding: var(--altum-g-space-3);
+
+    border-top: 1px solid var(--altum-color-border);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,236 @@
+.timeline {
+  margin: 0;
+  padding: 0;
+
+  font-family: inherit;
+  list-style: none;
+
+  & .item {
+    display: flex;
+
+    align-items: stretch;
+    gap: var(--altum-g-space-3);
+  }
+
+  & .rail {
+    display: flex;
+
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: center;
+
+    width: var(--altum-g-space-5);
+  }
+
+  & .dot {
+    display: inline-flex;
+    box-sizing: border-box;
+
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+
+    width: var(--altum-g-space-3);
+    height: var(--altum-g-space-3);
+
+    margin-top: var(--altum-g-space-1);
+
+    border: var(--altum-control-inset) solid var(--altum-color-surface);
+    border-radius: 50%;
+
+    font-size: var(--altum-g-font-size-3xs);
+    line-height: 0;
+
+    color: var(--altum-color-brand-text);
+    background-color: var(--altum-color-border);
+  }
+
+  & .line {
+    flex: 1;
+
+    width: var(--altum-control-inset);
+    min-height: var(--altum-g-space-4);
+
+    margin: var(--altum-g-space-1) 0 0;
+
+    border-radius: var(--altum-control-inset);
+
+    background-color: var(--altum-color-border);
+  }
+
+  & .body {
+    flex: 1;
+
+    min-width: 0;
+
+    padding-bottom: var(--altum-g-space-4);
+  }
+
+  & .header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--altum-g-space-3);
+  }
+
+  & .title {
+    font-size: var(--altum-g-font-size-sm);
+    font-weight: var(--altum-g-font-weight-semibold, 600);
+    line-height: 1.35;
+
+    color: var(--altum-color-input-text);
+  }
+
+  & .time {
+    flex-shrink: 0;
+
+    font-size: var(--altum-g-font-size-xs);
+    font-variant-numeric: tabular-nums;
+
+    color: var(--altum-color-muted);
+  }
+
+  & .description {
+    margin-top: var(--altum-g-space-1);
+
+    font-size: var(--altum-g-font-size-sm);
+    line-height: 1.45;
+
+    color: var(--altum-color-text-secondary);
+  }
+
+  & .detailsToggle {
+    margin-top: var(--altum-g-space-2);
+
+    border: none;
+
+    font-size: var(--altum-g-font-size-2xs);
+    font-weight: var(--altum-g-font-weight-semibold);
+
+    color: var(--altum-color-brand);
+    background-color: transparent;
+
+    cursor: pointer;
+    appearance: none;
+
+    transition: var(--altum-transition-smooth);
+  }
+
+  & .details {
+    margin-top: var(--altum-g-space-2);
+    padding: var(--altum-g-space-2) var(--altum-g-space-3);
+
+    border-radius: var(--altum-g-radius-sm);
+
+    font-size: var(--altum-g-font-size-sm);
+
+    color: var(--altum-color-text-secondary);
+    background-color: var(--altum-color-option-hover);
+  }
+
+  &.horizontal {
+    display: flex;
+    overflow-x: auto;
+
+    flex-direction: row;
+    gap: 0;
+    & .item {
+      flex: 1;
+      flex-direction: column;
+
+      min-width: calc(var(--altum-g-space-8) * 5);
+    }
+
+    & .rail {
+      flex-direction: row;
+      align-items: center;
+
+      width: 100%;
+      height: var(--altum-g-space-5);
+    }
+
+    & .dot {
+      margin-top: 0;
+    }
+
+    & .line {
+      flex: 1;
+
+      width: auto;
+      height: var(--altum-control-inset);
+      min-height: 0;
+
+      margin: 0 0 0 var(--altum-g-space-1);
+    }
+
+    & .last .line {
+      display: none;
+    }
+
+    & .body {
+      padding: var(--altum-g-space-3) var(--altum-g-space-2) 0 0;
+    }
+  }
+}
+
+
+
+
+
+
+
+.success .dot {
+  background-color: var(--altum-color-status-success);
+}
+
+.info .dot {
+  background-color: var(--altum-color-status-info);
+}
+
+.warning .dot {
+  background-color: var(--altum-color-status-warning);
+}
+
+.error .dot {
+  background-color: var(--altum-color-status-error);
+}
+
+.default .dot {
+  background-color: var(--altum-color-brand);
+}
+
+
+
+
+
+.last .body {
+  padding-bottom: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.current .dot {
+  width: calc(var(--altum-g-space-4) + var(--altum-control-inset));
+  height: calc(var(--altum-g-space-4) + var(--altum-control-inset));
+
+  margin-top: 0;
+
+  box-shadow: 0 0 0 var(--altum-g-space-1) color-mix(in srgb, var(--altum-color-brand) 18%, transparent);
+}
+
+.current .title {
+  font-size: var(--altum-g-font-size-sm);
+}
+
+

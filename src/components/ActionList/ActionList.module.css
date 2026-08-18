@@ -1,0 +1,106 @@
+.root {
+  display: flex;
+
+  flex-direction: column;
+
+  min-height: 0;
+  max-height: 100%;
+
+  color: var(--altum-color-input-text);
+  background-color: var(--altum-color-dropdown-bg);
+
+  & .filter {
+    flex-shrink: 0;
+
+    padding: var(--altum-g-space-2) var(--altum-g-space-3);
+
+    border-bottom: 1px solid var(--altum-color-dropdown-border);
+  }
+
+  & .filterInput {
+    min-height: var(--altum-control-height-sm);
+
+    font-size: var(--altum-g-font-size-sm);
+    line-height: var(--altum-g-line-height-sm);
+
+    appearance: none;
+
+    &::placeholder {
+      color: var(--altum-field-label);
+    }
+
+    &:focus-visible {
+      --altum-field-control-border: var(--altum-color-border-hover);
+      --altum-field-control-shadow: 0 0 0 1px var(--altum-color-border-hover);
+    }
+
+    &::-webkit-search-decoration,
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-results-button,
+    &::-webkit-search-results-decoration {
+      display: none;
+    }
+  }
+
+  & .list {
+    overflow-y: auto;
+
+    flex: 1 1 auto;
+
+    min-height: 0;
+
+    padding: var(--altum-g-space-2);
+  }
+
+  & .icon {
+    display: inline-flex;
+
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+
+    width: var(--altum-toggle-box-size);
+    height: var(--altum-toggle-box-size);
+
+    color: var(--altum-color-muted);
+
+    & svg {
+      width: var(--altum-g-font-size-lg);
+      height: var(--altum-g-font-size-lg);
+    }
+  }
+
+  & .itemBody {
+    display: flex;
+
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--altum-g-space-1);
+
+    min-width: 0;
+  }
+
+  & .itemLabel {
+    font-size: var(--altum-g-font-size-base);
+    font-weight: var(--altum-g-font-weight-medium);
+    line-height: 1.3;
+  }
+
+  & .itemDescription {
+    font-size: var(--altum-g-font-size-2xs);
+    line-height: var(--altum-g-line-height-2xs);
+
+    color: var(--altum-color-ink-muted);
+  }
+
+  & .shortcut {
+    flex-shrink: 0;
+
+    margin-left: auto;
+
+    font-size: var(--altum-g-font-size-xs);
+    font-variant-numeric: tabular-nums;
+
+    color: var(--altum-color-muted);
+  }
+}

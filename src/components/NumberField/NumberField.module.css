@@ -1,0 +1,73 @@
+.withSpinButtons {
+  /* Хит-зона = бокс аффикса (внутри chrome поля; ≥ xs только когда поле ≥ md). */
+  --altum-number-field-hit-size: var(--altum-field-affix-size);
+  --altum-field-postfix-actions-width: calc(2 * var(--altum-number-field-hit-size) + var(--altum-g-space-1));
+  --altum-field-postfix-gap: var(--altum-g-space-1);
+}
+
+/* Плотнее inset аффиксов на sm, чтобы степперы ± оставались ~20–24px относительно ритма TextField. */
+
+.spinSizeSm {
+  --altum-field-affix-inset: var(--altum-g-space-1);
+}
+
+.spinSlot {
+  display: flex;
+  box-sizing: border-box;
+
+  justify-content: center;
+  align-items: center;
+  align-self: stretch;
+
+  height: 100%;
+  & .spinControls {
+    display: inline-flex;
+    box-sizing: border-box;
+
+    align-items: center;
+    gap: var(--altum-g-space-1) !important;
+
+    max-width: none;
+    height: auto;
+
+    padding: 0 !important;
+
+    border: none !important;
+
+    background: transparent !important;
+
+    pointer-events: all;
+  }
+
+  & .spinControls button {
+    box-sizing: border-box;
+
+    flex: 0 0 auto;
+    align-self: center;
+
+    width: var(--altum-number-field-hit-size) !important;
+    min-width: var(--altum-number-field-hit-size) !important;
+    max-width: var(--altum-number-field-hit-size) !important;
+    height: var(--altum-number-field-hit-size) !important;
+    min-height: var(--altum-number-field-hit-size) !important;
+    max-height: var(--altum-number-field-hit-size) !important;
+    aspect-ratio: auto;
+
+    padding: 0 !important;
+  }
+
+  & .spinControls svg {
+    width: var(--altum-field-icon-size) !important;
+    height: var(--altum-field-icon-size) !important;
+  }
+}
+
+.numberInput {
+  -moz-appearance: textfield;
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    margin: 0;
+
+    -webkit-appearance: none;
+  }
+}

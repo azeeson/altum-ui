@@ -1,0 +1,14 @@
+.filterWrapper {
+  padding: var(--altum-g-space-2);
+
+  border-bottom: 1px solid var(--altum-color-border);
+}
+
+.filterInput {
+  min-height: var(--altum-control-height-sm);
+
+  &:focus-visible {
+    --altum-field-control-border: var(--altum-color-border-hover);
+    --altum-field-control-shadow: 0 0 0 1px var(--altum-color-border-hover);
+  }
+}

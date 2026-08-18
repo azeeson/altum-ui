@@ -1,0 +1,70 @@
+/* Панель: Header / Content / Footer.
+ * Scrollport — `.root`; Content не скроллится сам.
+ * `sticky` на Header/Footer закрепляет их к краям scrollport. */
+
+.root {
+  display: flex;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  flex: 1 1 auto;
+  flex-direction: column;
+
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+}
+
+.header {
+  box-sizing: border-box;
+
+  flex-shrink: 0;
+
+  &.headerSticky {
+    position: sticky;
+    top: 0;
+    z-index: var(--altum-g-z-raised, 1);
+  }
+}
+
+.content {
+  box-sizing: border-box;
+
+  /* Растягивается при коротком контенте; при длинном растёт вместе с ним (скролл у .root). */
+  flex: 1 0 auto;
+
+  min-width: 0;
+}
+
+.footer {
+  display: flex;
+  box-sizing: border-box;
+
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--altum-g-space-3);
+
+  &.footerAlign_start {
+    justify-content: flex-start;
+  }
+
+  &.footerAlign_center {
+    justify-content: center;
+  }
+
+  &.footerAlign_end {
+    justify-content: flex-end;
+  }
+
+  &.footerAlign_space-between {
+    justify-content: space-between;
+  }
+
+  &.footerSticky {
+    position: sticky;
+    bottom: 0;
+    z-index: var(--altum-g-z-raised, 1);
+  }
+}

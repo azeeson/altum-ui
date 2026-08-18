@@ -1,0 +1,220 @@
+.listWrapper {
+  --altum-sortable-list-gap: var(--altum-g-space-2);
+
+  position: relative;
+
+  display: flex;
+
+  flex-direction: column;
+  gap: var(--altum-sortable-list-gap);
+
+  padding: var(--altum-g-space-4);
+
+  user-select: none;
+  &:not(.handleOnly) .listItem {
+    cursor: grab;
+    touch-action: none;
+  }
+
+  &.layoutActive .listItem {
+    transition: var(--altum-sortable-transition-move), var(--altum-sortable-transition-fast) !important;
+  }
+
+  &.layoutActive .listItem.dropping {
+    z-index: var(--altum-g-z-local);
+
+    border-color: var(--altum-sortable-item-border);
+
+    background-color: var(--altum-sortable-item-bg);
+    box-shadow: none;
+
+    transition: var(--altum-sortable-transition-move) !important;
+  }
+
+  &.layoutActive .listItem.dragging {
+    z-index: var(--altum-g-z-local);
+
+    border-color: var(--altum-sortable-item-border-dragging);
+
+    background-color: var(--altum-sortable-item-bg-dragging);
+    box-shadow: var(--altum-sortable-shadow-dragging);
+
+    cursor: grabbing;
+
+    transition: none !important;
+  }
+
+  &.layoutActive .dragHandle {
+    cursor: grabbing;
+  }
+
+  &:not(.handleOnly) .content {
+    pointer-events: none;
+  }
+}
+
+.handleOnly {
+  touch-action: auto;
+  & .content {
+    pointer-events: auto;
+  }
+}
+
+.listItem {
+  position: relative;
+  z-index: var(--altum-g-z-raised);
+
+  display: flex;
+  box-sizing: border-box;
+
+  align-items: center;
+  gap: var(--altum-g-space-2);
+
+  width: 100%;
+
+  padding: var(--altum-g-space-3) var(--altum-g-space-4);
+
+  border: 1px solid var(--altum-sortable-item-border);
+  border-radius: var(--altum-sortable-radius);
+
+  background-color: var(--altum-sortable-item-bg);
+
+  transition: var(--altum-sortable-transition-fast);
+  &:hover:not(.dragging):not(.dropping) {
+    background-color: var(--altum-sortable-item-bg-hover);
+  }
+}
+
+/* Тот же паттерн, что у исходного `.drag .listItem` — transition на всех пунктах при перестановке */
+
+@media (prefers-reduced-motion: reduce) {
+  .listWrapper.layoutActive .listItem,
+  .listWrapper.layoutActive .listItem.dropping {
+    transition: none !important;
+  }
+}
+
+.controls {
+  display: flex;
+
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--altum-g-space-2);
+}
+
+.dragHandle {
+  display: inline-flex;
+  box-sizing: border-box;
+
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+
+  width: var(--altum-control-height-sm);
+  min-width: var(--altum-control-height-sm);
+  height: var(--altum-control-height-sm);
+  min-height: var(--altum-control-height-sm);
+
+  margin: 0;
+  padding: 0;
+
+  border: none;
+  border-radius: var(--altum-g-radius-sm);
+
+  color: var(--altum-sortable-handle-color);
+  background-color: transparent;
+
+  cursor: grab;
+  touch-action: none;
+  appearance: none;
+
+  transition: var(--altum-transition-smooth);
+  &:hover:not(:disabled) {
+    color: var(--altum-color-input-text);
+    background-color: var(--altum-color-option-hover);
+  }
+
+  &:focus-visible {
+    outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+    outline-offset: var(--altum-focus-ring-offset);
+  }
+}
+
+.moveButtons {
+  display: flex;
+
+  flex-direction: column;
+  gap: var(--altum-g-space-1);
+  & .moveBtn {
+    width: var(--altum-control-height-xs);
+    min-width: var(--altum-control-height-xs);
+    height: var(--altum-control-height-xs);
+    min-height: var(--altum-control-height-xs);
+  }
+}
+
+.content {
+  flex-grow: 1;
+
+  min-width: 0;
+}
+
+.plain {
+  padding-inline: 0;
+  & .listItem {
+    gap: var(--altum-g-space-2);
+
+    padding: 0;
+
+    border: none;
+    border-radius: 0;
+
+    background-color: transparent;
+  }
+
+  & .listItem:hover:not(.dragging):not(.dropping) {
+    background-color: transparent;
+  }
+
+  &.listWrapper.layoutActive .listItem.dragging {
+    border: 1px solid var(--altum-sortable-item-border-dragging);
+    border-radius: var(--altum-sortable-radius);
+
+    background-color: var(--altum-color-surface);
+    box-shadow: var(--altum-sortable-shadow-dragging);
+  }
+
+  &.listWrapper.layoutActive .listItem.dropping {
+    border: none;
+
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  & .controls {
+    align-self: stretch;
+
+    padding-inline-start: var(--altum-g-space-1);
+  }
+
+  & .dragHandle {
+    align-self: center;
+  }
+}
+
+.srOnly {
+  position: absolute;
+
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+
+  width: 1px;
+  height: 1px;
+
+  margin: -1px;
+  padding: 0;
+
+  border: 0;
+
+  white-space: nowrap;
+}

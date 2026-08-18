@@ -1,0 +1,27 @@
+.message {
+  margin: var(--altum-field-message-gap, var(--altum-g-space-1)) 0 0;
+  margin-left: var(--altum-form-helper-indent, var(--altum-g-space-1));
+
+  font-size: var(--altum-form-helper-size, var(--altum-g-font-size-xs));
+  line-height: var(--altum-form-helper-line-height, var(--altum-g-line-height-xs));
+}
+
+.error {
+  display: block;
+
+  margin-top: var(--altum-field-message-gap, var(--altum-g-space-1));
+  margin-left: var(--altum-form-helper-indent, var(--altum-g-space-1));
+
+  font-size: var(--altum-form-helper-size, var(--altum-g-font-size-xs));
+  line-height: var(--altum-form-helper-line-height, var(--altum-g-line-height-xs));
+
+  color: var(--altum-color-ink-danger);
+}
+
+.hint {
+  color: var(--altum-color-ink-muted);
+}
+
+.success {
+  color: var(--altum-color-status-success-strong, var(--altum-color-status-success));
+}

@@ -1,0 +1,272 @@
+.calendar {
+  --altum-calendar-width: 280px;
+
+  box-sizing: border-box;
+
+  width: var(--altum-calendar-width);
+  max-width: 100%;
+
+  font-family: var(--altum-g-font-family-ui);
+  user-select: none;
+
+  color: var(--altum-color-input-text);
+
+  & .calendarHeader {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: var(--altum-g-space-3);
+
+    font-size: var(--altum-g-font-size-sm);
+    font-weight: var(--altum-g-font-weight-semibold);
+
+    color: var(--altum-color-ink-default);
+  }
+
+  & .calBtn {
+    display: inline-flex;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: var(--altum-g-space-1);
+
+    border: none;
+    border-radius: var(--altum-g-radius-sm);
+
+    font-weight: var(--altum-g-font-weight-bold);
+    line-height: 0;
+
+    color: var(--altum-color-muted);
+    background-color: transparent;
+
+    cursor: pointer;
+
+    transition: var(--altum-transition-smooth);
+    &:hover:not(:disabled) {
+      background-color: var(--altum-color-option-hover);
+    }
+
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: var(--altum-focus-ring-offset);
+    }
+  }
+
+  & .calendarTitle {
+    font-size: var(--altum-g-font-size-base);
+  }
+
+  & .calendarTitleSplit {
+    display: inline-flex;
+
+    align-items: center;
+    gap: var(--altum-g-space-1);
+  }
+
+  & .calendarTitleButton {
+    margin: 0;
+    padding: var(--altum-control-inset) var(--altum-g-space-1);
+
+    border: none;
+    border-radius: var(--altum-g-radius-sm);
+
+    font: inherit;
+    font-size: var(--altum-g-font-size-base);
+    font-weight: var(--altum-g-font-weight-semibold);
+
+    color: var(--altum-color-ink-default);
+    background: none;
+
+    cursor: pointer;
+
+    transition: var(--altum-transition-smooth);
+    &:hover:not(:disabled) {
+      background-color: var(--altum-color-option-hover);
+    }
+
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: var(--altum-focus-ring-offset);
+    }
+  }
+
+  & .calendarBody {
+    display: flex;
+
+    flex-direction: column;
+  }
+
+  & .calendarWeekdays {
+    display: grid;
+
+    grid-template-columns: repeat(7, 1fr);
+
+    margin-bottom: var(--altum-g-space-2);
+
+    font-size: var(--altum-g-font-size-xs);
+    text-align: center;
+
+    color: var(--altum-color-muted);
+  }
+
+  & .calendarDays {
+    display: grid;
+
+    gap: var(--altum-g-space-1);
+    grid-template-columns: repeat(7, 1fr);
+
+    text-align: center;
+  }
+
+  & .calendarPeriodGrid {
+    display: grid;
+
+    align-content: stretch;
+    gap: var(--altum-g-space-1);
+
+    min-height: calc(var(--altum-control-height-sm) * 6);
+
+    text-align: center;
+  }
+
+  & .calendarMonths {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  & .calendarYears {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  & .periodCell {
+    width: 100%;
+
+    padding: var(--altum-g-space-2) var(--altum-g-space-1);
+
+    border: none;
+    border-radius: var(--altum-g-radius-sm);
+
+    font-family: inherit;
+    font-size: var(--altum-g-font-size-2xs);
+    font-weight: var(--altum-g-font-weight-medium, 500);
+
+    color: var(--altum-color-input-text);
+    background: none;
+
+    cursor: pointer;
+
+    transition: var(--altum-transition-smooth);
+    &:hover:not(:disabled) {
+      background-color: var(--altum-color-option-hover);
+    }
+
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: -2px;
+    }
+  }
+
+  & .dayCell {
+    width: 100%;
+
+    padding: var(--altum-g-space-1) 0;
+
+    border: none;
+    border-radius: var(--altum-g-radius-sm);
+
+    font-family: inherit;
+    font-size: var(--altum-g-font-size-2xs);
+
+    color: var(--altum-color-input-text);
+    background: none;
+
+    cursor: pointer;
+
+    transition: var(--altum-transition-smooth);
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: -2px;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: var(--altum-color-option-hover);
+    }
+  }
+
+  & .daySelected {
+    color: var(--altum-color-brand-text);
+    /* Локально, не composes fillPrimary: иначе `background: none` у `.dayCell`
+     / reset из mixins перебивает фон в CSS Modules. */
+    background-color: var(--altum-color-brand);
+  }
+
+  & .dayInRange {
+    border-radius: 0;
+
+    background-color: color-mix(in srgb, var(--altum-color-brand) 16%, transparent);
+  }
+
+  & .dayRangeStart {
+    border-radius: var(--altum-g-radius-sm) 0 0 var(--altum-g-radius-sm);
+    &.dayRangeEnd {
+      border-radius: var(--altum-g-radius-sm);
+    }
+  }
+
+  & .dayRangeEnd {
+    border-radius: 0 var(--altum-g-radius-sm) var(--altum-g-radius-sm) 0;
+  }
+
+  & .dayEmpty {
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .calendar {
+    width: 100%;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.dayToday:not(.daySelected) {
+  box-shadow: inset 0 0 0 1px var(--altum-color-brand);
+}
+
+

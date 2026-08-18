@@ -1,0 +1,42 @@
+.viewport {
+  position: relative;
+
+  box-sizing: border-box;
+  overflow: auto;
+  overscroll-behavior: contain;
+
+  width: 100%;
+}
+
+.external {
+  position: relative;
+
+  box-sizing: border-box;
+  overflow: visible;
+
+  width: 100%;
+}
+
+.spacer {
+  position: relative;
+
+  box-sizing: border-box;
+
+  width: 100%;
+
+  pointer-events: none;
+}
+
+.item {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  box-sizing: border-box;
+
+  width: 100%;
+
+  pointer-events: auto;
+
+  will-change: transform;
+}

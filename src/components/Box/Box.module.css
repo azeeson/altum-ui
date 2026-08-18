@@ -1,0 +1,385 @@
+.root {
+  --altum-box-border-color: var(--altum-color-border);
+  box-sizing: border-box;
+
+  border: 1px solid transparent;
+  border-style: solid;
+
+  color: var(--altum-color-input-text);
+  box-shadow: none;
+
+  /* --- Варианты заливки --- */
+
+  &.outlined,
+  &.elevated {
+    --altum-box-border-color: var(--altum-color-border);
+    border-radius: var(--altum-g-radius);
+
+    background-color: var(--altum-color-surface);
+  }
+
+  &.floating {
+    --altum-box-border-color: var(--altum-color-dropdown-border);
+    border-radius: var(--altum-g-radius);
+
+    color: var(--altum-color-fill-floating-fg);
+    background-color: var(--altum-color-fill-floating-bg);
+  }
+
+  &.tinted {
+    --altum-box-border-color: var(--altum-color-brand-tint-border);
+    border-radius: var(--altum-g-radius);
+
+    color: var(--altum-color-brand-tint-text);
+    background-color: var(--altum-color-brand-tint);
+  }
+
+  &.secondary {
+    --altum-box-border-color: var(--altum-color-border);
+    border-radius: var(--altum-g-radius);
+
+    color: var(--altum-color-text-secondary);
+    background-color: color-mix(in srgb, var(--altum-color-text-secondary) 10%, var(--altum-color-surface));
+  }
+
+  /* Приглушённая заливка (`--altum-color-surface-active`) — входящие сообщения, мягкие панели */
+
+  &.muted {
+    --altum-box-border-color: var(--altum-color-border);
+    border-radius: var(--altum-g-radius);
+
+    color: var(--altum-color-input-text);
+    background-color: var(--altum-color-surface-active);
+  }
+
+  &.glass {
+    --altum-box-border-color: color-mix(in srgb, var(--altum-color-border) 55%, transparent);
+    border-radius: var(--altum-g-radius);
+
+    color: var(--altum-color-input-text);
+    background-color: color-mix(in srgb, var(--altum-color-surface) 62%, transparent);
+    -webkit-backdrop-filter: blur(var(--altum-backdrop-blur, 12px));
+    backdrop-filter: blur(var(--altum-backdrop-blur, 12px));
+  }
+
+  /* Полупрозрачная поверхность на затемнённом scrim (медиа, crop stage, lightbox). */
+
+  &.overlay {
+    --altum-box-border-color: var(--altum-overlay-content-border);
+    border-radius: var(--altum-g-radius);
+
+    color: var(--altum-overlay-on-scrim);
+    background-color: var(--altum-overlay-content-bg);
+  }
+
+  &.ghost {
+    --altum-box-border-color: var(--altum-color-border);
+    border-radius: var(--altum-g-radius);
+
+    background-color: transparent;
+  }
+
+  &.plain {
+    --altum-box-border-color: transparent;
+    border: none;
+    border-radius: 0;
+
+    background-color: transparent;
+    &.bordered {
+      border-width: 1px;
+      border-color: var(--altum-box-border-color);
+    }
+  }
+}
+
+/*
+ * Карты chrome элемента — потомки наследуют адаптированные --altum-field-* / --altum-color-button-* / …
+ * Мягкий подъём рамки (~8–10%) совпадает с эталоном TextField (не каркас).
+ */
+
+.outlined,
+.elevated,
+.muted,
+.glass {
+  --altum-color-field-bg: var(--altum-color-upload-bg);
+  --altum-color-field-border: var(--altum-box-border-color);
+
+  --altum-color-button-secondary-bg: var(--altum-color-upload-bg);
+  --altum-color-button-secondary-bg-hover: color-mix(in srgb, var(--altum-color-text-secondary) 10%, var(--altum-color-upload-bg));
+  --altum-color-button-secondary-bg-active: color-mix(in srgb, var(--altum-color-text-secondary) 16%, var(--altum-color-upload-bg));
+  --altum-color-button-secondary-border: color-mix(in srgb, var(--altum-color-input-text) 10%, var(--altum-color-button-border-secondary));
+
+  --altum-color-button-ghost-hover-bg: color-mix(in srgb, var(--altum-color-input-text) 8%, transparent);
+  --altum-color-button-ghost-active-bg: color-mix(in srgb, var(--altum-color-input-text) 12%, transparent);
+  --altum-color-button-ghost-text-hover: var(--altum-color-input-text);
+
+  --altum-color-chip-secondary-bg: var(--altum-color-upload-bg);
+  --altum-color-chip-secondary-border: color-mix(in srgb, var(--altum-color-input-text) 10%, var(--altum-color-border));
+  --altum-color-chip-secondary-bg-hover: color-mix(in srgb, var(--altum-color-text-secondary) 10%, var(--altum-color-upload-bg));
+  --altum-color-chip-secondary-border-hover: color-mix(in srgb, var(--altum-color-input-text) 14%, var(--altum-color-border));
+
+  --altum-color-segmented-secondary-track-bg: var(--altum-color-button-secondary-bg);
+  --altum-color-segmented-secondary-track-border: var(--altum-color-button-secondary-border);
+  --altum-color-segmented-secondary-slider-bg: color-mix(in srgb, var(--altum-color-text-secondary) 12%, var(--altum-color-button-secondary-bg));
+  --altum-color-segmented-ghost-track-border: var(--altum-color-button-secondary-border);
+  --altum-color-segmented-ghost-slider-bg: var(--altum-color-button-ghost-active-bg);
+
+  --altum-color-panel-bg: var(--altum-color-upload-bg);
+  --altum-color-panel-border: color-mix(in srgb, var(--altum-color-input-text) 10%, var(--altum-color-border));
+  --altum-color-panel-bg-hover: color-mix(in srgb, var(--altum-color-text-secondary) 10%, var(--altum-color-upload-bg));
+
+  --altum-color-control-bg: var(--altum-color-upload-bg);
+  --altum-color-control-border: color-mix(in srgb, var(--altum-color-input-text) 10%, var(--altum-color-button-border-secondary));
+
+  --altum-color-option-hover: color-mix(in srgb, var(--altum-color-input-text) 8%, transparent);
+}
+
+.tinted {
+  --altum-color-field-bg: var(--altum-color-surface);
+  --altum-color-field-border: var(--altum-box-border-color);
+
+  --altum-color-button-secondary-bg: var(--altum-color-surface);
+  --altum-color-button-secondary-bg-hover: color-mix(in srgb, var(--altum-color-text-secondary) 10%, var(--altum-color-surface));
+  --altum-color-button-secondary-bg-active: color-mix(in srgb, var(--altum-color-text-secondary) 16%, var(--altum-color-surface));
+  --altum-color-button-secondary-border: color-mix(in srgb, var(--altum-color-input-text) 8%, var(--altum-color-button-border-secondary));
+
+  --altum-color-button-tinted-bg: var(--altum-color-surface);
+  --altum-color-button-tinted-bg-hover: var(--altum-color-surface-hover);
+  --altum-color-button-tinted-bg-active: var(--altum-color-surface-active);
+  --altum-color-button-tinted-border: var(--altum-color-border);
+
+  --altum-color-button-ghost-hover-bg: color-mix(in srgb, var(--altum-color-input-text) 8%, transparent);
+  --altum-color-button-ghost-active-bg: color-mix(in srgb, var(--altum-color-input-text) 12%, transparent);
+  --altum-color-button-ghost-text-hover: var(--altum-color-input-text);
+
+  --altum-color-chip-secondary-bg: var(--altum-color-surface);
+  --altum-color-chip-secondary-border: color-mix(in srgb, var(--altum-color-input-text) 8%, var(--altum-color-border));
+  --altum-color-chip-secondary-bg-hover: var(--altum-color-surface-hover);
+  --altum-color-chip-secondary-border-hover: var(--altum-color-border);
+
+  --altum-color-chip-tinted-bg: var(--altum-color-surface);
+  --altum-color-chip-tinted-border: var(--altum-color-border);
+  --altum-color-chip-tinted-bg-hover: var(--altum-color-surface-hover);
+  --altum-color-chip-tinted-border-hover: var(--altum-color-border);
+
+  --altum-color-segmented-secondary-track-bg: var(--altum-color-button-secondary-bg);
+  --altum-color-segmented-secondary-track-border: var(--altum-color-button-secondary-border);
+  --altum-color-segmented-secondary-slider-bg: color-mix(in srgb, var(--altum-color-text-secondary) 12%, var(--altum-color-button-secondary-bg));
+  --altum-color-segmented-tinted-track-bg: var(--altum-color-button-tinted-bg);
+  --altum-color-segmented-tinted-track-border: var(--altum-color-button-tinted-border);
+  --altum-color-segmented-tinted-slider-bg: var(--altum-color-button-secondary-bg);
+  --altum-color-segmented-ghost-track-border: var(--altum-color-button-secondary-border);
+  --altum-color-segmented-ghost-slider-bg: var(--altum-color-button-ghost-active-bg);
+
+  --altum-color-panel-bg: var(--altum-color-surface);
+  --altum-color-panel-border: color-mix(in srgb, var(--altum-color-input-text) 8%, var(--altum-color-border));
+  --altum-color-panel-bg-hover: var(--altum-color-surface-hover);
+
+  --altum-color-control-bg: var(--altum-color-surface);
+  --altum-color-control-border: color-mix(in srgb, var(--altum-color-input-text) 8%, var(--altum-color-button-border-secondary));
+
+  --altum-color-option-hover: color-mix(in srgb, var(--altum-color-input-text) 8%, transparent);
+
+  --altum-color-type: var(--altum-color-brand-tint-text);
+  --altum-color-type-secondary: color-mix(in srgb, var(--altum-color-brand-tint-text) 78%, transparent);
+  --altum-color-type-tertiary: color-mix(in srgb, var(--altum-color-brand-tint-text) 65%, transparent);
+  --altum-color-type-muted: color-mix(in srgb, var(--altum-color-brand-tint-text) 65%, transparent);
+  --altum-color-type-disabled: color-mix(in srgb, var(--altum-color-brand-tint-text) 45%, transparent);
+
+  --altum-color-link-color: var(--altum-color-brand-tint-text);
+  --altum-color-link-color-hover: var(--altum-color-brand-active);
+  --altum-color-link-secondary: color-mix(in srgb, var(--altum-color-brand-tint-text) 78%, transparent);
+  --altum-color-link-secondary-hover: var(--altum-color-brand-tint-text);
+  --altum-color-link-muted: color-mix(in srgb, var(--altum-color-brand-tint-text) 65%, transparent);
+  --altum-color-link-muted-hover: var(--altum-color-brand-tint-text);
+  --altum-color-link-focus-ring: var(--altum-color-brand-tint-text);
+}
+
+.secondary {
+  --altum-color-field-bg: var(--altum-color-upload-bg);
+  --altum-color-field-border: color-mix(in srgb, var(--altum-color-input-text) 10%, var(--altum-color-input-border));
+
+  --altum-color-button-secondary-bg: color-mix(in srgb, var(--altum-color-text-secondary) 22%, var(--altum-color-surface));
+  --altum-color-button-secondary-bg-hover: color-mix(in srgb, var(--altum-color-text-secondary) 32%, var(--altum-color-surface));
+  --altum-color-button-secondary-bg-active: color-mix(in srgb, var(--altum-color-text-secondary) 40%, var(--altum-color-surface));
+  --altum-color-button-secondary-border: color-mix(in srgb, var(--altum-color-text-secondary) 32%, var(--altum-color-border));
+  --altum-color-button-secondary-text: var(--altum-color-input-text);
+
+  --altum-color-button-ghost-hover-bg: color-mix(in srgb, var(--altum-color-input-text) 8%, transparent);
+  --altum-color-button-ghost-active-bg: color-mix(in srgb, var(--altum-color-input-text) 12%, transparent);
+  --altum-color-button-ghost-text-hover: var(--altum-color-input-text);
+
+  --altum-color-chip-secondary-bg: color-mix(in srgb, var(--altum-color-text-secondary) 22%, var(--altum-color-surface));
+  --altum-color-chip-secondary-border: color-mix(in srgb, var(--altum-color-text-secondary) 32%, var(--altum-color-border));
+  --altum-color-chip-secondary-text: var(--altum-color-input-text);
+  --altum-color-chip-secondary-bg-hover: color-mix(in srgb, var(--altum-color-text-secondary) 32%, var(--altum-color-surface));
+  --altum-color-chip-secondary-border-hover: color-mix(in srgb, var(--altum-color-text-secondary) 42%, var(--altum-color-border));
+
+  --altum-color-segmented-secondary-track-bg: var(--altum-color-button-secondary-bg);
+  --altum-color-segmented-secondary-track-border: var(--altum-color-button-secondary-border);
+  --altum-color-segmented-secondary-slider-bg: color-mix(in srgb, var(--altum-color-text-secondary) 12%, var(--altum-color-button-secondary-bg));
+  --altum-color-segmented-ghost-track-border: var(--altum-color-button-secondary-border);
+  --altum-color-segmented-ghost-slider-bg: var(--altum-color-button-ghost-active-bg);
+
+  --altum-color-panel-bg: var(--altum-color-upload-bg);
+  --altum-color-panel-border: color-mix(in srgb, var(--altum-color-input-text) 10%, var(--altum-color-border));
+  --altum-color-panel-bg-hover: color-mix(in srgb, var(--altum-color-text-secondary) 10%, var(--altum-color-upload-bg));
+
+  --altum-color-control-bg: var(--altum-color-upload-bg);
+  --altum-color-control-border: color-mix(in srgb, var(--altum-color-input-text) 10%, var(--altum-color-button-border-secondary));
+
+  --altum-color-option-hover: color-mix(in srgb, var(--altum-color-input-text) 8%, transparent);
+}
+
+.overlay {
+  --altum-color-field-bg: var(--altum-overlay-control-bg);
+  --altum-color-field-border: var(--altum-overlay-control-border);
+  --altum-color-field-text: var(--altum-overlay-on-scrim);
+  --altum-field-label: var(--altum-overlay-text-muted);
+  --altum-color-border-hover: var(--altum-overlay-on-scrim);
+
+  --altum-color-button-secondary-bg: var(--altum-overlay-control-bg);
+  --altum-color-button-secondary-bg-hover: var(--altum-overlay-control-hover);
+  --altum-color-button-secondary-bg-active: var(--altum-overlay-control-hover);
+  --altum-color-button-secondary-border: var(--altum-overlay-control-border);
+  --altum-color-button-secondary-text: var(--altum-overlay-on-scrim);
+
+  --altum-color-button-tinted-bg: var(--altum-overlay-control-bg);
+  --altum-color-button-tinted-bg-hover: var(--altum-overlay-control-hover);
+  --altum-color-button-tinted-bg-active: var(--altum-overlay-control-hover);
+  --altum-color-button-tinted-border: var(--altum-overlay-control-border);
+  --altum-color-button-tinted-text: var(--altum-overlay-on-scrim);
+
+  --altum-color-button-ghost-hover-bg: var(--altum-overlay-control-hover);
+  --altum-color-button-ghost-active-bg: var(--altum-overlay-control-hover);
+  --altum-color-button-ghost-text: var(--altum-overlay-on-scrim);
+  --altum-color-button-ghost-text-hover: var(--altum-overlay-on-scrim);
+
+  --altum-color-chip-secondary-bg: var(--altum-overlay-control-bg);
+  --altum-color-chip-secondary-border: var(--altum-overlay-control-border);
+  --altum-color-chip-secondary-text: var(--altum-overlay-on-scrim);
+  --altum-color-chip-secondary-bg-hover: var(--altum-overlay-control-hover);
+  --altum-color-chip-secondary-border-hover: var(--altum-overlay-control-border);
+
+  --altum-color-chip-tinted-bg: var(--altum-overlay-control-bg);
+  --altum-color-chip-tinted-border: var(--altum-overlay-control-border);
+  --altum-color-chip-tinted-text: var(--altum-overlay-on-scrim);
+  --altum-color-chip-tinted-bg-hover: var(--altum-overlay-control-hover);
+  --altum-color-chip-tinted-border-hover: var(--altum-overlay-control-border);
+
+  --altum-color-segmented-secondary-track-bg: var(--altum-color-button-secondary-bg);
+  --altum-color-segmented-secondary-track-border: var(--altum-color-button-secondary-border);
+  --altum-color-segmented-secondary-slider-bg: var(--altum-color-button-secondary-bg-hover);
+  --altum-color-segmented-tinted-track-bg: var(--altum-color-button-tinted-bg);
+  --altum-color-segmented-tinted-track-border: var(--altum-color-button-tinted-border);
+  --altum-color-segmented-tinted-slider-bg: var(--altum-color-button-tinted-bg-hover);
+  --altum-color-segmented-ghost-track-border: var(--altum-color-button-secondary-border);
+  --altum-color-segmented-ghost-slider-bg: var(--altum-color-button-ghost-active-bg);
+
+  --altum-color-panel-bg: var(--altum-overlay-control-bg);
+  --altum-color-panel-border: var(--altum-overlay-control-border);
+  --altum-color-panel-bg-hover: var(--altum-overlay-control-hover);
+
+  --altum-color-control-bg: var(--altum-overlay-control-bg);
+  --altum-color-control-border: var(--altum-overlay-control-border);
+
+  --altum-color-option-hover: var(--altum-overlay-control-hover);
+  --altum-color-upload-bg: var(--altum-overlay-control-bg);
+  --altum-color-upload-border: var(--altum-overlay-control-border);
+
+  --altum-color-type: var(--altum-overlay-on-scrim);
+  --altum-color-type-secondary: var(--altum-overlay-text-muted);
+  --altum-color-type-tertiary: var(--altum-overlay-text-muted);
+  --altum-color-type-muted: var(--altum-overlay-text-muted);
+  --altum-color-type-disabled: color-mix(in srgb, var(--altum-overlay-on-scrim) 45%, transparent);
+
+  --altum-color-link-color: var(--altum-overlay-on-scrim);
+  --altum-color-link-color-hover: color-mix(in srgb, var(--altum-overlay-on-scrim) 82%, transparent);
+  --altum-color-link-secondary: var(--altum-overlay-text-muted);
+  --altum-color-link-secondary-hover: var(--altum-overlay-on-scrim);
+  --altum-color-link-muted: color-mix(in srgb, var(--altum-overlay-on-scrim) 55%, transparent);
+  --altum-color-link-muted-hover: var(--altum-overlay-text-muted);
+  --altum-color-link-danger: color-mix(in srgb, var(--altum-color-status-error) 70%, var(--altum-overlay-on-scrim));
+  --altum-color-link-danger-hover: color-mix(in srgb, var(--altum-color-status-error) 55%, var(--altum-overlay-on-scrim));
+  --altum-color-link-focus-ring: var(--altum-overlay-on-scrim);
+}
+
+/* --- Рамка --- */
+
+.bordered {
+  border-color: var(--altum-box-border-color);
+}
+
+.borderNone {
+  border-color: transparent;
+}
+
+.borderSolid {
+  border-style: solid;
+}
+
+.borderDashed {
+  border-style: dashed;
+}
+
+/* --- Тень --- */
+
+.shadowNone {
+  box-shadow: none;
+}
+
+.shadowSm {
+  box-shadow: var(--altum-shadow-surface);
+}
+
+.shadowMd {
+  box-shadow: var(--altum-shadow-dropdown);
+}
+
+.shadowLg {
+  box-shadow: var(--altum-shadow-lg);
+}
+
+/* --- Радиус --- */
+
+.radiusNone {
+  border-radius: 0;
+}
+
+.radiusSm {
+  border-radius: var(--altum-g-radius-sm);
+}
+
+.radiusMd {
+  border-radius: var(--altum-g-radius);
+}
+
+.radiusLg {
+  border-radius: var(--altum-g-radius-lg, 12px);
+}
+
+/* --- Отступы --- */
+
+.paddingNone {
+  padding: 0;
+}
+
+.paddingXs {
+  padding: var(--altum-g-space-1);
+}
+
+.paddingSm {
+  padding: var(--altum-g-space-2);
+}
+
+.paddingMd {
+  padding: var(--altum-g-space-3);
+}
+
+.paddingLg {
+  padding: var(--altum-g-space-4);
+}
+
+.paddingXl {
+  padding: var(--altum-g-space-6);
+}

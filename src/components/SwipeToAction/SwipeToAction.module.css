@@ -1,0 +1,204 @@
+/* Touch-обёртка: без chrome строки. Высота = высота children. */
+
+
+
+.root {
+  position: relative;
+
+  overflow: hidden;
+
+  width: 100%;
+  min-width: 0;
+
+  -webkit-user-select: none;
+  user-select: none;
+
+  touch-action: pan-y;
+
+  & .passthrough {
+    display: contents;
+  }
+
+  & .content {
+    position: relative;
+    z-index: 2;
+
+    box-sizing: border-box;
+
+    width: 100%;
+    min-width: 0;
+
+    background: transparent;
+
+    touch-action: pan-y;
+
+    will-change: transform;
+  }
+
+  & .actionContainer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+
+    display: flex;
+    visibility: hidden;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    flex-direction: row;
+    align-items: stretch;
+
+    width: 0;
+  }
+
+  & .actionContainerLeft {
+    left: 0;
+
+    justify-content: flex-start;
+    & .actionButton:first-child {
+      border-top-left-radius: var(--altum-g-radius);
+      border-bottom-left-radius: var(--altum-g-radius);
+    }
+
+    & .actionButton:last-child {
+      border-top-right-radius: var(--altum-g-radius);
+      border-bottom-right-radius: var(--altum-g-radius);
+    }
+  }
+
+  & .actionContainerRight {
+    right: 0;
+
+    justify-content: flex-end;
+    & .actionButton:first-child {
+      border-top-left-radius: var(--altum-g-radius);
+      border-bottom-left-radius: var(--altum-g-radius);
+    }
+
+    & .actionButton:last-child {
+      border-top-right-radius: var(--altum-g-radius);
+      border-bottom-right-radius: var(--altum-g-radius);
+    }
+  }
+
+  & .actionButton {
+    display: inline-flex;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+
+    min-width: var(--altum-swipe-action-width, 76px);
+    max-width: var(--altum-swipe-action-width, 76px);
+    height: 100%;
+
+    margin: 0;
+    padding: var(--altum-g-space-1) var(--altum-g-space-2);
+
+    border: none;
+    border-radius: 0;
+
+    font-family: inherit;
+    font-weight: var(--altum-g-font-weight-medium);
+
+    color: var(--altum-overlay-on-scrim);
+
+    cursor: pointer;
+
+    transition:
+      max-width 0.28s cubic-bezier(0.32, 0.72, 0, 1),
+      min-width 0.28s cubic-bezier(0.32, 0.72, 0, 1),
+      flex 0.28s cubic-bezier(0.32, 0.72, 0, 1),
+      opacity 0.22s ease,
+      padding 0.22s ease;
+  }
+
+  & .actionButtonExpanded {
+    flex: 1 1 auto !important;
+
+    min-width: 100% !important;
+    max-width: 100% !important;
+
+    border-radius: var(--altum-g-radius) !important;
+    & .actionIcon {
+      transform: scale(1.15);
+    }
+  }
+
+  & .actionButtonCollapsed {
+    flex: 0 0 0 !important;
+
+    min-width: 0 !important;
+    max-width: 0 !important;
+
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+
+    opacity: 0;
+
+    pointer-events: none;
+  }
+
+  & .actionIcon {
+    display: inline-flex;
+
+    justify-content: center;
+    align-items: center;
+
+    line-height: 0;
+
+    transition: transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+
+  & .actionLabel {
+    overflow: hidden;
+
+    max-width: 100%;
+
+    font-size: var(--altum-g-font-size-xs);
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    opacity: 0.95;
+  }
+}
+
+
+
+/* --- Действия (стиль iOS notification / Mail) --- */
+
+
+
+
+
+
+
+
+
+/* Скругление группы — как у стека действий iOS */
+
+.actionContainerLeft .actionButton:only-child,
+.actionContainerRight .actionButton:only-child {
+  border-radius: var(--altum-g-radius);
+}
+
+
+
+
+
+
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  .actionButton,
+  .actionIcon {
+    transition: none;
+  }
+}

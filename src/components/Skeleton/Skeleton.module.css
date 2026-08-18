@@ -1,0 +1,99 @@
+.skeleton {
+  box-sizing: border-box;
+
+  width: 100%;
+
+  border-radius: var(--altum-g-radius-sm);
+
+  background: linear-gradient(90deg, var(--altum-color-panel-border) 25%, var(--altum-color-option-hover) 50%, var(--altum-color-panel-border) 75%);
+  background-size: 200% 100%;
+
+  animation: skeletonShimmer 1.5s infinite;
+}
+
+@keyframes skeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    background: var(--altum-color-panel-border);
+
+    animation: none;
+  }
+}
+
+.presetStack {
+  display: flex;
+
+  flex-direction: column;
+  gap: var(--altum-g-space-2);
+
+  width: 100%;
+
+  & .textLine {
+    max-width: 100%;
+  }
+}
+
+.card {
+  display: flex;
+  box-sizing: border-box;
+
+  align-items: flex-start;
+  gap: var(--altum-g-space-3);
+
+  padding: var(--altum-g-space-4);
+
+  border: 1px solid var(--altum-color-panel-border);
+  border-radius: var(--altum-g-radius-md);
+
+  background-color: var(--altum-color-panel-bg);
+
+  & .cardBody {
+    display: flex;
+
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--altum-g-space-2);
+
+    min-width: 0;
+  }
+}
+
+.table {
+  overflow: hidden;
+
+  width: 100%;
+
+  border: 1px solid var(--altum-color-panel-border);
+  border-radius: var(--altum-g-radius-md);
+
+  background-color: var(--altum-color-panel-bg);
+
+  & .tableHeader,
+  & .tableRow {
+    display: grid;
+
+    align-items: center;
+    gap: var(--altum-g-space-3);
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+
+    padding: var(--altum-g-space-3) var(--altum-g-space-4);
+  }
+
+  & .tableHeader {
+    border-bottom: 1px solid var(--altum-color-panel-border);
+
+    background-color: var(--altum-color-option-hover);
+  }
+
+  & .tableRow + .tableRow {
+    border-top: 1px solid var(--altum-color-panel-border);
+  }
+}

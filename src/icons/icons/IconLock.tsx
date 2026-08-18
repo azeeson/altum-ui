@@ -1,0 +1,28 @@
+import React from 'react';
+
+interface IconProps extends React.SVGProps<SVGSVGElement> {
+	/** Размер в px (или любой css‑единица) */
+	size?: number | string;
+	/** Цвет заливки */
+	color?: string;
+}
+
+export const IconLock: React.FC<IconProps> = ({
+	size = 24,
+	color = 'currentColor',
+	...props
+}) => (
+	<svg
+		width={size}
+		height={size}
+		fill={color}
+		viewBox='0 0 92 92'
+		{...props}
+	>
+		<path
+			id='XMLID_1385_'
+			d='M73,33h-3v-6.9C70,11.3,60,1,46,1C32,1,22,11.3,22,26.1V33h-3c-2.2,0-4,1.8-4,4v50c0,2.2,1.8,4,4,4h54
+	c2.2,0,4-1.8,4-4V37C77,34.8,75.2,33,73,33z M30,26.1C30,15.9,36.6,9,46,9c9.4,0,16,6.9,16,17.1V33H30V26.1z M69,83H23V41h46V83z'
+		/>
+	</svg>
+);

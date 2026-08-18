@@ -1,0 +1,114 @@
+.accordion {
+  display: flex;
+
+  flex-direction: column;
+
+  font-family: inherit;
+
+  &.bordered {
+    gap: var(--altum-g-space-2);
+  }
+
+  &.flush {
+    gap: 0;
+
+    & .accordionItem {
+      border-bottom: 1px solid var(--altum-color-panel-border);
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    & .accordionContent {
+      background: transparent;
+    }
+  }
+
+  & .accordionItem {
+    overflow: hidden;
+
+    min-width: 0;
+
+    &.disabled {
+      opacity: var(--altum-opacity-disabled);
+    }
+  }
+
+  & .accordionHeading {
+    margin: 0;
+  }
+
+  & .accordionTrigger {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    width: 100%;
+
+    padding: var(--altum-g-space-3) var(--altum-g-space-4);
+
+    border: none;
+
+    font-size: var(--altum-g-font-size-base);
+    font-weight: var(--altum-g-font-weight-semibold);
+    text-align: left;
+
+    color: var(--altum-color-ink-default);
+    background-color: transparent;
+
+    cursor: pointer;
+
+    transition: var(--altum-transition-smooth);
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: -2px;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: var(--altum-color-option-hover);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  & .accordionIcon {
+    flex-shrink: 0;
+
+    width: 1em;
+    height: 1em;
+
+    color: var(--altum-field-label);
+
+    transition: var(--altum-transition-smooth);
+
+    &.open {
+      transform: rotate(180deg);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  & .accordionContent {
+    background-color: transparent;
+  }
+
+  & .contentInner {
+    padding: var(--altum-g-space-3) var(--altum-g-space-4);
+
+    font-size: var(--altum-g-font-size-sm);
+    line-height: 1.5;
+
+    color: var(--altum-color-text-secondary);
+  }
+}

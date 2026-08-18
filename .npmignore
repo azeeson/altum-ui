@@ -1,0 +1,23 @@
+# Source and tooling stay in git; `package.json` `files` is the publish whitelist.
+src/
+.storybook/
+.cursor/
+.cursorrules
+.github/
+scripts/
+tests/
+ambient/
+design-system/
+.vscode/
+dist-storybook/
+
+rollup.config.mjs
+tsconfig.json
+tsconfig.types.json
+eslint.config.js
+stylelint.config.js
+playwright.config.ts
+playwright-report/
+test-results/
+*.tgz
+*.log

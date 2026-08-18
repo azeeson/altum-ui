@@ -1,0 +1,93 @@
+/**
+ * Chrome триггера dropdown-поля (Select).
+ * Поверхность (border/bg/padding) — `FieldBase.module.css`; здесь раскладка trigger.
+ *
+ * Не используйте resetButton-подобные bags — у миксина `border: none` / `background-color: transparent`,
+ * и при любом порядке CSS Modules в бандле он перебивает рамку/фон trigger.
+ */
+
+.trigger {
+  position: relative;
+
+  display: block;
+  overflow: hidden;
+
+  height: var(--altum-field-control-height, calc(var(--altum-field-pad-top) + var(--altum-field-pad-bottom) + 1.25em));
+  min-height: var(--altum-field-control-height, calc(var(--altum-field-pad-top) + var(--altum-field-pad-bottom) + 1.25em));
+
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  cursor: pointer;
+  appearance: none;
+
+  & .triggerSizer {
+    display: block;
+    visibility: hidden;
+    overflow: hidden;
+
+    height: 1.25em;
+
+    padding-right: var(--altum-field-padding-end, var(--altum-field-input-size));
+    padding-left: max(0px, calc(var(--altum-field-padding-start) - var(--altum-field-padding-inline)));
+
+    font-weight: var(--altum-g-font-weight-medium);
+    white-space: nowrap;
+
+    pointer-events: none;
+  }
+
+  & .triggerText {
+    position: absolute;
+    top: var(--altum-field-pad-top);
+    right: var(--altum-field-padding-end);
+    bottom: var(--altum-field-pad-bottom);
+    left: var(--altum-field-padding-start);
+
+    display: flex;
+    overflow: hidden;
+
+    align-items: center;
+
+    min-width: 0;
+    min-height: 1.25em;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.placementFlush .triggerText {
+  top: 0;
+  bottom: 0;
+}
+
+.placeholder {
+  color: var(--altum-color-input-placeholder, var(--altum-field-label));
+}
+
+.placementInline .placeholder {
+  color: transparent;
+}
+
+.arrow {
+  flex-shrink: 0;
+
+  color: var(--altum-field-label);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  transition: transform 0.2s ease;
+
+  &.open {
+    transform: rotate(180deg);
+  }
+
+  &.readOnly {
+    opacity: var(--altum-opacity-disabled);
+  }
+}

@@ -1,0 +1,361 @@
+/* —— Modal —— */
+
+.modalRoot {
+  position: fixed;
+  inset: 0;
+  z-index: var(--altum-g-z-modal);
+
+  display: flex;
+
+  align-items: center;
+
+  /* Корень не должен ловить клики во время выхода / закрытия. */
+  pointer-events: none;
+}
+
+.backdropFade {
+  transition: opacity var(--altum-motion-overlay) cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.backdropVisible {
+    opacity: 1;
+
+    pointer-events: auto;
+  }
+
+  &.backdropHidden {
+    opacity: 0;
+
+    pointer-events: none;
+  }
+}
+
+.modalFocusTrap {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+
+  pointer-events: none;
+}
+
+.modalContent {
+  position: relative;
+
+  max-height: 100vh;
+  max-height: 100dvh;
+
+  pointer-events: auto;
+  /* overflow задаёт chrome (Modal / ConfirmDialog), не motion-класс Overlay */
+  transition:
+    opacity var(--altum-motion-overlay) cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.modalContentVisible {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+
+  &.modalContentHidden {
+    opacity: 0;
+
+    transform: translateY(8px);
+  }
+}
+
+/* —— Floating —— */
+
+.floatingRoot {
+  position: fixed;
+  inset: 0;
+  z-index: var(--altum-g-z-modal);
+
+  /* Без backdrop — клики проходят к странице; панель сама pointer-events: auto */
+  pointer-events: none;
+}
+
+.floatingRootBackdrop {
+  /* Клики идут только в backdrop / панель — не в полноэкранный корень на выходе. */
+  pointer-events: none;
+}
+
+.floatingFocusTrap {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+  & > * {
+    pointer-events: auto;
+  }
+}
+
+.floatingContent {
+  position: fixed;
+  z-index: var(--altum-g-z-modal);
+
+  pointer-events: auto;
+
+  transition:
+    opacity var(--altum-motion-overlay) cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.floatingContentVisible {
+    opacity: 1;
+
+    transform: scale(1);
+  }
+
+  &.floatingContentHidden {
+    opacity: 0;
+
+    transform: scale(0.96);
+  }
+}
+
+/* —— Sheet —— */
+
+.sheetRoot {
+  position: fixed;
+  inset: 0;
+  z-index: var(--altum-g-z-overlay);
+
+  pointer-events: none;
+}
+
+/* Не форсировать auto на backdropHidden (общий `> *` перебивал pe:none). */
+
+.sheetRoot .sheetPanel,
+.sheetFocusTrap > * {
+  pointer-events: auto;
+}
+
+.sheetFocusTrap {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+
+  width: 100%;
+  height: 100%;
+
+  pointer-events: none;
+
+  &.sheetTrapBottom {
+    justify-content: center;
+    align-items: flex-end;
+  }
+
+  &.sheetTrapTop {
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  &.sheetTrapLeft {
+    justify-content: flex-start;
+    align-items: stretch;
+  }
+
+  &.sheetTrapRight {
+    justify-content: flex-end;
+    align-items: stretch;
+  }
+}
+
+.sheetPanel {
+  position: fixed;
+  z-index: var(--altum-g-z-overlay);
+  /* overflow задаёт chrome (Sheet), не motion-класс Overlay */
+  box-sizing: border-box;
+
+  pointer-events: auto;
+
+  transition: transform var(--altum-motion-overlay) cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.sheetPanelRaised {
+    position: relative;
+    z-index: 1;
+    &.sheetTop,
+    &.sheetBottom,
+    &.sheetLeft,
+    &.sheetRight {
+      top: auto;
+      right: auto;
+      bottom: auto;
+      left: auto;
+    }
+  }
+
+  &.sheetTop {
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    max-height: 95vh;
+    max-height: 95dvh;
+    &.sheetHidden {
+      transform: translateY(-100%);
+    }
+  }
+
+  &.sheetBottom {
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+    max-height: 95vh;
+    max-height: 95dvh;
+    &.sheetHidden {
+      transform: translateY(100%);
+    }
+  }
+
+  &.sheetLeft {
+    top: 0;
+    left: 0;
+
+    max-width: 95vw;
+    max-width: 95dvw;
+    height: 100%;
+    &.sheetHidden {
+      transform: translateX(-100%);
+    }
+  }
+
+  &.sheetRight {
+    top: 0;
+    right: 0;
+
+    max-width: 95vw;
+    max-width: 95dvw;
+    height: 100%;
+    &.sheetHidden {
+      transform: translateX(100%);
+    }
+  }
+
+  &.sheetVisible {
+    transform: translate(0, 0);
+  }
+}
+
+/* —— Якорь (popover / dropdown) —— */
+
+.anchorLayer {
+  position: fixed;
+  z-index: var(--altum-g-z-dropdown);
+
+  overflow: auto;
+
+  max-width: calc(100vw - var(--altum-g-space-4));
+  max-height: calc(100vh - var(--altum-g-space-4));
+  max-height: calc(100dvh - var(--altum-g-space-4));
+
+  pointer-events: auto;
+
+  /* Подсказки: не обрезать себя; Overlay уже порталится в body. */
+
+  &.anchorTooltip {
+    overflow: visible;
+
+    max-height: none;
+  }
+
+  &.originTop {
+    transform-origin: top center;
+  }
+
+  &.originBottom {
+    transform-origin: bottom center;
+  }
+
+  &.originLeft {
+    transform-origin: center left;
+  }
+
+  &.originRight {
+    transform-origin: center right;
+  }
+
+  &.popoverVisible {
+    opacity: 1;
+
+    transition: opacity var(--altum-motion-overlay) cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &.popoverHidden {
+    opacity: 0;
+
+    transition: opacity var(--altum-motion-overlay) cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+.dropdownLayer {
+  box-sizing: border-box;
+
+  transition:
+    opacity var(--altum-motion-overlay) cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.dropdownVisible {
+    opacity: 1;
+
+    transform: scale(1);
+  }
+
+  &.dropdownHidden.originTop,
+  &.dropdownHidden.originBottom {
+    opacity: 0;
+
+    transform: scaleY(0.85);
+  }
+
+  &.dropdownHidden.originLeft,
+  &.dropdownHidden.originRight {
+    opacity: 0;
+
+    transform: scaleX(0.85);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdropFade,
+  .modalContent,
+  .floatingContent,
+  .sheetPanel,
+  .popoverVisible,
+  .popoverHidden,
+  .dropdownLayer {
+    transition: none;
+  }
+
+  .modalContentHidden {
+    transform: none;
+  }
+
+  .floatingContentHidden {
+    transform: none;
+  }
+
+  .sheetTop.sheetHidden,
+  .sheetBottom.sheetHidden,
+  .sheetLeft.sheetHidden,
+  .sheetRight.sheetHidden {
+    opacity: 0;
+
+    transform: none;
+  }
+
+  .dropdownHidden.originTop,
+  .dropdownHidden.originBottom,
+  .dropdownHidden.originLeft,
+  .dropdownHidden.originRight {
+    transform: none;
+  }
+}
+

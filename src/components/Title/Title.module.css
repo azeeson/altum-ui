@@ -1,0 +1,36 @@
+.title {
+  margin: 0;
+
+  font-family: var(--altum-g-font-family-ui);
+  line-height: 1.25;
+
+  color: var(--altum-color-type);
+
+  &.h1 {
+    font-size: var(--altum-g-font-size-4xl);
+  }
+
+  &.h2 {
+    font-size: var(--altum-g-font-size-3xl);
+  }
+
+  &.h3 {
+    font-size: var(--altum-g-font-size-2xl);
+  }
+
+  &.h4 {
+    font-size: var(--altum-g-font-size-lg);
+  }
+
+  &.normal {
+    font-weight: var(--altum-g-font-weight-normal);
+  }
+
+  &.medium {
+    font-weight: var(--altum-g-font-weight-medium);
+  }
+
+  &.bold {
+    font-weight: var(--altum-g-font-weight-bold);
+  }
+}
