@@ -47,6 +47,7 @@ import {Title} from '../Title/Title';
 import {IconBell} from '../../icons/icons/IconBell';
 import {IconCard} from '../../icons/icons/IconCard';
 import {IconPlus} from '../../icons/icons/IconPlus';
+import {demoImage} from '../../storybook/demoImages';
 import {Story} from '../../storybook/meta';
 import styles from './ScreenLayouts.stories.module.css';
 
@@ -1554,7 +1555,7 @@ export const ProductDetailScreen: Story<Record<string, never>> = {
 				<div className={styles.productHero}>
 					<div className={styles.heroMedia}>
 						<AspectRatio ratio={4 / 3}>
-							<ImageGallery images={['https://picsum.photos/seed/lamp1/800/600', 'https://picsum.photos/seed/lamp2/800/600', 'https://picsum.photos/seed/lamp3/800/600',]}>
+							<ImageGallery images={[demoImage(4), demoImage(5), demoImage(6)]}>
 								<ImageGallery.Viewport>
 									<ImageGallery.Prev />
 									<ImageGallery.Image />

@@ -2,28 +2,8 @@ import type {Meta} from '@storybook/react';
 import React from 'react';
 import {Media, MediaProps} from './Media';
 import {Stack} from '../Layout/Layout';
+import {demoImage, demoThumb} from '../../storybook/demoImages';
 import {componentParameters, story, Story} from '../../storybook/meta';
-
-const landscapeSvg = 'data:image/svg+xml,' + encodeURIComponent(
-	'<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">'
-	+ '<rect width="640" height="360" fill="#4a90d9"/>'
-	+ '<text x="320" y="190" text-anchor="middle" fill="white" font-size="28" font-family="sans-serif">Превью</text>'
-	+ '</svg>',
-);
-
-const containSvg = 'data:image/svg+xml,' + encodeURIComponent(
-	'<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">'
-	+ '<rect width="200" height="200" fill="#e67e22"/>'
-	+ '<circle cx="100" cy="100" r="60" fill="#f1c40f"/>'
-	+ '</svg>',
-);
-
-const posterSvg = 'data:image/svg+xml,' + encodeURIComponent(
-	'<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">'
-	+ '<rect width="640" height="360" fill="#2c3e50"/>'
-	+ '<polygon points="280,140 280,220 360,180" fill="white"/>'
-	+ '</svg>',
-);
 
 export default {
 	title: 'altum/Components/Media',
@@ -50,7 +30,7 @@ export default {
 
 export const Playground: Story<MediaProps> = {
 	args: {
-		src: landscapeSvg,
+		src: demoImage(1),
 		alt: 'Превью изображения',
 		ratio: 16 / 9,
 	},
@@ -59,21 +39,21 @@ export const Playground: Story<MediaProps> = {
 			<Media {...args} />
 		</div>
 	),
-	parameters: story('Изображение через SVG data URL в рамке 16:9.'),
+	parameters: story('Изображение из `.storybook/public/images` в рамке 16:9.'),
 };
 
 export const FitContain: Story<MediaProps> = {
 	render: () => (
 		<Stack gap='md' style={{maxWidth: 320}}>
 			<Media
-				src={containSvg}
-				alt='Квадрат в широкой рамке'
+				src={demoImage(2)}
+				alt='Фото в широкой рамке'
 				ratio={16 / 9}
 				fit='contain'
 			/>
 			<Media
-				src={containSvg}
-				alt='Квадрат с cover'
+				src={demoImage(2)}
+				alt='Фото с cover'
 				ratio={16 / 9}
 				fit='cover'
 			/>
@@ -88,11 +68,11 @@ export const Video: Story<MediaProps> = {
 			<Media
 				as='video'
 				src='https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4'
-				poster={posterSvg}
+				poster={demoThumb(3)}
 				alt='Демо-видео'
 				ratio={16 / 9}
 			/>
 		</div>
 	),
-	parameters: story('Видео с poster (SVG data URL); `controls` выключены.'),
+	parameters: story('Видео с локальным poster; `controls` выключены.'),
 };

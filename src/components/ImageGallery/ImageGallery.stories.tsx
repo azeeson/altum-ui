@@ -2,34 +2,15 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {ImageGallery} from './ImageGallery';
+import {demoGalleryItem, demoImage} from '../../storybook/demoImages';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 const DEMO_IMAGES = [
-	{
-		src: 'https://picsum.photos/seed/gallery1/1200/800',
-		alt: 'Горный пейзаж',
-		thumbnail: 'https://picsum.photos/seed/gallery1/160/120',
-	},
-	{
-		src: 'https://picsum.photos/seed/gallery2/1200/800',
-		alt: 'Лесная тропа',
-		thumbnail: 'https://picsum.photos/seed/gallery2/160/120',
-	},
-	{
-		src: 'https://picsum.photos/seed/gallery3/1200/800',
-		alt: 'Вид на океан',
-		thumbnail: 'https://picsum.photos/seed/gallery3/160/120',
-	},
-	{
-		src: 'https://picsum.photos/seed/gallery4/1200/800',
-		alt: 'Городской горизонт',
-		thumbnail: 'https://picsum.photos/seed/gallery4/160/120',
-	},
-	{
-		src: 'https://picsum.photos/seed/gallery5/1200/800',
-		alt: 'Песчаные дюны',
-		thumbnail: 'https://picsum.photos/seed/gallery5/160/120',
-	},
+	demoGalleryItem(1, 'Горный пейзаж'),
+	demoGalleryItem(2, 'Лесная тропа'),
+	demoGalleryItem(3, 'Вид на океан'),
+	demoGalleryItem(4, 'Городской горизонт'),
+	demoGalleryItem(5, 'Песчаные дюны'),
 ];
 
 export default {
@@ -89,19 +70,12 @@ export const Controlled: Story<Record<string, never>> = {
 };
 
 export const SingleImage: Story<Record<string, never>> = {
-	render: () => (<Gallery images={[
-		{
-			src: 'https://picsum.photos/seed/single/1200/800',
-			alt: 'Одно фото',
-			thumbnail: 'https://picsum.photos/seed/single/160/120'
-		}
-	]}
-	/>),
+	render: () => <Gallery images={[demoGalleryItem(8, 'Одно фото')]} />,
 	parameters: story('Композиция для одного изображения.')
 };
 
 export const StringUrls: Story<Record<string, never>> = {
-	render: () => (<ImageGallery images={['https://picsum.photos/seed/simple1/1000/700', 'https://picsum.photos/seed/simple2/1000/700']}>
+	render: () => (<ImageGallery images={[demoImage(6), demoImage(7)]}>
 		<ImageGallery.Viewport>
 			<ImageGallery.Image />
 		</ImageGallery.Viewport>

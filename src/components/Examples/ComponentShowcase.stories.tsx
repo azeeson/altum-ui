@@ -81,6 +81,7 @@ import {Tooltip} from '../Tooltip/Tooltip';
 import {UploadZone} from '../UploadZone/UploadZone';
 import {IconDocument} from '../../icons/icons/IconDocument';
 import {IconPlus} from '../../icons/icons/IconPlus';
+import {demoImage} from '../../storybook/demoImages';
 import {componentParameters, story, Story} from '../../storybook/meta';
 import styles from './ComponentShowcase.stories.module.css';
 
@@ -1333,14 +1334,14 @@ const ComponentShowcaseDemo = () => {
 							)}
 							<Separator start='md' end='md' />
 							<Media
-								src='https://picsum.photos/seed/altum-media/640/360'
+								src={demoImage(1)}
 								alt='Превью'
 								ratio={16 / 9}
 							/>
 						</div>
 					</div>
 					<div className={styles.galleryWrap}>
-						<ImageGallery images={['https://picsum.photos/seed/altum1/400/240', 'https://picsum.photos/seed/altum2/400/240',]}>
+						<ImageGallery images={[demoImage(2), demoImage(3)]}>
 							<ImageGallery.Viewport>
 								<ImageGallery.Prev />
 								<ImageGallery.Image />
@@ -1485,7 +1486,7 @@ const ComponentShowcaseDemo = () => {
 			<ImageLightbox
 				open={lightboxOpen}
 				onClose={() => setLightboxOpen(false)}
-				images={['https://picsum.photos/seed/altum3/800/500']}
+				images={[demoImage(4)]}
 			/>
 
 			<NotificationContainer

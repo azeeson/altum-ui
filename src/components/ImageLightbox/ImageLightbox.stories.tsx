@@ -2,37 +2,14 @@ import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {ImageLightbox, ImageLightboxProps} from './ImageLightbox';
 import {Button} from '../Button/Button';
+import {demoGalleryItem} from '../../storybook/demoImages';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
-const makeSvgDataUrl = (color: string, label: string) =>
-	`data:image/svg+xml,${encodeURIComponent(
-		`<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
-      <rect width="1400" height="900" fill="${color}"/>
-      <text x="700" y="450" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-family="sans-serif" font-size="48">${label}</text>
-    </svg>`,
-	)}`;
-
 const DEMO_IMAGES = [
-	{
-		src: makeSvgDataUrl('#2563eb', 'Горный пейзаж'),
-		alt: 'Горный пейзаж',
-		thumbnail: makeSvgDataUrl('#2563eb', '1'),
-	},
-	{
-		src: makeSvgDataUrl('#7c3aed', 'Лесная тропа'),
-		alt: 'Лесная тропа',
-		thumbnail: makeSvgDataUrl('#7c3aed', '2'),
-	},
-	{
-		src: makeSvgDataUrl('#059669', 'Вид на океан'),
-		alt: 'Вид на океан',
-		thumbnail: makeSvgDataUrl('#059669', '3'),
-	},
-	{
-		src: makeSvgDataUrl('#dc2626', 'Городской горизонт'),
-		alt: 'Городской горизонт',
-		thumbnail: makeSvgDataUrl('#dc2626', '4'),
-	},
+	demoGalleryItem(1, 'Горный пейзаж'),
+	demoGalleryItem(2, 'Лесная тропа'),
+	demoGalleryItem(3, 'Вид на океан'),
+	demoGalleryItem(4, 'Городской горизонт'),
 ];
 
 export default {

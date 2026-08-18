@@ -1,6 +1,7 @@
 import type {Meta} from '@storybook/react';
 import React from 'react';
 import {Avatar, AvatarGroup, AvatarProps} from './Avatar';
+import {demoThumb} from '../../storybook/demoImages';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
@@ -42,7 +43,7 @@ export const AllVariants: Story<AvatarProps> = {
 		>
 			<Avatar name='Алексей Иванов' />
 			<Avatar name='Мария Сидорова' size={56} />
-			<Avatar src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&h=100&q=80' />
+			<Avatar src={demoThumb(1)} />
 		</div>
 	),
 	parameters: story('Инициалы, увеличенный размер и изображение.'),

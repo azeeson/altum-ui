@@ -1,10 +1,19 @@
 import {test, expect} from '@playwright/test';
 import {visitStory} from '../helpers/storybook';
 
+test.describe('Media', () => {
+	test('показывает локальное демо-изображение', async ({page}) => {
+		await visitStory(page, 'altum-components-media--playground');
+		await expect(page.locator('#storybook-root img').first()).toHaveAttribute('src', /\/images\/img00001\.jpeg/);
+	});
+});
+
 test.describe('ImageGallery', () => {
 	test('рендерит изображения галереи', async ({page}) => {
 		await visitStory(page, 'altum-components-imagegallery--playground');
-		await expect(page.getByRole('img').first()).toBeVisible();
+		const image = page.locator('#storybook-root img').first();
+		await expect(image).toBeVisible();
+		await expect(image).toHaveAttribute('src', /\/images\/img00001\.jpeg/);
 	});
 });
 
@@ -13,6 +22,7 @@ test.describe('ImageLightbox', () => {
 		await visitStory(page, 'altum-components-imagelightbox--playground');
 		await page.getByRole('button', {name: /Открыть lightbox/i}).click();
 		await expect(page.getByRole('dialog')).toBeVisible();
+		await expect(page.getByRole('dialog').locator('img').first()).toHaveAttribute('src', /\/images\/img00001\.jpeg/);
 		await page.keyboard.press('Escape');
 		await expect(page.getByRole('dialog')).toBeHidden({timeout: 3000});
 	});

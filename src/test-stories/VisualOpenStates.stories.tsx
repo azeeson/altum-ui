@@ -9,6 +9,7 @@ import {Tooltip} from '../components/Tooltip/Tooltip';
 import {Button} from '../components/Button/Button';
 import {ButtonIcon} from '../components/ButtonIcon/ButtonIcon';
 import {Text} from '../components/Text/Text';
+import {demoGalleryItem} from '../storybook/demoImages';
 
 const meta = {
 	title: 'altum/Test/VisualOpenStates',
@@ -24,25 +25,9 @@ type Story = StoryObj;
 
 const noop = () => undefined;
 
-const makeSvgDataUrl = (color: string, label: string) =>
-	`data:image/svg+xml,${encodeURIComponent(
-		`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
-      <rect width="800" height="600" fill="${color}"/>
-      <text x="400" y="300" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-family="sans-serif" font-size="32">${label}</text>
-    </svg>`,
-	)}`;
-
 const LIGHTBOX_IMAGES = [
-	{
-		src: makeSvgDataUrl('#2563eb', 'Слайд 1'),
-		alt: 'Слайд 1',
-		thumbnail: makeSvgDataUrl('#2563eb', '1'),
-	},
-	{
-		src: makeSvgDataUrl('#7c3aed', 'Слайд 2'),
-		alt: 'Слайд 2',
-		thumbnail: makeSvgDataUrl('#7c3aed', '2'),
-	},
+	demoGalleryItem(1, 'Слайд 1'),
+	demoGalleryItem(2, 'Слайд 2'),
 ];
 
 export const ModalOpen: Story = {

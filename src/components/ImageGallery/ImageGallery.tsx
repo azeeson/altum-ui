@@ -176,14 +176,16 @@ const ImageGalleryImage = forwardRef<HTMLImageElement, ImageGalleryImageProps>(
 		const image = images[index];
 		if (!image) return null;
 		return (
-			<img
-				ref={ref}
-				src={image.src}
-				alt={image.alt ?? t('imageGallery.imageN', {index: index + 1})}
-				className={cn(styles.mainImage, styles[`slide_${slideDirection}`], className)}
-				draggable={false}
-				{...rest}
-			/>
+			<div className={styles.viewport}>
+				<img
+					ref={ref}
+					src={image.src}
+					alt={image.alt ?? t('imageGallery.imageN', {index: index + 1})}
+					className={cn(styles.mainImage, styles[`slide_${slideDirection}`], className)}
+					draggable={false}
+					{...rest}
+				/>
+			</div>
 		);
 	},
 );

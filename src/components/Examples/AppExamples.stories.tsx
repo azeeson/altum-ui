@@ -54,6 +54,7 @@ import {IconPhoto} from '../../icons/icons/IconPhoto';
 import {IconPlus} from '../../icons/icons/IconPlus';
 import {IconSearch} from '../../icons/icons/IconSearch';
 import {IconUserGroup} from '../../icons/icons/IconUserGroup';
+import {demoImage} from '../../storybook/demoImages';
 import {Story} from '../../storybook/meta';
 import styles from './AppExamples.stories.module.css';
 
@@ -2113,7 +2114,7 @@ export const MediaLibraryApp: Story<Record<string, never>> = {
 					</Modal.Header>
 					<Modal.Body>
 						<ImageGallery
-							images={['https://picsum.photos/seed/altum1/640/400', 'https://picsum.photos/seed/altum2/640/400', 'https://picsum.photos/seed/altum3/640/400',]}
+							images={[demoImage(1), demoImage(2), demoImage(3)]}
 						>
 							<ImageGallery.Viewport>
 								<ImageGallery.Prev />

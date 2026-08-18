@@ -15,6 +15,16 @@ export async function visitStory(page: Page, storyId: string): Promise<void> {
 		await page.waitForSelector('#storybook-root', {state: 'attached'});
 		await page.waitForLoadState('networkidle');
 		await page.evaluate(() => document.fonts?.ready);
+		await page.locator('#storybook-root img').evaluateAll(async (imgs) => {
+			await Promise.all(imgs.map((node) => {
+				const img = node as HTMLImageElement;
+				if (img.complete) return undefined;
+				return new Promise<void>((resolve) => {
+					img.addEventListener('load', () => resolve(), {once: true});
+					img.addEventListener('error', () => resolve(), {once: true});
+				});
+			}));
+		});
 		await page.waitForTimeout(150);
 
 		const errorOverlay = page.locator('.sb-show-errordisplay, #error-message');
