@@ -5,9 +5,17 @@ export type {
 	RelativeTimeProps,
 } from './RelativeTime.types';
 
-import {forwardRef, useEffect, useMemo, useState} from 'react';
-import {cn} from '../../utils/cn';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {forwardRef} from 'react';
+import {useLocale} from '../../locales/localeContext';
+import {useNow} from '../../hooks/useNow';
+
+const UNITS = [
+	[60, 1, 'second'],
+	[3600, 60, 'minute'],
+	[86400, 3600, 'hour'],
+	[86400 * 30, 86400, 'day'],
+	[86400 * 365, 86400 * 30, 'month'],
+] as const;
 
 function toDate(input: Date | string | number): Date | null {
 	const date = input instanceof Date ? input : new Date(input);
@@ -28,12 +36,9 @@ export function formatRelativeTime(
 	const diffSec = Math.round((date.getTime() - now.getTime()) / 1000);
 	const abs = Math.abs(diffSec);
 	const rtf = new Intl.RelativeTimeFormat(locale, {numeric: 'auto'});
-
-	if (abs < 60) return rtf.format(Math.round(diffSec), 'second');
-	if (abs < 3600) return rtf.format(Math.round(diffSec / 60), 'minute');
-	if (abs < 86400) return rtf.format(Math.round(diffSec / 3600), 'hour');
-	if (abs < 86400 * 30) return rtf.format(Math.round(diffSec / 86400), 'day');
-	if (abs < 86400 * 365) return rtf.format(Math.round(diffSec / (86400 * 30)), 'month');
+	for (const [limit, div, unit] of UNITS) {
+		if (abs < limit) return rtf.format(Math.round(diffSec / div), unit);
+	}
 	return rtf.format(Math.round(diffSec / (86400 * 365)), 'year');
 }
 
@@ -58,36 +63,16 @@ export const RelativeTime = forwardRef<HTMLTimeElement, RelativeTimeProps>(funct
 ) {
 	const {locale: localeCode} = useLocale();
 	const resolvedLocale = locale ?? (localeCode === 'en' ? 'en-US' : 'ru-RU');
-	const resolved = useMemo(() => toDate(date), [date]);
-	const [now, setNow] = useState(() => new Date());
-
-	useEffect(() => {
-		if (!updateInterval || !resolved) return undefined;
-		const id = window.setInterval(() => setNow(new Date()), updateInterval);
-		return () => window.clearInterval(id);
-	}, [resolved, updateInterval]);
-
-	if (!resolved) {
-		return (
-			<time
-				ref={ref}
-				className={cn(className)}
-				{...rest}
-			>
-				—
-			</time>
-		);
-	}
-
-	const label = formatRelativeTime(resolved, resolvedLocale, now);
-	const absolute = resolved.toLocaleString(resolvedLocale);
+	const resolved = toDate(date);
+	const now = useNow(resolved ? updateInterval : 0);
+	const label = resolved ? formatRelativeTime(resolved, resolvedLocale, now) : '—';
 
 	return (
 		<time
 			ref={ref}
-			className={cn(className)}
-			dateTime={resolved.toISOString()}
-			title={showAbsoluteTitle ? absolute : title}
+			className={className}
+			dateTime={resolved?.toISOString()}
+			title={resolved && showAbsoluteTitle ? resolved.toLocaleString(resolvedLocale) : title}
 			{...rest}
 		>
 			{label}

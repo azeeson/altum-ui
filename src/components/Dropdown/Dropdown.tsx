@@ -1,4 +1,8 @@
-import type {DropdownPopupRole, DropdownTriggerMode, DropdownAlign, DropdownWidthMode, DropdownPanelScroll, DropdownTriggerSlotProps, DropdownProps, DropdownTriggerProps, DropdownContentProps} from './Dropdown.types';
+import type {
+	DropdownAlign,
+	DropdownTriggerSlotProps,
+	DropdownProps,
+} from './Dropdown.types';
 export type {
 	DropdownPopupRole,
 	DropdownTriggerMode,
@@ -8,28 +12,23 @@ export type {
 	DropdownTriggerAttrs,
 	DropdownTriggerSlotProps,
 	DropdownProps,
-	DropdownTriggerProps,
-	DropdownContentProps,
 } from './Dropdown.types';
 
-import React, {createContext, forwardRef, lazy, Suspense, useCallback, useContext, useEffect, useId, useMemo, useRef} from 'react';
-import {composeRefs} from '../../utils/composeRefs';
+import {forwardRef, lazy, Suspense, useCallback, useEffect, useId, useMemo, useRef} from 'react';
 import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
 import {IconCross} from '../../icons/icons/IconCross';
+import overlayClose from '../../styles/overlayClose.module.css';
 import styles from './Dropdown.module.css';
 import {focusElement} from '../../utils/a11y';
-import {useOutsideClick} from '../../hooks/useOutsideClick';
 import {MOBILE_MEDIA_QUERY, useMediaQuery} from '../../hooks/useMediaQuery';
 import {useDocumentKeyDown} from '../../hooks/useDocumentKeyDown';
 import {useControlledState} from '../../hooks/useControlledState';
 import {FOCUSABLE_WITH_ROLES_SELECTOR, handleFocusableListNavigation, handleTabCycle, queryFocusableElements} from '../../utils/focus';
 import {cn} from '../../utils/cn';
-import {composeEventHandlers} from '../../utils/composeEvents';
 import {elevateAboveOverlayStack, useOverlayStackZIndex} from '../../utils/overlayStack';
 import {Box} from '../Box/Box';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
-import {Overlay, type OverlayContentProps} from '../Overlay/Overlay';
-import {renderChildren} from '../../utils/renderChildren';
+import {useLocale} from '../../locales/localeContext';
+import {Overlay} from '../Overlay/Overlay';
 import type {AnchorAlign} from '../../types';
 
 const DropdownMobileSheet = lazy(async () => {
@@ -37,65 +36,48 @@ const DropdownMobileSheet = lazy(async () => {
 	return {default: module.DropdownMobileSheet};
 });
 
-interface DropdownContextValue {
-	isOpen: boolean;
-	openDropdown: () => void;
-	closeDropdown: () => void;
-	toggleDropdown: () => void;
-	triggerRef: React.RefObject<HTMLElement | null>;
-	dropdownRef: React.MutableRefObject<HTMLElement | null>;
-	sheetRef: React.RefObject<HTMLDivElement | null>;
-	dropdownId: string;
-	align: DropdownAlign;
-	widthMode: DropdownWidthMode;
-	popupRole: DropdownPopupRole;
-	triggerMode: DropdownTriggerMode;
-	isCombobox: boolean;
-	isMobile: boolean;
-	panelScroll: DropdownPanelScroll;
-	mobileTitle?: React.ReactNode;
-	mobileLeftControls?: React.ReactNode;
-	mobileRightControls?: React.ReactNode;
-	elevatedZIndex: number | string | undefined;
-	handleTriggerKeyDown: (event: React.KeyboardEvent) => void;
-	triggerAttrs: DropdownTriggerSlotProps;
-}
-
-const DropdownContext = createContext<DropdownContextValue | null>(null);
-
-function useDropdownContext(component: string): DropdownContextValue {
-	const context = useContext(DropdownContext);
-	if (!context) {
-		throw new Error(`${component} должен использоваться внутри Dropdown`);
-	}
-	return context;
-}
-
 function mapAlign(align: DropdownAlign): AnchorAlign {
-	if (align === 'left' || align === 'auto') return 'start';
-	if (align === 'right') return 'end';
+	if (align === 'left' || align === 'start' || align === 'auto') return 'start';
+	if (align === 'right' || align === 'end') return 'end';
 	return 'center';
 }
 
-const DropdownRoot = forwardRef<HTMLDivElement, DropdownProps>(function DropdownRoot(
+/**
+ * Выпадающая панель: desktop Overlay и mobile Sheet.
+ * Якорь — `renderTrigger`; содержимое панели — `children`.
+ *
+ * @component
+ * @example
+ * <Dropdown
+ *   renderTrigger={(props, ref) => <Button {...props} ref={ref}>Меню</Button>}
+ *   widthMode="content"
+ *   mobileTitle="Меню"
+ * >
+ *   <ActionList items={menuItems} />
+ * </Dropdown>
+ */
+export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(function Dropdown(
 	{
 		children,
+		renderTrigger,
 		open: controlledIsOpen,
-		onClose,
 		onOpenChange,
-		align = 'auto',
-		widthMode = 'content',
 		popupRole = 'none',
 		triggerMode = 'toggle',
+		className,
+		boxProps,
+		align = 'auto',
+		widthMode = 'content',
+		panelScroll = 'overlay',
 		mobileTitle,
 		mobileLeftControls,
 		mobileRightControls,
-		panelScroll = 'overlay',
-		className,
+		panelClassName,
 		...rest
 	},
 	ref,
 ) {
+	const {t} = useLocale();
 	const overlayStackZ = useOverlayStackZIndex();
 	const elevatedZIndex = elevateAboveOverlayStack(overlayStackZ);
 	const isCombobox = triggerMode === 'combobox';
@@ -121,15 +103,28 @@ const DropdownRoot = forwardRef<HTMLDivElement, DropdownProps>(function Dropdown
 	}, []);
 
 	const closeDropdown = useCallback(() => {
-		onClose?.();
 		onOpenChange?.(false);
 		setIsOpen(false);
+
+		if (isCombobox) {
+			const active = document.activeElement;
+			if (active instanceof Node && triggerRef.current?.contains(active)) {
+				return;
+			}
+			const inPopup = active instanceof Node && (
+				Boolean(dropdownRef.current?.contains(active))
+				|| Boolean(sheetRef.current?.contains(active))
+			);
+			if (!inPopup) {
+				return;
+			}
+		}
 
 		const focusTarget = previousFocusRef.current ?? getFocusableTrigger();
 		focusElement(focusTarget);
 	}, [
 		getFocusableTrigger,
-		onClose,
+		isCombobox,
 		onOpenChange,
 		setIsOpen
 	]);
@@ -180,21 +175,13 @@ const DropdownRoot = forwardRef<HTMLDivElement, DropdownProps>(function Dropdown
 		],
 	);
 
-	useOutsideClick(
-		[triggerRef, sheetRef],
-		closeDropdown,
-		{enabled: isOpen && isMobile},
-	);
-
 	useDocumentKeyDown((event) => {
-		if (!isOpen) return;
-		if (!dropdownRef.current) return;
+		if (!isOpen || !dropdownRef.current) return;
 
 		const focusableElements = queryFocusableElements(
 			dropdownRef.current,
 			FOCUSABLE_WITH_ROLES_SELECTOR,
 		);
-
 		if (focusableElements.length === 0) return;
 
 		if (handleTabCycle(event, focusableElements, {
@@ -204,8 +191,7 @@ const DropdownRoot = forwardRef<HTMLDivElement, DropdownProps>(function Dropdown
 			return;
 		}
 
-		const focusInPopup = dropdownRef.current.contains(document.activeElement);
-		if (isCombobox && !focusInPopup) {
+		if (isCombobox && !dropdownRef.current.contains(document.activeElement)) {
 			return;
 		}
 
@@ -214,11 +200,9 @@ const DropdownRoot = forwardRef<HTMLDivElement, DropdownProps>(function Dropdown
 
 	useEffect(() => {
 		if (!isOpen || isCombobox || !dropdownRef.current) return;
-
-		const firstFocusable = dropdownRef.current.querySelector<HTMLElement>(
+		focusElement(dropdownRef.current.querySelector<HTMLElement>(
 			'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]), [role="option"]'
-		);
-		focusElement(firstFocusable);
+		));
 	}, [isCombobox, isOpen]);
 
 	useEffect(() => {
@@ -249,12 +233,11 @@ const DropdownRoot = forwardRef<HTMLDivElement, DropdownProps>(function Dropdown
 				: 'listbox',
 		'aria-expanded': isOpen,
 		'aria-controls': isOpen ? dropdownId : undefined,
+		...(isCombobox ? {} : {tabIndex: 0}),
 		onKeyDown: handleTriggerKeyDown,
 		onClick: (event) => {
 			if (isCombobox) {
-				if (!isOpen) {
-					openDropdown();
-				}
+				if (!isOpen) openDropdown();
 				return;
 			}
 			event.preventDefault();
@@ -270,168 +253,55 @@ const DropdownRoot = forwardRef<HTMLDivElement, DropdownProps>(function Dropdown
 		toggleDropdown,
 	]);
 
-	const value = useMemo<DropdownContextValue>(() => ({
-		isOpen,
-		openDropdown,
-		closeDropdown,
-		toggleDropdown,
-		triggerRef,
-		dropdownRef,
-		sheetRef,
-		dropdownId,
-		align,
-		widthMode,
-		popupRole,
-		triggerMode,
-		isCombobox,
-		isMobile,
-		panelScroll,
-		mobileTitle,
-		mobileLeftControls,
-		mobileRightControls,
-		elevatedZIndex,
-		handleTriggerKeyDown,
-		triggerAttrs,
-	}), [
-		align,
-		closeDropdown,
-		dropdownId,
-		elevatedZIndex,
-		handleTriggerKeyDown,
-		isCombobox,
-		isMobile,
-		isOpen,
-		mobileLeftControls,
-		mobileRightControls,
-		mobileTitle,
-		openDropdown,
-		panelScroll,
-		popupRole,
-		toggleDropdown,
-		triggerAttrs,
-		triggerMode,
-		widthMode,
-	]);
-
-	return (
-		<DropdownContext.Provider value={value}>
-			<div
-				ref={ref}
-				className={cn(styles.root, className)}
-				{...rest}
-			>
-				{children}
-			</div>
-		</DropdownContext.Provider>
-	);
-});
-
-const DropdownTrigger = forwardRef<HTMLElement, DropdownTriggerProps>(function DropdownTrigger(props, ref) {
-	const {
-		children,
-		asChild,
-		className,
-	} = props;
-	const {
-		triggerRef,
-		triggerAttrs,
-	} = useDropdownContext('Dropdown.Trigger');
-
-	const resolvedAsChild = asChild === true;
-	const slotProps: DropdownTriggerSlotProps = {
-		...triggerAttrs,
-		...(resolvedAsChild ? {tabIndex: 0} : {}),
-		...(className ? {className} : {}),
-	};
-
-	return renderChildren({
-		asChild: resolvedAsChild,
-		children,
-		props: slotProps,
-		/* eslint-disable-next-line react-hooks/refs -- composeRefs мержит object-ref; значение читается только позже */
-		contentRef: composeRefs(ref, triggerRef),
-	});
-});
-
-const DropdownContent = forwardRef<HTMLElement, DropdownContentProps>(function DropdownContent(
-	{
-		children,
-		className,
-		boxProps,
-		onClick,
-		onMouseDown,
-		...rest
-	},
-	ref,
-) {
-	const {t} = useLocale();
-	const {
-		isOpen,
-		closeDropdown,
-		triggerRef,
-		dropdownRef,
-		sheetRef,
-		dropdownId,
-		align,
-		widthMode,
-		popupRole,
-		isCombobox,
-		isMobile,
-		panelScroll,
-		mobileTitle,
-		mobileLeftControls,
-		mobileRightControls,
-		elevatedZIndex,
-	} = useDropdownContext('Dropdown.Content');
-
 	const panelRole = popupRole === 'none' ? undefined : popupRole;
-
-	const resolvedMobileRightControls = mobileRightControls ?? (
-		mobileTitle ? (
-			<ButtonIcon
-				variant='ghost'
-				size='sm'
-				aria-label={t('common.close')}
-				onClick={closeDropdown}
-			>
-				<IconCross size={14} />
-			</ButtonIcon>
-		) : undefined
-	);
-
 	const panelClasses = cn(
-		isMobile ? styles.mobilePanel : styles.dropdownOverlay,
-		panelScroll === 'content' ? styles.dropdownPanelContentScroll : '',
-		className,
+		styles.panel,
+		isMobile && styles.mobile,
+		panelScroll === 'content' && styles.contentScroll,
+		panelClassName,
 	);
-
 	const panelHandlers = {
-		onClick: composeEventHandlers(onClick, (event: React.MouseEvent) => event.stopPropagation()),
-		onMouseDown: composeEventHandlers(onMouseDown, (event: React.MouseEvent) => {
-			if (isCombobox) {
-				event.preventDefault();
-			}
-		}),
+		onClick: (event: React.MouseEvent) => event.stopPropagation(),
+		onMouseDown: (event: React.MouseEvent) => {
+			if (isCombobox) event.preventDefault();
+		},
 	};
 
+	let panel: React.ReactNode = null;
 	if (isMobile) {
-		return (
+		panel = (
 			<Suspense fallback={null}>
 				<DropdownMobileSheet
 					sheetRef={sheetRef as React.Ref<HTMLDivElement>}
 					open={isOpen}
-					onClose={closeDropdown}
+					onOpenChange={(next) => {
+						if (!next) closeDropdown();
+					}}
 					zIndex={elevatedZIndex}
 					mobileTitle={mobileTitle}
 					mobileLeftControls={mobileLeftControls}
-					mobileRightControls={resolvedMobileRightControls}
+					mobileRightControls={mobileRightControls ?? (
+						mobileTitle ? (
+							<ButtonIcon
+								appearance='diskClose'
+								aria-label={t('common.close')}
+								icon={(
+									<IconCross
+										className={overlayClose.icon}
+										size={16}
+										aria-hidden
+									/>
+								)}
+								onClick={closeDropdown}
+							/>
+						) : undefined
+					)}
 				>
 					<div
 						id={dropdownId}
-						ref={composeRefs(ref, dropdownRef as React.Ref<HTMLDivElement>)}
+						ref={dropdownRef as React.Ref<HTMLDivElement>}
 						role={panelRole}
 						className={panelClasses}
-						{...rest}
 						{...panelHandlers}
 					>
 						{children}
@@ -439,73 +309,51 @@ const DropdownContent = forwardRef<HTMLElement, DropdownContentProps>(function D
 				</DropdownMobileSheet>
 			</Suspense>
 		);
-	}
-
-	return (
-		<Overlay
-			ref={ref}
-			variant='dropdown'
-			purpose='dropdown'
-			open={isOpen}
-			onClose={closeDropdown}
-			targetRef={triggerRef}
-			triggerMode='manual'
-			side='bottom'
-			align={mapAlign(align)}
-			widthMode={widthMode}
-			closeOnOutsideClick
-			closeOnEscape
-			asChild={false}
-		>
-			{(slotProps: OverlayContentProps, contentRef) => (
+	} else {
+		panel = (
+			<Overlay
+				ref={dropdownRef}
+				variant='dropdown'
+				purpose='dropdown'
+				open={isOpen}
+				onOpenChange={(next) => {
+					if (!next) closeDropdown();
+				}}
+				targetRef={triggerRef}
+				triggerMode='manual'
+				side='bottom'
+				align={mapAlign(align)}
+				widthMode={widthMode}
+				dismiss='all'
+				role={panelRole ?? 'presentation'}
+			>
 				<Box
 					as='div'
 					variant='floating'
 					id={dropdownId}
-					ref={(node: HTMLDivElement | null) => {
-						dropdownRef.current = node;
-						contentRef(node);
-					}}
 					role={panelRole}
-					className={cn(
-						isMobile ? styles.mobilePanel : styles.dropdownOverlay,
-						panelScroll === 'content' ? styles.dropdownPanelContentScroll : '',
-						slotProps.className,
-						className,
-					)}
-					style={slotProps.style}
-					data-side={slotProps['data-side']}
+					className={panelClasses}
 					{...boxProps}
-					{...rest}
 					{...panelHandlers}
 				>
 					{children}
 				</Box>
-			)}
-		</Overlay>
+			</Overlay>
+		);
+	}
+
+	return (
+		<div
+			ref={ref}
+			className={cn(styles.root, className)}
+			{...rest}
+		>
+			{renderTrigger(triggerAttrs, (node) => {
+				triggerRef.current = node;
+			})}
+			{panel}
+		</div>
 	);
 });
 
-DropdownRoot.displayName = 'Dropdown';
-DropdownTrigger.displayName = 'Dropdown.Trigger';
-DropdownContent.displayName = 'Dropdown.Content';
-
-/**
- * Универсальная выпадающая панель: desktop Overlay и mobile Sheet.
- * Составной API: `Dropdown` + `Trigger` + `Content`.
- *
- * @component
- * @example
- * <Dropdown>
- *   <Dropdown.Trigger asChild>
- *     <Button>Меню</Button>
- *   </Dropdown.Trigger>
- *   <Dropdown.Content>
- *     <ActionList items={menuItems} />
- *   </Dropdown.Content>
- * </Dropdown>
- */
-export const Dropdown = Object.assign(DropdownRoot, {
-	Trigger: DropdownTrigger,
-	Content: DropdownContent,
-});
+Dropdown.displayName = 'Dropdown';

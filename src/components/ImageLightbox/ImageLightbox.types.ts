@@ -6,8 +6,7 @@ import {ImageGalleryItem} from '../ImageGallery/ImageGallery';
  */
 export interface ImageLightboxProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
 	open: boolean;
-	onClose: () => void;
-	onOpenChange?: (open: boolean) => void;
+	onOpenChange: (open: boolean) => void;
 	images: ImageGalleryItem[] | string[];
 	index?: number;
 	defaultIndex?: number;

@@ -26,3 +26,32 @@ export function getNextIndex(
 export function focusElement(element: HTMLElement | null | undefined) {
 	element?.focus({preventScroll: true});
 }
+
+/**
+ * Индекс в двумерной сетке: стрелки ±1 / ±columns, Home/End — края списка.
+ * Индекс зажимается в `[0, length)`.
+ *
+ * @param currentIndex - Текущая позиция.
+ * @param length - Число ячеек.
+ * @param key - Клавиша (`Arrow*` / `Home` / `End`).
+ * @param columns - Ширина ряда.
+ * @returns Новый индекс или `null`, если клавиша не навигационная.
+ */
+export function getGridIndex(
+	currentIndex: number,
+	length: number,
+	key: string,
+	columns: number,
+): number | null {
+	if (length === 0) return null;
+
+	let next: number | null = null;
+	if (key === 'ArrowLeft') next = currentIndex - 1;
+	else if (key === 'ArrowRight') next = currentIndex + 1;
+	else if (key === 'ArrowUp') next = currentIndex - columns;
+	else if (key === 'ArrowDown') next = currentIndex + columns;
+	else if (key === 'Home') next = 0;
+	else if (key === 'End') next = length - 1;
+	if (next === null) return null;
+	return Math.max(0, Math.min(length - 1, next));
+}

@@ -12,7 +12,10 @@ export type MarkerVariant = 'default' | 'separator' | 'note' | 'row';
  * Свойства `Marker`.
  */
 export interface MarkerProps extends ComponentPropsWithoutRef<'div'> {
-	children: React.ReactNode;
+	children?: React.ReactNode;
+	icon?: React.ReactNode;
+	/** Мерцающая анимация текста (loading / searching). @default false */
+	shimmer?: boolean;
 	/**
 	 * Внешний вид:
 	 * - `default` — системная заметка с иконкой
@@ -22,20 +25,4 @@ export interface MarkerProps extends ComponentPropsWithoutRef<'div'> {
 	 * @default 'default'
 	 */
 	variant?: MarkerVariant;
-}
-
-/**
- * Свойства `Marker.Icon`.
- */
-export interface MarkerIconProps extends ComponentPropsWithoutRef<'span'> {
-	children: React.ReactNode;
-}
-
-/**
- * Свойства `Marker.Content`.
- */
-export interface MarkerContentProps extends ComponentPropsWithoutRef<'span'> {
-	children: React.ReactNode;
-	/** Мерцающая анимация текста (loading / searching). @default false */
-	shimmer?: boolean;
 }

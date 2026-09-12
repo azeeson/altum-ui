@@ -9,39 +9,23 @@ export type AlertVariant = 'info' | 'success' | 'warning' | 'error';
 
 export type AlertLayout = 'block' | 'inline';
 
-/** Свойства корня `Alert`. */
-export interface AlertRootProps extends Omit<ComponentPropsWithoutRef<'div'>, 'title'> {
+/**
+ * Свойства `Alert`.
+ */
+export interface AlertProps extends Omit<ComponentPropsWithoutRef<'div'>, 'title'> {
 	variant?: AlertVariant;
 	size?: ControlSize;
 	layout?: AlertLayout;
 	role?: React.AriaRole;
-}
-
-export interface AlertIconProps extends ComponentPropsWithoutRef<'div'> {
-	children?: React.ReactNode | null;
-	/** Подставляет `Alert.Root` через cloneElement. */
-	variant?: AlertVariant;
-}
-
-export interface AlertBodyProps extends ComponentPropsWithoutRef<'div'> {
-	children?: React.ReactNode;
-}
-
-export interface AlertTitleProps extends ComponentPropsWithoutRef<'div'> {
-	children?: React.ReactNode;
-}
-
-export interface AlertContentProps extends ComponentPropsWithoutRef<'div'> {
-	children?: React.ReactNode;
-}
-
-export interface AlertActionsProps extends ComponentPropsWithoutRef<'div'> {
-	children?: React.ReactNode;
-}
-
-export interface AlertCloseProps extends ComponentPropsWithoutRef<'button'> {
-	onClose: () => void;
+	/** Заголовок. */
+	title?: React.ReactNode;
+	/**
+	 * Иконка слева. По умолчанию — иконка варианта.
+	 * `null` скрывает слот.
+	 */
+	icon?: React.ReactNode | null;
+	/** Кнопки под текстом. */
+	actions?: React.ReactNode;
+	onClose?: () => void;
 	closeLabel?: string;
 }
-
-export type AlertProps = AlertRootProps;

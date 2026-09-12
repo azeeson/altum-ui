@@ -1,0 +1,27 @@
+/* Сброс UA-кнопки. Chrome (размер, hover, цвет) — в модуле компонента. */
+
+.control {
+  box-sizing: border-box;
+
+  margin: 0;
+  padding: 0;
+
+  border: none;
+
+  font: inherit;
+
+  color: inherit;
+  background: transparent;
+
+  cursor: pointer;
+  appearance: none;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+    outline-offset: var(--altum-focus-ring-offset);
+  }
+}

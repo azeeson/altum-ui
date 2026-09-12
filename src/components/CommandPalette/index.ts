@@ -1,10 +1,6 @@
-export {CommandPaletteInput, CommandPaletteList, CommandPaletteEmpty, CommandPaletteFooter, CommandPalette} from './CommandPalette';
+export {CommandPalette} from './CommandPalette';
 export type {
 	CommandPaletteGroup,
 	CommandPaletteItem,
-	CommandPaletteRootProps,
-	CommandPaletteInputProps,
-	CommandPaletteListProps,
-	CommandPaletteEmptyProps,
-	CommandPaletteFooterProps,
+	CommandPaletteProps,
 } from './CommandPalette.types';

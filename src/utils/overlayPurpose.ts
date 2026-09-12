@@ -24,7 +24,7 @@ const PURPOSE_OFFSET_TOKEN: Record<OverlayPurpose, string> = {
 const PURPOSE_OFFSET_FALLBACK: Record<OverlayPurpose, number> = {
 	tooltip: 8,
 	popover: 8,
-	dropdown: 4,
+	dropdown: 8,
 	modal: 0,
 	sheet: 0,
 	lightbox: 0,

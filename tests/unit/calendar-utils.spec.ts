@@ -1,5 +1,6 @@
 import {test, expect} from '@playwright/test';
-import {compareDay, isDateInRange, isSameDay, selectNextRange} from '../../src/components/Calendar/Calendar.utils';
+import {compareDay, isDateInRange, isSameDay, selectNextRange, weekdayLabels} from '../../src/components/Calendar/Calendar.utils';
+import {getGridIndex} from '../../src/utils/a11y';
 
 test.describe('calendar.utils', () => {
 	test('isSameDay игнорирует время', () => {
@@ -22,5 +23,35 @@ test.describe('calendar.utils', () => {
 		expect(first.end).toBeUndefined();
 		const second = selectNextRange(first, new Date(2026, 7, 18));
 		expect(second.end && isSameDay(second.end, new Date(2026, 7, 18))).toBe(true);
+	});
+
+	test('getGridIndex двигает по сетке 7 колонок и зажимает края', () => {
+		expect(getGridIndex(8, 30, 'ArrowLeft', 7)).toBe(7);
+		expect(getGridIndex(8, 30, 'ArrowUp', 7)).toBe(1);
+		expect(getGridIndex(0, 30, 'ArrowUp', 7)).toBe(0);
+		expect(getGridIndex(5, 30, 'End', 7)).toBe(29);
+		expect(getGridIndex(5, 30, 'Enter', 7)).toBeNull();
+	});
+
+	test('weekdayLabels крутит вс в начало при weekStartsOn=0', () => {
+		const days = [
+			'пн',
+			'вт',
+			'ср',
+			'чт',
+			'пт',
+			'сб',
+			'вс'
+		];
+		expect(weekdayLabels(days, 1)).toEqual(days);
+		expect(weekdayLabels(days, 0)).toEqual([
+			'вс',
+			'пн',
+			'вт',
+			'ср',
+			'чт',
+			'пт',
+			'сб'
+		]);
 	});
 });

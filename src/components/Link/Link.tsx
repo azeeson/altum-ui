@@ -8,18 +8,28 @@ export type {
 	LinkProps,
 } from './Link.types';
 
-import {forwardRef} from 'react';
+import {Children, createElement, forwardRef, isValidElement} from 'react';
+import unstyled from '../../styles/unstyledControl.module.css';
+import textLink from '../../styles/textLink.module.css';
+import typeStyles from '../../styles/type.module.css';
 import styles from './Link.module.css';
 import {cn} from '../../utils/cn';
 import {Slot} from '../../utils/slot';
 
 /**
  * Стилизованная текстовая ссылка с вариантами, размерами и hover/focus дизайн-системы.
- * Цвета читают `--altum-color-link-*` (Box на адаптивных поверхностях переопределяет их).
+ * Цвета читают `--altum-color-link-*`.
+ *
+ * Единственный элемент-child получает стили через Slot (роутерный `Link` / кастомный `<a>`).
+ * Текст и смешанные дети рендерятся в нативный `<a>`.
  *
  * @component
  * @example
  * <Link href="/docs" variant="secondary" size="sm">Документация</Link>
+ * @example
+ * <Link href="/docs">
+ *   <RouterLink to="/docs">Документация</RouterLink>
+ * </Link>
  */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
 	{
@@ -29,47 +39,34 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
 		weight,
 		className,
 		children,
-		asChild = false,
 		target,
 		rel,
 		...props
 	},
 	ref,
 ) {
-	const linkClassName = cn(
-		styles.link,
-		styles[variant],
-		status === 'danger' ? styles.danger : '',
-		size && styles[size],
-		weight && styles[weight],
-		className,
-	);
+	const slotChild = isValidElement(children) && Children.count(children) === 1;
 	const resolvedRel = target === '_blank' ? (rel ?? 'noopener noreferrer') : rel;
 
-	if (asChild) {
-		return (
-			<Slot
-				ref={ref}
-				className={linkClassName}
-				target={target}
-				rel={resolvedRel}
-				{...props}
-			>
-				{children}
-			</Slot>
-		);
-	}
-
-	return (
-		<a
-			ref={ref}
-			className={linkClassName}
-			target={target}
-			rel={resolvedRel}
-			{...props}
-		>
-			{children}
-		</a>
+	return createElement(
+		slotChild ? Slot : 'a',
+		{
+			ref,
+			className: cn(
+				unstyled.control,
+				textLink.link,
+				styles.link,
+				styles[variant],
+				status === 'danger' && styles.danger,
+				size && typeStyles[size],
+				weight && typeStyles[weight],
+				className,
+			),
+			target,
+			rel: resolvedRel,
+			...props,
+		},
+		children,
 	);
 });
 

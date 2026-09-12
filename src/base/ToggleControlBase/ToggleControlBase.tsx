@@ -1,126 +1,77 @@
-import {
-	cloneElement,
-	forwardRef,
-	isValidElement,
-} from 'react';
+import {forwardRef, useId} from 'react';
 import type {ToggleControlBaseProps} from './ToggleControlBase.types';
 import {cn} from '../../utils/cn';
+import {preventWhen} from '../../utils/preventWhen';
 import styles from './ToggleControlBase.module.css';
 
 export type {
-	ToggleControlType,
 	ToggleControlAlign,
 	ToggleControlBaseProps,
 } from './ToggleControlBase.types';
 
 /**
- * Хешированный класс fieldset группы Checkbox / Radio.
- */
-export function toggleGroupClassName(className?: string): string {
-	return cn(styles.groupFieldset, className);
-}
-
-/**
- * Хешированный класс legend группы.
- */
-export function toggleLegendClassName(className?: string): string {
-	return cn(styles.groupLegend, className);
-}
-
-/**
- * Стек опций в группе (`vertical` | `horizontal`).
- */
-export function toggleStackClassName(
-	orientation: 'horizontal' | 'vertical' = 'vertical',
-	className?: string,
-): string {
-	return cn(
-		styles.controlsStack,
-		orientation === 'horizontal' ? styles.horizontal : '',
-		className,
-	);
-}
-
-const TYPE_CLASS: Record<NonNullable<ToggleControlBaseProps['controlType']>, string> = {
-	checkbox: styles.checkboxType,
-	task: styles.taskType,
-	radio: styles.radioType,
-	switch: styles.switchType,
-};
-
-/**
  * Каркас тоггла: `<label>` + скрытый нативный input + визуальный box.
- * Продукты не импортируют CSS-модуль базы.
+ * Chrome бокса навешивает продукт.
  *
  * @component
  * @example
- * <ToggleControlBase id={id} label="Согласен" input={<input id={id} type="checkbox" />} />
+ * <ToggleControlBase type="checkbox" label="Согласен" checked={on} onChange={...} />
  */
-export const ToggleControlBase = forwardRef<HTMLLabelElement, ToggleControlBaseProps>(
+export const ToggleControlBase = forwardRef<HTMLInputElement, ToggleControlBaseProps>(
 	function ToggleControlBase(
 		{
-			id,
-			controlType = 'checkbox',
+			id: providedId,
 			size = 'md',
 			align = 'center',
 			boxClassName,
 			labelClassName,
+			inputClassName,
 			labelSide = 'end',
 			readOnly = false,
-			disabled: _disabled,
-			checked = false,
+			disabled,
 			label,
 			labelHidden = false,
-			input,
 			boxContent,
 			className,
 			style,
+			onChange,
+			onClick,
 			...rest
 		},
 		ref,
 	) {
+		const generatedId = useId();
+		const id = providedId || generatedId;
+		const isReadOnly = !!readOnly && !disabled;
 		const hasLabel = !labelHidden && label != null && label !== false && label !== '';
-
-		const labelEl = hasLabel ? (
-			<span className={cn(styles.labelText, labelClassName)}>
-				{label}
-			</span>
-		) : null;
-
-		const inputNode = isValidElement<{className?: string}>(input)
-			? cloneElement(input, {
-				className: cn(styles.input, input.props.className),
-			})
-			: input;
 
 		return (
 			<label
-				ref={ref}
-				className={cn(
-					styles.root,
-					TYPE_CLASS[controlType],
-					size !== 'md' ? styles[size] : '',
-					labelSide === 'start' ? styles.labelStart : '',
-					align === 'start' ? styles.alignStart : styles.alignCenter,
-					controlType === 'task' && checked ? styles.checked : '',
-					readOnly ? styles.readOnly : '',
-					className,
-				)}
+				className={cn(styles.root, className)}
 				style={style}
-				{...rest}
 				htmlFor={id}
+				data-size={size}
+				data-align={align}
+				data-label-side={labelSide}
 			>
-				{labelSide === 'start' && labelEl}
-				{inputNode}
-				<span
-					className={cn(
-						controlType === 'switch' ? '' : styles.box,
-						boxClassName,
-					)}
-				>
+				<input
+					ref={ref}
+					id={id}
+					className={cn(styles.input, inputClassName)}
+					disabled={disabled}
+					aria-readonly={isReadOnly || undefined}
+					{...rest}
+					onChange={preventWhen(isReadOnly, onChange)}
+					onClick={preventWhen(isReadOnly, onClick)}
+				/>
+				<span className={boxClassName}>
 					{boxContent}
 				</span>
-				{labelSide === 'end' && labelEl}
+				{hasLabel ? (
+					<span className={cn(styles.labelText, labelClassName)}>
+						{label}
+					</span>
+				) : null}
 			</label>
 		);
 	},

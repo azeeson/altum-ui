@@ -1,0 +1,155 @@
+.root {
+  position: relative;
+
+  display: flex;
+
+  flex-wrap: nowrap;
+  align-items: center;
+
+  min-width: 0;
+
+  &.actions {
+    display: inline-flex;
+
+    flex-wrap: wrap;
+    gap: var(--altum-g-space-1);
+  }
+
+  &.fitContent {
+    width: max-content;
+    max-width: 100%;
+  }
+
+  &.fitContainer {
+    align-self: stretch;
+
+    width: 100%;
+    height: 100%;
+
+    & .row {
+      align-items: stretch;
+
+      height: 100%;
+    }
+
+    & .item {
+      display: flex;
+
+      align-items: stretch;
+    }
+
+    & .moreSlot {
+      align-items: stretch;
+
+      margin-inline-start: auto;
+    }
+
+    & .bare {
+      align-self: stretch;
+
+      height: auto;
+      min-height: 0;
+      aspect-ratio: auto;
+
+      border: none;
+      border-radius: calc(var(--altum-g-radius) - 2px);
+
+      opacity: 0.75;
+      background-color: transparent;
+      box-shadow: none;
+
+      &:hover:not(:disabled) {
+        opacity: 1;
+        background-color: color-mix(in srgb, var(--altum-field-label) 8%, transparent);
+      }
+
+      &:focus-visible {
+        opacity: 1;
+      }
+    }
+  }
+
+  & .row {
+    display: flex;
+
+    flex-wrap: nowrap;
+    align-items: center;
+
+    width: 100%;
+    min-width: 0;
+  }
+
+  & .item,
+  & .more {
+    flex-shrink: 0;
+  }
+
+  & .moreMeasure {
+    position: absolute;
+
+    visibility: hidden;
+
+    pointer-events: none;
+  }
+
+  & .moreSlot {
+    display: flex;
+
+    flex-shrink: 0;
+    align-items: center;
+  }
+
+  & .gapSm {
+    gap: var(--altum-g-space-1);
+  }
+
+  & .gapMd {
+    gap: var(--altum-g-space-2);
+  }
+
+  & .gapLg {
+    gap: var(--altum-g-space-3);
+  }
+
+  & .menuPanel {
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    max-width: min(20rem, calc(100vw - var(--altum-g-space-8)));
+  }
+
+  & .menuStack {
+    display: flex;
+    overflow-x: hidden;
+
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--altum-g-space-2);
+
+    width: max-content;
+    max-width: 100%;
+
+    padding: var(--altum-g-space-2);
+
+    & > * {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      min-height: var(--altum-control-height-sm);
+    }
+  }
+
+  & .srFocus {
+    &:focus-visible {
+      position: static;
+
+      overflow: visible;
+      clip: auto;
+
+      width: auto;
+      height: auto;
+
+      margin: 0;
+    }
+  }
+}

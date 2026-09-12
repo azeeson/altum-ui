@@ -4,6 +4,7 @@ import {Badge, BadgeProps} from './Badge';
 import {Button} from '../Button/Button';
 import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
 import {Inline, Stack} from '../Layout/Layout';
+import {Text} from '../Text/Text';
 import {IconBell} from '../../icons/icons/IconBell';
 import {IconMail} from '../../icons/icons/IconMail';
 import {IconMessage} from '../../icons/icons/IconMessage';
@@ -24,9 +25,13 @@ export default {
 	tags: ['autodocs'],
 	parameters: componentParameters('Индикатор уведомлений в виде счётчика или точки поверх дочернего элемента.'),
 	argTypes: {
-		content: {
+		label: {
+			control: 'text',
+			description: 'Текст / число бейджа',
+		},
+		max: {
 			control: 'number',
-			description: 'Числовое значение счётчика',
+			description: 'Потолок числового label: `{max}+`',
 		},
 		dot: {
 			control: 'boolean',
@@ -61,7 +66,12 @@ export const Playground: Story<BadgeProps> = {
 			</Button>
 		</Badge>
 	),
-	args: {label: 9},
+	args: {
+		label: 9,
+		variant: 'error',
+		size: 'md',
+		dot: false,
+	},
 	parameters: story('Используйте панель Controls для настройки.'),
 };
 
@@ -263,5 +273,71 @@ export const DenseIconRail: Story<BadgeProps> = {
 	parameters: story(
 		'Вертикальный rail ButtonIcon sm + Badge sm; `max={9}` для двухзначных счётчиков.',
 	),
+};
+
+export const OverflowLabel: Story<BadgeProps> = {
+	render: () => (
+		<Inline
+			gap='sm'
+			wrap
+			align='center'
+		>
+			<Badge
+				label='Очень длинная метка статуса'
+				variant='warning'
+				position='standalone'
+			/>
+			<Badge
+				label={128}
+				max={99}
+				variant='error'
+				position='standalone'
+			/>
+			<Badge
+				label={128}
+				max={false}
+				variant='info'
+				position='standalone'
+			/>
+		</Inline>
+	),
+	parameters: story('Длинный текст; `max={99}` → 99+; `max={false}` без ограничения.'),
+};
+
+export const UsageExample: Story<BadgeProps> = {
+	render: () => (
+		<Stack gap='md' style={{maxWidth: 360}}>
+			<Inline gap='sm' align='center'>
+				<Text size='md' weight='medium'>
+					Входящие
+				</Text>
+				<Badge
+					label={12}
+					variant='error'
+					position='standalone'
+					size='sm'
+				/>
+			</Inline>
+			<Inline gap='md'>
+				<Badge label={3} variant='error'>
+					<ButtonIcon
+						variant='ghost'
+						size='sm'
+						icon={<IconBell size={18} />}
+						aria-label='Уведомления'
+					/>
+				</Badge>
+				<Badge
+					label={9}
+					variant='info'
+				>
+					<Button variant='secondary' size='sm'>
+						Сообщения
+					</Button>
+				</Badge>
+			</Inline>
+		</Stack>
+	),
+	parameters: story('Заголовок со standalone-счётчиком и overlay на кнопках.'),
 };
 

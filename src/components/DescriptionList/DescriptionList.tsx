@@ -6,7 +6,7 @@ export type {
 	DescriptionListProps,
 } from './DescriptionList.types';
 
-import {forwardRef} from 'react';
+import {forwardRef, type CSSProperties} from 'react';
 import styles from './DescriptionList.module.css';
 import {cn} from '../../utils/cn';
 
@@ -32,15 +32,12 @@ export const DescriptionList = forwardRef<HTMLDListElement, DescriptionListProps
 		return (
 			<dl
 				ref={ref}
-				className={cn(
-					styles.list,
-					styles[layout],
-					columns > 1 ? styles[`cols${columns}`] : '',
-					className,
-				)}
+				className={cn(styles.list, styles[layout], className)}
 				{...rest}
-				style={style}
-				data-layout={layout}
+				style={{
+					'--altum-dl-cols': columns,
+					...style,
+				} as CSSProperties}
 			>
 				{items.map((item, index) => (
 					<div key={item.id ?? index} className={styles.row}>

@@ -1,15 +1,16 @@
 import type {TooltipTriggerProps, TooltipProps} from './Tooltip.types';
 export type {
 	TooltipPosition,
+	TooltipSide,
 	TooltipTriggerProps,
 	TooltipProps,
 } from './Tooltip.types';
 
-import React, {forwardRef, isValidElement, useRef} from 'react';
+import React, {forwardRef, isValidElement} from 'react';
 import {composeRefs} from '../../utils/composeRefs';
-import {Popover, type PopoverTriggerSlotProps} from '../Popover/Popover';
+import {Popover} from '../Popover/Popover';
 import styles from './Tooltip.module.css';
-import {renderChildren, type RenderChildrenFn} from '../../utils/renderChildren';
+import {renderChildren} from '../../utils/renderChildren';
 
 function isDisabledElement(node: React.ReactNode): boolean {
 	if (!isValidElement(node)) return false;
@@ -21,105 +22,85 @@ function isDisabledElement(node: React.ReactNode): boolean {
 }
 
 /**
- * Контекстная подсказка при наведении или фокусе — на базе `Popover.Content variant="tooltip"`.
+ * Контекстная подсказка при наведении или фокусе — на базе `Popover` (`variant="tooltip"`).
  *
- * Триггер рендерится через `renderChildren` / `WithEnrichedChildren`.
+ * Триггер: единственный элемент (slot) или render-prop `(props, ref) => …`.
  *
  * @component
  * @example
- * <Tooltip content="Сохранить" asChild openDelay={300}>
+ * <Tooltip content="Сохранить" openDelay={300}>
  *   <Button variant="ghost">Сохранить</Button>
  * </Tooltip>
  * @example
- * <Tooltip content="Подсказка" asChild={false}>
+ * <Tooltip content="Подсказка">
  *   {(props, ref) => <button type="button" {...props} ref={ref}>?</button>}
  * </Tooltip>
  * @example
- * <Tooltip content="Недоступно" asChild wrap>
+ * <Tooltip content="Недоступно" wrap>
  *   <Button disabled>Действие</Button>
  * </Tooltip>
  */
-export const Tooltip = forwardRef<HTMLElement, TooltipProps>(function Tooltip(props, ref) {
-	const {
+export const Tooltip = forwardRef<HTMLElement, TooltipProps>(function Tooltip(
+	{
 		content,
+		side,
 		position = 'top',
 		children,
-		asChild,
-		className = '',
-		open: controlledOpen,
+		className,
+		open,
 		defaultOpen = false,
 		onOpenChange,
-		openDelay,
+		openDelay = 200,
 		closeDelay = 100,
 		disabled = false,
 		wrap,
-		arrow = false,
-	} = props;
+		arrow = true,
+	},
+	ref,
+) {
+	const isSlot = isValidElement(children);
+	const shouldWrap = wrap ?? (isSlot && isDisabledElement(children));
+	const triggerChildren = isSlot && shouldWrap
+		? (
+			<span className={styles.wrap}>
+				{children}
+			</span>
+		)
+		: children;
 
-	const resolvedAsChild = asChild === true;
-	const resolvedOpenDelay = openDelay ?? 200;
-	const shouldWrap = wrap ?? (
-		resolvedAsChild
-		&& isValidElement(children)
-		&& isDisabledElement(children)
-	);
-	const forceOpenOnly = controlledOpen === true && !onOpenChange;
-	const triggerRef = useRef<HTMLElement | null>(null);
+	const renderAnchor = (
+		slotProps: TooltipTriggerProps,
+		slotRef: React.RefCallback<HTMLElement>,
+	) => renderChildren({
+		children: triggerChildren,
+		props: slotProps,
+		contentRef: composeRefs(ref, slotRef),
+	});
+
+	const resolvedSide = side ?? position;
 
 	if (content == null || content === '') {
-		const triggerSlotProps: TooltipTriggerProps = {
-			...(!resolvedAsChild && shouldWrap ? {className: styles.wrap} : {}),
-		};
-		const triggerChildren = resolvedAsChild && shouldWrap
-			? (
-				<span className={styles.wrap}>
-					{children as React.ReactElement}
-				</span>
-			)
-			: children;
-
-		return (
-			<>
-				{renderChildren({
-					asChild: resolvedAsChild,
-					children: triggerChildren,
-					props: triggerSlotProps,
-					contentRef: composeRefs(ref, triggerRef),
-				})}
-			</>
-		);
+		return renderAnchor({}, () => undefined);
 	}
 
 	return (
 		<Popover
-			ref={ref}
-			side={position}
-			trigger={forceOpenOnly ? 'manual' : 'hover'}
-			open={forceOpenOnly ? true : controlledOpen}
-			defaultOpen={forceOpenOnly ? true : defaultOpen}
-			onOpenChange={forceOpenOnly ? undefined : onOpenChange}
-			openDelay={forceOpenOnly ? 0 : resolvedOpenDelay}
-			closeDelay={closeDelay}
-			closeOnOutsideClick={false}
-			closeOnEscape
+			trigger='hover'
+			open={open}
+			defaultOpen={defaultOpen}
+			onOpenChange={onOpenChange}
 			disabled={disabled}
+			wrap={false}
+			variant='tooltip'
+			arrow={arrow}
+			panelClassName={className}
+			side={resolvedSide}
+			openDelay={openDelay}
+			closeDelay={closeDelay}
+			dismiss='escape'
+			renderTrigger={renderAnchor}
 		>
-			{resolvedAsChild ? (
-				<Popover.Trigger asChild wrap={wrap}>
-					{children as React.ReactElement}
-				</Popover.Trigger>
-			) : (
-				<Popover.Trigger asChild={false} wrap={wrap}>
-					{children as RenderChildrenFn<PopoverTriggerSlotProps>}
-				</Popover.Trigger>
-			)}
-			<Popover.Content
-				variant='tooltip'
-				arrow={arrow}
-				className={className}
-			>
-				{content}
-			</Popover.Content>
+			{content}
 		</Popover>
 	);
 });

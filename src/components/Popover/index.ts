@@ -4,6 +4,4 @@ export type {
 	PopoverContentVariant,
 	PopoverTriggerSlotProps,
 	PopoverProps,
-	PopoverTriggerProps,
-	PopoverContentProps,
 } from './Popover.types';

@@ -1,6 +1,5 @@
-import {forwardRef, type ElementType} from 'react';
-import {cn} from '../../utils/cn';
-import {alignClass, flexStyles as styles, gapClass, justifyClass} from './layoutClasses';
+import {forwardRef} from 'react';
+import {Flex} from '../../base/Flex';
 import type {InlineProps} from './Layout.types';
 
 export type {LayoutAlign, LayoutGap, LayoutJustify, InlineProps} from './Layout.types';
@@ -16,39 +15,17 @@ export type {LayoutAlign, LayoutGap, LayoutJustify, InlineProps} from './Layout.
  *   <span>Заказ #1024</span>
  * </Inline>
  */
-export const Inline = forwardRef<HTMLElement, InlineProps>(function Inline(
-	{
-		children,
-		gap = 'sm',
-		align = 'center',
-		justify = 'start',
-		wrap = true,
-		className,
-		as: Component = 'div',
-		style,
-		...rest
-	},
-	ref,
-) {
-	const Element = Component as ElementType;
-
+export const Inline = forwardRef<HTMLElement, InlineProps>(function Inline(props, ref) {
 	return (
-		<Element
-			ref={ref as never}
-			className={cn(
-				styles.base,
-				styles.inline,
-				!wrap && styles.inlineNowrap,
-				gapClass(gap),
-				alignClass(align),
-				justifyClass(justify),
-				className,
-			)}
-			style={style}
-			{...rest}
-		>
-			{children}
-		</Element>
+		<Flex
+			ref={ref}
+			gap='sm'
+			align='center'
+			justify='start'
+			wrap
+			{...props}
+			direction='row'
+		/>
 	);
 });
 

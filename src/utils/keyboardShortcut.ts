@@ -85,46 +85,6 @@ function isApplePlatform(): boolean {
 		|| /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
-function eventKeyNormalized(event: KeyboardEvent): string {
-	if (event.key === ' ') return ' ';
-	return event.key.length === 1 ? event.key.toLowerCase() : event.key.toLowerCase();
-}
-
-/**
- * Проверяет, соответствует ли событие клавиатуры заданному шорткату.
- * Учитывает платформенный `mod` и неявный Shift для символов вроде `?`.
- *
- * @param event - Событие keydown/keyup.
- * @param shortcut - Строка шортката в формате {@link parseKeyboardShortcut}.
- * @returns `true`, если клавиша и все модификаторы совпали.
- */
-export function matchesKeyboardShortcut(
-	event: KeyboardEvent,
-	shortcut: string,
-): boolean {
-	const parts = parseKeyboardShortcut(shortcut);
-	if (!parts) return false;
-
-	if (eventKeyNormalized(event) !== parts.key) return false;
-
-	const apple = isApplePlatform();
-	const wantMeta = parts.meta || (parts.mod && apple);
-	const wantCtrl = parts.ctrl || (parts.mod && !apple);
-
-	if (Boolean(event.metaKey) !== wantMeta) return false;
-	if (Boolean(event.ctrlKey) !== wantCtrl) return false;
-	if (Boolean(event.altKey) !== parts.alt) return false;
-
-	// Для символов вроде `?` браузер ставит shiftKey=true, даже если в строке шортката нет `shift`.
-	const shiftImpliedBySymbol = !parts.shift
-		&& parts.key.length === 1
-		&& event.key === parts.key
-		&& event.shiftKey;
-	if (!shiftImpliedBySymbol && Boolean(event.shiftKey) !== parts.shift) return false;
-
-	return true;
-}
-
 function formatKeyLabel(key: string): string {
 	if (key === ' ') return 'Space';
 	if (key === 'escape') return 'Esc';

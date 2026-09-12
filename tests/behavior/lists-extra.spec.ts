@@ -15,6 +15,26 @@ test.describe('ActionList', () => {
 		await page.getByRole('option', {name: /Входящие/i}).click();
 		await expect(page.getByText('Выбрано: Входящие')).toBeVisible();
 	});
+
+	test('первый пункт без подсветки до наведения', async ({page}) => {
+		await visitStory(page, 'altum-components-actionlist--with-static-list');
+		await expect(page.getByRole('listbox')).not.toHaveAttribute('aria-activedescendant');
+	});
+
+	test('уход указателя не возвращает подсветку на первый пункт', async ({page}) => {
+		await visitStory(page, 'altum-components-actionlist--with-static-list');
+		await page.getByRole('option', {name: /Сегодня/i}).hover();
+		await expect(page.getByRole('listbox')).toHaveAttribute('aria-activedescendant', /.+/);
+		await page.mouse.move(0, 0);
+		await expect(page.getByRole('listbox')).not.toHaveAttribute('aria-activedescendant');
+	});
+
+	test('стрелка вниз подсвечивает первый пункт', async ({page}) => {
+		await visitStory(page, 'altum-components-actionlist--playground');
+		await page.getByRole('searchbox').focus();
+		await page.keyboard.press('ArrowDown');
+		await expect(page.getByRole('listbox')).toHaveAttribute('aria-activedescendant', /.+/);
+	});
 });
 
 test.describe('Pagination', () => {
@@ -28,9 +48,8 @@ test.describe('Pagination', () => {
 test.describe('Table', () => {
 	test('переключает выбор строки', async ({page}) => {
 		await visitStory(page, 'altum-components-table--playground');
-		const checkbox = page.getByRole('checkbox').nth(1);
-		await expect(checkbox).toBeVisible();
-		await checkbox.click();
+		const checkbox = page.getByRole('checkbox', {name: /Выбрать строку 1/});
+		await page.locator('label').filter({has: checkbox}).click();
 		await expect(checkbox).toBeChecked();
 	});
 });

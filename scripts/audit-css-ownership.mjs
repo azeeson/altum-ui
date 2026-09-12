@@ -2,7 +2,8 @@
 /**
  * Проверяет владение CSS:
  * - TSX может импортировать только `./Something.module.css` из своей папки
- * - Нет CSS в src/styles/** или src/components/common/**
+ *   или общий рецепт из `src/styles/*.module.css`
+ * - Нет CSS в src/components/common/**
  * - Нет `composes:` у CSS Modules
  *
  * Использование: node scripts/audit-css-ownership.mjs
@@ -12,6 +13,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const SRC = path.resolve('src');
+const STYLES_DIR = path.join(SRC, 'styles');
 const violations = [];
 
 function walk(dir, acc = []) {
@@ -30,11 +32,13 @@ const allFiles = walk(SRC);
 for (const file of allFiles) {
 	const rel = path.relative(SRC, file);
 	if (!file.endsWith('.css')) continue;
-	if (rel.startsWith(`styles${path.sep}`) || rel === 'styles') {
-		violations.push(`Запрещённый общий CSS: src/${rel}`);
-	}
 	if (rel.startsWith(`components${path.sep}common${path.sep}`)) {
 		violations.push(`Запрещённый CSS в common: src/${rel}`);
+	}
+	if (rel.startsWith(`styles${path.sep}`) || rel === 'styles') {
+		if (!file.endsWith('.module.css')) {
+			violations.push(`В src/styles допустимы только *.module.css: src/${rel}`);
+		}
 	}
 }
 
@@ -47,13 +51,12 @@ for (const file of allFiles) {
 	}
 }
 
-// 3) Импорты .module.css из чужой папки в TS/TSX
+// 3) Импорты .module.css из чужой папки в TS/TSX (кроме src/styles)
 const importRe = /from\s+['"]([^'"]+\.module\.css)['"]/g;
 for (const file of allFiles) {
 	if (!/\.(tsx?|jsx?)$/.test(file)) continue;
-	if (file.includes(`${path.sep}common${path.sep}`) && /stories\.(tsx?|jsx?)$/.test(file)) {
-		// stories в common будут удалены; всё равно проверяем
-	}
+	// Внутренние test-stories могут ссылаться на CSS продукта (например Listbox).
+	if (file.includes(`${path.sep}test-stories${path.sep}`)) continue;
 	const text = fs.readFileSync(file, 'utf8');
 	const fileDir = path.dirname(file);
 	let match;
@@ -61,7 +64,9 @@ for (const file of allFiles) {
 		const spec = match[1];
 		const resolved = path.resolve(fileDir, spec);
 		const resolvedDir = path.dirname(resolved);
-		if (resolvedDir !== fileDir) {
+		if (resolvedDir === fileDir) continue;
+		const isSharedRecipe = resolvedDir === STYLES_DIR && resolved.endsWith('.module.css');
+		if (!isSharedRecipe) {
 			violations.push(
 				`Импорт CSS из чужой папки: ${path.relative(process.cwd(), file)} → ${spec}`,
 			);

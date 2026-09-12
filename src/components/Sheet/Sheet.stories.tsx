@@ -65,7 +65,7 @@ export const Playground: Story<SheetProps> = {
 				<Sheet
 					{...args}
 					open={isOpen}
-					onClose={() => setIsOpen(false)}
+					onOpenChange={setIsOpen}
 				>
 					<Sheet.Header>
 						<Sheet.Title>
@@ -100,7 +100,7 @@ export const WithControls: Story<SheetProps> = {
 				</Button>
 				<Sheet
 					open={isOpen}
-					onClose={() => setIsOpen(false)}
+					onOpenChange={setIsOpen}
 					mode='sheet'
 					backdrop={false}
 				>
@@ -164,7 +164,7 @@ export const WithoutTitle: Story<SheetProps> = {
 				</Button>
 				<Sheet
 					open={isOpen}
-					onClose={() => setIsOpen(false)}
+					onOpenChange={setIsOpen}
 					mode='sheet'
 					backdrop={false}
 				>
@@ -215,7 +215,7 @@ export const ControlsOnly: Story<SheetProps> = {
 				</Button>
 				<Sheet
 					open={isOpen}
-					onClose={() => setIsOpen(false)}
+					onOpenChange={setIsOpen}
 					mode='sheet'
 					backdrop={false}
 				>
@@ -249,7 +249,7 @@ export const LongContent: Story<SheetProps> = {
 				</Button>
 				<Sheet
 					open={isOpen}
-					onClose={() => setIsOpen(false)}
+					onOpenChange={setIsOpen}
 					mode='sheet'
 					backdrop={false}
 				>
@@ -311,7 +311,7 @@ export const WithHandle: Story<SheetProps> = {
 				</Button>
 				<Sheet
 					open={isOpen}
-					onClose={() => setIsOpen(false)}
+					onOpenChange={setIsOpen}
 					mode='sheet'
 					backdrop={false}
 					showHandle
@@ -354,7 +354,7 @@ export const WithRef: Story<SheetProps> = {
 				<Sheet
 					ref={sheetRef}
 					open={isOpen}
-					onClose={() => setIsOpen(false)}
+					onOpenChange={setIsOpen}
 					mode='sheet'
 					backdrop={false}
 					data-testid='sheet-panel'
@@ -387,7 +387,7 @@ export const SidebarMode: Story<SheetProps> = {
 				</Button>
 				<Sheet
 					open={isOpen}
-					onClose={() => setIsOpen(false)}
+					onOpenChange={setIsOpen}
 					mode='sidebar'
 					direction='start'
 					width={320}
@@ -420,7 +420,7 @@ export const AutoMode: Story<SheetProps> = {
 				</Button>
 				<Sheet
 					open={isOpen}
-					onClose={() => setIsOpen(false)}
+					onOpenChange={setIsOpen}
 					mode='auto'
 					backdrop
 				>
@@ -453,7 +453,7 @@ export const WithBackdrop: Story<SheetProps> = {
 				</Button>
 				<Sheet
 					open={isOpen}
-					onClose={() => setIsOpen(false)}
+					onOpenChange={setIsOpen}
 					mode='sheet'
 					direction='end'
 					backdrop
@@ -486,7 +486,7 @@ export const TopSheet: Story<SheetProps> = {
 				</Button>
 				<Sheet
 					open={isOpen}
-					onClose={() => setIsOpen(false)}
+					onOpenChange={setIsOpen}
 					mode='sheet'
 					direction='start'
 					backdrop
@@ -519,7 +519,7 @@ export const CompoundSlots: Story<SheetProps> = {
 				</Button>
 				<Sheet
 					open={isOpen}
-					onClose={() => setIsOpen(false)}
+					onOpenChange={setIsOpen}
 					mode='sheet'
 					direction='end'
 					showHandle
@@ -573,4 +573,91 @@ export const CompoundSlots: Story<SheetProps> = {
 	parameters: story(
 		'Составной: `Header` (plain) + `Body padding={false}` + `Footer`.',
 	),
+};
+
+export const Empty: Story<SheetProps> = {
+	render: function EmptyRender() {
+		const [isOpen, setIsOpen] = useState(true);
+		return (
+			<Sheet
+				open={isOpen}
+				onOpenChange={setIsOpen}
+				mode='sheet'
+				backdrop
+			>
+				<Sheet.Header showClose>
+					<Sheet.Title>
+						Пустая панель
+					</Sheet.Title>
+				</Sheet.Header>
+				<Sheet.Body>
+					<Text size='md' color='muted'>
+						Контента пока нет.
+					</Text>
+				</Sheet.Body>
+			</Sheet>
+		);
+	},
+	parameters: story('Открытый Sheet без полезной нагрузки.'),
+};
+
+export const OverflowText: Story<SheetProps> = {
+	render: function OverflowTextRender() {
+		const [isOpen, setIsOpen] = useState(true);
+		return (
+			<Sheet
+				open={isOpen}
+				onOpenChange={setIsOpen}
+				mode='sheet'
+				backdrop
+			>
+				<Sheet.Header showClose>
+					<Sheet.Title>
+						Очень длинный заголовок нижней панели фильтров и дополнительных параметров отчёта
+					</Sheet.Title>
+				</Sheet.Header>
+				<Sheet.Body>
+					<Text size='md'>
+						Длинный заголовок и абзац проверяют перенос в chrome Sheet.
+					</Text>
+				</Sheet.Body>
+			</Sheet>
+		);
+	},
+	parameters: story('Длинный Title в шапке Sheet.'),
+};
+
+export const Interaction: Story<SheetProps> = {
+	render: function InteractionRender() {
+		const [isOpen, setIsOpen] = useState(false);
+		return (
+			<>
+				<Button variant='primary' onClick={() => setIsOpen(true)}>
+					Открыть Sheet
+				</Button>
+				<Sheet
+					open={isOpen}
+					onOpenChange={setIsOpen}
+					mode='sheet'
+					direction='end'
+				>
+					<Sheet.Header>
+						<Sheet.Title>
+							Действия
+						</Sheet.Title>
+					</Sheet.Header>
+					<Sheet.Body>
+						<Text size='md'>
+							Панель открыта сценарием play.
+						</Text>
+					</Sheet.Body>
+				</Sheet>
+			</>
+		);
+	},
+	play: async ({canvasElement}) => {
+		const trigger = canvasElement.querySelector('button');
+		trigger?.click();
+	},
+	parameters: story('Play: клик по триггеру открывает Sheet.'),
 };

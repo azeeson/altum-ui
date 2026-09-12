@@ -12,8 +12,6 @@ import {TextareaField} from '../TextareaField/TextareaField';
 import {NumberField} from '../NumberField/NumberField';
 import {Select} from '../Select/Select';
 import {Chip} from '../Chip/Chip';
-import {Checkbox} from '../Checkbox/Checkbox';
-import {RadioGroup} from '../Radio/Radio';
 import {Switch} from '../Switch/Switch';
 import {PinInput} from '../PinInput/PinInput';
 import {Pagination} from '../Pagination/Pagination';
@@ -43,7 +41,7 @@ const ALL_VARIANTS: Array<[BoxVariant, string]> = [
 	['plain', 'без chrome'],
 ];
 
-const ADAPTIVE_VARIANTS: BoxVariant[] = [
+const SURFACE_VARIANTS: BoxVariant[] = [
 	'outlined',
 	'elevated',
 	'tinted',
@@ -75,17 +73,6 @@ const SELECT_OPTIONS = [
 	},
 	{
 		label: 'Опция B',
-		value: 'b'
-	},
-];
-
-const RADIO_OPTIONS = [
-	{
-		label: 'A',
-		value: 'a'
-	},
-	{
-		label: 'B',
 		value: 'b'
 	},
 ];
@@ -139,15 +126,12 @@ function SurfaceControls() {
 	const [notes, setNotes] = useState('');
 	const [number, setNumber] = useState(1);
 	const [select, setSelect] = useState('a');
-	const [checked, setChecked] = useState(true);
-	const [radio, setRadio] = useState('a');
 	const [switched, setSwitched] = useState(false);
 	const [pin, setPin] = useState('');
 	const [page, setPage] = useState(2);
 	const [range, setRange] = useState<RangeValue>([20, 70]);
 	const [tab, setTab] = useState('one');
 	const [chipActive, setChipActive] = useState(true);
-	const radioName = React.useId();
 
 	return (
 		<Stack gap='md'>
@@ -305,30 +289,24 @@ function SurfaceControls() {
 						label='Имя'
 						value={text}
 						onChange={(event) => setText(event.target.value)}
-						width='sm'
+						width='md'
 						size='sm'
 					/>
 					<NumberField
 						label='Кол-во'
 						value={number}
 						onChange={(val) => setNumber(val ?? 0)}
-						width='xs'
+						width='md'
 						size='sm'
 					/>
-					<Select.Root
+					<Select
 						options={SELECT_OPTIONS}
 						value={select}
 						onChange={(value) => { if (!Array.isArray(value)) setSelect(value); }}
-					>
-						<Select.Trigger
-							label='Выбор'
-							width='sm'
-							size='sm'
-						/>
-						<Select.Panel>
-							<Select.List />
-						</Select.Panel>
-					</Select.Root>
+						label='Выбор'
+						width='md'
+						size='sm'
+					/>
 				</Inline>
 				<TextareaField
 					label='Заметки'
@@ -351,18 +329,6 @@ function SurfaceControls() {
 					Тогглы / Chip
 				</SectionLabel>
 				<Inline gap='md' wrap>
-					<Checkbox
-						label='Чекбокс'
-						checked={checked}
-						onChange={(event) => setChecked(event.target.checked)}
-					/>
-					<RadioGroup
-						name={radioName}
-						options={RADIO_OPTIONS}
-						value={radio}
-						onChange={setRadio}
-						orientation='horizontal'
-					/>
 					<Switch
 						label='Переключатель'
 						checked={switched}
@@ -374,7 +340,7 @@ function SurfaceControls() {
 					<Chip
 						variant='secondary'
 						size='sm'
-						active={chipActive}
+						as={chipActive ? 'toggle' : 'chip'}
 						onClick={() => setChipActive((v) => !v)}
 					>
 						Secondary
@@ -383,14 +349,14 @@ function SurfaceControls() {
 						Tinted
 					</Chip>
 					<Chip
-						mode='tag'
+						as='tag'
 						variant='secondary'
 						size='sm'
 					>
 						Tag
 					</Chip>
 					<Chip
-						mode='tag'
+						as='tag'
 						variant='tinted'
 						size='sm'
 					>
@@ -461,7 +427,7 @@ function SurfaceControls() {
 				>
 					<Pagination.Controls />
 				</Pagination>
-				<Skeleton.Card />
+				<Skeleton variant='card' />
 				<UploadZone>
 					Перетащите файл или нажмите для выбора
 				</UploadZone>
@@ -475,7 +441,7 @@ export default {
 	component: Box,
 	tags: ['autodocs'],
 	parameters: componentParameters(
-		'Примитив поверхности: `variant` + chrome. Адаптивные варианты переопределяют element CSS-переменные (`--altum-field-*`, `--altum-color-button-*`, …) для потомков.',
+		'Примитив поверхности: `variant` + chrome. Вложенные контролы остаются на глобальных токенах.',
 	),
 	argTypes: {
 		variant: {
@@ -746,27 +712,8 @@ export const SurfaceAdaptation: Story<BoxProps> = {
 	render: () => (
 		<Stack gap='lg' style={{maxWidth: 720}}>
 			<Text size='sm'>
-				Адаптивные варианты Box переопределяют element CSS-переменные
-				{' '}
-				<code>
-					--altum-field-*
-				</code>
-				,
-				{' '}
-				<code>
-					--altum-color-button-*
-				</code>
-				,
-				{' '}
-				<code>
-					--altum-type-*
-				</code>
-				,
-				{' '}
-				<code>
-					--altum-color-link-*
-				</code>
-				и др. — контролы и типографика наследуют цвета через каскад.
+				Одни и те же кнопки, чипы, поля и панели на каждой заливке Box —
+				цвета остаются глобальными, без ремапа токенов.
 			</Text>
 			<Stack gap='sm'>
 				<Text size='sm' weight='bold'>
@@ -774,7 +721,7 @@ export const SurfaceAdaptation: Story<BoxProps> = {
 				</Text>
 				<SurfaceControls />
 			</Stack>
-			{ADAPTIVE_VARIANTS.map((variant) => {
+			{SURFACE_VARIANTS.map((variant) => {
 				const box = (
 					<Box
 						variant={variant}
@@ -814,7 +761,72 @@ export const SurfaceAdaptation: Story<BoxProps> = {
 		</Stack>
 	),
 	parameters: story(
-		'Эталон вне Box + адаптация на outlined / elevated / tinted / secondary / muted / glass / overlay: typography (Title / Text / Link), buttons, fields, toggles, panels.',
+		'Эталон вне Box и те же контролы на outlined / elevated / tinted / secondary / muted / glass / overlay — палитра одна.',
 	),
+};
+
+export const Empty: Story<BoxProps> = {
+	render: () => (
+		<div style={{maxWidth: 320}}>
+			<Box
+				variant='outlined'
+				border
+				borderStyle='dashed'
+				padding='lg'
+			/>
+		</div>
+	),
+	parameters: story('Пустая поверхность (drop-zone / placeholder).'),
+};
+
+export const OverflowText: Story<BoxProps> = {
+	render: () => (
+		<div style={{maxWidth: 240}}>
+			<Box
+				variant='outlined'
+				padding='md'
+			>
+				<Text size='sm'>
+					Очень длинный абзац без переноса слов-исключений: суперкалендарнаядоскасобытий
+					должна мягко переноситься внутри ограниченной ширины панели, а не раздувать Box.
+				</Text>
+			</Box>
+		</div>
+	),
+	parameters: story('Длинный текст внутри узкого Box.'),
+};
+
+export const UsageExample: Story<BoxProps> = {
+	render: () => (
+		<div style={{maxWidth: 360}}>
+			<Box
+				variant='elevated'
+				padding='md'
+				radius='lg'
+			>
+				<Stack gap='sm'>
+					<Title level={4}>
+						Черновик отчёта
+					</Title>
+					<Text
+						as='p'
+						size='sm'
+						color='secondary'
+					>
+						Поверхность для блока контента: заголовок, текст и действия.
+					</Text>
+					<Inline gap='sm'>
+						<Button size='sm' variant='secondary'>
+							Отмена
+						</Button>
+						<Button size='sm'>
+							Опубликовать
+						</Button>
+					</Inline>
+				</Stack>
+			</Box>
+		</div>
+	),
+	parameters: story('Карточный блок: Title + Text + кнопки на elevated Box.'),
 };
 

@@ -83,7 +83,7 @@ export function handleVerticalTriggerKeyDown(
 }
 
 export function handleArrowPairKeyDown(
-	event: KeyboardEvent,
+	event: React.KeyboardEvent | KeyboardEvent,
 	onPrev: () => void,
 	onNext: () => void,
 ): boolean {

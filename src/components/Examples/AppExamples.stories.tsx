@@ -14,7 +14,7 @@ import {Chip} from '../Chip/Chip';
 import {Card} from '../Card/Card';
 import {CommandPalette} from '../CommandPalette/CommandPalette';
 import {ConfirmDialog} from '../ConfirmDialog/ConfirmDialog';
-import {ContextMenu} from '../ContextMenu/ContextMenu';
+import {Menu} from '../Menu/Menu';
 import {Table} from '../Table/Table';
 import type {Column} from '../Table/Table';
 import {DescriptionList} from '../DescriptionList/DescriptionList';
@@ -40,8 +40,7 @@ import {Timeline} from '../Timeline/Timeline';
 import {Title} from '../Title/Title';
 import {UploadZone} from '../UploadZone/UploadZone';
 import {addDays, startOfDay, startOfWeek} from '../Calendar/Calendar.utils';
-import {ActionList} from '../ActionList';
-import type {ActionListGroup} from '../ActionList/ActionList.types';
+import type {ActionListGroup, ActionListItem} from '../ActionList/ActionList.types';
 import {IconBell} from '../../icons/icons/IconBell';
 import {IconBriefcase} from '../../icons/icons/IconBriefcase';
 import {IconCalendar} from '../../icons/icons/IconCalendar';
@@ -229,7 +228,7 @@ function DemoFilterBar({
 									key={item.id}
 									size='sm'
 									variant={item.active ? 'tinted' : 'secondary'}
-									active={!!item.active}
+									as={item.active ? 'toggle' : 'chip'}
 									onClick={onFilterChange
 										? () => onFilterChange(item.id, !item.active)
 										: undefined}
@@ -451,7 +450,7 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 				header: 'Статус',
 				render: (row) => (
 					<Chip
-						mode='tag'
+						as='tag'
 						size='sm'
 						variant={STATUS_TAG[row.status].variant}
 					>
@@ -473,35 +472,37 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 		const commandGroups: ActionListGroup[] = [
 			{
 				id: 'nav',
-				label: 'Навигация',
-				items: [
-					{
-						id: 'go-dash',
-						label: 'Дашборд',
-						onSelect: () => { setNav('dashboard'); setPaletteOpen(false); }
-					},
-					{
-						id: 'go-deals',
-						label: 'Сделки',
-						onSelect: () => { setNav('deals'); setPaletteOpen(false); }
-					},
-					{
-						id: 'go-clients',
-						label: 'Клиенты',
-						onSelect: () => { setNav('clients'); setPaletteOpen(false); }
-					},
-				],
+				label: 'Навигация'
 			},
 			{
 				id: 'actions',
-				label: 'Действия',
-				items: [
-					{
-						id: 'new-deal',
-						label: 'Новая сделка',
-						onSelect: () => { setCreateOpen(true); setPaletteOpen(false); }
-					},
-				],
+				label: 'Действия'
+			},
+		];
+		const commandItems: ActionListItem[] = [
+			{
+				id: 'go-dash',
+				groupId: 'nav',
+				label: 'Дашборд',
+				onSelect: () => { setNav('dashboard'); setPaletteOpen(false); }
+			},
+			{
+				id: 'go-deals',
+				groupId: 'nav',
+				label: 'Сделки',
+				onSelect: () => { setNav('deals'); setPaletteOpen(false); }
+			},
+			{
+				id: 'go-clients',
+				groupId: 'nav',
+				label: 'Клиенты',
+				onSelect: () => { setNav('clients'); setPaletteOpen(false); }
+			},
+			{
+				id: 'new-deal',
+				groupId: 'actions',
+				label: 'Новая сделка',
+				onSelect: () => { setCreateOpen(true); setPaletteOpen(false); }
 			},
 		];
 
@@ -606,20 +607,16 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 					<div className={styles.content}>
 						{nav === 'dashboard' && (
 							<>
-								<Alert variant='info' size='sm'>
-									<Alert.Icon />
-									<Alert.Body>
-										<Alert.Title>
-											Квартал Q3
-										</Alert.Title>
-										<Alert.Content>
-											Воронка
-											{' '}
-											{formatRub(pipelineSum)}
-											{' '}
-											· цели обновлены по региону «Центр».
-										</Alert.Content>
-									</Alert.Body>
+								<Alert
+									variant='info'
+									size='sm'
+									title='Квартал Q3'
+								>
+									Воронка
+									{' '}
+									{formatRub(pipelineSum)}
+									{' '}
+									· цели обновлены по региону «Центр».
 								</Alert>
 								<div className={styles.metrics}>
 									<DemoKpiCard
@@ -728,14 +725,12 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 											Все
 										</Button>
 									</Split>
-									<Table.Root>
-										<Table.Content
-											columns={columns}
-											data={deals.slice(0, 4)}
-											rowKey={(row) => row.id}
-											density='compact'
-										/>
-									</Table.Root>
+									<Table
+										columns={columns}
+										data={deals.slice(0, 4)}
+										rowKey={(row) => row.id}
+										density='compact'
+									/>
 								</div>
 							</>
 						)}
@@ -763,7 +758,7 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 										setPage(1);
 									}}
 									end={(
-										<Select.Root
+										<Select
 											options={[
 												{
 													label: 'По сумме',
@@ -776,90 +771,71 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 											]}
 											value='amount'
 											onChange={() => undefined}
-										>
-											<Select.Trigger
-												label='Сортировка'
-												size='sm'
-												width='sm'
-											/>
-											<Select.Panel>
-												<Select.List />
-											</Select.Panel>
-										</Select.Root>
+											label='Сортировка'
+											size='sm'
+											width='md'
+										/>
 									)}
 								/>
-								<Table.Root>
-									<Table.Content
-										columns={columns}
-										data={pageRows}
-										rowKey={(row) => row.id}
-										density='compact'
-										rowActions={(row) => [
-											{
-												id: 'row',
-												label: 'Действия',
-												items: [
-													{
-														id: 'open',
-														label: 'Открыть',
-														onSelect: () => setSelected(row)
-													},
-													{
-														id: 'won',
-														label: 'Отметить выигранной',
-														onSelect: () => {
-															setDeals((prev) => prev.map((d) => (d.id === row.id ? {
-																...d,
-																status: 'won' as const
-															} : d)));
-															push('Сделка выиграна', 'success');
-														}
-													},
-													{
-														id: 'del',
-														label: 'Удалить',
-														onSelect: () => {
-															setSelected(row);
-															setDeleteOpen(true);
-														}
-													},
-												],
-											},
-										]}
-									/>
-									<Table.Empty
-										title='Нет сделок'
-										description='Снимите фильтры или создайте новую сделку.'
-										action={(
+								<Table
+									columns={columns}
+									data={pageRows}
+									rowKey={(row) => row.id}
+									density='compact'
+									rowActions={(row) => [
+										{
+											id: 'open',
+											label: 'Открыть',
+											onSelect: () => setSelected(row)
+										},
+										{
+											id: 'won',
+											label: 'Отметить выигранной',
+											onSelect: () => {
+												setDeals((prev) => prev.map((d) => (d.id === row.id ? {
+													...d,
+													status: 'won' as const
+												} : d)));
+												push('Сделка выиграна', 'success');
+											}
+										},
+										{
+											id: 'del',
+											label: 'Удалить',
+											onSelect: () => {
+												setSelected(row);
+												setDeleteOpen(true);
+											}
+										},
+									]}
+									empty={{
+										title: 'Нет сделок',
+										description: 'Снимите фильтры или создайте новую сделку.',
+										action: (
 											<Button size='sm' onClick={() => setCreateOpen(true)}>
 												Создать
 											</Button>
-										)}
-									/>
-									<Table.Footer pagination={{
+										),
+									}}
+									footer={{
 										page,
 										totalPages,
 										totalItems: filtered.length,
 										pageSize,
 										onPageChange: setPage,
 									}}
-									/>
-								</Table.Root>
+								/>
 							</>
 						)}
 
 						{nav === 'clients' && (
 							<div className={styles.panel}>
-								<Alert variant='warning' size='sm'>
-									<Alert.Icon />
-									<Alert.Body>
-										<Alert.Title>
-											Черновик раздела
-										</Alert.Title>
-										<Alert.Content>
-											Здесь обычно карточки аккаунтов: DescriptionList + Tabs + Timeline.
-										</Alert.Content>
-									</Alert.Body>
+								<Alert
+									variant='warning'
+									size='sm'
+									title='Черновик раздела'
+								>
+									Здесь обычно карточки аккаунтов: DescriptionList + Tabs + Timeline.
 								</Alert>
 								<DescriptionList
 									items={[
@@ -892,7 +868,7 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 
 				<Sheet
 					open={!!selected && !deleteOpen}
-					onClose={() => setSelected(null)}
+					onOpenChange={(open) => { if (!open) setSelected(null); }}
 					mode='sidebar'
 					direction='end'
 					backdrop
@@ -909,7 +885,7 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 							<div className={styles.detailStack}>
 								<Inline gap='sm'>
 									<Chip
-										mode='tag'
+										as='tag'
 										size='sm'
 										variant={STATUS_TAG[selected.status].variant}
 									>
@@ -935,35 +911,28 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 										},
 									]}
 								/>
-								<Fieldset variant='plain'>
-									<Fieldset.Inner>
-										<Fieldset.Legend>
-											История
-										</Fieldset.Legend>
-										<Fieldset.Content>
-											<Timeline
-												items={[
-													{
-														id: '1',
-														title: 'Сделка создана',
-														time: '10:00',
-														status: 'success'
-													},
-													{
-														id: '2',
-														title: 'Отправлено КП',
-														time: '12:40',
-														status: 'info'
-													},
-													{
-														id: '3',
-														title: 'Созвон с ЛПР',
-														time: 'вчера'
-													},
-												]}
-											/>
-										</Fieldset.Content>
-									</Fieldset.Inner>
+								<Fieldset variant='plain' legend='История'>
+									<Timeline
+										items={[
+											{
+												id: '1',
+												title: 'Сделка создана',
+												time: '10:00',
+												status: 'success'
+											},
+											{
+												id: '2',
+												title: 'Отправлено КП',
+												time: '12:40',
+												status: 'info'
+											},
+											{
+												id: '3',
+												title: 'Созвон с ЛПР',
+												time: 'вчера'
+											},
+										]}
+									/>
 								</Fieldset>
 								<Inline gap='sm'>
 									<Button
@@ -986,7 +955,7 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 					)}
 				</Sheet>
 
-				<Modal open={createOpen} onClose={() => setCreateOpen(false)}>
+				<Modal open={createOpen} onOpenChange={setCreateOpen}>
 					<Modal.Header>
 						<Modal.Title>
 							Новая сделка
@@ -1012,7 +981,7 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 								}))}
 								width='full'
 							/>
-							<Select.Root
+							<Select
 								value={draft.owner}
 								onChange={(value) => setDraft((prev) => ({
 									...prev,
@@ -1032,12 +1001,8 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 										value: 'Мария П.'
 									},
 								]}
-							>
-								<Select.Trigger label='Владелец' />
-								<Select.Panel>
-									<Select.List />
-								</Select.Panel>
-							</Select.Root>
+								label='Владелец'
+							/>
 						</Stack>
 					</Modal.Body>
 					<Modal.Footer>
@@ -1085,7 +1050,7 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 					message={selected ? `«${selected.company}» будет удалена из воронки.` : ''}
 					confirmLabel='Удалить'
 					status='danger'
-					onCancel={() => setDeleteOpen(false)}
+					onOpenChange={setDeleteOpen}
 					onConfirm={() => {
 						if (selected) {
 							setDeals((prev) => prev.filter((d) => d.id !== selected.id));
@@ -1096,19 +1061,13 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 					}}
 				/>
 
-				<CommandPalette.Root open={paletteOpen} onClose={() => setPaletteOpen(false)}>
-					<CommandPalette.Input placeholder='Перейти или создать…' />
-					<CommandPalette.List>
-						{commandGroups.map((group) => (
-							<ActionList.Group key={group.id} id={group.id}>
-								<ActionList.GroupLabel>
-									{group.label}
-								</ActionList.GroupLabel>
-								{group.items.map((item) => <ActionList.Item key={item.id} {...item} />)}
-							</ActionList.Group>
-						))}
-					</CommandPalette.List>
-				</CommandPalette.Root>
+				<CommandPalette
+					open={paletteOpen}
+					onOpenChange={setPaletteOpen}
+					placeholder='Перейти или создать…'
+					items={commandItems}
+					groups={commandGroups}
+				/>
 
 				<NotificationContainer notifications={toasts} onClose={dismiss} />
 			</div>
@@ -1308,7 +1267,7 @@ export const SupportDeskApp: Story<Record<string, never>> = {
 								Служба поддержки
 							</strong>
 							<Chip
-								mode='tag'
+								as='tag'
 								size='sm'
 								variant='tinted'
 							>
@@ -1384,7 +1343,7 @@ export const SupportDeskApp: Story<Record<string, never>> = {
 													</Badge>
 												)}
 												<Chip
-													mode='tag'
+													as='tag'
 													size='sm'
 													variant={ticket.status === 'resolved' ? 'success' : 'secondary'}
 												>
@@ -1413,7 +1372,7 @@ export const SupportDeskApp: Story<Record<string, never>> = {
 									</Inline>
 									<Inline gap='sm'>
 										<Chip
-											mode='tag'
+											as='tag'
 											size='sm'
 											variant={active.priority === 'high' ? 'error' : 'secondary'}
 										>
@@ -1478,7 +1437,7 @@ export const SupportDeskApp: Story<Record<string, never>> = {
 
 				<Sheet
 					open={detailOpen}
-					onClose={() => setDetailOpen(false)}
+					onOpenChange={setDetailOpen}
 					mode='sidebar'
 					direction='end'
 					backdrop
@@ -1510,19 +1469,12 @@ export const SupportDeskApp: Story<Record<string, never>> = {
 									},
 								]}
 							/>
-							<Fieldset variant='card'>
-								<Fieldset.Inner>
-									<Fieldset.Legend>
-										Заметка агента
-									</Fieldset.Legend>
-									<Fieldset.Content>
-										<TextareaField
-											label='Внутренняя заметка'
-											defaultValue='Проверить SMS-провайдер и blacklist.'
-											width='full'
-										/>
-									</Fieldset.Content>
-								</Fieldset.Inner>
+							<Fieldset variant='card' legend='Заметка агента'>
+								<TextareaField
+									label='Внутренняя заметка'
+									defaultValue='Проверить SMS-провайдер и blacklist.'
+									width='full'
+								/>
 							</Fieldset>
 							<Timeline
 								items={[
@@ -1692,16 +1644,12 @@ export const ProjectStudioApp: Story<Record<string, never>> = {
 								</Button>
 							))}
 						</Stack>
-						<Alert variant='info' size='sm'>
-							<Alert.Icon />
-							<Alert.Body>
-								<Alert.Title>
-									Спринт 24
-								</Alert.Title>
-								<Alert.Content>
-									Заморозка в четверг · Toolbar + CalendarBoard + Chip-фильтры
-								</Alert.Content>
-							</Alert.Body>
+						<Alert
+							variant='info'
+							size='sm'
+							title='Спринт 24'
+						>
+							Заморозка в четверг · Toolbar + CalendarBoard + Chip-фильтры
 						</Alert>
 					</aside>
 
@@ -1727,7 +1675,7 @@ export const ProjectStudioApp: Story<Record<string, never>> = {
 									key={chip.id}
 									size='sm'
 									variant={chip.active ? 'tinted' : 'secondary'}
-									active={chip.active}
+									as={chip.active ? 'toggle' : 'chip'}
 									onClick={() => {
 										setChips((prev) => prev.map((c) => (c.id === chip.id ? {
 											...c,
@@ -1767,25 +1715,20 @@ export const ProjectStudioApp: Story<Record<string, never>> = {
 						{section === 'tasks' && (
 							<Stack gap='sm'>
 								{tasks.map((task) => (
-									<ContextMenu
+									<Menu
+										trigger='context'
 										key={task.id}
-										groups={[
+										items={[
 											{
-												id: 'ctx',
-												label: 'Задача',
-												items: [
-													{
-														id: 'open',
-														label: 'Открыть',
-														onSelect: () => { setSelected(task); setDrawerOpen(true); }
-													},
-													{
-														id: 'done',
-														label: 'Готово',
-														onSelect: () => push(`${task.title} · готово`, 'success')
-													},
-												],
-											}
+												id: 'open',
+												label: 'Открыть',
+												onSelect: () => { setSelected(task); setDrawerOpen(true); }
+											},
+											{
+												id: 'done',
+												label: 'Готово',
+												onSelect: () => push(`${task.title} · готово`, 'success')
+											},
 										]}
 									>
 										<div className={styles.panel} style={{padding: 'var(--altum-g-space-3)'}}>
@@ -1794,7 +1737,7 @@ export const ProjectStudioApp: Story<Record<string, never>> = {
 													{task.title}
 												</Text>
 												<Chip
-													mode='tag'
+													as='tag'
 													size='sm'
 													variant='secondary'
 												>
@@ -1802,7 +1745,7 @@ export const ProjectStudioApp: Story<Record<string, never>> = {
 												</Chip>
 											</Split>
 										</div>
-									</ContextMenu>
+									</Menu>
 								))}
 							</Stack>
 						)}
@@ -1817,7 +1760,7 @@ export const ProjectStudioApp: Story<Record<string, never>> = {
 
 				<Sheet
 					open={drawerOpen}
-					onClose={() => setDrawerOpen(false)}
+					onOpenChange={setDrawerOpen}
 					mode='sidebar'
 					direction='end'
 					backdrop
@@ -1831,7 +1774,7 @@ export const ProjectStudioApp: Story<Record<string, never>> = {
 						<Sheet.Body>
 							<div className={styles.detailStack}>
 								<Chip
-									mode='tag'
+									as='tag'
 									size='sm'
 									variant='tinted'
 								>
@@ -1980,7 +1923,7 @@ export const MediaLibraryApp: Story<Record<string, never>> = {
 				<div className={styles.pageChrome}>
 					<DemoHeader
 						title='Медиатека'
-						description='Select + UploadZone/FileList + ContextMenu + ImageGallery'
+						description='Select + UploadZone/FileList + Menu + ImageGallery'
 						actions={(
 							<Button
 								size='sm'
@@ -1995,18 +1938,15 @@ export const MediaLibraryApp: Story<Record<string, never>> = {
 
 				<div className={styles.mediaSplit}>
 							<div className={styles.folderPane}>
-								<Select.Root
+								<Select
 									options={FOLDER_OPTIONS}
 									value={folder}
 									onChange={(id) => {
 										if (!Array.isArray(id)) setFolder(id);
 									}}
-								>
-									<Select.Trigger label='Папка' width='full' />
-									<Select.Panel>
-										<Select.List />
-									</Select.Panel>
-								</Select.Root>
+									label='Папка'
+									width='full'
+								/>
 								<UploadZone
 									onChange={(files) => {
 										const next = Array.from(files).map((file, index) => ({
@@ -2051,7 +1991,7 @@ export const MediaLibraryApp: Story<Record<string, never>> = {
 										<Inline gap='sm' align='center'>
 											<IconFolder size={16} />
 											<Chip
-												mode='tag'
+												as='tag'
 												size='sm'
 												variant='tinted'
 											>
@@ -2065,30 +2005,25 @@ export const MediaLibraryApp: Story<Record<string, never>> = {
 								) : (
 									<div className={styles.assetGrid}>
 										{assets.map((asset) => (
-											<ContextMenu
+											<Menu
+												trigger='context'
 												key={asset.id}
-												groups={[
+												items={[
 													{
-														id: 'a',
-														label: 'Файл',
-														items: [
-															{
-																id: 'open',
-																label: 'Открыть',
-																onSelect: () => setPreview(true)
-															},
-															{
-																id: 'rename',
-																label: 'Переименовать',
-																onSelect: () => push(asset.name, 'info')
-															},
-															{
-																id: 'del',
-																label: 'Удалить',
-																onSelect: () => push('Удалено', 'warning')
-															},
-														],
-													}
+														id: 'open',
+														label: 'Открыть',
+														onSelect: () => setPreview(true)
+													},
+													{
+														id: 'rename',
+														label: 'Переименовать',
+														onSelect: () => push(asset.name, 'info')
+													},
+													{
+														id: 'del',
+														label: 'Удалить',
+														onSelect: () => push('Удалено', 'warning')
+													},
 												]}
 											>
 												<div className={styles.assetTile}>
@@ -2099,14 +2034,14 @@ export const MediaLibraryApp: Story<Record<string, never>> = {
 														{asset.name}
 													</Text>
 												</div>
-											</ContextMenu>
+											</Menu>
 										))}
 									</div>
 								)}
 							</div>
 				</div>
 
-				<Modal open={preview} onClose={() => setPreview(false)}>
+				<Modal open={preview} onOpenChange={setPreview}>
 					<Modal.Header>
 						<Modal.Title>
 							Превью
@@ -2115,14 +2050,8 @@ export const MediaLibraryApp: Story<Record<string, never>> = {
 					<Modal.Body>
 						<ImageGallery
 							images={[demoImage(1), demoImage(2), demoImage(3)]}
-						>
-							<ImageGallery.Viewport>
-								<ImageGallery.Prev />
-								<ImageGallery.Image />
-								<ImageGallery.Next />
-							</ImageGallery.Viewport>
-							<ImageGallery.Counter />
-						</ImageGallery>
+							showThumbnails={false}
+						/>
 					</Modal.Body>
 				</Modal>
 

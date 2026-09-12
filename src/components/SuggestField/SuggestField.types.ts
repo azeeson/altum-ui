@@ -24,7 +24,6 @@ export interface SuggestFieldProps
 	/** Placeholder при `labelPlacement` `outside` / `none`; в `inline` скрыт. */
 	placeholder?: string;
 	className?: string;
-	wrapperClassName?: string;
 	name?: string;
 	required?: boolean;
 	/**

@@ -14,7 +14,7 @@ import {cn} from '../../utils/cn';
  *
  * @component
  * @example
- * <Sheet showHandle open={open} onClose={onClose}>
+ * <Sheet showHandle open={open} onOpenChange={setOpen}>
  *   {content}
  * </Sheet>
  */

@@ -79,17 +79,17 @@ export const ru = {
 
 	dayStrip: {
 		ariaLabel: 'Навигация по дням',
-		prev: 'Предыдущие дни',
-		next: 'Следующие дни',
+		prev: 'Предыдущий день',
+		next: 'Следующий день',
 		days: 'Дни',
 	},
 
-	timePicker: {
+	timeField: {
 		hours: 'Часы',
 		minutes: 'Минуты',
 	},
 
-	dateRangePicker: {
+	dateRangeField: {
 		label: 'Период',
 		start: 'С',
 		end: 'По',
@@ -163,7 +163,7 @@ export const ru = {
 		confirm: 'Применить',
 		cancel: 'Отмена',
 		choose: 'Выберите изображение',
-		hint: 'Перетащите рамку или измените масштаб за углы',
+		hint: 'Перетащите изображение или измените масштаб за углы',
 		loadError: 'Не удалось загрузить изображение',
 		cropError: 'Не удалось обрезать изображение',
 		exportError: 'Не удалось экспортировать изображение',
@@ -225,7 +225,6 @@ export const ru = {
 
 	rating: {
 		ariaLabel: 'Рейтинг',
-		value: '{score} из {max}',
 	},
 
 	actionList: {
@@ -243,11 +242,6 @@ export const ru = {
 		pull: 'Потяните для обновления',
 		release: 'Отпустите',
 		refreshing: 'Обновление…',
-	},
-
-	timeline: {
-		hide: 'Скрыть',
-		more: 'Подробнее',
 	},
 
 	spinner: {
@@ -288,33 +282,22 @@ export const ru = {
 		label: 'Перейти к содержимому',
 	},
 
-	overflowActions: {
+	overflow: {
 		title: 'Действия',
 		ariaLabel: 'Действия',
 		more: 'Ещё действия',
-	},
-
-	overflowGroup: {
-		title: 'Ещё',
-		ariaLabel: 'Группа',
-		more: 'Показать ещё',
+		groupTitle: 'Ещё',
+		groupAriaLabel: 'Группа',
+		groupMore: 'Показать ещё',
 	},
 
 	buttonGroup: {
 		ariaLabel: 'Группа кнопок',
 	},
 
-	dropdownMenu: {
+	menu: {
 		mobileTitle: 'Меню',
 		ariaLabel: 'Меню',
-	},
-
-	contextMenu: {
-		ariaLabel: 'Контекстное меню',
-	},
-
-	charts: {
-		donut: 'Круговая диаграмма',
-		bar: 'Столбчатый график',
+		contextAriaLabel: 'Контекстное меню',
 	},
 } as const;

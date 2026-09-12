@@ -11,8 +11,6 @@ import {forwardRef} from 'react';
 import styles from './Kbd.module.css';
 import {cn} from '../../utils/cn';
 
-const ARROW_RE = /^[↑↓←→⟵⟶⇧⌃⌥⌘]$/u;
-
 /**
  * Отображает клавишу или сочетание ввода с клавиатуры.
  *
@@ -30,14 +28,10 @@ export const Kbd = forwardRef<HTMLElement, KbdProps>(function Kbd(
 	},
 	ref,
 ) {
-	const isSymbol = symbol ?? (
-		typeof children === 'string' && ARROW_RE.test(children.trim())
-	);
-
 	return (
 		<kbd
 			ref={ref}
-			className={cn(styles.kbd, isSymbol ? styles.kbdSymbol : '', className)}
+			className={cn(styles.kbd, symbol && styles.kbdSymbol, className)}
 			{...rest}
 		>
 			{children}

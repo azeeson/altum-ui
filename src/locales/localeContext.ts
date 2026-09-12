@@ -1,6 +1,7 @@
 import {createContext, useContext} from 'react';
 import type {LocaleCode, Messages} from './types';
-import {builtInMessages, translate, type TranslateFn} from './translate';
+import {ru} from './ru';
+import {translate, type TranslateFn} from './translate';
 
 export interface LocaleContextValue {
 	locale: LocaleCode;
@@ -8,7 +9,7 @@ export interface LocaleContextValue {
 	t: TranslateFn;
 }
 
-const defaultMessages = builtInMessages.ru;
+const defaultMessages = ru as unknown as Messages;
 
 export const defaultLocaleContext: LocaleContextValue = {
 	locale: 'ru',

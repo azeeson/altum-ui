@@ -6,7 +6,7 @@ export type {
 } from './VisuallyHidden.types';
 
 import {forwardRef} from 'react';
-import styles from './VisuallyHidden.module.css';
+import srOnly from '../../styles/srOnly.module.css';
 import {cn} from '../../utils/cn';
 
 /**
@@ -31,7 +31,7 @@ export const VisuallyHidden = forwardRef<HTMLElement, VisuallyHiddenProps>(funct
 	return (
 		<Component
 			ref={ref as never}
-			className={cn(styles.srOnly, className)}
+			className={cn(srOnly.srOnly, className)}
 			{...rest}
 		>
 			{children}

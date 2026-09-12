@@ -8,7 +8,15 @@ import {
 } from './CustomSelect';
 import {Button} from '../Button/Button';
 import {Chip} from '../Chip/Chip';
-import {componentParameters, story, Story} from '../../storybook/meta';
+import {Card} from '../Card/Card';
+import {Stack, Inline} from '../Layout/Layout';
+import {Text} from '../Text/Text';
+import {
+	componentParameters,
+	story,
+	Story,
+} from '../../storybook/meta';
+import {playClick, playFocus} from '../../storybook/play';
 import styles from './CustomSelect.stories.module.css';
 
 const CITY_OPTIONS: CustomSelectOption[] = [
@@ -45,38 +53,98 @@ export default {
 	parameters: componentParameters(
 		'Составной примитив для select/combobox: Dropdown + Listbox, кастомный trigger через renderTarget.',
 	),
+	argTypes: {
+		disabled: {
+			control: 'boolean',
+			description: 'Заблокированное состояние',
+		},
+		readOnly: {
+			control: 'boolean',
+			description: 'Только чтение',
+		},
+		selectionMode: {
+			control: {
+				type: 'select',
+				options: ['single', 'multiple', 'path'],
+			},
+			description: 'Режим выбора',
+		},
+		onChange: {
+			action: 'onChange',
+			description: 'Колбэк изменения значения',
+		},
+		onOpenChange: {
+			action: 'onOpenChange',
+			description: 'Колбэк открытия панели',
+		},
+		options: {control: false},
+		renderTarget: {control: false},
+		children: {control: false},
+	},
 } satisfies Meta<typeof CustomSelect.Root>;
+
+function optionLabels(options: CustomSelectOption[]): React.ReactNode {
+	return options.map((option) => (
+		<span key={option.value}>
+			{typeof option.label === 'string' ? option.label : option.value}
+		</span>
+	));
+}
+
+function ButtonTarget({
+	ctx,
+	options,
+	fallback,
+}: {
+	ctx: CustomSelectRenderTargetContext;
+	options: CustomSelectOption[];
+	fallback: string;
+}) {
+	const {
+		triggerRef,
+		triggerAttrs,
+		disabled,
+		selectedOptions,
+	} = ctx;
+	const label = selectedOptions[0]?.label ?? fallback;
+	return (
+		<div
+			ref={triggerRef}
+			className={styles.triggerWrap}
+		>
+			<span className={styles.triggerSizer} aria-hidden>
+				{optionLabels(options)}
+			</span>
+			<Button
+				{...triggerAttrs}
+				className={styles.triggerButton}
+				variant='secondary'
+				disabled={disabled}
+				fullWidth
+				aria-haspopup='listbox'
+			>
+				{typeof label === 'string' ? label : 'Выбрано'}
+			</Button>
+		</div>
+	);
+}
 
 export const Playground: Story<CustomSelectRootProps> = {
 	render: function ButtonTargetRender() {
 		const [value, setValue] = useState('moscow');
-
-		const renderTarget = (ctx: CustomSelectRenderTargetContext) => {
-			const label = ctx.selectedOptions[0]?.label ?? 'Выберите город';
-			return (
-				<div
-					ref={ctx.triggerRef}
-					className={styles.triggerWrap}
-				>
-					<Button
-						{...ctx.triggerAttrs}
-						variant='secondary'
-						disabled={ctx.disabled}
-						aria-haspopup='listbox'
-					>
-						{typeof label === 'string' ? label : 'Выбрано'}
-					</Button>
-				</div>
-			);
-		};
 
 		return (
 			<CustomSelect.Root
 				options={CITY_OPTIONS}
 				value={value}
 				onChange={(next) => setValue(typeof next === 'string' ? next : next[0] ?? '')}
-				renderTarget={renderTarget}
-				widthMode='trigger'
+				renderTarget={(ctx) => (
+					<ButtonTarget
+						ctx={ctx}
+						options={CITY_OPTIONS}
+						fallback='Выберите город'
+					/>
+				)}
 				mobileTitle='Город'
 			>
 				<CustomSelect.Filter placeholder='Поиск города...' />
@@ -129,7 +197,6 @@ export const CompoundMultiple: Story<CustomSelectRootProps> = {
 				value={value}
 				onChange={(next) => setValue(Array.isArray(next) ? next : [])}
 				renderTarget={renderTarget}
-				widthMode='trigger'
 				triggerMode='combobox'
 				mobileTitle='Города'
 			>
@@ -167,21 +234,13 @@ const GROUPED_OPTIONS: CustomSelectOption[] = [
 export const WithGroups: Story<CustomSelectRootProps> = {
 	render: function GroupsRender() {
 		const [value, setValue] = useState('react');
-		const renderTarget = (ctx: CustomSelectRenderTargetContext) => {
-			const label = ctx.selectedOptions[0]?.label ?? 'Стек';
-			return (
-				<div ref={ctx.triggerRef} className={styles.triggerWrap}>
-					<Button
-						{...ctx.triggerAttrs}
-						variant='secondary'
-						disabled={ctx.disabled}
-						aria-haspopup='listbox'
-					>
-						{typeof label === 'string' ? label : 'Выбрано'}
-					</Button>
-				</div>
-			);
-		};
+		const renderTarget = (ctx: CustomSelectRenderTargetContext) => (
+			<ButtonTarget
+				ctx={ctx}
+				options={GROUPED_OPTIONS}
+				fallback='Стек'
+			/>
+		);
 		return (
 			<CustomSelect.Root
 				options={GROUPED_OPTIONS}
@@ -204,4 +263,167 @@ export const WithGroups: Story<CustomSelectRootProps> = {
 		);
 	},
 	parameters: story('Группы: плоский `options` + `groups` + `groupId`.'),
+};
+
+export const Disabled: Story<CustomSelectRootProps> = {
+	render: () => (
+		<CustomSelect.Root
+			options={CITY_OPTIONS}
+			value='moscow'
+			disabled
+			renderTarget={(ctx) => (
+				<ButtonTarget
+					ctx={ctx}
+					options={CITY_OPTIONS}
+					fallback='Выберите город'
+				/>
+			)}
+		>
+			<CustomSelect.List aria-label='Города' />
+		</CustomSelect.Root>
+	),
+	parameters: story('Заблокированный триггер.'),
+};
+
+export const Empty: Story<CustomSelectRootProps> = {
+	render: function EmptyRender() {
+		const [value, setValue] = useState('');
+		return (
+			<CustomSelect.Root
+				options={CITY_OPTIONS}
+				value={value}
+				onChange={(next) => setValue(typeof next === 'string' ? next : next[0] ?? '')}
+				renderTarget={(ctx) => (
+					<ButtonTarget
+						ctx={ctx}
+						options={CITY_OPTIONS}
+						fallback='Выберите город'
+					/>
+				)}
+			>
+				<CustomSelect.Filter placeholder='Поиск города...' />
+				<CustomSelect.List aria-label='Города' />
+			</CustomSelect.Root>
+		);
+	},
+	parameters: story('Пустой триггер с fallback-подписью.'),
+};
+
+export const OverflowText: Story<CustomSelectRootProps> = {
+	render: function OverflowRender() {
+		const [value, setValue] = useState('nizhny-novgorod');
+		return (
+			<div style={{maxWidth: 200}}>
+				<CustomSelect.Root
+					options={CITY_OPTIONS}
+					value={value}
+					onChange={(next) => setValue(typeof next === 'string' ? next : next[0] ?? '')}
+					renderTarget={(ctx) => (
+						<ButtonTarget
+							ctx={ctx}
+							options={CITY_OPTIONS}
+							fallback='Выберите город'
+						/>
+					)}
+				>
+					<CustomSelect.List aria-label='Города' />
+				</CustomSelect.Root>
+			</div>
+		);
+	},
+	parameters: story('Длинный пункт в узком триггере — сайзер не уже самого длинного label.'),
+};
+
+export const Focused: Story<CustomSelectRootProps> = {
+	render: function FocusedRender() {
+		const [value, setValue] = useState('moscow');
+		return (
+			<CustomSelect.Root
+				options={CITY_OPTIONS}
+				value={value}
+				onChange={(next) => setValue(typeof next === 'string' ? next : next[0] ?? '')}
+				renderTarget={(ctx) => (
+					<ButtonTarget
+						ctx={ctx}
+						options={CITY_OPTIONS}
+						fallback='Выберите город'
+					/>
+				)}
+			>
+				<CustomSelect.List aria-label='Города' />
+			</CustomSelect.Root>
+		);
+	},
+	play: async ({canvasElement}) => {
+		await playFocus(canvasElement, 'button');
+	},
+	parameters: story('Фокус кнопки-триггера.'),
+};
+
+export const Interaction: Story<CustomSelectRootProps> = {
+	render: function InteractionRender() {
+		const [value, setValue] = useState('moscow');
+		return (
+			<CustomSelect.Root
+				options={CITY_OPTIONS}
+				value={value}
+				onChange={(next) => setValue(typeof next === 'string' ? next : next[0] ?? '')}
+				renderTarget={(ctx) => (
+					<ButtonTarget
+						ctx={ctx}
+						options={CITY_OPTIONS}
+						fallback='Выберите город'
+					/>
+				)}
+				mobileTitle='Город'
+			>
+				<CustomSelect.Filter placeholder='Поиск города...' />
+				<CustomSelect.List aria-label='Города' />
+			</CustomSelect.Root>
+		);
+	},
+	play: async ({canvasElement}) => {
+		await playClick(canvasElement, 'button');
+	},
+	parameters: story('Play: открытие панели и фильтра по клику на Button.'),
+};
+
+export const UsageExample: Story<CustomSelectRootProps> = {
+	render: function UsageExampleRender() {
+		const [city, setCity] = useState('moscow');
+		return (
+			<Card
+				header='Фильтры списка'
+				style={{maxWidth: 480}}
+			>
+				<Stack gap='md'>
+					<Text size='sm' color='secondary'>
+						Кастомный триггер — Button; панель с поиском.
+					</Text>
+					<Inline gap='sm' align='center'>
+						<CustomSelect.Root
+							options={CITY_OPTIONS}
+							value={city}
+							onChange={(next) => setCity(typeof next === 'string' ? next : next[0] ?? '')}
+							renderTarget={(ctx) => (
+								<ButtonTarget
+									ctx={ctx}
+									options={CITY_OPTIONS}
+									fallback='Город'
+								/>
+							)}
+							mobileTitle='Город'
+						>
+							<CustomSelect.Filter placeholder='Поиск города...' />
+							<CustomSelect.List aria-label='Города' />
+						</CustomSelect.Root>
+						<Button variant='primary'>
+							Применить
+						</Button>
+					</Inline>
+				</Stack>
+			</Card>
+		);
+	},
+	parameters: story('CustomSelect как фильтр в карточке тулбара.'),
 };

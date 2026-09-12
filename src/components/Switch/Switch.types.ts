@@ -13,6 +13,10 @@ export interface SwitchProps extends Omit<ComponentPropsWithoutRef<'input'>, 'on
 	label?: string;
 	checked: boolean;
 	onChange: (checked: boolean) => void;
+	/**
+	 * Алиас `onChange(checked)` — тот же контракт, что у `Checkbox.onCheckedChange`.
+	 */
+	onCheckedChange?: (checked: boolean) => void;
 	className?: string;
 	readOnly?: boolean;
 	/** @default 'md' */

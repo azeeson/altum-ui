@@ -2,7 +2,6 @@ import type {
 	ComponentPropsWithoutRef,
 	ReactNode,
 } from 'react';
-import type {ButtonBaseProps} from '../ButtonBase';
 import type {ControlSize, FieldWidth} from '../../types';
 
 export type {ControlSize, FieldWidth};
@@ -11,89 +10,61 @@ export type {ControlSize, FieldWidth};
 export type FieldLabelPlacement = 'inline' | 'outside' | 'none';
 
 /**
- * Свойства `FieldBase` — общая оболочка TextField / Select / Textarea / CustomSelect.
+ * Публичный контракт chrome поля (`label`, `size`, `width`, …)
+ * для TextField / Select / и других продуктов на {@link FieldBase}.
  */
-export interface FieldBaseRootProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
-	children: ReactNode;
-	size?: ControlSize;
-	/** @default 'full' */
-	width?: FieldWidth;
-	/**
-	 * Расположение лейбла:
-	 * - `inline` — floating label внутри поля (по умолчанию);
-	 * - `outside` — лейбл над полем;
-	 * - `none` — без лейбла (бывший `compact`).
-	 * @default 'inline'
-	 */
+export interface FieldBaseProps {
+	label: string;
+	/** @default `'inline'` */
 	labelPlacement?: FieldLabelPlacement;
+	size?: ControlSize;
+	/**
+	 * Ширина оболочки: `md` — до 320px, `full` — на всю ширину родителя.
+	 * @default `'md'`
+	 */
+	width?: FieldWidth;
 	error?: boolean | string;
 	helperText?: string;
 	disabled?: boolean;
 	readOnly?: boolean;
-	hasValue?: boolean;
-	open?: boolean;
-	focused?: boolean;
-}
-
-export interface FieldBaseLabelProps extends ComponentPropsWithoutRef<'label'> {
-	/** Расположение конкретного label; по умолчанию — `labelPlacement` Root. */
-	placement?: Exclude<FieldLabelPlacement, 'none'>;
-}
-
-export interface FieldBaseControlProps extends ComponentPropsWithoutRef<'div'> {
-	children: ReactNode;
-}
-
-export interface FieldBasePrefixProps extends ComponentPropsWithoutRef<'span'> {
-	children: ReactNode;
-}
-
-export interface FieldBasePostfixProps extends ComponentPropsWithoutRef<'span'> {
-	children: ReactNode;
-}
-
-/**
- * Affix-кнопка поля (`FieldBase.Button`). `icon` — содержимое; размер берётся из Root.
- */
-export interface FieldBaseButtonProps extends Omit<
-	ButtonBaseProps,
-	'as' | 'asChild' | 'contentClassName' | 'children'
-> {
-	icon?: ReactNode;
-	children?: ReactNode;
-}
-
-export interface FieldBaseIconProps extends ComponentPropsWithoutRef<'span'> {
-	children: ReactNode;
-}
-
-export interface FieldBaseClearProps extends Omit<FieldBaseButtonProps, 'icon'> {
-	/** Показывать кнопку; по умолчанию зависит от состояния Root. */
-	visible?: boolean;
-}
-
-export interface FieldBaseErrorProps extends Omit<ComponentPropsWithoutRef<'p'>, 'children'> {
-	error?: boolean | string;
-	className?: string;
-	id?: string;
-}
-
-export interface FieldBaseHelperProps extends ComponentPropsWithoutRef<'span'> {
-	children?: ReactNode;
-	helperText?: string;
-}
-
-/**
- * Публичный контракт chrome поля (`label`, `size`, `width`, …)
- * для TextField / Select / и других продуктов на {@link FieldBase}.
- */
-export interface FieldBaseProps extends Pick<
-	FieldBaseRootProps,
-	'labelPlacement' | 'size' | 'width' | 'error' | 'helperText' | 'disabled' | 'readOnly'
-> {
-	label: string;
 	prefix?: ReactNode;
 	postfix?: ReactNode;
 	onClear?: () => void;
 	clearLabel?: string;
+	/** Слот под chrome (strength-meter и т.п.). */
+	footer?: ReactNode;
+}
+
+/**
+ * Свойства оболочки `FieldBase`: chrome — пропсы, control — `children`.
+ */
+export interface FieldBaseHostProps extends FieldBaseProps, Omit<
+	ComponentPropsWithoutRef<'div'>,
+	'children' | 'prefix'
+> {
+	id: string;
+	hasValue?: boolean;
+	focused?: boolean;
+	open?: boolean;
+	/** Нативный control (`input`, `textarea`, trigger-кнопка). */
+	children: ReactNode;
+	/** Абсолютный слой поверх control (маска MaskedField). */
+	controlOverlay?: ReactNode;
+	labelId?: string;
+	/**
+	 * Рамка и flex-chrome вокруг control. Выключите для группы ячеек (`PinInput`).
+	 * @default true
+	 */
+	chrome?: boolean;
+}
+
+/**
+ * Affix-кнопка поля. `icon` — содержимое.
+ */
+export interface FieldBaseButtonProps extends ComponentPropsWithoutRef<'button'> {
+	icon?: ReactNode;
+}
+
+export interface FieldBaseIconProps extends ComponentPropsWithoutRef<'span'> {
+	children: ReactNode;
 }

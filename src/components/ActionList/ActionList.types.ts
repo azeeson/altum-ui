@@ -16,13 +16,14 @@ export interface ActionListItem {
 	keywords?: string[];
 	onSelect?: () => void;
 	buttonProps?: ListboxOption['buttonProps'];
+	/** Id группы из {@link ActionListGroup}. */
+	groupId?: string;
 }
 
-/** Группа строк `ActionList`. */
+/** Метаданные группы. Пункты — в плоском `items` через `groupId`. */
 export interface ActionListGroup {
 	id: string;
-	label: string;
-	items: ActionListItem[];
+	label: ReactNode;
 }
 
 /** Императивный API подсветки / выбора в `ActionList`. */
@@ -37,39 +38,20 @@ export interface ActionListHandle {
 	getListId: () => string;
 }
 
-/** Свойства корня `ActionList`. */
-export interface ActionListRootProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'onSelect'> {
-	children: ReactNode;
+/** Свойства `ActionList`. */
+export interface ActionListProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'onSelect'> {
+	items: ActionListItem[];
+	groups?: ActionListGroup[];
 	onAction?: (item: ActionListItem) => void;
 	onHighlightChange?: (index: number) => void;
-}
-
-/** Свойства слота `ActionList.Search`. */
-export interface ActionListSearchProps extends Omit<
-	ComponentPropsWithoutRef<'input'>,
-	'value' | 'type' | 'children'
-> {
+	/**
+	 * Поле фильтра над списком.
+	 * @default false
+	 */
+	filterable?: boolean;
+	filterPlaceholder?: string;
+	/** Контролируемый запрос фильтра (в т.ч. без видимого поля — `CommandPalette`). */
 	query?: string;
 	onQueryChange?: (query: string) => void;
-	/**
-	 * Если `false`, состояние фильтра применяется без второго поля поиска.
-	 * @default true
-	 */
-	visible?: boolean;
-}
-
-/** Свойства слота `ActionList.Group`. */
-export interface ActionListGroupProps {
-	id: string;
-	children: ReactNode;
-}
-
-/** Свойства слота `ActionList.GroupLabel`. */
-export interface ActionListGroupLabelProps {
-	children: ReactNode;
-}
-
-/** Свойства слота `ActionList.Empty`. */
-export interface ActionListEmptyProps {
-	children?: ReactNode;
+	emptyText?: string;
 }

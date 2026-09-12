@@ -15,6 +15,13 @@ test.describe('ImageGallery', () => {
 		await expect(image).toBeVisible();
 		await expect(image).toHaveAttribute('src', /\/images\/img00001\.jpeg/);
 	});
+
+	test('одно изображение без стрелок', async ({page}) => {
+		await visitStory(page, 'altum-components-imagegallery--single-image');
+		await expect(page.locator('#storybook-root img').first()).toBeVisible();
+		await expect(page.getByRole('button', {name: 'Предыдущее изображение'})).toHaveCount(0);
+		await expect(page.getByRole('button', {name: 'Следующее изображение'})).toHaveCount(0);
+	});
 });
 
 test.describe('ImageLightbox', () => {
@@ -91,16 +98,57 @@ test.describe('Calendar', () => {
 	});
 });
 
-test.describe('DateRangePicker', () => {
+test.describe('DateRangeField', () => {
+	test('пустой лейбл не приподнят', async ({page}) => {
+		await visitStory(page, 'altum-components-formfield-daterangefield--playground');
+		const label = page.locator('label').filter({hasText: 'Период отчёта'});
+		await expect(label).toBeVisible();
+		const scaleX = await label.evaluate((el) => {
+			const transform = getComputedStyle(el).transform;
+			if (!transform || transform === 'none') return 1;
+			return new DOMMatrixReadOnly(transform).a;
+		});
+		expect(scaleX).toBeCloseTo(1, 2);
+	});
+
 	test('открывает календарь диапазона', async ({page}) => {
-		await visitStory(page, 'altum-components-daterangepicker--playground');
-		await page.getByRole('button').first().click();
+		await visitStory(page, 'altum-components-formfield-daterangefield--playground');
+		await page.getByLabel('Период отчёта').click();
 		await expect(page.getByRole('grid')).toBeVisible();
+	});
+
+	test('split: календарь закрывается после ухода со второго поля', async ({page}) => {
+		await visitStory(page, 'altum-components-formfield-daterangefield--variants');
+		const start = page.getByLabel('С', {exact: true});
+		const end = page.getByLabel('По', {exact: true});
+		await start.click();
+		await expect(page.getByRole('grid')).toBeVisible();
+		await end.click();
+		await expect(page.getByRole('grid')).toBeVisible();
+		await page.getByText('layout="single"').click();
+		await expect(page.getByRole('grid')).toBeHidden();
 	});
 });
 
 test.describe('DayStripCalendar', () => {
-	test('переходит к следующему диапазону дней', async ({page}) => {
+	test('навигация выбирает соседний день', async ({page}) => {
+		await visitStory(page, 'altum-components-daystripcalendar--playground');
+		const selected = page.getByText(/Выбрано:/);
+		const before = (await selected.innerText()).trim();
+		await page.getByRole('button', {name: /Следующий день|Next day/i}).click();
+		await expect(selected).not.toHaveText(before);
+	});
+
+	test('сдвигает полосу, когда выбранный день выходит за край', async ({page}) => {
+		await visitStory(page, 'altum-components-daystripcalendar--playground');
+		const listbox = page.getByRole('listbox', {name: /Дни|Days/i});
+		await listbox.getByRole('option').last().click();
+		const firstBefore = (await listbox.getByRole('option').first().innerText()).trim();
+		await page.getByRole('button', {name: /Следующий день|Next day/i}).click();
+		await expect(listbox.getByRole('option').first()).not.toHaveText(firstBefore);
+	});
+
+	test('выбирает другой день в полосе', async ({page}) => {
 		await visitStory(page, 'altum-components-daystripcalendar--playground');
 		const selected = page.getByText(/Выбрано:/);
 		await expect(selected).toBeVisible();
@@ -119,9 +167,10 @@ test.describe('CalendarBoard', () => {
 	});
 });
 
-test.describe('TimePicker', () => {
+test.describe('TimeField', () => {
 	test('показывает списки часов и минут', async ({page}) => {
-		await visitStory(page, 'altum-components-timepicker--playground');
+		await visitStory(page, 'altum-components-formfield-timefield--playground');
+		await page.getByRole('textbox').click();
 		await expect(page.getByRole('listbox', {name: /Часы|Hours/i})).toBeVisible();
 		await expect(page.getByRole('listbox', {name: /Минуты|Minutes/i})).toBeVisible();
 	});

@@ -1,43 +1,21 @@
 import type React from 'react';
-import type {
-	ComponentPropsWithoutRef,
-} from 'react';
+import type {ComponentPropsWithoutRef} from 'react';
 
 export type FieldsetVariant = 'default' | 'card' | 'plain';
 
-/** Свойства корня `Fieldset`. */
-export interface FieldsetRootProps extends ComponentPropsWithoutRef<'div'> {
+/**
+ * Свойства `Fieldset` — chrome через пропсы, поля через `children`.
+ */
+export interface FieldsetProps extends ComponentPropsWithoutRef<'div'> {
+	/** @default `'default'` */
 	variant?: FieldsetVariant;
+	/** Native `disabled` на `<fieldset>` (футер снаружи — кнопки остаются кликабельными). */
 	disabled?: boolean;
-	id?: string;
 	children?: React.ReactNode;
-}
-
-/** Семантический `<fieldset>`. */
-export interface FieldsetInnerProps extends ComponentPropsWithoutRef<'fieldset'> {
-	children?: React.ReactNode;
-}
-
-/** Контейнер полей с gap. */
-export interface FieldsetContentProps extends ComponentPropsWithoutRef<'div'> {
+	legend?: React.ReactNode;
+	description?: React.ReactNode;
+	hint?: React.ReactNode;
+	footer?: React.ReactNode;
+	/** Gap между полями. @default `'var(--altum-g-space-4)'` */
 	gap?: number | string;
-	children?: React.ReactNode;
 }
-
-export interface FieldsetLegendProps extends ComponentPropsWithoutRef<'legend'> {
-	children?: React.ReactNode;
-}
-
-export interface FieldsetDescriptionProps extends ComponentPropsWithoutRef<'p'> {
-	children?: React.ReactNode;
-}
-
-export interface FieldsetHintProps extends ComponentPropsWithoutRef<'p'> {
-	children?: React.ReactNode;
-}
-
-export interface FieldsetFooterProps extends ComponentPropsWithoutRef<'div'> {
-	children?: React.ReactNode;
-}
-
-export type FieldsetProps = FieldsetRootProps;

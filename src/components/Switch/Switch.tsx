@@ -6,11 +6,10 @@ export type {
 	SwitchProps,
 } from './Switch.types';
 
-import React, {useId, forwardRef} from 'react';
+import {forwardRef} from 'react';
 import styles from './Switch.module.css';
 import {ToggleControlBase} from '../../base/ToggleControlBase';
 import {cn} from '../../utils/cn';
-import {composeEventHandlers} from '../../utils/composeEvents';
 
 /**
  * Переключатель: `size`, `labelSide`.
@@ -24,56 +23,37 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
 		label,
 		checked,
 		onChange,
-		className = '',
-		id: providedId,
+		onCheckedChange,
+		className,
 		disabled,
 		readOnly,
-		onClick,
 		size = 'md',
 		labelSide = 'end',
 		...props
 	},
 	ref,
 ) {
-	const generatedId = useId();
-	const id = providedId || generatedId;
-	const isReadOnly = !!readOnly && !disabled;
-
 	return (
 		<ToggleControlBase
-			id={id}
-			controlType='switch'
+			ref={ref}
+			type='checkbox'
+			role='switch'
 			size={size}
 			labelSide={labelSide}
-			readOnly={isReadOnly}
-			className={cn(styles.root, size !== 'md' ? styles[size] : '', className)}
-			boxClassName={cn(styles.switchTrack, isReadOnly ? styles.readOnlyTrack : '')}
+			readOnly={readOnly}
+			disabled={disabled}
+			checked={checked}
+			className={cn(styles.root, className)}
+			inputClassName={styles.input}
+			boxClassName={cn(styles.switchTrack, readOnly && !disabled ? styles.readOnlyTrack : '')}
 			boxContent={<div className={styles.switchThumb} />}
 			label={label}
-			input={(
-				<input
-					ref={ref}
-					type='checkbox'
-					id={id}
-					className={styles.input}
-					checked={checked}
-					disabled={disabled}
-					{...props}
-					role='switch'
-					aria-checked={checked}
-					aria-readonly={isReadOnly || undefined}
-					onChange={(e) => {
-						if (isReadOnly) {
-							e.preventDefault();
-							return;
-						}
-						onChange(e.target.checked);
-					}}
-					onClick={composeEventHandlers(onClick, (event) => {
-						if (isReadOnly) event.preventDefault();
-					})}
-				/>
-			)}
+			{...props}
+			aria-checked={checked}
+			onChange={(event) => {
+				onChange(event.target.checked);
+				onCheckedChange?.(event.target.checked);
+			}}
 		/>
 	);
 });

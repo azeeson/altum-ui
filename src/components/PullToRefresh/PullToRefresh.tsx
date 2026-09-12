@@ -10,7 +10,7 @@ import {Spinner} from '../Spinner/Spinner';
 import styles from './PullToRefresh.module.css';
 import {cn} from '../../utils/cn';
 import {composeEventHandlers} from '../../utils/composeEvents';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useLocale} from '../../locales/localeContext';
 import {composeRefs} from '../../utils/composeRefs';
 
 /**

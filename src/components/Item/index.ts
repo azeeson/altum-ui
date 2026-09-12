@@ -4,9 +4,4 @@ export type {
 	ItemMediaVariant,
 	ItemVariant,
 	ItemProps,
-	ItemMediaProps,
-	ItemContentProps,
-	ItemTitleProps,
-	ItemDescriptionProps,
-	ItemActionsProps,
 } from './Item.types';

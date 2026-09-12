@@ -2,7 +2,17 @@ import type {Meta} from '@storybook/react';
 import React from 'react';
 import {StatBadge, StatBadgeProps} from './StatBadge';
 import {Inline, Stack} from '../Layout/Layout';
+import {Card} from '../Card/Card';
+import {Text} from '../Text/Text';
+import {Title} from '../Title/Title';
 import {componentParameters, story, Story} from '../../storybook/meta';
+
+const VARIANTS = [
+	'default',
+	'success',
+	'warning',
+	'error'
+] as const;
 
 export default {
 	title: 'altum/Components/StatBadge',
@@ -15,27 +25,22 @@ export default {
 			description: 'Метка показателя'
 		},
 		value: {
-			control: 'number',
-			description: 'Числовое значение'
+			control: 'text',
+			description: 'Значение (число или строка)'
 		},
 		variant: {
 			control: {
 				type: 'select',
-				options: [
-					'default',
-					'success',
-					'warning',
-					'error'
-				]
+				options: VARIANTS
 			},
-			description: 'Вариант оформления',
+			description: 'Семантический статус',
 		},
 		size: {
 			control: {
 				type: 'select',
 				options: ['md', 'sm'],
 			},
-			description: 'Размер: md — карточка, sm — inline pill',
+			description: 'md — карточка, sm — inline pill',
 		},
 	},
 } satisfies Meta<typeof StatBadge>;
@@ -45,36 +50,14 @@ export const Playground: Story<StatBadgeProps> = {
 		label: 'Готово',
 		value: 12,
 		variant: 'success',
+		size: 'md',
 	},
 	parameters: story('Используйте панель Controls для настройки.'),
 };
 
-export const ProfileStats: Story<StatBadgeProps> = {
-	render: () => (
-		<Inline gap='md'>
-			<StatBadge
-				label='Готово'
-				value={12}
-				variant='success'
-			/>
-			<StatBadge label='В ожидании' value={5} />
-			<StatBadge
-				label='Просрочено'
-				value={2}
-				variant='error'
-			/>
-		</Inline>
-	),
-	parameters: story('Набор статистики профиля задач.'),
-};
-
 export const AllVariants: Story<StatBadgeProps> = {
 	render: () => (
-		<div style={{
-			display: 'flex',
-			gap: 12
-		}}
-		>
+		<Inline gap='md' wrap>
 			<StatBadge label='Обычный' value={42} />
 			<StatBadge
 				label='Успех'
@@ -91,43 +74,12 @@ export const AllVariants: Story<StatBadgeProps> = {
 				value={1}
 				variant='error'
 			/>
-		</div>
+		</Inline>
 	),
 	parameters: story('Все варианты оформления StatBadge.'),
 };
 
-export const Compact: Story<StatBadgeProps> = {
-	render: () => (
-		<Inline gap='sm' align='center'>
-			<StatBadge
-				label='Готово'
-				value={12}
-				variant='success'
-				size='sm'
-			/>
-			<StatBadge
-				label='В ожидании'
-				value={5}
-				size='sm'
-			/>
-			<StatBadge
-				label='Просрочено'
-				value={2}
-				variant='error'
-				size='sm'
-			/>
-			<StatBadge
-				label='Черновик'
-				value={3}
-				variant='warning'
-				size='sm'
-			/>
-		</Inline>
-	),
-	parameters: story('Компактный inline-вариант: value и label в одну строку, высота 15px.'),
-};
-
-export const SizeComparison: Story<StatBadgeProps> = {
+export const Sizes: Story<StatBadgeProps> = {
 	render: () => (
 		<Stack gap='lg'>
 			<Inline gap='md' align='center'>
@@ -153,5 +105,75 @@ export const SizeComparison: Story<StatBadgeProps> = {
 			</Inline>
 		</Stack>
 	),
-	parameters: story('Сравнение default и compact размеров.'),
+	parameters: story('Сравнение `md` (карточка) и `sm` (pill).'),
+};
+
+export const EmptyAndZero: Story<StatBadgeProps> = {
+	render: () => (
+		<Inline gap='md' wrap>
+			<StatBadge label='Новых' value={0} />
+			<StatBadge
+				label='Ошибок'
+				value={0}
+				variant='error'
+			/>
+			<StatBadge label='—' value='—' />
+		</Inline>
+	),
+	parameters: story('Нулевые и пустые значения.'),
+};
+
+export const OverflowText: Story<StatBadgeProps> = {
+	render: () => (
+		<Inline
+			gap='md'
+			wrap
+			style={{maxWidth: 420}}
+		>
+			<StatBadge
+				label='Очень длинная подпись показателя за квартал'
+				value={12847}
+				variant='success'
+			/>
+			<StatBadge
+				label='KPI'
+				value='1 284 700 ₽'
+				size='sm'
+			/>
+		</Inline>
+	),
+	parameters: story('Длинная подпись и форматированная строка вместо числа.'),
+};
+
+export const UsageExample: Story<StatBadgeProps> = {
+	render: () => (
+		<Card
+			style={{maxWidth: 420}}
+			header={(
+				<Title level={4}>
+					Профиль спринта
+				</Title>
+			)}
+		>
+			<Stack gap='md'>
+				<Text size='sm' color='secondary'>
+					Сводка по задачам текущей итерации
+				</Text>
+				<Inline gap='md' wrap>
+					<StatBadge
+						label='Готово'
+						value={12}
+						variant='success'
+					/>
+					<StatBadge label='В ожидании' value={5} />
+					<StatBadge
+						label='Просрочено'
+						value={2}
+						variant='error'
+					/>
+				</Inline>
+			</Stack>
+		</Card>
+	),
+	parameters: story('Набор метрик в карточке профиля.'),
 };

@@ -12,5 +12,5 @@ export type {
 	CalendarContextValue,
 	DateRangeValue,
 	CalendarDayCell,
+	CalendarScheduleEvent,
 } from './Calendar.types';
-export type {CalendarScheduleEvent} from './calendar.schedule';

@@ -4,6 +4,8 @@ import {Link, LinkProps} from './Link';
 import {Text} from '../Text/Text';
 import {Stack, Inline} from '../Layout/Layout';
 import {Box} from '../Box/Box';
+import {Card} from '../Card/Card';
+import {Button} from '../Button/Button';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
@@ -11,7 +13,7 @@ export default {
 	component: Link,
 	tags: ['autodocs'],
 	parameters: componentParameters(
-		'Ссылка с вариантами, размерами и адаптацией цветов внутри Box (--altum-color-link-*).',
+		'Ссылка с вариантами, размерами и цветами `--altum-color-link-*`.',
 	),
 	argTypes: {
 		href: {
@@ -24,6 +26,13 @@ export default {
 				options: ['primary', 'secondary', 'muted'],
 			},
 			description: 'Визуальный вариант',
+		},
+		status: {
+			control: {
+				type: 'select',
+				options: ['default', 'danger'],
+			},
+			description: 'Деструктивное действие',
 		},
 		size: {
 			control: {
@@ -49,6 +58,9 @@ export default {
 			control: 'text',
 			description: 'Текст ссылки',
 		},
+		onClick: {
+			action: 'click',
+		},
 	},
 } satisfies Meta<typeof Link>;
 
@@ -61,6 +73,7 @@ export const Playground: Story<LinkProps> = {
 	args: {
 		children: 'Нажмите сюда для перехода по ссылке',
 		variant: 'primary',
+		status: 'default',
 	},
 	parameters: story('Используйте панель Controls для настройки.'),
 };
@@ -116,6 +129,17 @@ export const Sizes: Story<LinkProps> = {
 		</Stack>
 	),
 	parameters: story('Размеры `xs`–`xl`; без `size` — наследование от родителя.'),
+};
+
+export const OverflowText: Story<LinkProps> = {
+	render: () => (
+		<div style={{maxWidth: 200}}>
+			<Link href='#'>
+				Очень длинный текст ссылки, который переносится на несколько строк
+			</Link>
+		</div>
+	),
+	parameters: story('Длинный текст ссылки в узком контейнере.'),
 };
 
 export const OnBox: Story<LinkProps> = {
@@ -191,5 +215,54 @@ export const OnBox: Story<LinkProps> = {
 			</Inline>
 		</Stack>
 	),
-	parameters: story('Адаптация `--altum-color-link-*` на поверхностях Box.'),
+	parameters: story('Ссылки на заливках Box — те же `--altum-color-link-*`, без ремапа.'),
+};
+
+export const Interaction: Story<LinkProps> = {
+	render: () => (
+		<Link href='#docs'>
+			Документация
+		</Link>
+	),
+	play: async ({canvasElement}) => {
+		canvasElement.querySelector('a')?.focus();
+	},
+	parameters: story('Play ставит фокус на ссылку (focus-visible).'),
+};
+
+export const UsageExample: Story<LinkProps> = {
+	render: () => (
+		<Card
+			style={{maxWidth: 400}}
+			header={(
+				<Text weight='bold'>
+					Нет аккаунта?
+				</Text>
+			)}
+		>
+			<Stack gap='md'>
+				<Text size='sm'>
+					Создайте учётную запись или
+					{' '}
+					<Link href='#' size='sm'>
+						восстановите доступ
+					</Link>
+					.
+				</Text>
+				<Inline gap='sm' align='center'>
+					<Button size='sm'>
+						Зарегистрироваться
+					</Button>
+					<Link
+						href='#'
+						variant='muted'
+						size='sm'
+					>
+						Узнать больше
+					</Link>
+				</Inline>
+			</Stack>
+		</Card>
+	),
+	parameters: story('Ссылка в тексте карточки рядом с кнопкой.'),
 };

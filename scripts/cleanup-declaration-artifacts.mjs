@@ -44,6 +44,7 @@ function shouldMarkUseClient(rel) {
 		|| normalized.startsWith('components/')
 		|| normalized.startsWith('base/')
 		|| normalized.startsWith('hooks/')
+		|| normalized.startsWith('styles/')
 	);
 }
 

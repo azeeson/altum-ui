@@ -14,11 +14,35 @@ export type OverlayTriggerMode = 'click' | 'hover' | 'manual';
 export type OverlayWidthMode = 'trigger' | 'content' | 'trigger-fit';
 /** Алиас `OverlayWidthMode` для Dropdown. */
 export type DropdownWidthMode = OverlayWidthMode;
-/** Выравнивание панели Dropdown относительно триггера. */
-export type DropdownAlign = 'left' | 'center' | 'right' | 'auto';
+/**
+ * Выравнивание панели Dropdown относительно триггера.
+ * `start` / `center` / `end` — как у Overlay; `auto` — старт с flip.
+ * `left` / `right` — deprecated-алиасы `start` / `end`.
+ */
+export type DropdownAlign = AnchorAlign | 'auto' | 'left' | 'right';
 /** Кто скроллит панель: оболочка Overlay или контент. */
 export type DropdownPanelScroll = 'overlay' | 'content';
 export type {OverlayPurpose};
+
+/** Как Overlay закрывается: клик снаружи, Escape, оба или ни то ни другое. */
+export type OverlayDismiss = 'outside' | 'escape' | 'all' | 'none';
+
+export function resolveOverlayDismiss(
+	dismiss: OverlayDismiss | undefined,
+	defaults: {
+		outside: boolean;
+		escape: boolean
+	},
+): {
+	outside: boolean;
+	escape: boolean
+} {
+	if (dismiss == null) return defaults;
+	return {
+		outside: dismiss === 'all' || dismiss === 'outside',
+		escape: dismiss === 'all' || dismiss === 'escape',
+	};
+}
 
 /**
  * Slot-пропсы контентного узла Overlay (className, style, a11y, handlers).
@@ -31,31 +55,23 @@ export type OverlayContentProps = Omit<React.HTMLAttributes<HTMLElement>, 'role'
 	'aria-describedby'?: string;
 	/** Фактическая сторона после flip (для стрелок и т.п.). */
 	'data-side'?: AnchorSide;
+	'data-kind'?: OverlayVariant;
+	'data-presented'?: string;
 };
 
-/** Контент Overlay: элемент (`asChild`) или render-prop. */
-export type OverlayChildren =
-	| React.ReactElement
-	| RenderChildrenFn<OverlayContentProps>;
-
-type OverlayChildrenProps = {
-	/**
-	 * `true` — единственный child-элемент получает slot-пропсы через `cloneElement`.
-	 * `false` — `children` — функция `(props, contentRef) => ReactNode`.
-	 * @default true
-	 */
-	asChild?: boolean;
-	children: OverlayChildren;
-};
+/** Контент Overlay: render-prop или единственный элемент (`mergeSlotProps`). */
+export type OverlayChildren = RenderChildrenFn<OverlayContentProps> | React.ReactElement;
 
 /** Общие свойства всех вариантов Overlay. */
-export type OverlayBaseProps = OverlayChildrenProps & {
+export type OverlayBaseProps = {
+	children: OverlayChildren;
 	/**
 	 * Видимость слоя. Держите компонент смонтированным —
 	 * `{open && <Overlay>}` убивает exit-анимацию.
 	 */
 	open: boolean;
-	onClose: () => void;
+	/** Закрытие — `onOpenChange(false)`; открытие с якоря — `onOpenChange(true)`. */
+	onOpenChange: (open: boolean) => void;
 	className?: string;
 	/**
 	 * Семантика слоя: z-index и sideOffset из CSS-токенов ThemeProvider
@@ -82,9 +98,9 @@ export type OverlayBaseProps = OverlayChildrenProps & {
 /** Overlay как модальный диалог. */
 export type OverlayModalProps = OverlayBaseProps & {
 	variant: 'modal';
-	/** Вариант Backdrop. @default 'default' */
+	/** Вариант Backdrop. @default `'strong'` при `purpose="lightbox"`, иначе `'default'` */
 	backdropVariant?: BackdropVariant;
-	/** Размытие Backdrop. @default 'sm' */
+	/** Размытие Backdrop. @default `'md'` при `purpose="lightbox"`, иначе `'sm'` */
 	backdropBlur?: BackdropBlur;
 };
 
@@ -97,7 +113,7 @@ export type OverlayFloatingProps = OverlayBaseProps & {
 	 */
 	style?: React.CSSProperties;
 	/**
-	 * Показать Backdrop под контентом; клик по scrim закрывает при `closeOnOutsideClick`.
+	 * Показать Backdrop под контентом; клик по scrim закрывает при `dismiss` с `outside`.
 	 * @default false
 	 */
 	backdrop?: boolean;
@@ -106,15 +122,10 @@ export type OverlayFloatingProps = OverlayBaseProps & {
 	/** Размытие Backdrop. @default 'sm' */
 	backdropBlur?: BackdropBlur;
 	/**
-	 * Закрытие по клику снаружи (по Backdrop или вне панели).
-	 * @default true при `backdrop`, иначе false
+	 * Закрытие: снаружи, Escape, оба или выкл.
+	 * @default `'all'` при `backdrop`, иначе `'escape'`
 	 */
-	closeOnOutsideClick?: boolean;
-	/**
-	 * Закрытие по Escape.
-	 * @default true
-	 */
-	closeOnEscape?: boolean;
+	dismiss?: OverlayDismiss;
 	/**
 	 * Блокировать scroll body.
 	 * @default true при `backdrop`, иначе false
@@ -133,7 +144,7 @@ export type OverlaySheetProps = OverlayBaseProps & {
 	/** Край, с которого выезжает панель. @default 'bottom' */
 	side?: OverlaySheetSide;
 	/**
-	 * Показать Backdrop под панелью; клик по scrim закрывает при `closeOnOutsideClick`.
+	 * Показать Backdrop под панелью; клик по scrim закрывает при `dismiss` с `outside`.
 	 * @default false
 	 */
 	backdrop?: boolean;
@@ -142,22 +153,17 @@ export type OverlaySheetProps = OverlayBaseProps & {
 	/** Размытие Backdrop. @default 'sm' */
 	backdropBlur?: BackdropBlur;
 	/**
-	 * Закрытие по клику снаружи (по Backdrop или вне панели).
-	 * @default true при `backdrop`, иначе false
+	 * Закрытие: снаружи, Escape, оба или выкл.
+	 * @default `'all'` при `backdrop`, иначе `'escape'`
 	 */
-	closeOnOutsideClick?: boolean;
-	/**
-	 * Закрытие по Escape.
-	 * @default true
-	 */
-	closeOnEscape?: boolean;
+	dismiss?: OverlayDismiss;
 };
 
 type OverlayAnchorBaseProps = OverlayBaseProps & {
 	targetRef: React.RefObject<HTMLElement | null>;
 	/**
 	 * `click` / `hover` — слушатели на `targetRef` (нужен `onOpenChange` для открытия);
-	 * `manual` — только `open` / `onClose`.
+	 * `manual` — только `open` / `onOpenChange`.
 	 * @default 'manual'
 	 */
 	triggerMode?: OverlayTriggerMode;
@@ -165,12 +171,13 @@ type OverlayAnchorBaseProps = OverlayBaseProps & {
 	side?: AnchorSide;
 	/** Выравнивание вдоль стороны; при нехватке места — flip start↔end. @default 'start' */
 	align?: AnchorAlign;
-	/** Уведомление об открытии/закрытии (click/hover). */
-	onOpenChange?: (open: boolean) => void;
 	openDelay?: number;
 	closeDelay?: number;
-	closeOnOutsideClick?: boolean;
-	closeOnEscape?: boolean;
+	/**
+	 * Закрытие: снаружи, Escape, оба или выкл.
+	 * @default `'all'` при `triggerMode="click"`, `'none'` при `hover`
+	 */
+	dismiss?: OverlayDismiss;
 };
 
 /** Overlay, привязанный к якорю (popover). */
@@ -197,109 +204,9 @@ export type OverlayProps =
 	| OverlayPopoverProps
 	| OverlayDropdownProps;
 
-/** Согласовано с transition в Overlay.module.css (modal / popover / dropdown / sheet). */
+/** Согласовано с transition в Overlay.module.css. */
 export const PRESENCE_MS = 200;
-/** Sheet использует ту же длительность `--altum-motion-overlay`, что и другие оверлеи. */
-export const SHEET_PRESENCE_MS = 200;
 /** Задержка открытия hover-оверлея. */
 export const HOVER_OPEN_DELAY = 200;
 /** Задержка закрытия hover-оверлея. */
 export const HOVER_CLOSE_DELAY = 100;
-
-/** Внутренние пропсы modal-слоя Overlay. */
-export type ModalLayerProps = {
-	open: boolean;
-	onClose: () => void;
-	children: OverlayChildren;
-	asChild: boolean;
-	className?: string;
-	presented: boolean;
-	layerStyle?: React.CSSProperties;
-	backdropVariant?: BackdropVariant;
-	backdropBlur?: BackdropBlur;
-	'aria-label'?: string;
-	'aria-labelledby'?: string;
-	'aria-describedby'?: string;
-	role?: string;
-	contentRef: React.Ref<HTMLElement | null>;
-};
-
-/** Внутренние пропсы floating-слоя Overlay. */
-export type FloatingLayerProps = {
-	open: boolean;
-	onClose: () => void;
-	children: OverlayChildren;
-	asChild: boolean;
-	className?: string;
-	style?: React.CSSProperties;
-	presented: boolean;
-	layerStyle?: React.CSSProperties;
-	backdrop?: boolean;
-	backdropVariant?: BackdropVariant;
-	backdropBlur?: BackdropBlur;
-	closeOnOutsideClick?: boolean;
-	closeOnEscape?: boolean;
-	lockScroll?: boolean;
-	trapFocus?: boolean;
-	'aria-label'?: string;
-	'aria-labelledby'?: string;
-	'aria-describedby'?: string;
-	role?: string;
-	contentRef: React.Ref<HTMLElement | null>;
-};
-
-/** Внутренние пропсы sheet-слоя Overlay. */
-export type SheetLayerProps = {
-	side: OverlaySheetSide;
-	open: boolean;
-	children: OverlayChildren;
-	asChild: boolean;
-	className?: string;
-	presented: boolean;
-	onClose: () => void;
-	layerStyle?: React.CSSProperties;
-	backdrop?: boolean;
-	backdropVariant?: BackdropVariant;
-	backdropBlur?: BackdropBlur;
-	closeOnOutsideClick?: boolean;
-	closeOnEscape?: boolean;
-	'aria-label'?: string;
-	'aria-labelledby'?: string;
-	'aria-describedby'?: string;
-	role?: string;
-	contentRef: React.Ref<HTMLElement | null>;
-};
-
-/** Внутренние пропсы якорного слоя Overlay (popover / dropdown). */
-export type AnchorLayerProps = {
-	variant: 'popover' | 'dropdown';
-	purpose?: OverlayPurpose;
-	open: boolean;
-	targetRef: React.RefObject<HTMLElement | null>;
-	contentRef: React.Ref<HTMLElement | null>;
-	triggerMode: OverlayTriggerMode;
-	side: AnchorSide;
-	align: AnchorAlign;
-	sideOffset: number;
-	widthMode: OverlayWidthMode;
-	children: OverlayChildren;
-	asChild: boolean;
-	className?: string;
-	presented: boolean;
-	layerStyle?: React.CSSProperties;
-	closeDelay: number;
-	closeOnOutsideClick?: boolean;
-	closeOnEscape?: boolean;
-	clearTimers: () => void;
-	closeTimerRef: React.MutableRefObject<number | null>;
-	pointerRef: React.MutableRefObject<{
-		x: number;
-		y: number
-	} | null>;
-	requestOpen: (next: boolean) => void;
-	openHover: (next: boolean) => void;
-	'aria-label'?: string;
-	'aria-labelledby'?: string;
-	'aria-describedby'?: string;
-	role?: string;
-};

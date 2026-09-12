@@ -6,6 +6,8 @@ import {Grid} from '../Grid/Grid';
 import {Stack} from '../Layout/Layout';
 import {Text} from '../Text/Text';
 import {Title} from '../Title/Title';
+import {Button} from '../Button/Button';
+import {componentParameters, story, Story} from '../../storybook/meta';
 
 function DemoKpiCard({
 	label,
@@ -36,7 +38,6 @@ function DemoKpiCard({
 		</Card>
 	);
 }
-import {componentParameters, story, Story} from '../../storybook/meta';
 
 const SIZES: ContainerSize[] = [
 	'sm',
@@ -51,11 +52,39 @@ export default {
 	component: Container,
 	tags: ['autodocs'],
 	parameters: componentParameters('Контентная колонка и Page-оболочка.'),
+	argTypes: {
+		size: {
+			control: {
+				type: 'select',
+				options: SIZES,
+			},
+			description: 'Max-width контентной колонки',
+		},
+		padded: {
+			control: 'boolean',
+			description: 'Горизонтальные отступы',
+		},
+		as: {
+			control: {
+				type: 'select',
+				options: [
+					'div',
+					'section',
+					'main',
+					'article'
+				],
+			},
+			description: 'HTML-тег корня',
+		},
+	},
 } satisfies Meta<typeof Container>;
 
 export const Playground: Story<ContainerProps> = {
 	render: (args) => (
-		<Page {...args}>
+		<Page
+			size={args.size}
+			padded={args.padded}
+		>
 			<Grid columns={3} gap={16}>
 				<DemoKpiCard
 					label='Выручка'
@@ -77,7 +106,10 @@ export const Playground: Story<ContainerProps> = {
 			</Grid>
 		</Page>
 	),
-	args: {size: 'lg'},
+	args: {
+		size: 'lg',
+		padded: true,
+	},
 	parameters: story('Page + KPI Card сетка.'),
 };
 
@@ -100,7 +132,7 @@ export const Sizes: Story<ContainerProps> = {
 						&quot;
 					</Text>
 					<Text size='xs'>
-						max-width: 
+						max-width:
 						{' '}
 						{size === 'full' ? 'none' : `${{
 							sm: 640,
@@ -114,6 +146,35 @@ export const Sizes: Story<ContainerProps> = {
 		</Stack>
 	),
 	parameters: story('Все размеры контентной колонки: sm / md / lg / xl / full.'),
+};
+
+export const Flush: Story<ContainerProps> = {
+	render: () => (
+		<Container
+			size='md'
+			padded={false}
+			style={{
+				background: 'var(--altum-color-surface-active)',
+				paddingBlock: 'var(--altum-g-space-3)',
+			}}
+		>
+			<Text size='sm'>
+				{'padded={false} — без горизонтальных отступов колонки.'}
+			</Text>
+		</Container>
+	),
+	parameters: story('Колонка без боковых padding.'),
+};
+
+export const Empty: Story<ContainerProps> = {
+	render: () => (
+		<Container size='sm'>
+			<Text size='sm' color='muted'>
+				Пустая колонка.
+			</Text>
+		</Container>
+	),
+	parameters: story('Минимальное содержимое.'),
 };
 
 export const PageAlias: Story<ContainerProps> = {
@@ -155,4 +216,36 @@ export const PageAlias: Story<ContainerProps> = {
 		</Page>
 	),
 	parameters: story('Экспорт `Page` — полноэкранная оболочка с Container внутри.'),
+};
+
+export const UsageExample: Story<ContainerProps> = {
+	render: () => (
+		<Page size='md'>
+			<Stack gap='md'>
+				<Title level={2}>
+					Настройки аккаунта
+				</Title>
+				<Text size='sm' color='secondary'>
+					Контент страницы ограничен колонкой Container внутри Page.
+				</Text>
+				<Card
+					header={(
+						<Text weight='bold'>
+							Профиль
+						</Text>
+					)}
+					actions={(
+						<Button size='sm'>
+							Сохранить
+						</Button>
+					)}
+				>
+					<Text size='sm'>
+						Имя, email и уведомления.
+					</Text>
+				</Card>
+			</Stack>
+		</Page>
+	),
+	parameters: story('Типовая страница: Title + Card внутри Page.'),
 };

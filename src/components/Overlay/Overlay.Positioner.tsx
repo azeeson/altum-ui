@@ -1,6 +1,7 @@
 import React, {useCallback, useLayoutEffect, useRef, useState} from 'react';
 import {
 	computeAnchorPosition,
+	type AnchorAlign,
 	type AnchorSide,
 } from '../../utils/anchorPosition';
 import {cn} from '../../utils/cn';
@@ -8,11 +9,45 @@ import {composeRefs} from '../../utils/composeRefs';
 import {renderChildren} from '../../utils/renderChildren';
 import {useAnchorDismiss} from './Overlay.Dismiss';
 import type {
-	AnchorLayerProps,
 	OverlayContentProps,
+	OverlayPurpose,
+	OverlayTriggerMode,
 	OverlayWidthMode,
+	OverlayChildren,
 } from './Overlay.types';
 import styles from './Overlay.module.css';
+
+type AnchorLayerProps = {
+	variant: 'popover' | 'dropdown';
+	purpose?: OverlayPurpose;
+	open: boolean;
+	targetRef: React.RefObject<HTMLElement | null>;
+	contentRef: React.Ref<HTMLElement | null>;
+	triggerMode: OverlayTriggerMode;
+	side: AnchorSide;
+	align: AnchorAlign;
+	sideOffset: number;
+	widthMode: OverlayWidthMode;
+	children: OverlayChildren;
+	className?: string;
+	presented: boolean;
+	layerStyle?: React.CSSProperties;
+	closeDelay: number;
+	closeOnOutsideClick?: boolean;
+	closeOnEscape?: boolean;
+	clearTimers: () => void;
+	closeTimerRef: React.MutableRefObject<number | null>;
+	pointerRef: React.MutableRefObject<{
+		x: number;
+		y: number
+	} | null>;
+	requestOpen: (next: boolean) => void;
+	openHover: (next: boolean) => void;
+	'aria-label'?: string;
+	'aria-labelledby'?: string;
+	'aria-describedby'?: string;
+	role?: string;
+};
 
 function transformOriginForSide(side: AnchorSide): string {
 	if (side === 'bottom') return 'top center';
@@ -70,9 +105,13 @@ function resolveWidthStyle(
 	};
 }
 
+type AnchorCoords = React.CSSProperties & {
+	'--altum-anchor-arrow-along'?: string;
+};
+
 function coordsEqual(
-	a: React.CSSProperties,
-	b: React.CSSProperties,
+	a: AnchorCoords,
+	b: AnchorCoords,
 ): boolean {
 	return a.position === b.position
 		&& a.top === b.top
@@ -80,7 +119,8 @@ function coordsEqual(
 		&& a.width === b.width
 		&& a.maxWidth === b.maxWidth
 		&& a.minWidth === b.minWidth
-		&& a.transformOrigin === b.transformOrigin;
+		&& a.transformOrigin === b.transformOrigin
+		&& a['--altum-anchor-arrow-along'] === b['--altum-anchor-arrow-along'];
 }
 
 export function AnchorLayer({
@@ -95,7 +135,6 @@ export function AnchorLayer({
 	sideOffset,
 	widthMode,
 	children,
-	asChild,
 	className,
 	presented,
 	layerStyle,
@@ -119,7 +158,7 @@ export function AnchorLayer({
 		localContentRef,
 	) as React.RefCallback<HTMLElement>;
 	/* eslint-enable react-hooks/refs */
-	const [coords, setCoords] = useState<React.CSSProperties>({
+	const [coords, setCoords] = useState<AnchorCoords>({
 		position: 'fixed',
 		top: -9999,
 		left: -9999,
@@ -164,8 +203,19 @@ export function AnchorLayer({
 		}
 
 		const next = computeAnchorPosition(trigger, content, side, align, sideOffset);
-		const triggerWidth = Math.ceil(trigger.getBoundingClientRect().width);
-		const nextCoords: React.CSSProperties = {
+		const triggerRect = trigger.getBoundingClientRect();
+		const triggerWidth = Math.ceil(triggerRect.width);
+		const alongAxis = next.side === 'top' || next.side === 'bottom'
+			? triggerRect.left + triggerRect.width / 2 - next.left
+			: triggerRect.top + triggerRect.height / 2 - next.top;
+		const alongExtent = next.side === 'top' || next.side === 'bottom'
+			? content.offsetWidth
+			: content.offsetHeight;
+		const alongPad = 10;
+		const along = Math.round(
+			Math.min(Math.max(alongAxis, alongPad), Math.max(alongPad, alongExtent - alongPad)),
+		);
+		const nextCoords: AnchorCoords = {
 			position: next.position,
 			top: next.top,
 			left: next.left,
@@ -178,6 +228,7 @@ export function AnchorLayer({
 				)
 				: undefined,
 			transformOrigin: transformOriginForSide(next.side),
+			'--altum-anchor-arrow-along': `${along}px`,
 		};
 
 		return {
@@ -254,10 +305,6 @@ export function AnchorLayer({
 		schedulePositionUpdate
 	]);
 
-	const animClass = variant === 'dropdown'
-		? (presented ? styles.dropdownVisible : styles.dropdownHidden)
-		: (presented ? styles.popoverVisible : styles.popoverHidden);
-
 	const originClass =
 		resolvedSide === 'top' ? styles.originBottom
 			: resolvedSide === 'left' ? styles.originRight
@@ -266,13 +313,14 @@ export function AnchorLayer({
 
 	const contentProps: OverlayContentProps = {
 		className: cn(
-			styles.anchorLayer,
+			styles.anchor,
 			purpose === 'tooltip' && styles.anchorTooltip,
-			variant === 'dropdown' && styles.dropdownLayer,
-			animClass,
+			purpose === 'popover' && styles.anchorPopover,
+			variant === 'dropdown' && styles.dropdown,
 			variant === 'dropdown' && originClass,
 			className,
 		),
+		'data-presented': presented ? '' : undefined,
 		style: {
 			...coords,
 			...layerStyle,
@@ -307,10 +355,9 @@ export function AnchorLayer({
 			: undefined,
 	};
 
-	/* renderChildren может навесить contentRef через cloneElement; доступ к ref — намеренная проводка слота. */
-	// eslint-disable-next-line react-hooks/refs -- слияние contentRef для asChild/render-prop
+	/* renderChildren навешивает contentRef через render-prop. */
+	// eslint-disable-next-line react-hooks/refs -- слияние contentRef для render-prop
 	return renderChildren({
-		asChild,
 		children,
 		props: contentProps,
 		contentRef: mergedContentRef,

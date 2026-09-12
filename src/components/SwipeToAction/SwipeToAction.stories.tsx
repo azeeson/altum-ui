@@ -4,7 +4,7 @@ import {SwipeToAction} from './SwipeToAction';
 import type {SwipeAction, SwipeToActionProps} from './SwipeToAction.types';
 import {Item} from '../Item/Item';
 import {ActionSheetTrigger} from '../ActionSheetTrigger/ActionSheetTrigger';
-import {OverflowActions} from '../OverflowActions/OverflowActions';
+import {Overflow} from '../Overflow/Overflow';
 import {SortableList} from '../SortableList/SortableList';
 import {VirtualList} from '../VirtualList/VirtualList';
 import {Button} from '../Button/Button';
@@ -94,19 +94,13 @@ export const WithItem: Story<SwipeToActionProps> = {
 					На desktop обёртка прозрачна.
 				</Text>
 				<SwipeToAction leftActions={leftActions} rightActions={rightActions}>
-					<Item interactive>
-						<Item.Media variant='icon'>
-							<IconBell size={20} />
-						</Item.Media>
-						<Item.Content>
-							<Item.Title>
-								Уведомление
-							</Item.Title>
-							<Item.Description>
-								Высота кнопок действий = высота Item
-							</Item.Description>
-						</Item.Content>
-					</Item>
+					<Item
+						interactive
+						media={<IconBell size={20} />}
+						mediaVariant='icon'
+						title='Уведомление'
+						description='Высота кнопок действий = высота Item'
+					/>
 				</SwipeToAction>
 				<Text size='sm' color='muted'>
 					Действие:
@@ -154,19 +148,13 @@ export const TriggerAnyAction: Story<SwipeToActionProps> = {
 						},
 					]}
 				>
-					<Item interactive>
-						<Item.Media variant='icon'>
-							<IconToDo size={20} />
-						</Item.Media>
-						<Item.Content>
-							<Item.Title>
-								Задача
-							</Item.Title>
-							<Item.Description>
-								Full-swipe раскрывает и запускает «Архив»
-							</Item.Description>
-						</Item.Content>
-					</Item>
+					<Item
+						interactive
+						media={<IconToDo size={20} />}
+						mediaVariant='icon'
+						title='Задача'
+						description='Full-swipe раскрывает и запускает «Архив»'
+					/>
 				</SwipeToAction>
 				<Text size='sm' color='muted'>
 					Лог:
@@ -186,7 +174,7 @@ export const WithActionSheetTrigger: Story<SwipeToActionProps> = {
 		return (
 			<Stack gap='md' style={{maxWidth: 420}}>
 				<Text size='sm' color='muted'>
-					Long-press (ActionSheetTrigger) открывает OverflowActions; свайп — отдельные
+					Long-press (ActionSheetTrigger) открывает Overflow; свайп — отдельные
 					действия. На touch+mobile ⋯ скрыты.
 				</Text>
 				<ActionSheetTrigger>
@@ -203,38 +191,32 @@ export const WithActionSheetTrigger: Story<SwipeToActionProps> = {
 								},
 							]}
 						>
-							<Item interactive>
-								<Item.Media variant='icon'>
-									<IconBell size={20} />
-								</Item.Media>
-								<Item.Content>
-									<Item.Title>
-										Сообщение
-									</Item.Title>
-									<Item.Description>
-										Long-press → меню · свайп → удалить
-									</Item.Description>
-								</Item.Content>
-								<Item.Actions>
-									<OverflowActions visibleCount={0}>
-										<OverflowActions.Item
+							<Item
+								interactive
+								media={<IconBell size={20} />}
+								mediaVariant='icon'
+								title='Сообщение'
+								description='Long-press → меню · свайп → удалить'
+								actions={(
+									<Overflow visibleCount={0}>
+										<Overflow.Item
 											icon={<IconStar size={16} />}
 											label='В избранное'
 											onSelect={act('Меню: Избранное')}
 										/>
-										<OverflowActions.Item
+										<Overflow.Item
 											icon={<IconArchive size={16} />}
 											label='Архив'
 											onSelect={act('Меню: Архив')}
 										/>
-										<OverflowActions.Item
+										<Overflow.Item
 											icon={<IconTrash size={16} />}
 											label='Удалить'
 											onSelect={act('Меню: Удалить')}
 										/>
-									</OverflowActions>
-								</Item.Actions>
-							</Item>
+									</Overflow>
+								)}
+							/>
 						</SwipeToAction>
 					</div>
 				</ActionSheetTrigger>
@@ -246,7 +228,7 @@ export const WithActionSheetTrigger: Story<SwipeToActionProps> = {
 			</Stack>
 		);
 	},
-	parameters: story('Связка ActionSheetTrigger + SwipeToAction + Item + OverflowActions.'),
+	parameters: story('Связка ActionSheetTrigger + SwipeToAction + Item + Overflow.'),
 };
 
 type SortRow = {
@@ -312,30 +294,25 @@ export const SortableListCombo: Story<SwipeToActionProps> = {
 										},
 									]}
 								>
-									<Item interactive>
-										<Item.Content>
-											<Item.Title>
-												{item.title}
-											</Item.Title>
-											<Item.Description>
-												{item.subtitle}
-											</Item.Description>
-										</Item.Content>
-										<Item.Actions>
-											<OverflowActions visibleCount={0}>
-												<OverflowActions.Item
+									<Item
+										interactive
+										title={item.title}
+										description={item.subtitle}
+										actions={(
+											<Overflow visibleCount={0}>
+												<Overflow.Item
 													icon={<IconStar size={16} />}
 													label='Закрепить'
 													onSelect={act(`${item.title}: Закрепить`)}
 												/>
-												<OverflowActions.Item
+												<Overflow.Item
 													icon={<IconArchive size={16} />}
 													label='Архив'
 													onSelect={act(`${item.title}: Архив`)}
 												/>
-											</OverflowActions>
-										</Item.Actions>
-									</Item>
+											</Overflow>
+										)}
+									/>
 								</SwipeToAction>
 							</div>
 						</ActionSheetTrigger>
@@ -412,35 +389,33 @@ export const VirtualListCombo: Story<SwipeToActionProps> = {
 											},
 										]}
 									>
-										<Item interactive>
-											<Item.Media variant='icon'>
-												<IconBell size={18} />
-											</Item.Media>
-											<Item.Content>
-												<Item.Title>
-													{item.from}
-												</Item.Title>
-												<Item.Description>
+										<Item
+											interactive
+											media={<IconBell size={18} />}
+											mediaVariant='icon'
+											title={item.from}
+											description={(
+												<>
 													{item.subject}
 													{' — '}
 													{item.preview}
-												</Item.Description>
-											</Item.Content>
-											<Item.Actions>
-												<OverflowActions visibleCount={0}>
-													<OverflowActions.Item
+												</>
+											)}
+											actions={(
+												<Overflow visibleCount={0}>
+													<Overflow.Item
 														icon={<IconStar size={16} />}
 														label='Избранное'
 														onSelect={act(`${item.subject}: Избранное`)}
 													/>
-													<OverflowActions.Item
+													<Overflow.Item
 														icon={<IconToDo size={16} />}
 														label='Прочитано'
 														onSelect={act(`${item.subject}: Прочитано`)}
 													/>
-												</OverflowActions>
-											</Item.Actions>
-										</Item>
+												</Overflow>
+											)}
+										/>
 									</SwipeToAction>
 								</div>
 							</ActionSheetTrigger>

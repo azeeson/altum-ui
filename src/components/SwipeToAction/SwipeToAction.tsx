@@ -193,7 +193,7 @@ export const SwipeToAction = forwardRef<HTMLDivElement, SwipeToActionProps>(func
 						// Не даём ActionSheetTrigger открыть меню во время свайпа
 						actionSheetRef.current?.cancelLongPress();
 						if (actionSheetRef.current?.overflowOpen) {
-							actionSheetRef.current.closeOverflow();
+							actionSheetRef.current.setOverflowOpen(false);
 						}
 					}
 				}

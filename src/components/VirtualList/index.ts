@@ -10,5 +10,4 @@ export type {
 	VirtualListHandle,
 	MountRange,
 	VirtualListProps,
-	VirtualListItemCellProps,
 } from './VirtualList.types';

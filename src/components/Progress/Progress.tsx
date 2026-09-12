@@ -7,15 +7,45 @@ export type {
 	ProgressCircleProps,
 } from './Progress.types';
 
-import {forwardRef} from 'react';
+import {forwardRef, type ReactNode} from 'react';
+import type {ProgressVariant} from './Progress.types';
 import styles from './Progress.module.css';
 import {cn} from '../../utils/cn';
+import {mergeStyles} from '../../utils/mergeStyles';
 
 const CIRCLE_DIAMETER = {
 	sm: 40,
 	md: 50,
 	lg: 64,
 } as const;
+
+function progressModel(
+	percentage: number,
+	indeterminate: boolean,
+	variant: ProgressVariant,
+	label: ReactNode,
+	valueText: ReactNode,
+) {
+	const n = Math.min(100, Math.max(0, percentage));
+	const text = valueText ?? (indeterminate ? undefined : `${Math.round(n)}%`);
+	return {
+		n,
+		text,
+		tone: variant === 'auto'
+			? (!indeterminate && n >= 100 ? 'success' : 'primary')
+			: variant,
+		aria: {
+			role: 'progressbar' as const,
+			'aria-valuemin': indeterminate ? undefined : 0,
+			'aria-valuemax': indeterminate ? undefined : 100,
+			'aria-valuenow': indeterminate ? undefined : n,
+			'aria-valuetext': typeof text === 'string' || typeof text === 'number'
+				? String(text)
+				: undefined,
+			'aria-label': typeof label === 'string' ? label : undefined,
+		},
+	};
+}
 
 /**
  * Горизонтальный индикатор выполнения.
@@ -32,25 +62,21 @@ export const Progress = forwardRef<HTMLDivElement, ProgressProps>(function Progr
 		valueText,
 		showValueText = true,
 		size = 'md',
-		variant: variantProp = 'auto',
+		variant = 'auto',
 		className,
 		style,
 		...rest
 	},
 	ref,
 ) {
-	const normalized = Math.min(100, Math.max(0, percentage));
-	const resolvedValueText = valueText ?? (indeterminate ? undefined : `${Math.round(normalized)}%`);
-	const showMeta = label != null || (showValueText && resolvedValueText != null);
-	const tone = variantProp === 'auto'
-		? (!indeterminate && normalized >= 100 ? 'success' : 'primary')
-		: variantProp;
+	const {n, text, tone, aria} = progressModel(percentage, indeterminate, variant, label, valueText);
+	const showMeta = label != null || (showValueText && text != null);
 
 	return (
 		<div
 			ref={ref}
-			className={cn(styles.root, className)}
-			style={style}
+			className={cn(styles.root, styles[`tone_${tone}`], className)}
+			style={mergeStyles({['--altum-progress' as string]: n}, style)}
 			{...rest}
 		>
 			{showMeta && (
@@ -60,9 +86,9 @@ export const Progress = forwardRef<HTMLDivElement, ProgressProps>(function Progr
 							{label}
 						</span>
 					)}
-					{showValueText && resolvedValueText != null && (
+					{showValueText && text != null && (
 						<span className={styles.valueText}>
-							{resolvedValueText}
+							{text}
 						</span>
 					)}
 				</div>
@@ -70,25 +96,12 @@ export const Progress = forwardRef<HTMLDivElement, ProgressProps>(function Progr
 			<div
 				className={cn(
 					styles.progressLine,
-					size !== 'md' ? styles[size] : '',
-					styles[`tone_${tone}`],
-					indeterminate ? styles.indeterminate : '',
+					size !== 'md' && styles[size],
+					indeterminate && styles.indeterminate,
 				)}
-				role='progressbar'
-				aria-valuemin={indeterminate ? undefined : 0}
-				aria-valuemax={indeterminate ? undefined : 100}
-				aria-valuenow={indeterminate ? undefined : normalized}
-				aria-valuetext={
-					typeof resolvedValueText === 'string' || typeof resolvedValueText === 'number'
-						? String(resolvedValueText)
-						: undefined
-				}
-				aria-label={typeof label === 'string' ? label : undefined}
+				{...aria}
 			>
-				<div
-					className={styles.progressBar}
-					style={indeterminate ? undefined : {width: `${normalized}%`}}
-				/>
+				<div className={styles.progressBar} />
 			</div>
 		</div>
 	);
@@ -112,37 +125,26 @@ export const ProgressCircle = forwardRef<HTMLDivElement, ProgressCircleProps>(fu
 		label,
 		valueText,
 		showValueText = true,
-		variant: variantProp = 'auto',
+		variant = 'auto',
 		className,
 		style,
 		...rest
 	},
 	ref,
 ) {
-	const normalized = Math.min(100, Math.max(0, percentage));
-	const radius = 16;
-	const circumference = 2 * Math.PI * radius;
-	const strokeDashoffset = circumference - (normalized / 100) * circumference;
-	const resolvedValueText = valueText ?? (indeterminate ? undefined : `${Math.round(normalized)}%`);
-	const tone = variantProp === 'auto'
-		? (!indeterminate && normalized >= 100 ? 'success' : 'primary')
-		: variantProp;
+	const {n, text, tone, aria} = progressModel(percentage, indeterminate, variant, label, valueText);
 	const svgSize = diameter ?? CIRCLE_DIAMETER[size];
 
 	return (
 		<div
 			ref={ref}
 			className={cn(styles.circleRoot, styles[`tone_${tone}`], className)}
-			style={style}
+			style={mergeStyles({['--altum-progress' as string]: n}, style)}
 			{...rest}
-			role='progressbar'
-			aria-valuemin={indeterminate ? undefined : 0}
-			aria-valuemax={indeterminate ? undefined : 100}
-			aria-valuenow={indeterminate ? undefined : normalized}
-			aria-label={typeof label === 'string' ? label : undefined}
+			{...aria}
 		>
 			<svg
-				className={cn(styles.progressCircle, indeterminate ? styles.circleIndeterminate : '')}
+				className={cn(styles.progressCircle, indeterminate && styles.circleIndeterminate)}
 				width={svgSize}
 				height={svgSize}
 				viewBox='0 0 40 40'
@@ -152,22 +154,21 @@ export const ProgressCircle = forwardRef<HTMLDivElement, ProgressCircleProps>(fu
 					className={styles.progressCircleTrack}
 					cx='20'
 					cy='20'
-					r={radius}
+					r='16'
 				/>
 				<circle
 					className={styles.progressCircleBar}
 					cx='20'
 					cy='20'
-					r={radius}
-					strokeDasharray={circumference}
-					strokeDashoffset={indeterminate ? circumference * 0.75 : strokeDashoffset}
+					r='16'
+					pathLength={100}
 				/>
 			</svg>
-			{(label != null || (showValueText && resolvedValueText != null)) && (
+			{(label != null || (showValueText && text != null)) && (
 				<div className={styles.circleMeta}>
-					{showValueText && resolvedValueText != null && (
+					{showValueText && text != null && (
 						<span className={styles.circleValue}>
-							{resolvedValueText}
+							{text}
 						</span>
 					)}
 					{label != null && (

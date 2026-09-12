@@ -1,4 +1,6 @@
 .card {
+  --altum-card-px: var(--altum-g-space-5);
+
   position: relative;
 
   display: flex;
@@ -6,39 +8,36 @@
 
   flex-direction: column;
 
-  font-family: inherit;
-
   transition: var(--altum-transition-smooth);
 
-  &.cardHoverable:hover:not(:disabled) {
+  &.hoverable:is(:hover, :focus-visible):not(:disabled) {
     box-shadow: var(--altum-shadow-surface);
+  }
 
+  &.hoverable:hover:not(:disabled) {
     transform: translateY(-2px);
   }
 
-  &.cardHoverable:focus-visible {
+  &.hoverable:focus-visible {
     outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
     outline-offset: var(--altum-focus-ring-offset);
-
-    box-shadow: var(--altum-shadow-surface);
   }
 
-  &.ghost.cardHoverable:hover:not(:disabled),
-  &.ghost.cardHoverable:focus-visible {
+  &.ghost.hoverable:is(:hover, :focus-visible) {
     box-shadow: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    &.cardHoverable:hover:not(:disabled) {
+    &.hoverable:hover:not(:disabled) {
       transform: none;
     }
   }
 
-  & .cardHeader {
-    padding: var(--altum-g-space-4) var(--altum-g-space-5);
+  & .header {
+    padding: var(--altum-g-space-4) var(--altum-card-px);
   }
 
-  & .cardMedia {
+  & .media {
     overflow: hidden;
 
     width: 100%;
@@ -52,33 +51,24 @@
     }
   }
 
-  & .cardBody {
+  & .body {
     flex: 1;
 
-    padding: var(--altum-g-space-5);
+    padding: var(--altum-g-space-5) var(--altum-card-px);
   }
 
-  & .cardFooter {
+  & .footer {
     display: flex;
 
     flex-wrap: wrap;
     align-items: center;
     gap: var(--altum-g-space-2);
 
-    padding: var(--altum-g-space-3) var(--altum-g-space-5);
-
-    background-color: var(--altum-color-option-hover);
+    padding: var(--altum-g-space-4) var(--altum-card-px);
   }
 
-  &.ghost > .cardHeader,
-  &.ghost > .cardBody,
-  &.ghost > .cardFooter {
-    padding-right: 0;
-    padding-left: 0;
-  }
-
-  &.ghost > .cardFooter {
-    background: transparent;
+  &.ghost {
+    --altum-card-px: 0;
   }
 }
 
@@ -97,4 +87,23 @@
   align-items: center;
 
   background-color: color-mix(in srgb, var(--altum-color-surface) 72%, transparent);
+
+  &::after {
+    content: '';
+
+    width: 24px;
+    height: 24px;
+
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+
+    animation: cardSpin 0.75s linear infinite;
+  }
+}
+
+@keyframes cardSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }

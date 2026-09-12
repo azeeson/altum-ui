@@ -50,17 +50,7 @@ test.describe('ChartBase', () => {
 	});
 });
 
-test.describe('MediaRowBase', () => {
-	test('рендерит полиморфный корень article', async ({page}) => {
-		await visitStory(page, 'altum-test-base--media-row-base-article');
-		const article = page.locator('article');
-		await expect(article).toBeVisible();
-		await expect(article.getByText('Заголовок строки')).toBeVisible();
-		await expect(article.getByText('Описание')).toBeVisible();
-	});
-});
-
-test.describe('ListOptionBase', () => {
+test.describe('Listbox option', () => {
 	test('помечает выбранную опцию', async ({page}) => {
 		await visitStory(page, 'altum-test-base--list-option-base-selected');
 		await expect(page.getByRole('button', {name: 'Выбранная опция'})).toHaveAttribute(

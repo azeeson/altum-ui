@@ -15,11 +15,11 @@
     position: relative;
 
     width: 100%;
-    height: calc(var(--altum-g-space-1) + var(--altum-control-inset));
+    height: var(--altum-slider-track-height);
 
-    border-radius: var(--altum-g-radius-sm);
+    border-radius: var(--altum-g-radius-pill);
 
-    background-color: var(--altum-color-border);
+    background-color: var(--altum-slider-track);
 
     cursor: pointer;
   }
@@ -31,7 +31,7 @@
 
     height: 100%;
 
-    border-radius: var(--altum-g-radius-sm);
+    border-radius: var(--altum-g-radius-pill);
 
     background-color: var(--altum-color-brand);
   }
@@ -43,13 +43,13 @@
 
     box-sizing: border-box;
 
-    width: var(--altum-g-space-5);
-    height: var(--altum-g-space-5);
+    width: var(--altum-slider-thumb-size);
+    height: var(--altum-slider-thumb-size);
 
-    border: 2px solid var(--altum-color-brand);
+    border: 1px solid var(--altum-color-input-border);
     border-radius: 50%;
 
-    background-color: var(--altum-color-surface);
+    background-color: var(--altum-switch-thumb);
     box-shadow: var(--altum-shadow-brand);
 
     cursor: grab;
@@ -65,11 +65,7 @@
       content: '';
     }
 
-    &:hover:not(.handleReadOnly) {
-      transform: translate(-50%, -50%) scale(1.2);
-    }
-
-    &:active:not(.handleReadOnly) {
+    &:active {
       cursor: grabbing;
     }
 
@@ -97,10 +93,10 @@
     font-weight: var(--altum-g-font-weight-semibold);
     white-space: nowrap;
 
-    color: var(--altum-color-fill-primary-fg);
+    color: var(--altum-color-tooltip-fg);
     opacity: 0;
-    background-color: var(--altum-color-fill-primary-bg);
-    box-shadow: var(--altum-shadow-brand);
+    background-color: var(--altum-color-tooltip-bg);
+    box-shadow: var(--altum-shadow-surface);
 
     pointer-events: none;
 
@@ -116,23 +112,20 @@
     border-radius: var(--altum-g-radius);
 
     background-color: var(--altum-field-bg-readonly);
-
-    cursor: default;
   }
 
-  & .handleReadOnly {
+  &.readOnly,
+  &.disabled {
     cursor: default;
 
-    &:hover {
-      transform: translate(-50%, -50%);
+    & .track,
+    & .handle {
+      cursor: default;
     }
-  }
 
-  &.readOnly .track,
-  &.disabled .track,
-  &.readOnly .handle,
-  &.disabled .handle {
-    cursor: default;
+    & .handle:active {
+      cursor: default;
+    }
   }
 
   &.disabled .track,
@@ -145,14 +138,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wrapper .handle {
-    transition: none;
-
-    &:hover:not(.handleReadOnly) {
-      transform: translate(-50%, -50%);
-    }
-  }
-
+  .wrapper .handle,
   .wrapper .tooltip {
     transition: none;
   }

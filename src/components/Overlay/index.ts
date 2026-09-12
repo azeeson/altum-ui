@@ -17,8 +17,5 @@ export type {
 	OverlayPopoverProps,
 	OverlayDropdownProps,
 	OverlayProps,
-	ModalLayerProps,
-	FloatingLayerProps,
-	SheetLayerProps,
-	AnchorLayerProps,
+	OverlayDismiss,
 } from './Overlay.types';

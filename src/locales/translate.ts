@@ -1,12 +1,4 @@
-import {en} from './en';
-import {ru} from './ru';
-import type {DeepPartialMessages, LocaleCode, Messages, TranslationParams} from './types';
-
-/** Встроенные словари локалей, входящие в главную точку входа. */
-export const builtInMessages: Record<LocaleCode, Messages> = {
-	ru: ru as unknown as Messages,
-	en,
-};
+import type {DeepPartialMessages, Messages, TranslationParams} from './types';
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
 	return value !== null && typeof value === 'object' && !Array.isArray(value);

@@ -1,4 +1,4 @@
-.lightboxStage {
+.stage {
   position: relative;
 
   display: flex;
@@ -16,48 +16,31 @@
   pointer-events: none;
 }
 
-.lightboxContent {
-  position: relative;
-  z-index: 1;
+/* ImageGallery читает эти переменные (CSS Modules не стилизуют классы чужого модуля). */
+
+.gallery.gallery {
+  --altum-image-gallery-counter-color: var(--altum-overlay-text-muted);
+  --altum-image-gallery-viewport-height: min(72vh, 640px);
+  --altum-image-gallery-viewport-bg: transparent;
+  --altum-image-gallery-viewport-border: transparent;
+  --altum-image-gallery-viewport-overflow: visible;
+  --altum-image-gallery-image-filter: drop-shadow(var(--altum-overlay-media-shadow));
+  --altum-image-gallery-nav-bg: var(--altum-overlay-control-bg);
+  --altum-image-gallery-nav-border: var(--altum-overlay-control-border);
+  --altum-image-gallery-nav-color: var(--altum-overlay-on-scrim);
 
   width: min(100%, 960px);
   min-width: 0;
-  max-width: 100%;
   max-height: calc(100vh - 48px);
 
   pointer-events: auto;
 }
 
-/* ImageGallery читает эти переменные (CSS Modules не стилизуют классы чужого модуля). */
-
-.gallery {
-  --altum-image-gallery-counter-color: var(--altum-overlay-text-muted);
-  --altum-image-gallery-viewport-height: min(72vh, 640px);
-  --altum-image-gallery-viewport-bg: transparent;
-  --altum-image-gallery-viewport-border: transparent;
-  --altum-image-gallery-nav-bg: var(--altum-overlay-control-bg);
-  --altum-image-gallery-nav-border: var(--altum-overlay-control-border);
-  --altum-image-gallery-nav-color: var(--altum-overlay-on-scrim);
-}
-
-.closeBtn {/* !important: перекрывает ButtonIcon `position: relative` при className=closeBtn */
-  position: absolute !important;
+.close.close {
+  position: absolute;
   top: var(--altum-g-space-5);
   right: var(--altum-g-space-5);
-  z-index: 2;
-
-  border: 1px solid var(--altum-overlay-control-border) !important;
-
-  color: var(--altum-overlay-on-scrim);
-  background-color: var(--altum-overlay-control-bg) !important;
+  z-index: var(--altum-g-z-raised-above);
 
   pointer-events: auto;
-  &:hover:not(:disabled) {
-    background-color: var(--altum-overlay-control-hover) !important;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--altum-overlay-on-scrim);
-    outline-offset: var(--altum-focus-ring-offset);
-  }
 }

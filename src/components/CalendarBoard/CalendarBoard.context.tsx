@@ -1,11 +1,12 @@
 import React, {
 	createContext,
 	useCallback,
-	useContext,
 	useMemo,
 	useState,
 	useSyncExternalStore,
 } from 'react';
+import {useRequiredContext} from '../../hooks/useRequiredContext';
+import {useControlledStateWithCallback} from '../../hooks/useControlledState';
 import {startOfDay} from '../Calendar/Calendar.utils';
 import {
 	createCalendarBoardHoverStore,
@@ -14,7 +15,6 @@ import {
 import type {
 	CalendarBoardContextValue,
 	CalendarBoardProviderProps,
-	CalendarBoardView,
 } from './CalendarBoard.types';
 
 export type {
@@ -33,19 +33,17 @@ const CalendarBoardContext = createContext<CalendarBoardContextValue | null>(nul
 const CalendarBoardHoverStoreContext = createContext<CalendarBoardHoverStore | null>(null);
 
 export function useCalendarBoard(component: string): CalendarBoardContextValue {
-	const context = useContext(CalendarBoardContext);
-	if (!context) {
-		throw new Error(`${component} должен использоваться внутри CalendarBoard.Provider`);
-	}
-	return context;
+	return useRequiredContext(
+		CalendarBoardContext,
+		`${component} должен использоваться внутри CalendarBoard.Provider`,
+	);
 }
 
 function useCalendarBoardHoverStore(component: string): CalendarBoardHoverStore {
-	const store = useContext(CalendarBoardHoverStoreContext);
-	if (!store) {
-		throw new Error(`${component} должен использоваться внутри CalendarBoard.Provider`);
-	}
-	return store;
+	return useRequiredContext(
+		CalendarBoardHoverStoreContext,
+		`${component} должен использоваться внутри CalendarBoard.Provider`,
+	);
 }
 
 /**
@@ -110,37 +108,31 @@ export const CalendarBoardProvider: React.FC<CalendarBoardProviderProps> = ({
 	renderDayCell,
 	renderYearMonth,
 }) => {
-	const [internalView, setInternalView] = useState<CalendarBoardView>(defaultView);
-	const [internalViewDate, setInternalViewDate] = useState(() =>
-		startOfDay(defaultViewDate ?? controlledSelectedDate ?? new Date()),);
-	const [internalSelected, setInternalSelected] = useState<Date | undefined>(() =>
-		controlledSelectedDate ? startOfDay(controlledSelectedDate) : undefined,);
 	const [hoverStore] = useState(() => createCalendarBoardHoverStore());
+	const [view, setView] = useControlledStateWithCallback(
+		controlledView,
+		defaultView,
+		onViewChange,
+	);
+	const [viewDate, setViewDateRaw] = useControlledStateWithCallback(
+		controlledViewDate !== undefined ? startOfDay(controlledViewDate) : undefined,
+		startOfDay(defaultViewDate ?? controlledSelectedDate ?? new Date()),
+		onViewDateChange,
+	);
+	const [selectedDate, setSelectedDateRaw] = useControlledStateWithCallback<Date | undefined>(
+		controlledSelectedDate !== undefined
+			? (controlledSelectedDate ? startOfDay(controlledSelectedDate) : undefined)
+			: undefined,
+		controlledSelectedDate ? startOfDay(controlledSelectedDate) : undefined,
+		onSelectedDateChange
+			? (next) => {
+				if (next) onSelectedDateChange(next);
+			}
+			: undefined,
+	);
 
-	const view = controlledView ?? internalView;
-	const viewDate = controlledViewDate
-		? startOfDay(controlledViewDate)
-		: internalViewDate;
-	const selectedDate = controlledSelectedDate !== undefined
-		? (controlledSelectedDate ? startOfDay(controlledSelectedDate) : undefined)
-		: internalSelected;
-
-	const setView = useCallback((next: CalendarBoardView) => {
-		if (controlledView === undefined) setInternalView(next);
-		onViewChange?.(next);
-	}, [controlledView, onViewChange]);
-
-	const setViewDate = useCallback((next: Date) => {
-		const normalized = startOfDay(next);
-		if (controlledViewDate === undefined) setInternalViewDate(normalized);
-		onViewDateChange?.(normalized);
-	}, [controlledViewDate, onViewDateChange]);
-
-	const setSelectedDate = useCallback((next: Date) => {
-		const normalized = startOfDay(next);
-		if (controlledSelectedDate === undefined) setInternalSelected(normalized);
-		onSelectedDateChange?.(normalized);
-	}, [controlledSelectedDate, onSelectedDateChange]);
+	const setViewDate = useCallback((next: Date) => setViewDateRaw(startOfDay(next)), [setViewDateRaw]);
+	const setSelectedDate = useCallback((next: Date) => setSelectedDateRaw(startOfDay(next)), [setSelectedDateRaw]);
 
 	const value = useMemo<CalendarBoardContextValue>(() => ({
 		view,

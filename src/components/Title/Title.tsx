@@ -6,12 +6,20 @@ export type {
 } from './Title.types';
 
 import {forwardRef} from 'react';
+import {Type} from '../../base/Type';
 import styles from './Title.module.css';
 import {cn} from '../../utils/cn';
 
+const AS = {
+	1: 'h1',
+	2: 'h2',
+	3: 'h3',
+	4: 'h4',
+} as const;
+
 /**
  * Заголовок страницы или секции с семантическим уровнем h1–h4.
- * Цвет — `--altum-color-type` (адаптируется внутри `Box`).
+ * Цвет — `--altum-color-type`.
  *
  * @component
  * @example
@@ -21,24 +29,19 @@ export const Title = forwardRef<HTMLHeadingElement, TitleProps>(function Title(
 	{
 		level = 2,
 		weight = 'bold',
-		children,
 		className,
-		style,
 		...rest
 	},
 	ref,
 ) {
-	const Component = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4';
-
 	return (
-		<Component
+		<Type
 			ref={ref}
-			className={cn(styles.title, styles[`h${level}`], styles[weight], className)}
-			style={style}
+			as={AS[level]}
+			weight={weight}
+			className={cn(styles[`h${level}`], className)}
 			{...rest}
-		>
-			{children}
-		</Component>
+		/>
 	);
 });
 

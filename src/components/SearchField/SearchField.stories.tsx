@@ -2,56 +2,51 @@ import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {SearchField, SearchFieldProps} from './SearchField';
 import {Button} from '../Button/Button';
-import {componentParameters, story, Story} from '../../storybook/meta';
+import {Card} from '../Card/Card';
+import {Stack, Inline} from '../Layout/Layout';
+import {Text} from '../Text/Text';
+import {
+	componentParameters,
+	fieldArgTypes,
+	STORY_OVERFLOW_LABEL,
+	STORY_OVERFLOW_VALUE,
+	story,
+	Story,
+} from '../../storybook/meta';
+import {playFocus, playType} from '../../storybook/play';
 
 export default {
-	title: 'altum/Components/SearchField',
+	title: 'altum/Components/FormField/SearchField',
 	component: SearchField,
 	tags: ['autodocs'],
 	parameters: componentParameters(
 		'Поле поиска с иконкой лупы; по умолчанию `labelPlacement="none"`.',
 	),
-	argTypes: {
-		label: {
-			control: 'text',
-			description: 'Метка поля'
-		},
-		size: {
-			control: {
-				type: 'select',
-				options: ['sm', 'md', 'lg']
-			},
-			description: 'Размер поля',
-		},
-		labelPlacement: {
-			control: {
-				type: 'select',
-				options: ['inline', 'outside', 'none'],
-			},
-			description: 'По умолчанию none',
-		},
-		width: {
-			control: {
-				type: 'select',
-				options: [
-					'xxs',
-					'sm',
-					'md',
-					'lg',
-					'xl',
-					'full'
-				],
-			},
-			description: 'Ширина оболочки',
-		},
-		placeholder: {
-			control: 'text',
-			description: 'Подсказка в поле'
-		},
+	args: {
+		label: 'Поиск задач',
+		placeholder: 'Поиск…',
+		size: 'md',
+		width: 'md',
+		labelPlacement: 'none',
 	},
+	argTypes: fieldArgTypes,
 } satisfies Meta<typeof SearchField>;
 
 export const Playground: Story<SearchFieldProps> = {
+	render: function PlaygroundRender(args) {
+		const [val, setVal] = useState('');
+		return (
+			<SearchField
+				{...args}
+				value={val}
+				onChange={(e) => {
+					args.onChange?.(e);
+					setVal(e.target.value);
+				}}
+				onClear={args.onClear ? () => setVal('') : undefined}
+			/>
+		);
+	},
 	args: {
 		label: 'Поиск задач',
 		placeholder: 'Поиск…',
@@ -63,21 +58,12 @@ export const Sizes: Story<SearchFieldProps> = {
 	render: function SizesRender() {
 		const [val, setVal] = useState('');
 		return (
-			<div style={{
-				display: 'flex',
-				flexDirection: 'column',
-				gap: 12,
-				maxWidth: 320,
-			}}
-			>
+			<Stack gap='sm' style={{maxWidth: 320}}>
 				{(['sm', 'md', 'lg'] as const).map((size) => (
-					<div
+					<Inline
 						key={size}
-						style={{
-							display: 'flex',
-							gap: 8,
-							alignItems: 'center',
-						}}
+						gap='sm'
+						align='center'
 					>
 						<SearchField
 							label='Поиск'
@@ -90,9 +76,9 @@ export const Sizes: Story<SearchFieldProps> = {
 						<Button size={size}>
 							OK
 						</Button>
-					</div>
+					</Inline>
 				))}
-			</div>
+			</Stack>
 		);
 	},
 	parameters: story('`sm`–`lg` рядом с Button.'),
@@ -102,13 +88,7 @@ export const LabelPlacement: Story<SearchFieldProps> = {
 	render: function LabelPlacementRender() {
 		const [val, setVal] = useState('');
 		return (
-			<div style={{
-				display: 'flex',
-				flexDirection: 'column',
-				gap: 16,
-				maxWidth: 320,
-			}}
-			>
+			<Stack gap='md' style={{maxWidth: 320}}>
 				{(['none', 'outside', 'inline'] as const).map((placement) => (
 					<SearchField
 						key={placement}
@@ -120,10 +100,58 @@ export const LabelPlacement: Story<SearchFieldProps> = {
 						width='full'
 					/>
 				))}
-			</div>
+			</Stack>
 		);
 	},
 	parameters: story('По умолчанию — `none`; можно переключить на outside / inline.'),
+};
+
+export const Disabled: Story<SearchFieldProps> = {
+	render: () => (
+		<Stack gap='md' style={{maxWidth: 360}}>
+			<SearchField
+				label='Поиск'
+				disabled
+				value='дизайн-система'
+				placeholder='Поиск…'
+				width='full'
+			/>
+			<SearchField
+				label='Поиск'
+				error='Ничего не найдено по запросу'
+				value='xyz'
+				width='full'
+			/>
+		</Stack>
+	),
+	parameters: story('Заблокированное поле и ошибка поиска.'),
+};
+
+export const Empty: Story<SearchFieldProps> = {
+	args: {
+		label: 'Поиск',
+		placeholder: 'Поиск…',
+		width: 'full',
+	},
+	parameters: story('Пустой запрос.'),
+};
+
+export const OverflowText: Story<SearchFieldProps> = {
+	render: function OverflowRender() {
+		const [val, setVal] = useState(STORY_OVERFLOW_VALUE);
+		return (
+			<div style={{maxWidth: 280}}>
+				<SearchField
+					label={STORY_OVERFLOW_LABEL}
+					labelPlacement='outside'
+					value={val}
+					onChange={(e) => setVal(e.target.value)}
+					width='full'
+				/>
+			</div>
+		);
+	},
+	parameters: story('Длинный запрос в узком поле.'),
 };
 
 export const FullWidth: Story<SearchFieldProps> = {
@@ -152,4 +180,75 @@ export const WithClear: Story<SearchFieldProps> = {
 		);
 	},
 	parameters: story('Кнопка очистки при `onClear` — сбрасывает запрос.'),
+};
+
+export const Focused: Story<SearchFieldProps> = {
+	render: () => (
+		<div style={{maxWidth: 360}}>
+			<SearchField
+				label='Поиск'
+				defaultValue='задачи'
+				placeholder='Поиск…'
+				width='full'
+			/>
+		</div>
+	),
+	play: async ({canvasElement}) => {
+		await playFocus(canvasElement);
+	},
+	parameters: story('Программный фокус — chrome `:focus-within`.'),
+};
+
+export const Interaction: Story<SearchFieldProps> = {
+	render: function InteractionRender() {
+		const [val, setVal] = useState('');
+		return (
+			<div style={{maxWidth: 360}}>
+				<SearchField
+					label='Поиск'
+					value={val}
+					onChange={(e) => setVal(e.target.value)}
+					onClear={() => setVal('')}
+					placeholder='Поиск…'
+					width='full'
+				/>
+			</div>
+		);
+	},
+	play: async ({canvasElement}) => {
+		await playType(canvasElement, 'дизайн');
+	},
+	parameters: story('Play: ввод поискового запроса.'),
+};
+
+export const UsageExample: Story<SearchFieldProps> = {
+	render: function UsageExampleRender() {
+		const [query, setQuery] = useState('');
+		return (
+			<Card
+				header='Задачи'
+				style={{maxWidth: 480}}
+			>
+				<Stack gap='md'>
+					<Inline gap='sm' align='center'>
+						<SearchField
+							label='Поиск задач'
+							value={query}
+							onChange={(e) => setQuery(e.target.value)}
+							onClear={() => setQuery('')}
+							placeholder='Название или исполнитель'
+							width='full'
+						/>
+						<Button variant='primary'>
+							Найти
+						</Button>
+					</Inline>
+					<Text size='sm' color='muted'>
+						{query ? `Фильтр: ${query}` : 'Введите запрос, чтобы отфильтровать список'}
+					</Text>
+				</Stack>
+			</Card>
+		);
+	},
+	parameters: story('Поиск в шапке карточки со списком задач.'),
 };

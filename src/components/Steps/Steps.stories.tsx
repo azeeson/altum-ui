@@ -2,7 +2,10 @@ import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {Steps, StepsProps} from './Steps';
 import {Button} from '../Button/Button';
-import {Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout/Layout';
+import {Text} from '../Text/Text';
+import {TextField} from '../TextField/TextField';
+import {Card} from '../Card/Card';
 import {IconUser} from '../../icons/icons/IconUser';
 import {IconCheckmark} from '../../icons/icons/IconCheckmark';
 import {componentParameters, story, Story} from '../../storybook/meta';
@@ -14,21 +17,60 @@ export default {
 	component: Steps,
 	tags: ['autodocs'],
 	parameters: componentParameters('Пошаговый индикатор прогресса для многоэтапных процессов.'),
-	argTypes: {},
+	argTypes: {
+		currentStep: {
+			control: {
+				type: 'number',
+				min: 0,
+				max: 2,
+			},
+			description: 'Индекс текущего шага',
+		},
+		orientation: {
+			control: {
+				type: 'select',
+				options: ['horizontal', 'vertical'],
+			},
+		},
+		size: {
+			control: {
+				type: 'select',
+				options: ['sm', 'md', 'lg'],
+			},
+		},
+		showConnectors: {
+			control: 'boolean',
+			description: 'Линии между шагами',
+		},
+		onStepClick: {
+			action: 'stepClick',
+			description: 'Клик по шагу (индекс)',
+		},
+	},
 } satisfies Meta<typeof Steps>;
 
 export const Playground: Story<StepsProps> = {
-	render: function PlaygroundRender() {
+	args: {
+		currentStep: 1,
+		items: STEPS,
+		orientation: 'horizontal',
+		size: 'md',
+		showConnectors: true,
+	},
+	parameters: story('Controls: шаг, ориентация, размер, соединители.'),
+};
+
+export const Interactive: Story<StepsProps> = {
+	render: function InteractiveRender() {
 		const [current, setCurrent] = useState(0);
 		return (
-			<div style={{maxWidth: '600px'}}>
-				<Steps currentStep={current} items={STEPS} />
-				<div style={{
-					display: 'flex',
-					gap: '12px',
-					marginTop: '32px'
-				}}
-				>
+			<Stack gap='lg' style={{maxWidth: 600}}>
+				<Steps
+					currentStep={current}
+					items={STEPS}
+					onStepClick={setCurrent}
+				/>
+				<Inline gap='sm'>
 					<Button
 						variant='secondary'
 						size='sm'
@@ -45,11 +87,16 @@ export const Playground: Story<StepsProps> = {
 					>
 						Далее
 					</Button>
-				</div>
-			</div>
+				</Inline>
+			</Stack>
 		);
 	},
-	parameters: story('Используйте панель Controls для настройки.'),
+	play: async ({canvasElement}) => {
+		const next = Array.from(canvasElement.querySelectorAll('button'))
+			.find((button) => button.textContent?.includes('Далее'));
+		next?.click();
+	},
+	parameters: story('Кликабельные шаги и кнопки Назад / Далее. Play кликает «Далее».'),
 };
 
 export const Vertical: Story<StepsProps> = {
@@ -79,7 +126,7 @@ export const Vertical: Story<StepsProps> = {
 			</div>
 		);
 	},
-	parameters: story('Вертикальная ориентация с кликабельными шагами.'),
+	parameters: story('Вертикальная ориентация с описаниями.'),
 };
 
 export const WithIcons: Story<StepsProps> = {
@@ -135,6 +182,29 @@ export const ErrorStatus: Story<StepsProps> = {
 	parameters: story('Явный `status="error"` на шаге.'),
 };
 
+export const DisabledStep: Story<StepsProps> = {
+	render: function DisabledStepRender() {
+		const [current, setCurrent] = useState(0);
+		return (
+			<div style={{maxWidth: 640}}>
+				<Steps
+					currentStep={current}
+					onStepClick={setCurrent}
+					items={[
+						{title: 'Старт'},
+						{
+							title: 'Недоступно',
+							disabled: true
+						},
+						{title: 'Финиш'},
+					]}
+				/>
+			</div>
+		);
+	},
+	parameters: story('Шаг с `disabled` не кликается.'),
+};
+
 export const CompactSizes: Story<StepsProps> = {
 	render: () => (
 		<Stack gap='lg' style={{maxWidth: 640}}>
@@ -156,4 +226,90 @@ export const CompactSizes: Story<StepsProps> = {
 		</Stack>
 	),
 	parameters: story('Размеры sm / md / lg.'),
+};
+
+export const NoConnectors: Story<StepsProps> = {
+	args: {
+		currentStep: 1,
+		items: STEPS,
+		showConnectors: false,
+	},
+	parameters: story('`showConnectors={false}` — без линий между шагами.'),
+};
+
+export const OverflowText: Story<StepsProps> = {
+	render: () => (
+		<div style={{maxWidth: 480}}>
+			<Steps
+				currentStep={1}
+				size='sm'
+				items={[
+					{
+						title: 'Очень длинное название первого шага регистрации',
+						description: 'Подтверждение электронной почты и телефона'
+					},
+					{
+						title: 'Загрузка комплекта документов',
+					},
+					{
+						title: 'Подписание',
+					},
+				]}
+			/>
+		</div>
+	),
+	parameters: story('Длинные заголовки в узком контейнере.'),
+};
+
+export const UsageExample: Story<StepsProps> = {
+	render: function UsageExampleRender() {
+		const [current, setCurrent] = useState(0);
+		return (
+			<Card style={{maxWidth: 480}}>
+				<Stack gap='lg'>
+					<Steps
+						currentStep={current}
+						onStepClick={setCurrent}
+						size='sm'
+						items={[{title: 'Контакты'}, {title: 'Адрес'}, {title: 'Оплата'},]}
+					/>
+					{current === 0 && (
+						<TextField
+							label='Email'
+							defaultValue='alex@example.com'
+						/>
+					)}
+					{current === 1 && (
+						<TextField
+							label='Город'
+							defaultValue='Москва'
+						/>
+					)}
+					{current === 2 && (
+						<Text size='sm'>
+							Проверьте данные и подтвердите оплату.
+						</Text>
+					)}
+					<Inline gap='sm'>
+						<Button
+							variant='secondary'
+							size='sm'
+							disabled={current === 0}
+							onClick={() => setCurrent((step) => step - 1)}
+						>
+							Назад
+						</Button>
+						<Button
+							size='sm'
+							disabled={current === 2}
+							onClick={() => setCurrent((step) => step + 1)}
+						>
+							Далее
+						</Button>
+					</Inline>
+				</Stack>
+			</Card>
+		);
+	},
+	parameters: story('Мастер в карточке: шаги переключают поля формы.'),
 };

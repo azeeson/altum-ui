@@ -1,6 +1,5 @@
 import {forwardRef, type CSSProperties, type Ref} from 'react';
-import {CalendarBoardEventBar} from './CalendarBoard.EventBar';
-import {CalendarBoardTimedEvent} from './CalendarBoard.TimedEvent';
+import {CalendarBoardEvent} from './CalendarBoard.Event';
 import {useCalendarBoard, useCalendarBoardTaskHover, type CalendarBoardTaskRenderProps} from './CalendarBoard.context';
 import styles from './CalendarBoard.module.css';
 import {cn} from '../../utils/cn';
@@ -61,31 +60,16 @@ export const CalendarBoardTaskChip = forwardRef<HTMLButtonElement | HTMLSpanElem
 			);
 		}
 
-		if (layout === 'bar') {
+		if (layout === 'bar' || layout === 'timed') {
 			return (
-				<CalendarBoardEventBar
+				<CalendarBoardEvent
 					ref={ref as Ref<HTMLButtonElement | HTMLDivElement>}
-					title={task.title}
-					color={task.color}
-					continuesBefore={continuesBefore}
-					continuesAfter={continuesAfter}
-					highlighted={highlighted}
-					onClick={onClick}
-					onMouseEnter={handleEnter}
-					onMouseLeave={handleLeave}
-					className={className}
-					style={style}
-				/>
-			);
-		}
-
-		if (layout === 'timed') {
-			return (
-				<CalendarBoardTimedEvent
-					ref={ref as Ref<HTMLButtonElement | HTMLDivElement>}
+					layout={layout}
 					title={task.title}
 					timeLabel={timeLabel}
 					color={task.color}
+					continuesBefore={continuesBefore}
+					continuesAfter={continuesAfter}
 					highlighted={highlighted}
 					onClick={onClick}
 					onMouseEnter={handleEnter}

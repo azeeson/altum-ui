@@ -19,7 +19,7 @@ test.describe('PullToRefresh', () => {
 test.describe('Timeline', () => {
 	test('переключает сворачиваемые детали', async ({page}) => {
 		await visitStory(page, 'altum-components-timeline--collapsible-details');
-		const toggle = page.getByRole('button', {name: /Подробнее|Скрыть|More|Hide/i}).first();
+		const toggle = page.locator('summary').first();
 		await expect(toggle).toBeVisible();
 		await toggle.click();
 	});

@@ -17,31 +17,6 @@
     border-bottom: 1px solid var(--altum-color-dropdown-border);
   }
 
-  & .filterInput {
-    min-height: var(--altum-control-height-sm);
-
-    font-size: var(--altum-g-font-size-sm);
-    line-height: var(--altum-g-line-height-sm);
-
-    appearance: none;
-
-    &::placeholder {
-      color: var(--altum-field-label);
-    }
-
-    &:focus-visible {
-      --altum-field-control-border: var(--altum-color-border-hover);
-      --altum-field-control-shadow: 0 0 0 1px var(--altum-color-border-hover);
-    }
-
-    &::-webkit-search-decoration,
-    &::-webkit-search-cancel-button,
-    &::-webkit-search-results-button,
-    &::-webkit-search-results-decoration {
-      display: none;
-    }
-  }
-
   & .list {
     overflow-y: auto;
 
@@ -63,11 +38,6 @@
     height: var(--altum-toggle-box-size);
 
     color: var(--altum-color-muted);
-
-    & svg {
-      width: var(--altum-g-font-size-lg);
-      height: var(--altum-g-font-size-lg);
-    }
   }
 
   & .itemBody {

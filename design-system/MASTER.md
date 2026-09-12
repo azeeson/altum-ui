@@ -44,7 +44,7 @@
 
 Tab должен ощущаться одним языком. Токены: [`docs/THEMING.md`](../docs/THEMING.md).
 
-1. **Контролы / навигация / тогглы / выбор** — outline `--altum-focus-ring-*` (`--altum-focus-ring-color` → `--altum-color-input-border-focus`).
+1. **Контролы / навигация / тогглы / выбор** — outline `--altum-focus-ring-*` (light: цвет → `--altum-color-input-border-focus`; dark: светлая hairline `rgba(248,250,252,0.55)`).
 2. **Поля** — кольцо 1px на `:focus-within` / `.focused` / `.isOpen`. Невалидное + в фокусе остаётся `--altum-color-status-error`.
 3. **Кнопки (`ButtonBase`)** — двойной box-shadow (`--altum-color-button-focus-inner` / `--altum-color-button-focus-outer`). Danger: `--altum-color-danger-bg-solid`, не primary.
 

@@ -4,10 +4,16 @@ import {
 	DayStripCalendar,
 	DayStripCalendarProps,
 } from './DayStripCalendar';
+import {Card} from '../Card/Card';
+import {Stack} from '../Layout/Layout';
 import {Text} from '../Text/Text';
+import {Button} from '../Button/Button';
 import {componentParameters, story, Story} from '../../storybook/meta';
+import {playClick} from '../../storybook/play';
 import {formatMonthYear, isSameDay} from '../Calendar/Calendar.utils';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useLocale} from '../../locales/localeContext';
+
+const STORY_DATE = new Date(2026, 8, 8);
 
 export default {
 	title: 'altum/Components/DayStripCalendar',
@@ -23,15 +29,44 @@ export default {
 				'onChange',
 				'viewDate',
 				'onViewDateChange',
-				'renderDay'
-			]
+				'renderDay',
+			],
+		},
+	},
+	argTypes: {
+		daysCount: {
+			control: {
+				type: 'number',
+				min: 3,
+				max: 14,
+			},
+			description: 'Сколько дней показывать',
+		},
+		weekStartsOn: {
+			control: {
+				type: 'radio',
+				options: [0, 1,],
+			},
+			description: 'Начало недели: 0 = вс, 1 = пн',
+		},
+		showHeader: {
+			control: 'boolean',
+			description: 'Заголовок месяца/года над полосой',
+		},
+		showNav: {
+			control: 'boolean',
+			description: 'Кнопки prev / next',
+		},
+		onChange: {
+			action: 'change',
+			description: 'Колбэк выбранной даты',
 		},
 	},
 } satisfies Meta<typeof DayStripCalendar>;
 
 export const Playground: Story<DayStripCalendarProps> = {
 	render: function PlaygroundRender(args) {
-		const [value, setValue] = useState(new Date());
+		const [value, setValue] = useState(STORY_DATE);
 		const {messages} = useLocale();
 
 		return (
@@ -39,7 +74,6 @@ export const Playground: Story<DayStripCalendarProps> = {
 				display: 'flex',
 				flexDirection: 'column',
 				gap: 'var(--altum-g-space-3)',
-				maxWidth: 520,
 			}}
 			>
 				<DayStripCalendar
@@ -64,12 +98,12 @@ export const Playground: Story<DayStripCalendarProps> = {
 		showHeader: true,
 		showNav: true,
 	},
-	parameters: story('Стрелки ←/→, Home/End; prev/next сдвигают окно на daysCount.'),
+	parameters: story('Стрелки ←/→ и prev/next выбирают соседний день; за краем полосы окно сдвигается на daysCount / 2.'),
 };
 
 export const FiveDays: Story<DayStripCalendarProps> = {
 	render: function FiveDaysRender() {
-		const [value, setValue] = useState(new Date());
+		const [value, setValue] = useState(STORY_DATE);
 		return (
 			<DayStripCalendar
 				value={value}
@@ -82,10 +116,39 @@ export const FiveDays: Story<DayStripCalendarProps> = {
 	parameters: story('`daysCount={5}` — укороченная полоса.'),
 };
 
+export const SundayStart: Story<DayStripCalendarProps> = {
+	render: function SundayStartRender() {
+		const [value, setValue] = useState(STORY_DATE);
+		return (
+			<DayStripCalendar
+				value={value}
+				onChange={setValue}
+				weekStartsOn={0}
+			/>
+		);
+	},
+	parameters: story('`weekStartsOn={0}` — неделя с воскресенья.'),
+};
+
+export const WithoutChrome: Story<DayStripCalendarProps> = {
+	render: function WithoutChromeRender() {
+		const [value, setValue] = useState(STORY_DATE);
+		return (
+			<DayStripCalendar
+				value={value}
+				onChange={setValue}
+				showHeader={false}
+				showNav={false}
+			/>
+		);
+	},
+	parameters: story('Только полоса дней: без заголовка и стрелок.'),
+};
+
 export const CustomDay: Story<DayStripCalendarProps> = {
 	render: function CustomDayRender() {
-		const [value, setValue] = useState(new Date());
-		const markers = [new Date(), new Date(Date.now() + 2 * 86400000),];
+		const [value, setValue] = useState(STORY_DATE);
+		const markers = [STORY_DATE, new Date(STORY_DATE.getTime() + 2 * 86400000),];
 
 		return (
 			<DayStripCalendar
@@ -126,4 +189,65 @@ export const CustomDay: Story<DayStripCalendarProps> = {
 		);
 	},
 	parameters: story('`renderDay` — кастомная ячейка (точки-маркеры).'),
+};
+
+export const Interaction: Story<DayStripCalendarProps> = {
+	render: function InteractionRender() {
+		const [value, setValue] = useState(STORY_DATE);
+		const {messages} = useLocale();
+		return (
+			<Stack gap='sm'>
+				<DayStripCalendar
+					value={value}
+					onChange={setValue}
+				/>
+				<Text size='sm' color='secondary'>
+					Выбрано:
+					{' '}
+					{formatMonthYear(value, messages.calendar.months)}
+					,
+					{' '}
+					{value.getDate()}
+				</Text>
+			</Stack>
+		);
+	},
+	play: async ({canvasElement}) => {
+		await playClick(canvasElement, '[aria-label="Следующий день"]');
+	},
+	parameters: story('Play выбирает следующий день.'),
+};
+
+export const UsageExample: Story<DayStripCalendarProps> = {
+	render: function UsageExampleRender() {
+		const [value, setValue] = useState(STORY_DATE);
+		const {messages} = useLocale();
+		return (
+			<Card
+				style={{maxWidth: 480}}
+				header={(
+					<Text weight='bold'>
+						Слоты на день
+					</Text>
+				)}
+			>
+				<Stack gap='md'>
+					<DayStripCalendar
+						value={value}
+						onChange={setValue}
+					/>
+					<Text size='sm'>
+						{formatMonthYear(value, messages.calendar.months)}
+						,
+						{' '}
+						{value.getDate()}
+					</Text>
+					<Button size='sm' variant='primary'>
+						Записать на эту дату
+					</Button>
+				</Stack>
+			</Card>
+		);
+	},
+	parameters: story('Полоса дней в карточке записи на приём.'),
 };

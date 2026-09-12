@@ -19,21 +19,19 @@ type SliderSharedProps = Omit<ComponentPropsWithoutRef<'div'>, 'onChange' | 'def
  * Одиночный ползунок: `value` — число.
  */
 export type SliderSingleProps = SliderSharedProps & {
-	range?: false;
 	value: number;
 	onChange: (value: number) => void;
 };
 
 /**
- * Диапазон: `value` — `[from, to]`, либо `range={true}`.
+ * Диапазон: `value` — `[from, to]`.
  */
 export type SliderRangeProps = SliderSharedProps & {
-	range?: true;
 	value: RangeValue;
 	onChange: (value: RangeValue) => void;
 };
 
 /**
- * Свойства `Slider` — одиночный или диапазон (по типу `value` / флагу `range`).
+ * Свойства `Slider` — одиночный или диапазон (по типу `value`).
  */
 export type SliderProps = SliderSingleProps | SliderRangeProps;

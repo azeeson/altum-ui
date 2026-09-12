@@ -9,7 +9,7 @@ import {IconSearch} from 'altum/icons';
 <ButtonIcon aria-label="Поиск" icon={<IconSearch />} />
 ```
 
-Набор **не** входит в главный barrel — только `altum/icons`. Просмотр: Storybook → **Icons**.
+Набор **не** входит в главный barrel — только `altum/icons`. Просмотр: Storybook → **Icons**. Каталог собран через `createIcon` (`IconProps` тот же: `size`, `color`).
 
 ### Контракт для кастомных SVG
 
@@ -18,5 +18,6 @@ import {IconSearch} from 'altum/icons';
 | Размер | `width` / `height` или проп `size` (16–24 px для кнопок) |
 | Цвет | `fill="currentColor"` |
 | Доступность | На `ButtonIcon` всегда `aria-label` |
+| Sidebar | Тот же набор, один вес; не emoji и не цветные «игрушки» |
 
 Продуктовые иконки лучше держать в приложении — так не раздувается бандл, если набор `altum/icons` не нужен целиком.

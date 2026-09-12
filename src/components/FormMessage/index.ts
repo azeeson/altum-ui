@@ -1,6 +1,5 @@
-export {FormMessage, FieldError} from './FormMessage';
+export {FormMessage} from './FormMessage';
 export type {
 	FormMessageVariant,
 	FormMessageProps,
-	FieldErrorProps,
 } from './FormMessage.types';

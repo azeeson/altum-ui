@@ -1,7 +1,38 @@
 import type {Meta} from '@storybook/react';
 import React from 'react';
 import {Text, TextProps} from './Text';
+import {Card} from '../Card/Card';
+import {Stack} from '../Layout/Layout';
+import {Title} from '../Title/Title';
+import {Link} from '../Link/Link';
 import {componentParameters, story, Story} from '../../storybook/meta';
+
+const SIZES = [
+	'xs',
+	'sm',
+	'md',
+	'lg',
+	'xl'
+] as const;
+
+const WEIGHTS = [
+	'normal',
+	'medium',
+	'semibold',
+	'bold'
+] as const;
+
+const COLORS = [
+	'primary',
+	'secondary',
+	'tertiary',
+	'muted',
+	'info',
+	'success',
+	'warning',
+	'error',
+	'disabled'
+] as const;
 
 export default {
 	title: 'altum/Components/Text',
@@ -12,37 +43,21 @@ export default {
 		size: {
 			control: {
 				type: 'select',
-				options: [
-					'xs',
-					'sm',
-					'md',
-					'lg',
-					'xl'
-				]
+				options: [...SIZES]
 			},
 			description: 'Размер текста',
 		},
 		weight: {
 			control: {
 				type: 'select',
-				options: ['normal', 'medium', 'bold']
+				options: [...WEIGHTS]
 			},
 			description: 'Начертание',
 		},
 		color: {
 			control: {
 				type: 'select',
-				options: [
-					'primary',
-					'secondary',
-					'tertiary',
-					'muted',
-					'info',
-					'success',
-					'warning',
-					'error',
-					'disabled'
-				]
+				options: [...COLORS]
 			},
 			description: 'Семантический цвет',
 		},
@@ -73,19 +88,15 @@ export const Playground: Story<TextProps> = {
 		children: 'Пример текста компонента',
 		size: 'md',
 		color: 'primary',
+		weight: 'normal',
+		as: 'span',
 	},
 	parameters: story('Используйте панель Controls для настройки.'),
 };
 
 export const BlockCopy: Story<TextProps> = {
 	render: () => (
-		<div style={{
-			display: 'flex',
-			flexDirection: 'column',
-			gap: 'var(--altum-g-space-2)',
-			maxWidth: 360,
-		}}
-		>
+		<Stack gap='xs' style={{maxWidth: 360}}>
 			<Text
 				as='p'
 				size='lg'
@@ -100,78 +111,93 @@ export const BlockCopy: Story<TextProps> = {
 			>
 				Подсказка под заголовком. Без as=&quot;p&quot; два Text склеятся в одну строку.
 			</Text>
-		</div>
+		</Stack>
 	),
 	parameters: story('Блочный copy: as="p" / as="div". Дефолт as="span" — inline.'),
 };
 
 export const Colors: Story<TextProps> = {
 	render: () => (
-		<div style={{
-			display: 'flex',
-			flexDirection: 'column',
-			gap: '12px'
-		}}
-		>
-			<Text color='primary'>
-				Пример: цвет primary (основной цвет ввода)
-			</Text>
-			<Text color='secondary'>
-				Пример: цвет secondary (второстепенные надписи)
-			</Text>
-			<Text color='tertiary'>
-				Пример: цвет tertiary (подписи, легенда)
-			</Text>
-			<Text color='muted'>
-				Пример: цвет muted (второстепенные подсказки, метаданные)
-			</Text>
-			<Text color='info'>
-				Пример: цвет info (справочная информация)
-			</Text>
-			<Text color='success'>
-				Пример: цвет success (успешные отчёты)
-			</Text>
-			<Text color='warning'>
-				Пример: цвет warning (предупреждения)
-			</Text>
-			<Text color='error'>
-				Пример: цвет error (критические ошибки)
-			</Text>
-			<Text color='disabled'>
-				Пример: цвет disabled (заблокированный текст)
-			</Text>
-		</div>
+		<Stack gap='sm'>
+			{COLORS.map((color) => (
+				<Text key={color} color={color}>
+					Пример: цвет
+					{' '}
+					{color}
+				</Text>
+			))}
+		</Stack>
 	),
 	parameters: story('Все семантические цвета текста.'),
 };
 
 export const Sizes: Story<TextProps> = {
 	render: () => (
-		<div style={{
-			display: 'flex',
-			flexDirection: 'column',
-			gap: '12px',
-		}}
-		>
-			{([
-				'xs',
-				'sm',
-				'md',
-				'lg',
-				'xl'
-			] as const).map((size) => (
+		<Stack gap='sm'>
+			{SIZES.map((size) => (
 				<Text key={size} size={size}>
 					Text size=
 					{size}
 				</Text>
 			))}
-			<Text weight='bold'>
-				weight=bold
-			</Text>
-			<Text weight='medium'>
-				weight=medium
+			{WEIGHTS.map((weight) => (
+				<Text key={weight} weight={weight}>
+					weight=
+					{weight}
+				</Text>
+			))}
+		</Stack>
+	),
+	parameters: story('Размеры `xs`–`xl` и начертания, включая `semibold`.'),
+};
+
+export const OverflowText: Story<TextProps> = {
+	render: () => (
+		<div style={{maxWidth: 220}}>
+			<Text as='p' size='sm'>
+				Длинный абзац в узкой колонке: идентификатор SUPERCALENDAR_INTEGRATION_TOKEN_V3
+				должен переноситься, а не выталкивать соседние блоки.
 			</Text>
 		</div>
 	),
-	parameters: story('Размеры `xs`–`xl` и начертания.'),
+	parameters: story('Перенос длинного текста в узком контейнере.'),
+};
+
+export const UsageExample: Story<TextProps> = {
+	render: () => (
+		<div style={{maxWidth: 420}}>
+			<Card>
+				<Stack gap='sm'>
+					<Title level={3}>
+						Политика хранения
+					</Title>
+					<Text
+						as='p'
+						size='sm'
+						color='secondary'
+					>
+						Логи хранятся 30 дней, затем архивируются. Персональные данные
+						удаляются по запросу в течение 14 дней.
+					</Text>
+					<Text
+						as='p'
+						size='xs'
+						color='muted'
+					>
+						Подробнее — в
+						{' '}
+						<Link
+							href='#'
+							variant='primary'
+							size='sm'
+						>
+							справке по безопасности
+						</Link>
+						.
+					</Text>
+				</Stack>
+			</Card>
+		</div>
+	),
+	parameters: story('Статья в карточке: Title, абзац и ссылка внутри Text.'),
 };

@@ -1,11 +1,12 @@
 import type {Meta} from '@storybook/react';
 import React, {useMemo, useState} from 'react';
-import {Table, TableContentProps, type TableSortDirection, type Column} from './Table';
+import {Table, type TableProps, type TableSortDirection, type Column} from './Table';
 import {Chip} from '../Chip/Chip';
 import {Text} from '../Text/Text';
 import {Stack} from '../Layout/Layout';
 import {Button} from '../Button/Button';
 import {TextField} from '../TextField/TextField';
+import {Card} from '../Card/Card';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 interface UserRow {
@@ -48,7 +49,7 @@ const COLUMNS = [
 		key: 'role',
 		header: 'Роль',
 		render: (row: UserRow) => (
-			<Chip mode='tag' variant={row.role === 'Админ' ? 'primary' : 'secondary'}>
+			<Chip as='tag' variant={row.role === 'Админ' ? 'primary' : 'secondary'}>
 				{row.role}
 			</Chip>
 		),
@@ -137,23 +138,43 @@ export default {
 	parameters: componentParameters(
 		'Таблица: sort, selection, loading / empty / pagination / toolbar / row actions, expandable rows, sticky columns.',
 	),
-	argTypes: {},
+	argTypes: {
+		loading: {
+			control: 'boolean',
+			description: 'Скелетон вместо строк',
+		},
+		density: {
+			control: {
+				type: 'select',
+				options: ['default', 'compact'],
+			},
+			description: 'Плотность строк',
+		},
+		stickyHeader: {
+			control: 'boolean',
+		},
+		onSelectionChange: {
+			action: 'selectionChange',
+		},
+		onSortChange: {
+			action: 'sortChange',
+		},
+	},
 } satisfies Meta<typeof Table>;
 
-export const Playground: Story<TableContentProps<UserRow>> = {
+export const Playground: Story<TableProps<UserRow>> = {
 	render: function PlaygroundRender() {
 		const [selected, setSelected] = useState<Set<string | number>>(new Set());
 		return (
 			<div style={{maxWidth: '800px'}}>
-				<Table.Root aria-label='Пользователи'>
-					<Table.Content
-						columns={COLUMNS.slice(0, 3)}
-						data={DATA}
-						rowKey={(row) => row.id}
-						selectedKeys={selected}
-						onSelectionChange={setSelected}
-					/>
-				</Table.Root>
+				<Table
+					aria-label='Пользователи'
+					columns={COLUMNS.slice(0, 3)}
+					data={DATA}
+					rowKey={(row) => row.id}
+					selectedKeys={selected}
+					onSelectionChange={setSelected}
+				/>
 			</div>
 		);
 	},
@@ -175,88 +196,80 @@ export const WithToolbar: Story<Record<string, never>> = {
 		const pageRows = filtered.slice((page - 1) * pageSize, page * pageSize);
 
 		return (
-			<Table.Root aria-label='Заказы'>
-				<Table.Toolbar>
-					<TextField
-						label='Поиск'
-						labelPlacement='none'
-						width='md'
-						value={query}
-						onChange={(event) => {
-							setQuery(event.target.value);
-							setPage(1);
-						}}
-					/>
-					<Button
-						variant='secondary'
-						size='sm'
-						onClick={() => {
-							setLoading(true);
-							window.setTimeout(() => setLoading(false), 900);
-						}}
-					>
-						Обновить
-					</Button>
-				</Table.Toolbar>
-				<Table.Content
-					columns={ORDER_COLUMNS}
-					data={pageRows}
-					rowKey={(row) => row.id}
-					rowActions={(row) => [
-						{
-							id: 'ops',
-							label: 'Действия',
-							items: [
-								{
-									id: 'open',
-									label: `Открыть ${row.name}`
-								},
-								{
-									id: 'delete',
-									label: 'Удалить'
-								},
-							],
-						},
-					]}
-				/>
-				<Table.Loading loading={loading} rows={5} />
-				<Table.Empty
-					title='Заказы не найдены'
-					description='Измените фильтр или создайте заказ'
-					action={(
+			<Table
+				aria-label='Заказы'
+				columns={ORDER_COLUMNS}
+				data={pageRows}
+				rowKey={(row) => row.id}
+				loading={loading}
+				toolbar={(
+					<>
+						<TextField
+							label='Поиск'
+							labelPlacement='none'
+							width='md'
+							value={query}
+							onChange={(event) => {
+								setQuery(event.target.value);
+								setPage(1);
+							}}
+						/>
+						<Button
+							variant='secondary'
+							size='sm'
+							onClick={() => {
+								setLoading(true);
+								window.setTimeout(() => setLoading(false), 900);
+							}}
+						>
+							Обновить
+						</Button>
+					</>
+				)}
+				rowActions={(row) => [
+					{
+						id: 'open',
+						label: `Открыть ${row.name}`
+					},
+					{
+						id: 'delete',
+						label: 'Удалить'
+					},
+				]}
+				empty={{
+					title: 'Заказы не найдены',
+					description: 'Измените фильтр или создайте заказ',
+					action: (
 						<Button size='sm'>
 							Создать
 						</Button>
-					)}
-				/>
-				<Table.Footer pagination={{
+					),
+				}}
+				footer={{
 					page: Math.min(page, totalPages),
 					totalPages,
 					onPageChange: setPage,
 				}}
-				/>
-			</Table.Root>
+			/>
 		);
 	},
-	parameters: story('Поиск, loading, pagination, ⋯ меню (`Table.Toolbar`).'),
+	parameters: story('Поиск, loading, pagination, ⋯ меню (`toolbar`).'),
 };
 
-export const ClientSort: Story<TableContentProps<UserRow>> = {
+export const ClientSort: Story<TableProps<UserRow>> = {
 	render: () => (
 		<div style={{maxWidth: 720}}>
-			<Table.Root>
-				<Table.Content
-					columns={COLUMNS.slice(0, 3)}
-					data={DATA}
-					rowKey={(row) => row.id}
-				/>
-			</Table.Root>
+			<Table
+				columns={COLUMNS.slice(0, 3)}
+				data={DATA}
+				rowKey={(row) => row.id}
+			/>
 		</div>
 	),
 	parameters: story('Клиентская сортировка — клик по заголовку без `onSortChange`.'),
 };
 
-export const ServerSort: Story<TableContentProps<UserRow>> = {
+export const ServerSort: Story<TableProps<UserRow>> = {
 	render: function ServerSortRender() {
 		const [sortKey, setSortKey] = useState<string | null>('name');
 		const [sortDirection, setSortDirection] = useState<TableSortDirection>('asc');
@@ -272,19 +285,17 @@ export const ServerSort: Story<TableContentProps<UserRow>> = {
 					{sortDirection}
 					)
 				</Text>
-				<Table.Root>
-					<Table.Content
-						columns={COLUMNS.slice(0, 3)}
-						data={DATA}
-						rowKey={(row) => row.id}
-						sortKey={sortKey}
-						sortDirection={sortDirection}
-						onSortChange={(key, direction) => {
-							setSortKey(key);
-							setSortDirection(direction);
-						}}
-					/>
-				</Table.Root>
+				<Table
+					columns={COLUMNS.slice(0, 3)}
+					data={DATA}
+					rowKey={(row) => row.id}
+					sortKey={sortKey}
+					sortDirection={sortDirection}
+					onSortChange={(key, direction) => {
+						setSortKey(key);
+						setSortDirection(direction);
+					}}
+				/>
 			</Stack>
 		);
 	},
@@ -293,36 +304,33 @@ export const ServerSort: Story<TableContentProps<UserRow>> = {
 
 export const Loading: Story<Record<string, never>> = {
 	render: () => (
-		<Table.Root>
-			<Table.Content
-				columns={ORDER_COLUMNS}
-				data={[]}
-				rowKey={(row) => row.id}
-			/>
-			<Table.Loading loading rows={6} />
-		</Table.Root>
+		<Table
+			columns={ORDER_COLUMNS}
+			data={[]}
+			rowKey={(row) => row.id}
+			loading
+			loadingRows={6}
+		/>
 	),
 	parameters: story('Скелетон-таблица при `loading`.'),
 };
 
 export const Empty: Story<Record<string, never>> = {
 	render: () => (
-		<Table.Root>
-			<Table.Content
-				columns={ORDER_COLUMNS}
-				data={[]}
-				rowKey={(row) => row.id}
-			/>
-			<Table.Empty
-				title='Заказов пока нет'
-				description='Создайте первый заказ, чтобы начать работу'
-				action={(
+		<Table
+			columns={ORDER_COLUMNS}
+			data={[]}
+			rowKey={(row) => row.id}
+			empty={{
+				title: 'Заказов пока нет',
+				description: 'Создайте первый заказ, чтобы начать работу',
+				action: (
 					<Button size='sm'>
 						Создать заказ
 					</Button>
-				)}
-			/>
-		</Table.Root>
+				),
+			}}
+		/>
 	),
 	parameters: story('EmptyState при пустом `data`.'),
 };
@@ -335,13 +343,11 @@ export const WithPagination: Story<Record<string, never>> = {
 		const pageRows = ORDER_ROWS.slice((page - 1) * pageSize, page * pageSize);
 
 		return (
-			<Table.Root>
-				<Table.Content
-					columns={ORDER_COLUMNS}
-					data={pageRows}
-					rowKey={(row) => row.id}
-				/>
-				<Table.Footer pagination={{
+			<Table
+				columns={ORDER_COLUMNS}
+				data={pageRows}
+				rowKey={(row) => row.id}
+				footer={{
 					page: Math.min(page, totalPages),
 					totalPages,
 					totalItems: ORDER_ROWS.length,
@@ -353,8 +359,7 @@ export const WithPagination: Story<Record<string, never>> = {
 						setPage(1);
 					},
 				}}
-				/>
-			</Table.Root>
+			/>
 		);
 	},
 	parameters: story('Пагинация с выбором размера страницы и счётчиком записей.'),
@@ -362,48 +367,38 @@ export const WithPagination: Story<Record<string, never>> = {
 
 export const RowActions: Story<Record<string, never>> = {
 	render: () => (
-		<Table.Root>
-			<Table.Content
-				columns={ORDER_COLUMNS}
-				data={ORDER_ROWS.slice(0, 5)}
-				rowKey={(row) => row.id}
-				rowActions={(row) => [
-					{
-						id: 'main',
-						label: 'Действия',
-						items: [
-							{
-								id: 'view',
-								label: `Открыть ${row.name}`
-							},
-							{
-								id: 'duplicate',
-								label: 'Дублировать'
-							},
-							{
-								id: 'archive',
-								label: 'В архив'
-							},
-						],
-					},
-				]}
-			/>
-		</Table.Root>
+		<Table
+			columns={ORDER_COLUMNS}
+			data={ORDER_ROWS.slice(0, 5)}
+			rowKey={(row) => row.id}
+			rowActions={(row) => [
+				{
+					id: 'view',
+					label: `Открыть ${row.name}`
+				},
+				{
+					id: 'duplicate',
+					label: 'Дублировать'
+				},
+				{
+					id: 'archive',
+					label: 'В архив'
+				},
+			]}
+		/>
 	),
 	parameters: story('Колонка ⋯ с `rowActions` (sticky справа).'),
 };
 
-export const Compact: Story<TableContentProps<UserRow>> = {
+export const Compact: Story<TableProps<UserRow>> = {
 	render: () => (
 		<div style={{maxWidth: 720}}>
-			<Table.Root>
-				<Table.Content
-					columns={COLUMNS.slice(0, 4)}
-					data={DATA}
-					rowKey={(row) => row.id}
-					density='compact'
-				/>
-			</Table.Root>
+			<Table
+				columns={COLUMNS.slice(0, 4)}
+				data={DATA}
+				rowKey={(row) => row.id}
+				density='compact'
+			/>
 		</div>
 	),
 	parameters: story('Плотные строки через `density="compact"`.'),
@@ -413,56 +408,52 @@ export const ExpandableRows: Story<Record<string, never>> = {
 	render: function Render() {
 		const [expandedKeys, setExpandedKeys] = useState<Set<string | number>>(new Set(['1']));
 		return (
-			<Table.Root>
-				<Table.Content
-					columns={ORDER_COLUMNS}
-					data={ORDER_ROWS.slice(0, 6)}
-					rowKey={(row) => row.id}
-					expandedKeys={expandedKeys}
-					onExpandedChange={setExpandedKeys}
-					renderExpandedRow={(row) => (
-						<Stack gap='sm'>
-							<Text size='sm' weight='medium'>
-								Детали 
-								{' '}
-								{row.name}
-							</Text>
-							<Text size='sm'>
-								Статус: 
-								{' '}
-								{row.status}
-								{' '}
-								· Сумма: 
-								{' '}
-								{row.amount}
-								{' '}
-								₽
-							</Text>
-						</Stack>
-					)}
-				/>
-			</Table.Root>
+			<Table
+				columns={ORDER_COLUMNS}
+				data={ORDER_ROWS.slice(0, 6)}
+				rowKey={(row) => row.id}
+				expandedKeys={expandedKeys}
+				onExpandedChange={setExpandedKeys}
+				renderExpandedRow={(row) => (
+					<Stack gap='sm'>
+						<Text size='sm' weight='medium'>
+							Детали 
+							{' '}
+							{row.name}
+						</Text>
+						<Text size='sm'>
+							Статус: 
+							{' '}
+							{row.status}
+							{' '}
+							· Сумма: 
+							{' '}
+							{row.amount}
+							{' '}
+							₽
+						</Text>
+					</Stack>
+				)}
+			/>
 		);
 	},
 	parameters: story('Раскрываемые строки через `renderExpandedRow`.'),
 };
 
-export const StickyColumns: Story<TableContentProps<UserRow>> = {
+export const StickyColumns: Story<TableProps<UserRow>> = {
 	render: () => (
 		<div style={{
 			maxWidth: 480,
 			overflow: 'auto'
 		}}
 		>
-			<Table.Root>
-				<Table.Content
-					columns={COLUMNS}
-					data={DATA}
-					rowKey={(row) => row.id}
-					stickyHeader
-					density='compact'
-				/>
-			</Table.Root>
+			<Table
+				columns={COLUMNS}
+				data={DATA}
+				rowKey={(row) => row.id}
+				stickyHeader
+				density='compact'
+			/>
 		</div>
 	),
 	parameters: story('Липкий заголовок и закреплённая колонка `name` слева при горизонтальной прокрутке.'),
@@ -475,16 +466,129 @@ export const StickyHeader: Story<Record<string, never>> = {
 			overflow: 'auto'
 		}}
 		>
-			<Table.Root>
-				<Table.Content
-					columns={ORDER_COLUMNS}
-					data={ORDER_ROWS}
-					rowKey={(row) => row.id}
-					stickyHeader
-					density='compact'
-				/>
-			</Table.Root>
+			<Table
+				columns={ORDER_COLUMNS}
+				data={ORDER_ROWS}
+				rowKey={(row) => row.id}
+				stickyHeader
+				density='compact'
+			/>
 		</div>
 	),
 	parameters: story('Липкий заголовок при прокрутке длинного списка.'),
+};
+
+export const OverflowText: Story<TableProps<UserRow>> = {
+	render: () => (
+		<div style={{maxWidth: 420}}>
+			<Table
+				aria-label='Длинные ячейки'
+				columns={[
+					{
+						key: 'name',
+						header: 'Имя',
+						width: 140,
+					},
+					{
+						key: 'notes',
+						header: 'Комментарий',
+						render: (row) => (
+							<Text size='sm'>
+								{row.notes}
+								{' '}
+								— дополнительное очень длинное пояснение, которое не помещается в узкую колонку
+							</Text>
+						),
+					},
+				]}
+				data={DATA.slice(0, 3)}
+				rowKey={(row) => row.id}
+			/>
+		</div>
+	),
+	parameters: story('Длинный текст в ячейках при ограниченной ширине таблицы.'),
+};
+
+export const Interaction: Story<TableProps<UserRow>> = {
+	render: function InteractionRender() {
+		const [selected, setSelected] = useState<Set<string | number>>(new Set());
+		return (
+			<div style={{maxWidth: 640}}>
+				<Table
+					aria-label='Выбор строк'
+					columns={COLUMNS.slice(0, 3)}
+					data={DATA.slice(0, 3)}
+					rowKey={(row) => row.id}
+					selectedKeys={selected}
+					onSelectionChange={setSelected}
+				/>
+			</div>
+		);
+	},
+	play: async ({canvasElement}) => {
+		const checkbox = canvasElement.querySelector('tbody input[type="checkbox"]') as HTMLInputElement | null;
+		checkbox?.click();
+		const sort = Array.from(canvasElement.querySelectorAll('th button, th [role="button"], thead th'))
+			.find((cell) => cell.textContent?.includes('Имя')) as HTMLElement | undefined;
+		sort?.click();
+	},
+	parameters: story('Play отмечает первую строку и кликает сортировку по имени.'),
+};
+
+export const UsageExample: Story<Record<string, never>> = {
+	render: function UsageExampleRender() {
+		const [page, setPage] = useState(1);
+		const [query, setQuery] = useState('');
+		const pageSize = 4;
+		const filtered = useMemo(
+			() => ORDER_ROWS.filter((row) => row.name.toLowerCase().includes(query.toLowerCase())),
+			[query],
+		);
+		const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+		const pageRows = filtered.slice((page - 1) * pageSize, page * pageSize);
+
+		return (
+			<Card>
+				<Stack gap='md'>
+					<Text weight='bold'>
+						Заказы
+					</Text>
+					<Table
+						aria-label='Заказы'
+						columns={ORDER_COLUMNS}
+						data={pageRows}
+						rowKey={(row) => row.id}
+						toolbar={(
+							<>
+								<TextField
+									label='Поиск'
+									labelPlacement='none'
+									width='md'
+									value={query}
+									onChange={(event) => {
+										setQuery(event.target.value);
+										setPage(1);
+									}}
+								/>
+								<Button variant='secondary' size='sm'>
+									Экспорт
+								</Button>
+							</>
+						)}
+						empty={{
+							title: 'Ничего не найдено',
+							description: 'Измените запрос',
+						}}
+						footer={{
+							page: Math.min(page, totalPages),
+							totalPages,
+							onPageChange: setPage,
+							totalItems: filtered.length,
+						}}
+					/>
+				</Stack>
+			</Card>
+		);
+	},
+	parameters: story('Таблица в карточке: поиск, пагинация и пустое состояние.'),
 };

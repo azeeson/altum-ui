@@ -5,7 +5,8 @@ import type {
 /**
  * Вариант заливки поверхности (без рамки и тени).
  *
- * - `outlined` / `elevated` — фон `--altum-color-surface`
+ * - `outlined` — фон `--altum-color-surface`
+ * - `elevated` — фон `--altum-color-surface-elevated` (в dark ступенью светлее surface)
  * - `floating` — `--altum-color-dropdown-bg`
  * - `tinted` — тонированная заливка primary
  * - `secondary` — приглушённый secondary
@@ -14,8 +15,8 @@ import type {
  * - `overlay` — полупрозрачная поверхность на scrim (`--altum-overlay-content-*`)
  * - `ghost` / `plain` — прозрачный
  *
- * Варианты `outlined` / `elevated` / `tinted` / `secondary` / `muted` / `glass` / `overlay`
- * переопределяют element-токены (`--altum-field-*`, `--altum-color-button-secondary-*`, …) для потомков.
+ * Красит только себя (заливка, рамка, `color` для нестилизованного текста).
+ * Вложенные контролы остаются на глобальных element-токенах.
  */
 export type BoxVariant =
 	| 'outlined'

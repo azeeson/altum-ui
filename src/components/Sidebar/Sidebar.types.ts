@@ -47,6 +47,7 @@ export interface SidebarGroupLabelProps extends React.HTMLAttributes<HTMLDivElem
 /** Свойства пункта навигации `Sidebar.Item`. */
 export interface SidebarItemProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onChange' | 'type'> {
 	value: string;
+	/** SVG из набора (`currentColor`). Не emoji — ломает вес и цвет ряда. */
 	icon?: React.ReactNode;
 	badge?: React.ReactNode;
 	badgeDot?: boolean;

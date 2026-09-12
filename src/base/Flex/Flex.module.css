@@ -1,0 +1,22 @@
+.flex {
+  display: flex;
+  box-sizing: border-box;
+
+  gap: var(--altum-flex-gap);
+
+  width: 100%;
+  min-width: 0;
+}
+
+.col {
+  flex-direction: column;
+}
+
+.row {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.nowrap {
+  flex-wrap: nowrap;
+}

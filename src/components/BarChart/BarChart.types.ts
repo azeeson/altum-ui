@@ -1,12 +1,7 @@
-import type {
-	ComponentPropsWithoutRef,
-} from 'react';
+import type {ChartSeries} from '../../base/ChartBase';
+import type {ComponentPropsWithoutRef} from 'react';
 
-export interface BarChartDataset {
-	name: string;
-	color?: string;
-	data: number[];
-}
+export type BarChartDataset = ChartSeries;
 
 /**
  * Свойства `BarChart`.

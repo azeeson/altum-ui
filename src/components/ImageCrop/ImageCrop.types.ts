@@ -17,8 +17,7 @@ export interface ImageCropResult {
  */
 export interface ImageCropProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'title'> {
 	open: boolean;
-	onClose: () => void;
-	onOpenChange?: (open: boolean) => void;
+	onOpenChange: (open: boolean) => void;
 	/** Файл из UploadZone (или другой источник) */
 	file?: File | null;
 	/** Альтернатива file — готовый URL */

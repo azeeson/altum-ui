@@ -8,7 +8,7 @@ export type {
 import {forwardRef} from 'react';
 import styles from './SkipLink.module.css';
 import {cn} from '../../utils/cn';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useLocale} from '../../locales/localeContext';
 
 /**
  * «Перейти к содержимому» — появляется при фокусе (a11y-база).

@@ -18,8 +18,8 @@ import {Checkbox, CheckboxGroup} from '../Checkbox/Checkbox';
 import {Chip, ChipGroup} from '../Chip/Chip';
 import {ColorSwatchGroup} from '../ColorSwatchGroup/ColorSwatchGroup';
 import {ConfirmDialog} from '../ConfirmDialog/ConfirmDialog';
-import {DatePicker} from '../DatePicker/DatePicker';
-import {DateRangePicker} from '../DateRangePicker/DateRangePicker';
+import {DateField} from '../DateField/DateField';
+import {DateRangeField} from '../DateRangeField/DateRangeField';
 import {DayStripCalendar} from '../DayStripCalendar/DayStripCalendar';
 import {DescriptionList} from '../DescriptionList/DescriptionList';
 import {EmptyState} from '../EmptyState/EmptyState';
@@ -34,7 +34,7 @@ import {MaskedField} from '../MaskedField/MaskedField';
 import {Modal} from '../Modal/Modal';
 import {NotificationProvider, notify as pushToast} from '../Notification/toast';
 import {NumberField} from '../NumberField/NumberField';
-import {OverflowGroup} from '../OverflowGroup/OverflowGroup';
+import {Overflow} from '../Overflow/Overflow';
 import {Pagination} from '../Pagination/Pagination';
 import {PasswordField} from '../PasswordField/PasswordField';
 import {PinInput} from '../PinInput/PinInput';
@@ -60,12 +60,13 @@ import {Tabs} from '../Tabs/Tabs';
 import {Text} from '../Text/Text';
 import {TextField} from '../TextField/TextField';
 import {TextareaField} from '../TextareaField/TextareaField';
-import {TimePickerField} from '../TimePicker/TimePicker';
+import {TimeField} from '../TimeField/TimeField';
 import {Timeline} from '../Timeline/Timeline';
 import {Title} from '../Title/Title';
 import {Tooltip} from '../Tooltip/Tooltip';
 import {UploadZone} from '../UploadZone/UploadZone';
 import {IconBell} from '../../icons/icons/IconBell';
+import {IconCross} from '../../icons/icons/IconCross';
 import {IconCheckmark} from '../../icons/icons/IconCheckmark';
 import {IconDots3} from '../../icons/icons/IconDots3';
 import {IconHome} from '../../icons/icons/IconHome';
@@ -307,23 +308,17 @@ function GallerySelect({
 	size?: 'sm' | 'md' | 'lg';
 }) {
 	return (
-		<Select.Root
+		<Select
 			options={SELECT_OPTIONS}
 			value={value}
 			onChange={(next) => {
 				if (!Array.isArray(next) && next != null) onChange(String(next));
 			}}
-		>
-			<Select.Trigger
-				label={label}
-				width={width}
-				labelPlacement={labelPlacement}
-				size={size}
-			/>
-			<Select.Panel>
-				<Select.List />
-			</Select.Panel>
-		</Select.Root>
+			label={label}
+			width={width}
+			labelPlacement={labelPlacement}
+			size={size}
+		/>
 	);
 }
 
@@ -496,9 +491,7 @@ function VisualGalleryDemo() {
 									<RelativeTime date={RELATIVE_TIME_HOUR_AGO} />
 								</div>
 								<Marker variant='note'>
-									<Marker.Content>
-										Marker note — системная подсказка
-									</Marker.Content>
+									Marker note — системная подсказка
 								</Marker>
 								<KbdGroup>
 									<Kbd>
@@ -550,12 +543,14 @@ function VisualGalleryDemo() {
 								padding='md'
 								border
 							>
-								<Text size='sm' weight='semibold'>
-									{variant}
-								</Text>
-								<Text size='sm' color='muted'>
-									padding md
-								</Text>
+								<Stack gap='xs'>
+									<Text size='sm' weight='semibold'>
+										{variant}
+									</Text>
+									<Text size='sm' color='muted'>
+										padding md
+									</Text>
+								</Stack>
 							</Box>
 						))}
 					</div>
@@ -664,7 +659,11 @@ function VisualGalleryDemo() {
 									icon={<IconTrash />}
 									aria-label='Удалить'
 								/>
-								<ButtonIcon appearance='diskClose' aria-label='Закрыть' />
+								<ButtonIcon
+									appearance='diskClose'
+									icon={<IconCross />}
+									aria-label='Закрыть'
+								/>
 							</div>
 						</Panel>
 						<Panel title='ButtonGroup'>
@@ -696,7 +695,7 @@ function VisualGalleryDemo() {
 					title='Chip / Badge'
 					hint='Все варианты и размеры рядом с Avatar overlay'
 				>
-					<Panel title='Варианты Chip × размеры (mode=chip)'>
+					<Panel title='Варианты Chip × размеры (as=chip)'>
 						<div className={styles.matrix}>
 							{CHIP_VARIANTS.map((variant) => (
 								<div key={variant} className={styles.matrixRow}>
@@ -722,7 +721,7 @@ function VisualGalleryDemo() {
 								{CHIP_VARIANTS.map((variant) => (
 									<Chip
 										key={`tag-${variant}`}
-										mode='tag'
+										as='tag'
 										variant={variant}
 										size='sm'
 									>
@@ -732,7 +731,7 @@ function VisualGalleryDemo() {
 							</div>
 							<div className={styles.row}>
 								<Chip
-									active
+									as='toggle'
 									variant='tinted'
 									onClick={() => undefined}
 								>
@@ -757,7 +756,7 @@ function VisualGalleryDemo() {
 										key={label}
 										size='sm'
 										variant='secondary'
-										mode='tag'
+										as='tag'
 									>
 										{label}
 									</Chip>
@@ -944,21 +943,21 @@ function VisualGalleryDemo() {
 						</Panel>
 						<Panel title='Дата / время / диапазон'>
 							<div className={styles.stackGap}>
-								<DatePicker
+								<DateField
 									label='Дата'
 									size='md'
 									labelPlacement='outside'
 									value={date}
 									onChange={setDate}
 								/>
-								<TimePickerField
+								<TimeField
 									label='Время'
 									size='md'
 									labelPlacement='outside'
 									value={time}
 									onChange={setTime}
 								/>
-								<DateRangePicker
+								<DateRangeField
 									label='Период'
 									layout='split'
 									size='md'
@@ -1096,7 +1095,7 @@ function VisualGalleryDemo() {
 								))}
 							</div>
 						</Panel>
-						<Panel title='ButtonGroup + OverflowGroup'>
+						<Panel title='ButtonGroup + Overflow'>
 							<div className={styles.stackGap}>
 								<ButtonGroup
 									size='md'
@@ -1117,7 +1116,7 @@ function VisualGalleryDemo() {
 									</ButtonGroup.Item>
 								</ButtonGroup>
 								<div className={styles.overflowDemo}>
-									<OverflowGroup fit='container' aria-label='Переполнение фильтров'>
+									<Overflow fit='container' aria-label='Переполнение фильтров'>
 										{[
 											'Все',
 											'Мои',
@@ -1137,7 +1136,7 @@ function VisualGalleryDemo() {
 												</Chip>
 											),
 										)}
-									</OverflowGroup>
+									</Overflow>
 								</div>
 								<Rating value={rating} onChange={setRating} />
 							</div>
@@ -1160,23 +1159,17 @@ function VisualGalleryDemo() {
 									onChange={setSuggest}
 									placeholder='Начните вводить…'
 								/>
-								<Select.Root
+								<Select
 									options={SUGGEST_OPTIONS}
 									value={region}
 									onChange={(next) => {
 										if (!Array.isArray(next) && next != null) setRegion(String(next));
 									}}
-								>
-									<Select.Trigger
-										label='Регион'
-										labelPlacement='outside'
-										width='full'
-										onClear={() => setRegion('')}
-									/>
-									<Select.Panel>
-										<Select.List />
-									</Select.Panel>
-								</Select.Root>
+									label='Регион'
+									labelPlacement='outside'
+									width='full'
+									onClear={() => setRegion('')}
+								/>
 							</div>
 						</Panel>
 						<Panel title='Slider + ColorSwatch'>
@@ -1188,7 +1181,6 @@ function VisualGalleryDemo() {
 								/>
 								<Slider
 									aria-label='Диапазон'
-									range
 									value={sliderRange}
 									onChange={setSliderRange}
 								/>
@@ -1209,49 +1201,17 @@ function VisualGalleryDemo() {
 					hint='Alert / Progress / Spinner / Skeleton / EmptyState / StatBadge / Notification'
 				>
 					<div className={styles.stackGap}>
-						<Alert variant='info'>
-							<Alert.Icon />
-							<Alert.Body>
-								<Alert.Title>
-									Синхронизация запущена
-								</Alert.Title>
-								<Alert.Content>
-									Обновляем данные в фоне — можно продолжать работу.
-								</Alert.Content>
-							</Alert.Body>
+						<Alert variant='info' title='Синхронизация запущена'>
+							Обновляем данные в фоне — можно продолжать работу.
 						</Alert>
-						<Alert variant='success'>
-							<Alert.Icon />
-							<Alert.Body>
-								<Alert.Title>
-									Изменения сохранены
-								</Alert.Title>
-								<Alert.Content>
-									Команда увидит обновления в течение минуты.
-								</Alert.Content>
-							</Alert.Body>
+						<Alert variant='success' title='Изменения сохранены'>
+							Команда увидит обновления в течение минуты.
 						</Alert>
-						<Alert variant='warning'>
-							<Alert.Icon />
-							<Alert.Body>
-								<Alert.Title>
-									Срок почти истёк
-								</Alert.Title>
-								<Alert.Content>
-									Дедлайн через 2 часа — проверьте статусы задач.
-								</Alert.Content>
-							</Alert.Body>
+						<Alert variant='warning' title='Срок почти истёк'>
+							Дедлайн через 2 часа — проверьте статусы задач.
 						</Alert>
-						<Alert variant='error'>
-							<Alert.Icon />
-							<Alert.Body>
-								<Alert.Title>
-									Не удалось отправить
-								</Alert.Title>
-								<Alert.Content>
-									Проверьте соединение и повторите попытку.
-								</Alert.Content>
-							</Alert.Body>
+						<Alert variant='error' title='Не удалось отправить'>
+							Проверьте соединение и повторите попытку.
 						</Alert>
 					</div>
 					<div className={styles.grid3}>
@@ -1270,10 +1230,10 @@ function VisualGalleryDemo() {
 						</Panel>
 						<Panel title='Skeleton'>
 							<div className={styles.stackGap}>
-								<Skeleton.Text lines={3} />
+								<Skeleton variant='text' lines={3} />
 								<Inline gap='sm' align='center'>
-									<Skeleton.Avatar />
-									<Skeleton.Text lines={2} />
+									<Skeleton variant='avatar' />
+									<Skeleton variant='text' lines={2} />
 								</Inline>
 							</div>
 						</Panel>
@@ -1460,92 +1420,75 @@ function VisualGalleryDemo() {
 				>
 					<div className={styles.grid2}>
 						<Panel title='Card'>
-							<Card variant='elevated' hoverable>
-								<Card.Header>
+							<Card
+								variant='elevated'
+								hoverable
+								header={(
 									<Text weight='semibold'>
 										Карточка проекта
 									</Text>
-								</Card.Header>
-								<Card.Body>
-									<Text
-										as='p'
-										size='sm'
-										color='secondary'
-									>
-										Elevated Card с действиями — типичный блок обзора.
-									</Text>
-								</Card.Body>
-								<Card.Actions>
-									<Button size='sm' variant='secondary'>
-										Открыть
-									</Button>
-									<Button size='sm'>
-										Править
-									</Button>
-								</Card.Actions>
+								)}
+								actions={(
+									<>
+										<Button size='sm' variant='secondary'>
+											Открыть
+										</Button>
+										<Button size='sm'>
+											Править
+										</Button>
+									</>
+								)}
+							>
+								<Text
+									as='p'
+									size='sm'
+									color='secondary'
+								>
+									Elevated Card с действиями — типичный блок обзора.
+								</Text>
 							</Card>
 						</Panel>
 						<Panel title='Строки Item'>
 							<div className={styles.stackGap}>
-								<Item interactive variant='outlined'>
-									<Item.Media variant='avatar'>
-										<Avatar name='Nina' size='sm' />
-									</Item.Media>
-									<Item.Content>
-										<Item.Title>
-											Nina Petrova
-										</Item.Title>
-										<Item.Description>
-											Дизайнер · онлайн
-										</Item.Description>
-									</Item.Content>
-									<Item.Actions>
+								<Item
+									interactive
+									variant='outlined'
+									media={<Avatar name='Nina' size='sm' />}
+									mediaVariant='avatar'
+									title='Nina Petrova'
+									description='Дизайнер · онлайн'
+									actions={(
 										<ButtonIcon
 											icon={<IconBell />}
 											aria-label='Уведомить'
 											size='sm'
 											variant='ghost'
 										/>
-									</Item.Actions>
-								</Item>
-								<Item interactive variant='ghost'>
-									<Item.Media variant='icon'>
-										<IconCheckmark />
-									</Item.Media>
-									<Item.Content>
-										<Item.Title>
-											Задача закрыта
-										</Item.Title>
-										<Item.Description>
-											2 часа назад
-										</Item.Description>
-									</Item.Content>
-								</Item>
+									)}
+								/>
+								<Item
+									interactive
+									variant='ghost'
+									media={<IconCheckmark />}
+									mediaVariant='icon'
+									title='Задача закрыта'
+									description='2 часа назад'
+								/>
 							</div>
 						</Panel>
 					</div>
 					<div className={styles.grid2}>
 						<Panel title='Accordion'>
 							<Accordion variant='bordered' defaultOpenIds={['a']}>
-								<Accordion.Item value='a'>
-									<Accordion.Trigger>
-										Доставка
-									</Accordion.Trigger>
-									<Accordion.Content>
-										<Text size='sm'>
-											Бесплатно от 3000 ₽, 1–3 дня по городу.
-										</Text>
-									</Accordion.Content>
+								<Accordion.Item value='a' title='Доставка'>
+									<Text size='sm'>
+										Бесплатно от 3000 ₽, 1–3 дня по городу.
+									</Text>
 								</Accordion.Item>
-								<Accordion.Item value='b'>
-									<Accordion.Trigger>
-										Возврат
-									</Accordion.Trigger>
-									<Accordion.Content>
-										<Text size='sm'>
-											14 дней с момента получения.
-										</Text>
-									</Accordion.Content>
+								<Accordion.Item value='b' title='Возврат'>
+									<Text size='sm'>
+										14 дней с момента получения.
+									</Text>
 								</Accordion.Item>
 							</Accordion>
 						</Panel>
@@ -1570,43 +1513,44 @@ function VisualGalleryDemo() {
 					hint='Tooltip / Popover / Modal / Sheet / ConfirmDialog'
 				>
 					<div className={styles.row}>
-						<Tooltip content='Подсказка Tooltip' asChild>
+						<Tooltip content='Подсказка Tooltip'>
 							<Button variant='secondary' size='sm'>
 								Наведите Tooltip
 							</Button>
 						</Tooltip>
-						<Popover>
-							<Popover.Trigger asChild>
+						<Popover
+							renderTrigger={(props, ref) => (
 								<Button
 									variant='secondary'
 									size='sm'
 									iconEnd={<IconDots3 />}
+									{...props}
+									ref={ref}
 								>
 									Popover
 								</Button>
-							</Popover.Trigger>
-							<Popover.Content>
-								<Stack gap='sm'>
-									<Text size='sm' weight='semibold'>
-										Быстрые действия
-									</Text>
-									<Button
-										size='sm'
-										variant='ghost'
-										fullWidth
-									>
-										Дублировать
-									</Button>
-									<Button
-										size='sm'
-										variant='ghost'
-										status='danger'
-										fullWidth
-									>
-										Удалить
-									</Button>
-								</Stack>
-							</Popover.Content>
+							)}
+						>
+							<Stack gap='sm'>
+								<Text size='sm' weight='semibold'>
+									Быстрые действия
+								</Text>
+								<Button
+									size='sm'
+									variant='ghost'
+									fullWidth
+								>
+									Дублировать
+								</Button>
+								<Button
+									size='sm'
+									variant='ghost'
+									status='danger'
+									fullWidth
+								>
+									Удалить
+								</Button>
+							</Stack>
 						</Popover>
 						<Button size='sm' onClick={() => setModalOpen(true)}>
 							Открыть Modal
@@ -1629,7 +1573,7 @@ function VisualGalleryDemo() {
 						</Button>
 					</div>
 
-					<Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+					<Modal open={modalOpen} onOpenChange={setModalOpen}>
 						<Modal.Header>
 							<Modal.Title>
 								Modal + форма
@@ -1659,7 +1603,7 @@ function VisualGalleryDemo() {
 						</Modal.FormFooter>
 					</Modal>
 
-					<Sheet open={sheetOpen} onClose={() => setSheetOpen(false)}>
+					<Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
 						<Sheet.Header>
 							<Sheet.Title>
 								Sheet
@@ -1683,7 +1627,7 @@ function VisualGalleryDemo() {
 						message='Действие необратимо — данные нельзя будет восстановить.'
 						status='danger'
 						onConfirm={() => setConfirmOpen(false)}
-						onCancel={() => setConfirmOpen(false)}
+						onOpenChange={setConfirmOpen}
 					/>
 				</Section>
 
@@ -1752,62 +1696,56 @@ function VisualGalleryDemo() {
 							<p className={styles.panelTitle}>
 								Карточка формы
 							</p>
-							<Fieldset variant='card'>
-								<Fieldset.Inner>
-									<Fieldset.Legend>
-										Новая задача
-									</Fieldset.Legend>
-									<Fieldset.Description>
-										Поля одной высоты с CTA.
-									</Fieldset.Description>
-									<Fieldset.Content>
-										<div className={styles.stackGap}>
-											<TextField
-												label='Заголовок'
-												width='full'
-												labelPlacement='outside'
+							<Fieldset
+								variant='card'
+								legend='Новая задача'
+								description='Поля одной высоты с CTA.'
+							>
+								<div className={styles.stackGap}>
+									<TextField
+										label='Заголовок'
+										width='full'
+										labelPlacement='outside'
+									/>
+									<div className={styles.rowStretch}>
+										<div className={styles.fieldGrow}>
+											<GallerySelect
+												label='Статус'
+												value={status}
+												onChange={setStatus}
 											/>
-											<div className={styles.rowStretch}>
-												<div className={styles.fieldGrow}>
-													<GallerySelect
-														label='Статус'
-														value={status}
-														onChange={setStatus}
-													/>
-												</div>
-												<div className={styles.fieldGrow}>
-													<DatePicker
-														label='Дедлайн'
-														size='md'
-														labelPlacement='outside'
-														value={date}
-														onChange={setDate}
-													/>
-												</div>
-											</div>
-											<Split align='center'>
-												<CheckboxGroup
-													options={[
-														{
-															label: 'Уведомить команду',
-															value: 'notify'
-														}
-													]}
-													value={checks}
-													onChange={setChecks}
-												/>
-												<Inline gap='sm'>
-													<Button variant='secondary'>
-														Отмена
-													</Button>
-													<Button iconStart={<IconCheckmark />}>
-														Сохранить
-													</Button>
-												</Inline>
-											</Split>
 										</div>
-									</Fieldset.Content>
-								</Fieldset.Inner>
+										<div className={styles.fieldGrow}>
+											<DateField
+												label='Дедлайн'
+												size='md'
+												labelPlacement='outside'
+												value={date}
+												onChange={setDate}
+											/>
+										</div>
+									</div>
+									<Split align='center'>
+										<CheckboxGroup
+											options={[
+												{
+													label: 'Уведомить команду',
+													value: 'notify'
+												}
+											]}
+											value={checks}
+											onChange={setChecks}
+										/>
+										<Inline gap='sm'>
+											<Button variant='secondary'>
+												Отмена
+											</Button>
+											<Button iconStart={<IconCheckmark />}>
+												Сохранить
+											</Button>
+										</Inline>
+									</Split>
+								</div>
 							</Fieldset>
 						</div>
 
@@ -1868,7 +1806,7 @@ function VisualGalleryDemo() {
 									<Chip
 										size='sm'
 										variant='tinted'
-										active
+										as='toggle'
 									>
 										Продукт
 									</Chip>
@@ -1878,7 +1816,7 @@ function VisualGalleryDemo() {
 									<Chip
 										size='sm'
 										variant='secondary'
-										mode='tag'
+										as='tag'
 									>
 										v0.5
 									</Chip>
@@ -1907,7 +1845,7 @@ function VisualGalleryDemo() {
 								CommandPalette / Sidebar
 							</li>
 							<li>
-								ImageLightbox / ContextMenu
+								ImageLightbox / Menu
 							</li>
 							<li>
 								Attachment / FileList / ActionSheetTrigger

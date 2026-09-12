@@ -1,0 +1,17 @@
+.grid {
+  stroke: var(--altum-color-border);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+.tick {
+  font-size: var(--altum-g-font-size-3xs);
+
+  fill: var(--altum-color-muted);
+}
+
+.category {
+  font-size: var(--altum-g-font-size-xs);
+
+  fill: var(--altum-color-text-secondary);
+}

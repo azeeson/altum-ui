@@ -1,17 +1,87 @@
 import type {PinInputProps} from './PinInput.types';
-export type {
-	PinInputProps,
-} from './PinInput.types';
+export type {PinInputProps} from './PinInput.types';
 
-import {forwardRef, useCallback, useId, useRef, useState} from 'react';
+import {forwardRef, useId, type ClipboardEvent, type KeyboardEvent, type MutableRefObject} from 'react';
 import styles from './PinInput.module.css';
 import {cn} from '../../utils/cn';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
-import {FieldBase, fieldSurfaceClassName} from '../../base/FieldBase';
+import {useLocale} from '../../locales/localeContext';
+import {FieldBase, fieldChromeClassName, useFieldControlAttrs} from '../../base/FieldBase';
+import {useOtpInputs} from '../../hooks/useOtpInputs';
 
-function sanitize(raw: string, length: number, numeric: boolean): string {
-	const cleaned = numeric ? raw.replace(/\D/g, '') : raw.replace(/\s/g, '');
-	return cleaned.slice(0, length);
+function PinGroup({
+	chars,
+	value,
+	name,
+	numeric,
+	masked,
+	disabled,
+	autoFocus,
+	error,
+	ariaLabel,
+	groupId,
+	inputsRef,
+	onChange,
+	onKeyDown,
+	onPaste,
+}: {
+	chars: string[];
+	value: string;
+	name?: string;
+	numeric: boolean;
+	masked: boolean;
+	disabled: boolean;
+	autoFocus: boolean;
+	error?: boolean | string;
+	ariaLabel: string;
+	groupId: string;
+	inputsRef: MutableRefObject<Array<HTMLInputElement | null>>;
+	onChange: (index: number, raw: string) => void;
+	onKeyDown: (index: number, event: KeyboardEvent<HTMLInputElement>) => void;
+	onPaste: (index: number, event: ClipboardEvent<HTMLInputElement>) => void;
+}) {
+	const {id: _ignoredId, ...a11y} = useFieldControlAttrs({'aria-label': ariaLabel});
+	void _ignoredId;
+	const hasError = !!error;
+	const {t} = useLocale();
+	return (
+		<div
+			className={cn(styles.group, hasError ? styles.groupError : '')}
+			role='group'
+			id={groupId}
+			{...a11y}
+		>
+			{name ? (
+				<input
+					type='hidden'
+					name={name}
+					value={value}
+				/>
+			) : null}
+			{chars.map((char, index) => (
+				<input
+					key={index}
+					id={index === 0 ? `${groupId}-0` : undefined}
+					ref={(node) => {
+						inputsRef.current[index] = node;
+					}}
+					className={cn(fieldChromeClassName(), styles.cell)}
+					type={masked ? 'password' : 'text'}
+					inputMode={numeric ? 'numeric' : 'text'}
+					autoComplete={index === 0 ? 'one-time-code' : 'off'}
+					maxLength={chars.length}
+					value={char}
+					disabled={disabled}
+					aria-invalid={hasError || undefined}
+					aria-label={t('pinInput.digit', {index: index + 1})}
+					autoFocus={autoFocus && index === 0}
+					onChange={(event) => onChange(index, event.target.value)}
+					onKeyDown={(event) => onKeyDown(index, event)}
+					onPaste={(event) => onPaste(index, event)}
+					onFocus={(event) => event.currentTarget.select()}
+				/>
+			))}
+		</div>
+	);
 }
 
 /**
@@ -47,102 +117,19 @@ export const PinInput = forwardRef<HTMLDivElement, PinInputProps>(function PinIn
 	ref,
 ) {
 	const {t} = useLocale();
-	const isControlled = controlledValue !== undefined;
-	const [uncontrolled, setUncontrolled] = useState(() =>
-		sanitize(defaultValue, length, numeric),);
-	const value = sanitize(isControlled ? controlledValue! : uncontrolled, length, numeric);
-	const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
 	const groupId = useId();
-
-	const setValue = useCallback((next: string) => {
-		const clean = sanitize(next, length, numeric);
-		if (!isControlled) setUncontrolled(clean);
-		onChange?.(clean);
-		if (clean.length === length) onComplete?.(clean);
-	}, [
-		isControlled,
+	const otp = useOtpInputs({
 		length,
 		numeric,
+		value: controlledValue,
+		defaultValue,
+		disabled,
 		onChange,
-		onComplete
-	]);
-
-	const chars = Array.from({length}, (_, index) => value[index] ?? '');
-
-	const focusAt = (index: number) => {
-		const el = inputsRef.current[Math.max(0, Math.min(length - 1, index))];
-		el?.focus();
-		el?.select();
-	};
-
-	const handleChange = (index: number, raw: string) => {
-		if (disabled) return;
-		const incoming = sanitize(raw, length, numeric);
-		if (!incoming) {
-			const next = chars.slice();
-			next[index] = '';
-			setValue(next.join(''));
-			return;
-		}
-
-		if (incoming.length > 1) {
-			const merged = (value.slice(0, index) + incoming).slice(0, length);
-			setValue(merged);
-			focusAt(Math.min(length - 1, index + incoming.length));
-			return;
-		}
-
-		const next = chars.slice();
-		next[index] = incoming;
-		const joined = next.join('');
-		setValue(joined);
-		if (index < length - 1) focusAt(index + 1);
-	};
-
-	const handleKeyDown = (index: number, event: React.KeyboardEvent<HTMLInputElement>) => {
-		if (disabled) return;
-		if (event.key === 'Backspace') {
-			event.preventDefault();
-			if (chars[index]) {
-				const next = chars.slice();
-				next[index] = '';
-				setValue(next.join(''));
-			} else if (index > 0) {
-				const next = chars.slice();
-				next[index - 1] = '';
-				setValue(next.join(''));
-				focusAt(index - 1);
-			}
-			return;
-		}
-		if (event.key === 'ArrowLeft') {
-			event.preventDefault();
-			focusAt(index - 1);
-		}
-		if (event.key === 'ArrowRight') {
-			event.preventDefault();
-			focusAt(index + 1);
-		}
-	};
-
-	const handlePaste = (index: number, event: React.ClipboardEvent<HTMLInputElement>) => {
-		event.preventDefault();
-		const text = event.clipboardData.getData('text');
-		const clean = sanitize(text, length, numeric);
-		if (!clean) return;
-		const merged = (value.slice(0, index) + clean).slice(0, length);
-		setValue(merged);
-		focusAt(Math.min(length - 1, index + clean.length - 1));
-	};
-
-	const hasError = !!error;
-	const sizeClass =
-		size === 'sm' ? styles.sm
-			: size === 'lg' ? styles.lg
-				: styles.md;
+		onComplete,
+	});
 
 	return (
-		<FieldBase.Layout
+		<FieldBase
 			ref={ref}
 			label={label ?? ''}
 			size={size}
@@ -151,53 +138,30 @@ export const PinInput = forwardRef<HTMLDivElement, PinInputProps>(function PinIn
 			error={error}
 			helperText={helperText}
 			disabled={disabled}
-			hasValue={value.length > 0}
-			className={cn(styles.root, sizeClass, className)}
+			hasValue={otp.value.length > 0}
+			chrome={false}
+			className={cn(styles.root, className)}
 			id={`${groupId}-0`}
-			rootProps={{
-				style,
-				...rest,
-			}}
-			control={(
-				<div
-					className={cn(styles.group, hasError ? styles.groupError : '')}
-					role='group'
-					aria-label={ariaLabel ?? label ?? t('pinInput.ariaLabel')}
-					id={groupId}
-				>
-					{name && (
-						<input
-							type='hidden'
-							name={name}
-							value={value}
-						/>
-					)}
-					{chars.map((char, index) => (
-						<input
-							key={index}
-							id={index === 0 ? `${groupId}-0` : undefined}
-							ref={(node) => {
-								inputsRef.current[index] = node;
-							}}
-							className={cn(fieldSurfaceClassName(), styles.cell)}
-							type={masked ? 'password' : 'text'}
-							inputMode={numeric ? 'numeric' : 'text'}
-							autoComplete={index === 0 ? 'one-time-code' : 'off'}
-							maxLength={length}
-							value={char}
-							disabled={disabled}
-							aria-invalid={hasError || undefined}
-							aria-label={t('pinInput.digit', {index: index + 1})}
-							autoFocus={autoFocus && index === 0}
-							onChange={(event) => handleChange(index, event.target.value)}
-							onKeyDown={(event) => handleKeyDown(index, event)}
-							onPaste={(event) => handlePaste(index, event)}
-							onFocus={(event) => event.currentTarget.select()}
-						/>
-					))}
-				</div>
-			)}
-		/>
+			style={style}
+			{...rest}
+		>
+			<PinGroup
+				chars={otp.chars}
+				value={otp.value}
+				name={name}
+				numeric={numeric}
+				masked={masked}
+				disabled={disabled}
+				autoFocus={autoFocus}
+				error={error}
+				ariaLabel={ariaLabel ?? label ?? t('pinInput.ariaLabel')}
+				groupId={groupId}
+				inputsRef={otp.inputsRef}
+				onChange={otp.handleChange}
+				onKeyDown={otp.handleKeyDown}
+				onPaste={otp.handlePaste}
+			/>
+		</FieldBase>
 	);
 });
 

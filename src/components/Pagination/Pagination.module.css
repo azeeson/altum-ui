@@ -8,7 +8,6 @@
 
   width: 100%;
 
-  font-family: inherit;
   font-size: var(--altum-g-font-size-sm);
 
   & .summary {
@@ -38,45 +37,18 @@
 
     user-select: none;
 
-    color: var(--altum-field-label);
+    color: var(--altum-color-text-secondary);
   }
 
   & .pageSize {
-    display: inline-flex;
+    flex: 0 0 auto;
 
-    align-items: center;
-    gap: var(--altum-g-space-2);
-
-    margin-left: var(--altum-g-space-2);
-  }
-
-  & .pageSizeLabel {
-    white-space: nowrap;
-
-    color: var(--altum-field-label);
-  }
-
-  & .pageSizeSelect {
-    height: var(--altum-control-height-sm);
-
-    padding: 0 var(--altum-g-space-2);
-
-    border: 1px solid var(--altum-color-panel-border);
-    border-radius: var(--altum-g-radius-sm);
-
-    font: inherit;
-    font-size: var(--altum-g-font-size-sm);
-
-    color: var(--altum-color-field-text);
-    background-color: var(--altum-color-panel-bg);
-
-    &:focus-visible {
-      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
-      outline-offset: var(--altum-focus-ring-offset);
-    }
+    width: calc(var(--altum-control-height-sm) * 3);
   }
 
   & .pagBtn {
+    position: relative;
+
     display: inline-flex;
 
     justify-content: center;
@@ -87,39 +59,42 @@
 
     padding: 0 var(--altum-g-space-2);
 
-    border: 1px solid var(--altum-color-panel-border);
     border-radius: var(--altum-g-radius-sm);
 
     color: var(--altum-color-text-secondary);
-    background-color: var(--altum-color-panel-bg);
-
-    cursor: pointer;
-
-    transition: var(--altum-transition-smooth);
 
     &:hover:not(:disabled) {
-      border-color: var(--altum-color-border-hover);
-
       color: var(--altum-color-field-text);
       background-color: var(--altum-color-option-hover);
     }
 
-    &:focus-visible {
-      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
-      outline-offset: var(--altum-focus-ring-offset);
-    }
-
     &:disabled {
       opacity: var(--altum-opacity-disabled);
-
-      cursor: not-allowed;
     }
 
     &.active {
-      border-color: var(--altum-color-brand) !important;
+      font-weight: var(--altum-g-font-weight-medium);
 
-      color: var(--altum-color-brand-text) !important;
-      background-color: var(--altum-color-brand) !important;
+      color: var(--altum-color-input-text);
+
+      &::after {
+        position: absolute;
+        right: var(--altum-g-space-2);
+        bottom: 0;
+        left: var(--altum-g-space-2);
+
+        content: '';
+
+        height: var(--altum-pagination-active-bar);
+
+        border-radius: var(--altum-g-radius-pill);
+
+        background-color: var(--altum-color-tabs-indicator);
+      }
+
+      &:hover:not(:disabled) {
+        background-color: transparent;
+      }
     }
   }
 }

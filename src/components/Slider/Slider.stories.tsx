@@ -2,7 +2,9 @@ import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {Slider, type RangeValue, type SliderProps} from './Slider';
 import {Text} from '../Text/Text';
-import {Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout/Layout';
+import {Card} from '../Card/Card';
+import {Button} from '../Button/Button';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
@@ -13,27 +15,56 @@ export default {
 		'Ползунок: одно значение или диапазон «от–до» (два thumb).',
 	),
 	argTypes: {
-		value: {
-			control: {
-				type: 'range',
-				min: 0,
-				max: 100,
-			},
-			description: 'Текущее значение (number) или диапазон ([from, to])',
+		min: {
+			control: 'number',
+			description: 'Минимум',
+		},
+		max: {
+			control: 'number',
+			description: 'Максимум',
+		},
+		step: {
+			control: 'number',
+			description: 'Шаг',
+		},
+		disabled: {
+			control: 'boolean',
+		},
+		readOnly: {
+			control: 'boolean',
+		},
+		showValues: {
+			control: 'boolean',
+			description: 'Подписи над ползунками',
+		},
+		onChange: {
+			action: 'change',
 		},
 	},
 } satisfies Meta<typeof Slider>;
 
 export const Playground: Story<SliderProps> = {
-	render: function PlaygroundRender() {
+	render: function PlaygroundRender(args) {
 		const [val, setVal] = useState(35);
 		return (
-			<div style={{maxWidth: '300px'}}>
-				<Slider value={val} onChange={setVal} />
+			<div style={{maxWidth: 300}}>
+				<Slider
+					min={0}
+					max={100}
+					step={1}
+					{...args}
+					value={val}
+					onChange={setVal}
+				/>
 			</div>
 		);
 	},
-	parameters: story('Одиночный ползунок. Используйте Controls для настройки.'),
+	args: {
+		showValues: true,
+		disabled: false,
+		readOnly: false,
+	},
+	parameters: story('Одиночный ползунок. Controls: min/max/step, disabled, readOnly.'),
 };
 
 export const Range: Story<SliderProps> = {
@@ -63,7 +94,7 @@ export const Range: Story<SliderProps> = {
 			</Stack>
 		);
 	},
-	parameters: story('Диапазон цен с подписями над ползунками (`value: [from, to]`).'),
+	parameters: story('Диапазон цен (`value: [from, to]`).'),
 };
 
 export const RangeWithoutValues: Story<SliderProps> = {
@@ -84,33 +115,111 @@ export const RangeWithoutValues: Story<SliderProps> = {
 };
 
 export const States: Story<SliderProps> = {
-	render: function DisabledAndReadOnlyRender() {
+	render: function StatesRender() {
 		const [val, setVal] = useState(60);
 		return (
-			<div style={{
-				display: 'flex',
-				flexDirection: 'column',
-				gap: 'var(--altum-g-space-4)',
-				maxWidth: 300,
-			}}
-			>
+			<Stack gap='md' style={{maxWidth: 300}}>
+				<Stack gap='xs'>
+					<Text size='xs' color='muted'>
+						disabled
+					</Text>
+					<Slider
+						value={val}
+						onChange={setVal}
+						disabled
+					/>
+				</Stack>
+				<Stack gap='xs'>
+					<Text size='xs' color='muted'>
+						readOnly
+					</Text>
+					<Slider
+						value={35}
+						onChange={() => {}}
+						readOnly
+					/>
+				</Stack>
+				<Stack gap='xs'>
+					<Text size='xs' color='muted'>
+						range + disabled
+					</Text>
+					<Slider
+						value={[30, 70]}
+						onChange={() => {}}
+						disabled
+					/>
+				</Stack>
+			</Stack>
+		);
+	},
+	parameters: story('`disabled` и `readOnly` — без интерактива.'),
+};
+
+export const Interaction: Story<SliderProps> = {
+	render: function InteractionRender() {
+		const [val, setVal] = useState(40);
+		return (
+			<div style={{maxWidth: 300}}>
 				<Slider
 					value={val}
 					onChange={setVal}
-					disabled
-				/>
-				<Slider
-					value={35}
-					onChange={() => {}}
-					readOnly
-				/>
-				<Slider
-					value={[30, 70]}
-					onChange={() => {}}
-					disabled
+					aria-label='Громкость'
 				/>
 			</div>
 		);
 	},
-	parameters: story('`disabled` и `readOnly` — без интерактива (single и range).'),
+	play: async ({canvasElement}) => {
+		const thumb = canvasElement.querySelector('[role="slider"]') as HTMLElement | null;
+		thumb?.focus();
+		thumb?.dispatchEvent(new KeyboardEvent('keydown', {
+			key: 'ArrowRight',
+			bubbles: true,
+		}));
+	},
+	parameters: story('Play фокусирует thumb и жмёт ArrowRight.'),
+};
+
+export const UsageExample: Story<SliderProps> = {
+	render: function UsageExampleRender() {
+		const [price, setPrice] = useState<RangeValue>([1500, 7800]);
+		return (
+			<Card
+				style={{maxWidth: 400}}
+				header={(
+					<Text weight='bold'>
+						Фильтр по цене
+					</Text>
+				)}
+			>
+				<Stack gap='md'>
+					<Slider
+						value={price}
+						onChange={setPrice}
+						min={0}
+						max={10000}
+						step={100}
+					/>
+					<Inline gap='sm'>
+						<Text size='sm'>
+							{price[0]}
+							{' '}
+							—
+							{' '}
+							{price[1]}
+							{' '}
+							₽
+						</Text>
+						<Button
+							size='sm'
+							variant='secondary'
+							onClick={() => setPrice([0, 10000])}
+						>
+							Сбросить
+						</Button>
+					</Inline>
+				</Stack>
+			</Card>
+		);
+	},
+	parameters: story('Диапазон цен в карточке фильтра с кнопкой сброса.'),
 };

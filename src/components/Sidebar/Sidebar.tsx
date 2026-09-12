@@ -23,15 +23,13 @@ export type {
 	SidebarMobileTriggerProps,
 } from './Sidebar.types';
 
-import React, {
+import {
 	Children,
 	createContext,
 	forwardRef,
 	isValidElement,
-	useCallback,
 	useContext,
 	useMemo,
-	useState,
 } from 'react';
 import {Sheet} from '../Sheet/Sheet';
 import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
@@ -40,10 +38,12 @@ import {Badge} from '../Badge/Badge';
 import {IconMenu} from '../../icons/icons/IconMenu';
 import {IconChevronLeft} from '../../icons/icons/IconChevronLeft';
 import {MOBILE_MEDIA_QUERY, useMediaQuery} from '../../hooks/useMediaQuery';
+import {useControlledStateWithCallback} from '../../hooks/useControlledState';
 import styles from './Sidebar.module.css';
+import unstyled from '../../styles/unstyledControl.module.css';
 import {cn} from '../../utils/cn';
 import {composeEventHandlers} from '../../utils/composeEvents';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useLocale} from '../../locales/localeContext';
 
 interface SidebarContextValue {
 	activeId: string;
@@ -96,29 +96,17 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarProps>(function SidebarRoot(
 	const {t} = useLocale();
 	const resolvedAriaLabel = ariaLabel ?? t('sidebar.ariaLabel');
 	const isMobile = useMediaQuery(MOBILE_MEDIA_QUERY);
-	const [internalActiveId, setInternalActiveId] = useState(defaultActiveId);
-	const [internalCollapsed, setInternalCollapsed] = useState(defaultCollapsed);
-	const [internalMobileOpen, setInternalMobileOpen] = useState(false);
-	const activeId = controlledActiveId ?? internalActiveId;
-	const isCollapsedControlled = controlledCollapsed !== undefined;
-	const collapsed = isCollapsedControlled ? controlledCollapsed! : internalCollapsed;
-	const isMobileOpenControlled = controlledMobileOpen !== undefined;
-	const mobileOpen = isMobileOpenControlled ? controlledMobileOpen! : internalMobileOpen;
-
-	const setActiveId = useCallback((id: string) => {
-		if (controlledActiveId === undefined) setInternalActiveId(id);
-		onChange?.(id);
-	}, [controlledActiveId, onChange]);
-
-	const setCollapsed = useCallback((next: boolean) => {
-		if (!isCollapsedControlled) setInternalCollapsed(next);
-		onCollapsedChange?.(next);
-	}, [isCollapsedControlled, onCollapsedChange]);
-
-	const setMobileOpen = useCallback((next: boolean) => {
-		if (!isMobileOpenControlled) setInternalMobileOpen(next);
-		onMobileOpenChange?.(next);
-	}, [isMobileOpenControlled, onMobileOpenChange]);
+	const [activeId, setActiveId] = useControlledStateWithCallback(controlledActiveId, defaultActiveId, onChange);
+	const [collapsed, setCollapsed] = useControlledStateWithCallback(
+		controlledCollapsed,
+		defaultCollapsed,
+		onCollapsedChange,
+	);
+	const [mobileOpen, setMobileOpen] = useControlledStateWithCallback(
+		controlledMobileOpen,
+		false,
+		onMobileOpenChange,
+	);
 
 	const contextValue = useMemo<SidebarContextValue>(() => ({
 		activeId,
@@ -139,18 +127,18 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarProps>(function SidebarRoot(
 	]);
 
 	const childArray = Children.toArray(children);
-	const mobileTrigger = childArray.find(
+	const trigger = childArray.find(
 		(child) => isValidElement(child) && child.type === SidebarMobileTrigger,
 	);
-	const content = childArray.filter((child) => child !== mobileTrigger);
+	const content = childArray.filter((child) => child !== trigger);
 
 	if (mobileDrawer && isMobile) {
 		return (
 			<SidebarContext.Provider value={contextValue}>
-				{mobileTrigger}
+				{trigger}
 				<Sheet
 					open={mobileOpen}
-					onClose={() => setMobileOpen(false)}
+					onOpenChange={setMobileOpen}
 					mode='sidebar'
 					direction='start'
 					width={280}
@@ -173,7 +161,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarProps>(function SidebarRoot(
 		<SidebarContext.Provider value={contextValue}>
 			<aside
 				ref={ref}
-				className={cn(styles.sidebar, collapsed ? styles.collapsed : '', className)}
+				className={cn(styles.sidebar, collapsed && styles.collapsed, className)}
 				{...rest}
 				aria-expanded={!collapsed}
 			>
@@ -224,23 +212,25 @@ const SidebarCollapse = forwardRef<HTMLButtonElement, SidebarCollapseProps>(
 				content={collapsed ? t('sidebar.expand') : t('sidebar.collapse')}
 				position='right'
 				openDelay={150}
-				asChild
 			>
-				<button
+				<ButtonIcon
 					ref={ref}
-					type='button'
+					variant='ghost'
 					className={cn(styles.toggleBtn, className)}
 					aria-label={collapsed ? t('sidebar.expandSidebar') : t('sidebar.collapseSidebar')}
+					icon={(
+						<IconChevronLeft
+							size={16}
+							className={cn(styles.toggleIcon, collapsed && styles.toggleIconCollapsed)}
+							aria-hidden
+						/>
+					)}
 					onClick={composeEventHandlers(onClick, () => {
 						setCollapsed(!collapsed);
 					})}
 					{...rest}
 					aria-expanded={!collapsed}
-				>
-					<span className={cn(styles.toggleIcon, collapsed ? styles.toggleIconCollapsed : '')} aria-hidden>
-						<IconChevronLeft size={16} />
-					</span>
-				</button>
+				/>
 			</Tooltip>
 		);
 	},
@@ -318,7 +308,13 @@ const SidebarItem = forwardRef<HTMLButtonElement, SidebarItemProps>(
 			<button
 				ref={ref}
 				type='button'
-				className={cn(styles.menuItem, isActive ? styles.active : '', disabled ? styles.disabled : '', className)}
+				className={cn(
+					unstyled.control,
+					styles.menuItem,
+					isActive && styles.active,
+					disabled && styles.disabled,
+					className,
+				)}
 				{...itemRest}
 				aria-current={isActive ? 'page' : undefined}
 				aria-label={collapsed && typeof children === 'string' ? children : ariaLabel}
@@ -358,7 +354,6 @@ const SidebarItem = forwardRef<HTMLButtonElement, SidebarItemProps>(
 					content={children}
 					position='right'
 					openDelay={120}
-					asChild
 				>
 					{button}
 				</Tooltip>

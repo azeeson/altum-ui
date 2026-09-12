@@ -7,8 +7,13 @@ import {
 } from './VirtualList';
 import {Button} from '../Button/Button';
 import {ButtonGroup} from '../ButtonGroup/ButtonGroup';
+import {Card} from '../Card/Card';
+import {EmptyState} from '../EmptyState/EmptyState';
+import {Inline, Stack} from '../Layout/Layout';
 import {Text} from '../Text/Text';
+import {TextField} from '../TextField/TextField';
 import {componentParameters, story, Story} from '../../storybook/meta';
+import {playClick} from '../../storybook/play';
 import styles from './VirtualList.stories.module.css';
 
 type Row = {
@@ -62,14 +67,34 @@ export default {
 			control: false,
 			table: {disable: true}
 		},
-		onScroll: {
-			control: false,
-			table: {disable: true}
+		height: {
+			control: 'text',
+			description: 'Высота собственного вьюпорта',
 		},
-		height: {control: 'text'},
-		estimateSize: {control: 'number'},
-		overscan: {control: 'number'},
-		gap: {control: 'number'},
+		estimateSize: {
+			control: 'number',
+			description: 'Оценка высоты строки до измерения',
+		},
+		overscan: {
+			control: 'number',
+			description: 'Дополнительные строки за краем вьюпорта',
+		},
+		gap: {
+			control: 'number',
+			description: 'Промежуток между строками, px',
+		},
+		useWindowScroll: {
+			control: 'boolean',
+			description: 'Виртуализация относительно window',
+		},
+		onScroll: {
+			action: 'scroll',
+			table: {disable: true},
+		},
+		onRangeChange: {
+			action: 'rangeChange',
+			table: {disable: true},
+		},
 	},
 } satisfies Meta;
 
@@ -277,4 +302,174 @@ export const ExternalScrollParent: Story<VirtualListProps<Row>> = {
 		);
 	},
 	parameters: story('`scrollElement` — виртуализация относительно внешнего overflow-контейнера.'),
+};
+
+export const Empty: Story<VirtualListProps<Row>> = {
+	render: () => (
+		<Stack gap='md' style={{maxWidth: 480}}>
+			<VirtualList
+				items={[]}
+				height={200}
+				estimateSize={64}
+				renderItem={() => null}
+			/>
+			<EmptyState
+				size='sm'
+				title='Список пуст'
+				description='Нет элементов для виртуализации.'
+			/>
+		</Stack>
+	),
+	parameters: story('Пустой набор: вьюпорт без строк.'),
+};
+
+export const OverflowText: Story<VirtualListProps<Row>> = {
+	render: function OverflowTextRender() {
+		const items = useMemo(() => [
+			{
+				id: 'long-1',
+				title: 'Очень длинный заголовок элемента, который не помещается в одну строку карточки списка',
+				body: 'super-long-identifier-that-overflows-the-control@example.com — дополнительное пояснение с единицами измерения и уточнениями',
+			},
+			{
+				id: 'long-2',
+				title: 'Ещё один элемент с переполнением',
+				body: 'Короткий текст',
+			},
+		], []);
+
+		return (
+			<VirtualList
+				items={items}
+				height={220}
+				estimateSize={88}
+				gap={8}
+				getItemKey={(item) => item.id}
+				renderItem={({item}) => (
+					<div className={styles.row}>
+						<strong className={styles.rowTitle}>
+							{item.title}
+						</strong>
+						<p className={styles.rowBody}>
+							{item.body}
+						</p>
+					</div>
+				)}
+			/>
+		);
+	},
+	parameters: story('Длинный текст в строке виртуального списка.'),
+};
+
+export const Interaction: Story<VirtualListProps<Row>> = {
+	render: function InteractionRender() {
+		const items = useMemo(() => createRows(200), []);
+		const listRef = useRef<VirtualListHandle>(null);
+
+		return (
+			<div className={styles.demo}>
+				<div className={styles.toolbar}>
+					<Button
+						size='sm'
+						onClick={() => listRef.current?.scrollToIndex(80, {align: 'center'})}
+					>
+						К элементу 81
+					</Button>
+				</div>
+				<VirtualList
+					ref={listRef}
+					items={items}
+					height={280}
+					estimateSize={64}
+					gap={8}
+					getItemKey={(item) => item.id}
+					renderItem={({item}) => (
+						<div className={styles.row}>
+							<strong className={styles.rowTitle}>
+								{item.title}
+							</strong>
+							<p className={styles.rowBody}>
+								{item.body}
+							</p>
+						</div>
+					)}
+				/>
+			</div>
+		);
+	},
+	play: async ({canvasElement}) => {
+		await playClick(canvasElement, 'button');
+	},
+	parameters: story('Play прокручивает список к элементу 81.'),
+};
+
+export const UsageExample: Story<VirtualListProps<Row>> = {
+	render: function UsageExampleRender() {
+		const allItems = useMemo(() => createRows(400).map((row) => ({
+			...row,
+			body: `Короткий текст для ${row.title}`,
+		})), []);
+		const [query, setQuery] = useState('');
+		const filtered = useMemo(() => {
+			const needle = query.trim().toLowerCase();
+			if (!needle) return allItems;
+			return allItems.filter((item) => item.title.toLowerCase().includes(needle));
+		}, [allItems, query,]);
+
+		return (
+			<Card
+				style={{maxWidth: 480}}
+				header={(
+					<Text weight='bold'>
+						Журнал событий
+					</Text>
+				)}
+			>
+				<Stack gap='md'>
+					<TextField
+						label='Поиск'
+						labelPlacement='none'
+						placeholder='Фильтр по названию'
+						value={query}
+						onChange={(event) => setQuery(event.target.value)}
+					/>
+					{filtered.length === 0 ? (
+						<EmptyState
+							size='sm'
+							title='Ничего не найдено'
+							description='Измените запрос'
+						/>
+					) : (
+						<VirtualList
+							items={filtered}
+							height={280}
+							estimateSize={44}
+							gap={4}
+							getItemKey={(item) => item.id}
+							renderItem={({item, index}) => (
+								<div className={styles.compactRow}>
+									<span className={styles.index}>
+										{index + 1}
+									</span>
+									<span>
+										{item.title}
+									</span>
+								</div>
+							)}
+						/>
+					)}
+					<Inline gap='sm'>
+						<Text size='sm' color='muted'>
+							{filtered.length}
+							{' '}
+							из
+							{' '}
+							{allItems.length}
+						</Text>
+					</Inline>
+				</Stack>
+			</Card>
+		);
+	},
+	parameters: story('Карточка с поиском и виртуализированным журналом.'),
 };

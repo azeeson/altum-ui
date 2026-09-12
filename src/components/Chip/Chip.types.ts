@@ -17,28 +17,33 @@ export type ChipVariant =
 	| 'error';
 
 /**
- * Режим отображения: интерактивный чип или статичный тег.
+ * Роль чипа: метка, тег или toggle-фильтр.
  */
-export type ChipMode = 'chip' | 'tag';
+export type ChipMode = 'chip' | 'tag' | 'toggle';
+
+/**
+ * @deprecated Используйте {@link ChipMode}.
+ */
+export type ChipAs = ChipMode;
 
 /**
  * Свойства `Chip`.
  */
-export interface ChipProps extends Omit<ComponentPropsWithoutRef<'span'>, 'onClick'> {
+export interface ChipProps extends Omit<ComponentPropsWithoutRef<'span'>, 'onClick' | 'as'> {
 	variant?: ChipVariant;
 	/** Размер. @default 'md' */
 	size?: ControlSize;
 	/**
-	 * `tag` — pill-метка; с `onClick` кликабельна (hover как у chip).
-	 * `chip` — небольшое скругление углов (`--altum-g-radius-sm`).
+	 * `chip` — небольшое скругление.
+	 * `tag` — pill-метка.
+	 * `toggle` — выбранный фильтр (`aria-pressed`).
 	 * @default 'chip'
 	 */
 	mode?: ChipMode;
 	/**
-	 * Выбранное / активное состояние (фильтр, toggle).
-	 * Только в `mode="chip"`; при `onClick` выставляется `aria-pressed`.
+	 * @deprecated Используйте `mode`.
 	 */
-	active?: boolean;
+	as?: ChipMode;
 	children: React.ReactNode;
 	onRemove?: () => void;
 	onClick?: React.MouseEventHandler<HTMLButtonElement | HTMLSpanElement>;
@@ -91,6 +96,10 @@ export interface ChipGroupProps extends Omit<ComponentPropsWithoutRef<'div'>, 'c
 	 * `tag` — группа статичных меток (дефолтный `aria-label` «Теги»).
 	 * @default 'chip'
 	 */
-	mode?: ChipMode;
+	mode?: Exclude<ChipMode, 'toggle'>;
+	/**
+	 * @deprecated Используйте `mode`.
+	 */
+	as?: Exclude<ChipMode, 'toggle'>;
 	className?: string;
 }

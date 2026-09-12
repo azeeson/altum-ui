@@ -1,15 +1,14 @@
 .sheet {
+  position: relative;
+
   display: flex;
   box-sizing: border-box;
-  overflow: hidden;
 
   flex-direction: column;
 
   max-height: calc(100dvh - var(--altum-g-space-4));
 
   font-family: var(--altum-g-font-family-ui);
-
-  pointer-events: auto;
 
   &.panel_sheet {
     width: 100%;
@@ -45,10 +44,27 @@
     padding-top: 0;
   }
 
-  & .sheetLayout {
-    min-height: 0;
+  & .grabHandleOverlay {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: var(--altum-g-z-raised-above);
+
+    padding: var(--altum-g-space-2) 0 0;
+
+    pointer-events: none;
+
+    transform: translateX(-50%);
   }
 
+  &.panel_sheet.panel_start .grabHandleOverlay {
+    top: auto;
+    bottom: 0;
+
+    padding: 0 0 var(--altum-g-space-2);
+  }
+
+  /* Сетка на самом header: обёртка DialogBase (.headerContent) сворачивается через contents. */
   & .headerChrome {
     display: grid;
 
@@ -57,11 +73,19 @@
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   }
 
+  & .headerChrome .headerChromeContent {
+    display: contents;
+  }
+
   & .headerPlain {
     display: flex;
 
     align-items: center;
     gap: var(--altum-g-space-3);
+  }
+
+  & .headerPlain .headerPlainInner {
+    display: contents;
   }
 
   & .headerPlainContent {
@@ -89,34 +113,41 @@
     align-items: center;
     gap: var(--altum-g-space-2);
 
+    width: 100%;
     min-width: 0;
     min-height: var(--altum-overlay-close-size, 28px);
 
     &.headerSideStart {
       justify-content: flex-start;
+      justify-self: stretch;
     }
 
     &.headerSideEnd {
       justify-content: flex-end;
+      justify-self: stretch;
     }
   }
 
   & .headerCenter {
-    grid-column: 2;
+    justify-self: center;
 
     min-width: 0;
-  }
 
-  & .titleAlign {
-    text-align: start;
-  }
-
-  & .headerChrome .titleAlign {
-    text-align: center;
+    & h2,
+    & h3,
+    & h4 {
+      text-align: center;
+    }
   }
 
   & .bodyFollowsHeader:not(:first-child) {
     padding-top: var(--altum-g-space-2);
+  }
+
+  & .bodyFlush {
+    flex: 1 0 auto;
+
+    min-width: 0;
   }
 }
 

@@ -12,81 +12,7 @@
 
   color: var(--altum-color-input-text);
 
-  & .header {
-    display: flex;
-
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--altum-g-space-2);
-
-    min-height: var(--altum-g-space-8, 32px);
-  }
-
-  & .title {
-    flex: 1 1 auto;
-
-    font-size: var(--altum-g-font-size-base);
-    font-weight: var(--altum-g-font-weight-semibold);
-    line-height: var(--altum-g-line-height-base);
-    text-align: center;
-
-    color: var(--altum-color-ink-default);
-  }
-
-  & .titleSpacer {
-    flex: 1 1 auto;
-  }
-
-  & .navBtn {
-    display: inline-flex;
-
-    flex-shrink: 0;
-    justify-content: center;
-    align-items: center;
-
-    width: var(--altum-g-space-8, 32px);
-    height: var(--altum-g-space-8, 32px);
-
-    margin: 0;
-    padding: 0;
-
-    border: none;
-    border-radius: var(--altum-g-radius-sm);
-
-    color: var(--altum-color-muted);
-    background: transparent;
-
-    cursor: pointer;
-
-    transition: var(--altum-transition-smooth);
-    &:hover:not(:disabled) {
-      color: var(--altum-color-input-text);
-      background-color: var(--altum-color-option-hover);
-    }
-
-    &:focus-visible {
-      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
-      outline-offset: var(--altum-focus-ring-offset);
-    }
-  }
-
-  & .dayHeaderRow {
-    display: grid;
-
-    gap: 0;
-    grid-template-columns: calc(var(--altum-g-space-7) * 2) minmax(0, 1fr);
-
-    min-width: 0;
-  }
-  & .allDayRow {
-    display: grid;
-
-    gap: 0;
-    grid-template-columns: calc(var(--altum-g-space-7) * 2) minmax(0, 1fr);
-
-    min-width: 0;
-  }
-  & .timeGrid {
+  & .gutterRow {
     display: grid;
 
     gap: 0;
@@ -116,17 +42,7 @@
     color: var(--altum-color-ink-muted);
   }
 
-  & .dayHeaders {
-    display: grid;
-
-    min-width: 0;
-  }
-  & .allDayTrack {
-    display: grid;
-
-    min-width: 0;
-  }
-  & .columns {
+  & .cols {
     display: grid;
 
     min-width: 0;
@@ -142,29 +58,7 @@
 
     min-height: var(--altum-g-space-9, 36px);
 
-    margin: 0;
     padding: var(--altum-g-space-1);
-
-    border: none;
-    border-radius: var(--altum-g-radius-sm);
-
-    font: inherit;
-
-    color: inherit;
-    background-color: transparent;
-
-    cursor: pointer;
-    appearance: none;
-
-    transition: var(--altum-transition-smooth);
-    &:hover:not(:disabled) {
-      background-color: var(--altum-color-option-hover);
-    }
-
-    &:focus-visible {
-      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
-      outline-offset: -2px;
-    }
   }
 
   & .dayWeekday {
@@ -184,13 +78,9 @@
     line-height: 1.2;
   }
 
-  & .dayHeaderSelected {
-    color: var(--altum-color-brand-text);
-    background-color: var(--altum-color-brand);
-    & .dayWeekday {
-      color: inherit;
-      opacity: 0.85;
-    }
+  & .dayHeaderSelected .dayWeekday {
+    color: inherit;
+    opacity: 0.85;
   }
 
   & .allDayTrack {
@@ -226,7 +116,7 @@
     overflow: auto;
 
     max-height: min(70vh, 640px);
-    /* Место для первой метки часа (`top: -0.55em`), иначе 08:00 обрезается */
+
     padding-top: var(--altum-g-space-3);
 
     scrollbar-gutter: stable;
@@ -246,7 +136,6 @@
     position: absolute;
     top: -0.55em;
     right: var(--altum-g-space-2);
-    /* не клипать при скролле родителя из‑за негативного offset */
     z-index: 1;
 
     font-size: var(--altum-g-font-size-xs);
@@ -299,63 +188,9 @@
     z-index: 1;
 
     box-sizing: border-box;
-    /* Не сжимаем короткие события до нечитаемости; текст обрежется эллипсисом */
+
     min-height: var(--altum-g-space-8);
 
     pointer-events: auto;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.dayHeaderToday:not(.dayHeaderSelected) {
-  box-shadow: inset 0 0 0 1px var(--altum-color-brand);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

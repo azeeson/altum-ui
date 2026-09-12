@@ -23,7 +23,7 @@ export interface DayStripCalendarProps extends Omit<React.ComponentPropsWithoutR
 	weekStartsOn?: 0 | 1;
 	/** Заголовок месяца/года над полосой. */
 	showHeader?: boolean;
-	/** Кнопки prev / next для сдвига окна. */
+	/** Кнопки prev / next: выбирают соседний день; полоса сдвигается на `daysCount / 2`, если дата вне окна. */
 	showNav?: boolean;
 	renderDay?: (props: DayStripDayRenderProps) => React.ReactNode;
 }

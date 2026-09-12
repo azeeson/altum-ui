@@ -1,6 +1,6 @@
 import React, {cloneElement, isValidElement} from 'react';
-import {composeRefs, type PossibleRef} from './composeRefs';
-import {cn} from './cn';
+import type {PossibleRef} from './composeRefs';
+import {mergeSlotProps} from './slot';
 
 /**
  * Children как render-prop: получает slot-пропсы и ref контентного узла.
@@ -12,10 +12,8 @@ export type RenderChildrenFn<P> = (
 
 /**
  * Режим render-prop: `children` — функция `(props, contentRef) => ReactNode`.
- * `asChild` можно опустить или передать `false`.
  */
 export interface EnrichedThroughFn<P> {
-	asChild?: false;
 	children: RenderChildrenFn<P>;
 }
 
@@ -23,34 +21,34 @@ export interface EnrichedThroughFn<P> {
  * Режим cloneElement: единственный React-элемент получает slot-пропсы.
  */
 export interface EnrichedThroughChild {
-	asChild: true;
 	children: React.ReactElement;
 }
 
 /**
- * Дискриминированный union `asChild` + `children` для API вроде Overlay / Tooltip.
+ * Union `children`: элемент (slot) или render-prop. Режим выбирается по типу `children`.
  *
  * @example
  * type Props = WithEnrichedChildren<{ content: React.ReactNode }, SlotProps>;
  */
-export type WithEnrichedChildren<T, P> = T & (EnrichedThroughFn<P> | EnrichedThroughChild);
+export type WithEnrichedChildren<T, P> = T & {
+	children: RenderChildrenFn<P> | React.ReactElement;
+};
 
 export type RenderChildrenOptions<P> = {
-	/** `true` — `cloneElement` единственного child; `false` — children как render-prop. */
-	asChild: boolean;
 	children: React.ReactNode | RenderChildrenFn<P>;
-	/** Пропсы, которые Overlay навешивает на контентный узел. */
+	/** Пропсы, которые слот навешивает на хост. */
 	props: P;
 	contentRef: PossibleRef<HTMLElement | null>;
 };
 
 /**
  * Отрисовка children без лишней обёртки:
- * - `asChild` — мержит `props` + `contentRef` в единственный React-элемент через `cloneElement`;
- * - иначе — вызывает children как функцию `(props, contentRef) => ReactNode`.
+ * - функция — `(props, contentRef) => ReactNode`;
+ * - единственный React-элемент — `mergeSlotProps` + `cloneElement`.
+ *
+ * @throws если `children` ни функция, ни элемент.
  */
 export function renderChildren<P extends object>({
-	asChild,
 	children,
 	props,
 	contentRef,
@@ -62,40 +60,18 @@ export function renderChildren<P extends object>({
 		}
 	};
 
-	if (asChild) {
-		if (!isValidElement(children)) {
-			throw new Error('renderChildren: asChild требует единственный дочерний React-элемент');
-		}
-
-		const child = children as React.ReactElement<{
-			className?: string;
-			style?: React.CSSProperties;
-			ref?: PossibleRef<HTMLElement>;
-		}>;
-
-		const childProps = child.props;
-		const slotProps = props as P & {
-			className?: string;
-			style?: React.CSSProperties;
-		};
-
-		return cloneElement(child, {
-			...slotProps,
-			className: cn(slotProps.className, childProps.className),
-			// Slot (позиционирование Overlay) перекрывает декоративный style child.
-			style: {
-				...childProps.style,
-				...slotProps.style,
-			},
-			ref: composeRefs(refCallback, childProps.ref),
-		} as Partial<typeof child.props> & {ref: React.RefCallback<HTMLElement>});
+	if (typeof children === 'function') {
+		return (children as RenderChildrenFn<P>)(props, refCallback);
 	}
 
-	if (typeof children !== 'function') {
+	if (!isValidElement(children)) {
 		throw new Error(
-			'renderChildren: если asChild равен false, children должен быть функцией (props, contentRef) => ReactNode',
+			'renderChildren: children должен быть функцией (props, contentRef) => ReactNode или единственным React-элементом',
 		);
 	}
 
-	return (children as RenderChildrenFn<P>)(props, refCallback);
+	return cloneElement(
+		children,
+		mergeSlotProps(props as Record<string, unknown>, children, refCallback),
+	);
 }

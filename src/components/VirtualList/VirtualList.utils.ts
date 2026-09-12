@@ -1,4 +1,3 @@
-import type {CSSProperties} from 'react';
 import type {MountRange, ScrollTarget, VirtualScrollMetrics} from './VirtualList.types';
 
 export const DEFAULT_ESTIMATE = 48;
@@ -7,7 +6,6 @@ const EMPTY_METRICS: VirtualScrollMetrics = {
 	scrollTop: 0,
 	clientHeight: 0,
 };
-export const ITEM_CONTENT_STYLE: CSSProperties = {position: 'relative'};
 
 export function noopSubscribe(): () => void {
 	return () => undefined;
@@ -91,18 +89,6 @@ export function getListOffsetInScrollParent(
 	const parentRect = parent.getBoundingClientRect();
 	const listRect = list.getBoundingClientRect();
 	return listRect.top - parentRect.top + parent.scrollTop;
-}
-
-export function getItemOffset(
-	index: number,
-	getSizeAt: (i: number) => number,
-	gap: number,
-): number {
-	let offset = 0;
-	for (let i = 0; i < index; i += 1) {
-		offset += getSizeAt(i) + gap;
-	}
-	return offset;
 }
 
 export function rangesEqual(a: MountRange, b: MountRange): boolean {

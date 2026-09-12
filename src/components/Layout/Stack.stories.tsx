@@ -8,7 +8,35 @@ import {Chip} from '../Chip/Chip';
 import {TextField} from '../TextField/TextField';
 import {Select} from '../Select/Select';
 import {Text} from '../Text/Text';
+import {Card} from '../Card/Card';
+import {Title} from '../Title/Title';
 import {componentParameters, story, Story} from '../../storybook/meta';
+
+const GAPS = [
+	'none',
+	'xs',
+	'sm',
+	'md',
+	'lg',
+	'xl'
+] as const;
+
+const ALIGNS = [
+	'start',
+	'center',
+	'end',
+	'baseline',
+	'stretch'
+] as const;
+
+const JUSTIFY = [
+	'start',
+	'center',
+	'end',
+	'between',
+	'around',
+	'evenly'
+] as const;
 
 export default {
 	title: 'altum/Components/Stack',
@@ -18,6 +46,26 @@ export default {
 		'Вертикальный flex-стек с токенным gap. Для секций формы, колонок в сайдбаре и списков блоков. '
 		+ 'Не для горизонтальных рядов — там Inline / ControlRow / Split.',
 	),
+	argTypes: {
+		gap: {
+			control: {
+				type: 'select',
+				options: [...GAPS],
+			},
+		},
+		align: {
+			control: {
+				type: 'select',
+				options: [...ALIGNS],
+			},
+		},
+		justify: {
+			control: {
+				type: 'select',
+				options: [...JUSTIFY],
+			},
+		},
+	},
 } satisfies Meta<typeof Stack>;
 
 const CITY_OPTIONS = [
@@ -32,29 +80,31 @@ const CITY_OPTIONS = [
 ];
 
 export const Playground: Story<StackProps> = {
-	render: function FormSectionsRender() {
+	args: {
+		gap: 'md',
+		align: 'stretch',
+		justify: 'start',
+	},
+	render: function FormSectionsRender(args) {
 		const [city, setCity] = useState('');
 		return (
 			<Stack
-				gap='md'
+				{...args}
 				style={{maxWidth: 420}}
 			>
 				<Text size='sm' color='muted'>
-					Поля друг под другом с единым вертикальным ритмом (gap=«md»).
+					Поля друг под другом с единым вертикальным ритмом.
 				</Text>
 				<TextField label='Имя' width='full' />
 				<ControlRow gap='sm' align='end'>
 					<ControlRow.Item grow>
-						<Select.Root
+						<Select
 							options={CITY_OPTIONS}
 							value={city}
 							onChange={(value) => { if (!Array.isArray(value)) setCity(value); }}
-						>
-							<Select.Trigger label='Город' width='full' />
-							<Select.Panel>
-								<Select.List />
-							</Select.Panel>
-						</Select.Root>
+							label='Город'
+							width='full'
+						/>
 					</ControlRow.Item>
 					<Button variant='secondary'>
 						Сброс
@@ -68,7 +118,7 @@ export const Playground: Story<StackProps> = {
 						Черновик
 					</Chip>
 					<Chip
-						mode='tag'
+						as='tag'
 						variant='secondary'
 						size='sm'
 					>
@@ -81,19 +131,13 @@ export const Playground: Story<StackProps> = {
 			</Stack>
 		);
 	},
-	parameters: story('Типичная форма: Stack → поля → ControlRow → Inline чипов.'),
+	parameters: story('Типичная форма: Stack → поля → ControlRow → Inline чипов. Controls: gap / align / justify.'),
 };
 
 export const WithGapScale: Story<StackProps> = {
 	render: () => (
 		<Stack gap='lg'>
-			{([
-				'xs',
-				'sm',
-				'md',
-				'lg',
-				'xl'
-			] as const).map((gap) => (
+			{GAPS.filter((gap) => gap !== 'none').map((gap) => (
 				<Stack
 					key={gap}
 					gap={gap}
@@ -118,4 +162,64 @@ export const WithGapScale: Story<StackProps> = {
 		</Stack>
 	),
 	parameters: story('Шкала токенных отступов Stack.'),
+};
+
+export const AlignCenter: Story<StackProps> = {
+	render: () => (
+		<Stack
+			gap='sm'
+			align='center'
+			style={{
+				maxWidth: 320,
+				padding: 'var(--altum-g-space-4)',
+				border: '1px solid var(--altum-color-border)',
+				borderRadius: 'var(--altum-g-radius)',
+			}}
+		>
+			<Text size='sm'>
+				Короткая строка
+			</Text>
+			<Button size='sm'>
+				По центру
+			</Button>
+		</Stack>
+	),
+	parameters: story('`align="center"` — дети по поперечной оси.'),
+};
+
+export const UsageExample: Story<StackProps> = {
+	render: function UsageExampleRender() {
+		const [city, setCity] = useState('msk');
+		return (
+			<div style={{maxWidth: 420}}>
+				<Card
+					header={(
+						<Title level={4}>
+							Новый участник
+						</Title>
+					)}
+					actions={(
+						<Button size='sm'>
+							Пригласить
+						</Button>
+					)}
+				>
+					<Stack gap='md'>
+						<TextField label='Эл. почта' width='full' />
+						<Select
+							options={CITY_OPTIONS}
+							value={city}
+							onChange={(value) => { if (!Array.isArray(value)) setCity(value); }}
+							label='Офис'
+							width='full'
+						/>
+						<Text size='xs' color='muted'>
+							Приглашение придёт на указанный адрес.
+						</Text>
+					</Stack>
+				</Card>
+			</div>
+		);
+	},
+	parameters: story('Форма внутри Card: поля в Stack, действие в actions карточки.'),
 };

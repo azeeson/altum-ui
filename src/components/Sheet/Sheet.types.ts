@@ -5,6 +5,7 @@ import type {
 } from 'react';
 import type {DialogFooterAlign} from '../../base/DialogBase';
 import type {OverlayZIndexTier} from '../../utils/overlayZIndex';
+import type {OverlayDismiss} from '../Overlay/Overlay.types';
 
 export type {OverlayZIndexTier};
 
@@ -31,8 +32,7 @@ export type SheetFooterAlign = DialogFooterAlign;
  */
 export interface SheetProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
 	open: boolean;
-	onClose: () => void;
-	onOpenChange?: (open: boolean) => void;
+	onOpenChange: (open: boolean) => void;
 	children?: ReactNode;
 	/** Ручка захвата в стиле iOS (логична для `mode="sheet"`). */
 	showHandle?: boolean;
@@ -52,7 +52,6 @@ export interface SheetProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'
 	width?: number | string;
 	/** Высота для `mode="sheet"`. */
 	height?: number | string;
-	closeLabel?: string;
 	backdropVariant?: 'default' | 'strong';
 	backdropBlur?: 'none' | 'sm' | 'md';
 	/**
@@ -63,10 +62,10 @@ export interface SheetProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'
 	/** Сырой z-index корня; перекрывает `zIndexTier` / `purpose`. */
 	zIndex?: number | string;
 	/**
-	 * Padding `Sheet.Body` по умолчанию, если у Body не задан свой `padding`.
-	 * @default true
+	 * Закрытие: снаружи, Escape, оба или выкл.
+	 * @default `'all'` при `backdrop`, иначе `'escape'`
 	 */
-	padding?: boolean;
+	dismiss?: OverlayDismiss;
 }
 
 /**
@@ -83,7 +82,7 @@ export interface SheetHeaderProps extends HTMLAttributes<HTMLElement> {
 	variant?: 'chrome' | 'plain';
 	leftControls?: ReactNode;
 	rightControls?: ReactNode;
-	/** Встроенный `Sheet.Close` справа (после `rightControls`). @default true */
+	/** Встроенный `Sheet.Close` справа. По умолчанию `true`, если нет `rightControls`. */
 	showClose?: boolean;
 }
 
@@ -112,7 +111,7 @@ export interface SheetBodyProps extends HTMLAttributes<HTMLElement> {
 	className?: string;
 	/**
 	 * Внутренние отступы. `false` — edge-to-edge контент.
-	 * Если не задано — берётся `Sheet` `padding` (дефолт `true`).
+	 * @default true
 	 */
 	padding?: boolean;
 }

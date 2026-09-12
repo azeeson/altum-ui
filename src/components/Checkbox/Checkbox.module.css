@@ -1,0 +1,83 @@
+.root {
+  --altum-toggle-check-w: var(--altum-toggle-check-width);
+  --altum-toggle-check-h: var(--altum-toggle-check-height);
+  --altum-toggle-check-s: var(--altum-toggle-check-stroke);
+  --altum-toggle-dash-w: var(--altum-toggle-dash-width);
+  --altum-toggle-dash-h: var(--altum-toggle-dash-height);
+
+  &[data-size='sm'] {
+    --altum-toggle-check-w: var(--altum-toggle-check-width-sm);
+    --altum-toggle-check-h: var(--altum-toggle-check-height-sm);
+    --altum-toggle-check-s: var(--altum-toggle-check-stroke-sm);
+    --altum-toggle-dash-w: var(--altum-toggle-dash-width-sm);
+    --altum-toggle-dash-h: var(--altum-toggle-dash-height-sm);
+  }
+
+  &[data-size='lg'] {
+    --altum-toggle-check-w: var(--altum-toggle-check-width-lg);
+    --altum-toggle-check-h: var(--altum-toggle-check-height-lg);
+    --altum-toggle-dash-w: var(--altum-toggle-dash-width-lg);
+  }
+
+  &.task {
+    flex-shrink: 0;
+
+    & .box {
+      border-width: 2px;
+      border-radius: 50%;
+
+      &::after {
+        height: var(--altum-toggle-task-check-height);
+      }
+    }
+
+    &[data-size='sm'] .box::after,
+    &[data-size='lg'] .box::after {
+      height: var(--altum-toggle-check-h);
+    }
+  }
+
+  &.checked .box {
+    opacity: 0.7;
+  }
+
+  & .box {
+    border-radius: var(--altum-g-radius-sm);
+
+    &::after {
+      width: var(--altum-toggle-check-w);
+      height: var(--altum-toggle-check-h);
+
+      border: solid var(--altum-color-control-mark-color);
+      border-width: 0 var(--altum-toggle-check-s) var(--altum-toggle-check-s) 0;
+
+      transform: translate(-50%, -70%) rotate(45deg) scale(0.5);
+    }
+  }
+
+  & .input:checked ~ .box::after {
+    transform: translate(-50%, -70%) rotate(45deg) scale(1);
+  }
+
+  & .input:indeterminate ~ .box {
+    border-color: var(--altum-color-control-border-checked);
+
+    background-color: var(--altum-color-control-bg-checked);
+
+    &::after {
+      top: 50%;
+      left: 50%;
+
+      width: var(--altum-toggle-dash-w);
+      height: var(--altum-toggle-dash-h);
+
+      border: none;
+      border-radius: 1px;
+
+      opacity: 1;
+      background-color: var(--altum-color-control-mark-color);
+
+      transform: translate(-50%, -50%);
+    }
+  }
+}

@@ -1,5 +1,4 @@
 import type {
-	EmptyStateSize,
 	EmptyStateProps,
 } from './EmptyState.types';
 export type {
@@ -8,6 +7,8 @@ export type {
 } from './EmptyState.types';
 
 import {forwardRef} from 'react';
+import {Text} from '../Text/Text';
+import {Title} from '../Title/Title';
 import styles from './EmptyState.module.css';
 import {cn} from '../../utils/cn';
 
@@ -26,39 +27,38 @@ export const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(function E
 		action,
 		size = 'md',
 		className,
-		style,
 		...rest
 	},
 	ref,
 ) {
-	const resolvedSize: EmptyStateSize = size;
-
 	return (
 		<div
 			ref={ref}
-			className={cn(styles.emptyState, styles[resolvedSize], className)}
-			style={style}
+			className={cn(styles.emptyState, size !== 'md' && styles[size], className)}
 			{...rest}
-			data-size={resolvedSize}
 		>
-			{icon && (
+			{icon ? (
 				<div className={styles.icon}>
 					{icon}
 				</div>
-			)}
-			<h3 className={styles.title}>
+			) : null}
+			<Title level={3} className={styles.title}>
 				{title}
-			</h3>
-			{description && (
-				<p className={styles.description}>
+			</Title>
+			{description ? (
+				<Text
+					as='p'
+					color='secondary'
+					className={styles.description}
+				>
 					{description}
-				</p>
-			)}
-			{action && (
+				</Text>
+			) : null}
+			{action ? (
 				<div className={styles.action}>
 					{action}
 				</div>
-			)}
+			) : null}
 		</div>
 	);
 });

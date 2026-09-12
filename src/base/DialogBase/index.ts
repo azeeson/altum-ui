@@ -8,4 +8,5 @@ export type {
 	DialogBodyProps,
 	DialogFooterProps,
 	DialogFooterAlign,
+	DialogSurfaceProps,
 } from './DialogBase.types';

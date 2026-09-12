@@ -1,6 +1,8 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
-import {LocaleProvider, useLocale, type LocaleCode} from './LocaleProvider';
+import {LocaleProvider} from './LocaleProvider';
+import {useLocale} from '../../locales/localeContext';
+import type {LocaleCode} from './LocaleProvider';
 import {Button} from '../Button/Button';
 import {Pagination} from '../Pagination/Pagination';
 import {Stack, Inline} from '../Layout/Layout';

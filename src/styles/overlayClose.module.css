@@ -1,0 +1,53 @@
+/* Chrome кнопки закрытия overlay (Modal / Sheet / ButtonIcon diskClose). */
+
+.close.close {
+  --altum-btn-border: transparent;
+  --altum-btn-shadow: none;
+  --altum-btn-bg: transparent;
+  --altum-btn-bg-hover: var(--altum-overlay-close-bg-hover);
+  --altum-btn-bg-active: var(--altum-overlay-close-bg-hover);
+  --altum-btn-text: var(--altum-overlay-close-fg);
+  --altum-btn-text-hover: var(--altum-overlay-close-fg-hover);
+
+  overflow: visible;
+
+  width: var(--altum-overlay-close-size);
+  height: var(--altum-overlay-close-size);
+
+  padding: 0;
+
+  border: none;
+  border-radius: var(--altum-g-radius-sm);
+
+  color: var(--altum-overlay-close-fg);
+  background-color: transparent;
+  box-shadow: none;
+
+  &:hover:not(:disabled):not([aria-disabled='true']) {
+    color: var(--altum-overlay-close-fg-hover);
+    background-color: var(--altum-overlay-close-bg-hover);
+  }
+
+  &:focus-visible {
+    outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+    outline-offset: var(--altum-focus-ring-offset);
+
+    box-shadow: none;
+  }
+
+  & svg {
+    width: var(--altum-overlay-close-icon-size);
+    height: var(--altum-overlay-close-icon-size);
+  }
+}
+
+.icon {
+  display: block;
+
+  flex-shrink: 0;
+
+  width: var(--altum-overlay-close-icon-size);
+  height: var(--altum-overlay-close-icon-size);
+
+  transform: translate(0, 0.5px);
+}

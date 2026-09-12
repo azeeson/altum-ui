@@ -2,11 +2,6 @@
   position: fixed;
   inset: 0;
 
-  margin: 0;
-  padding: 0;
-
-  border: none;
-
   background-color: var(--altum-overlay-scrim);
   -webkit-backdrop-filter: blur(var(--altum-backdrop-blur, 4px));
   backdrop-filter: blur(var(--altum-backdrop-blur, 4px));
@@ -20,19 +15,11 @@
     position: absolute;
   }
 
-  &.variantStrong {
+  &.strong {
     background-color: var(--altum-overlay-scrim-strong);
   }
 
-  &.blurSm {
-    --altum-backdrop-blur: 4px;
-  }
-
-  &.blurMd {
-    --altum-backdrop-blur: 8px;
-  }
-
-  &.blurNone {
+  &.noBlur {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -50,6 +37,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }

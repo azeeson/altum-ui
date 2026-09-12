@@ -1,79 +1,12 @@
-/* MaskedField: UI-шрифт как у TextField/FieldBase.
- * Overlay совпадает с content-box input: те же padding + transparent border (1px),
- * иначе литералы маски («+7») и значение сдвигаются на ширину рамки.
- * Текст — обычный inline flow (не flex), чтобы baseline совпадал с input.
- * Spacer — прозрачные уже введённые символы; не переопределяйте padding/font-size на input. */
-
-.maskedWrapper {
-  --altum-masked-field-line-height: 1.25;
-  --altum-masked-field-control-border-width: 1px;
-  position: relative;
-
-  width: 100%;
-  & .input {
-    font-family: inherit;
-    line-height: var(--altum-masked-field-line-height);
-  }
-}
-
-/* Контролы формы не наследуют font-family от UA — берём UI-стек FieldBase */
-
-.maskOverlay {
-  position: absolute;
-  inset: 0;
-  z-index: var(--altum-g-z-local);
-
-  box-sizing: border-box;
-  overflow: hidden;
-
-  /* Зеркалить padding и border TextField.inputElement, чтобы начала текста совпадали */
-  padding: var(--altum-field-pad-top) var(--altum-field-padding-end) var(--altum-field-pad-bottom) var(--altum-field-padding-start);
-
-  border: var(--altum-masked-field-control-border-width) solid transparent;
-
-  font-family: inherit;
-  font-size: var(--altum-field-font-size, var(--altum-g-font-size-base));
-  line-height: var(--altum-masked-field-line-height);
-  white-space: pre;
-  user-select: none;
-
-  pointer-events: none;
-}
-
-/* outside / none: оверлей по центру fieldBody — те же метрики, что у input */
-
-.centered .maskOverlay {
-  display: flex;
-
-  align-items: center;
-
-  padding-top: 0;
-  padding-bottom: 0;
-
-  line-height: var(--altum-field-line-height, var(--altum-masked-field-line-height));
-}
-
-.centered .input {
-  line-height: var(--altum-field-line-height, var(--altum-masked-field-line-height));
-}
-
-.maskOffset,
-.guideChar {
-  white-space: pre;
-}
-
 .maskOffset {
+  white-space: pre;
+
   color: transparent;
 }
 
 .guideChar {
+  white-space: pre;
+
   color: var(--altum-field-label);
   opacity: 0.6;
-}
-
-.fullWidth {
-  flex-shrink: 1;
-
-  min-width: 0;
-  max-width: 100%;
 }

@@ -3,7 +3,7 @@ import {visitStory} from '../helpers/storybook';
 
 test.describe('PasswordField', () => {
 	test('принимает введённый пароль', async ({page}) => {
-		await visitStory(page, 'altum-components-passwordfield--playground');
+		await visitStory(page, 'altum-components-formfield-passwordfield--playground');
 		const input = page.getByRole('textbox', {name: 'Пароль'});
 		await input.fill('Secret123');
 		await expect(input).toHaveValue('Secret123');
@@ -12,7 +12,7 @@ test.describe('PasswordField', () => {
 
 test.describe('SearchField', () => {
 	test('принимает поисковый запрос', async ({page}) => {
-		await visitStory(page, 'altum-components-searchfield--playground');
+		await visitStory(page, 'altum-components-formfield-searchfield--playground');
 		const input = page.getByRole('searchbox').or(page.getByRole('textbox')).first();
 		await input.fill('tasks');
 		await expect(input).toHaveValue('tasks');
@@ -21,7 +21,7 @@ test.describe('SearchField', () => {
 
 test.describe('NumberField', () => {
 	test('увеличивает значение спин-контролом', async ({page}) => {
-		await visitStory(page, 'altum-components-numberfield--playground');
+		await visitStory(page, 'altum-components-formfield-numberfield--playground');
 		const input = page.getByRole('spinbutton').or(page.getByRole('textbox')).first();
 		await expect(input).toHaveValue(/10/);
 		await page.getByRole('button', {name: /Увеличить|Increase|Plus|\+/i}).click();
@@ -31,7 +31,7 @@ test.describe('NumberField', () => {
 
 test.describe('PinInput', () => {
 	test('принимает цифры по ячейкам', async ({page}) => {
-		await visitStory(page, 'altum-components-pininput--playground');
+		await visitStory(page, 'altum-components-formfield-pininput--playground');
 		const cells = page.locator('input');
 		await expect(cells.first()).toBeVisible();
 		expect(await cells.count()).toBeGreaterThanOrEqual(4);
@@ -54,25 +54,37 @@ test.describe('Slider', () => {
 	});
 });
 
-test.describe('DatePicker', () => {
+test.describe('DateField', () => {
 	test('открывает сетку календаря', async ({page}) => {
-		await visitStory(page, 'altum-components-datepicker--playground');
-		await page.getByRole('button', {name: /\d{2}\.\d{2}\.\d{4}/}).click();
+		await visitStory(page, 'altum-components-formfield-datefield--playground');
+		await page.getByRole('textbox').click();
 		await expect(page.getByRole('grid')).toBeVisible({timeout: 5000});
 	});
 });
 
-test.describe('TimePickerField', () => {
+test.describe('TimeField', () => {
 	test('открывает списки часов и минут', async ({page}) => {
-		await visitStory(page, 'altum-components-timepicker--field-variant');
-		await page.getByRole('button', {name: /\d{1,2}:\d{2}/}).or(page.getByRole('combobox')).first().click();
+		await visitStory(page, 'altum-components-formfield-timefield--playground');
+		await page.getByRole('textbox').click();
 		await expect(page.getByRole('listbox').first()).toBeVisible({timeout: 5000});
+	});
+
+	test('клик по часу обновляет поле и не закрывает попап', async ({page}) => {
+		await visitStory(page, 'altum-components-formfield-timefield--playground');
+		const input = page.getByRole('textbox');
+		await input.click();
+		const hours = page.getByRole('listbox', {name: /Часы|Hours/i});
+		await expect(hours).toBeVisible({timeout: 5000});
+		await hours.getByRole('option', {name: '09'}).click();
+		await expect(input).toHaveValue('09:00');
+		await expect(hours).toBeVisible();
+		await expect(page.getByRole('listbox', {name: /Минуты|Minutes/i})).toBeVisible();
 	});
 });
 
 test.describe('SuggestField', () => {
 	test('фильтрует подсказки', async ({page}) => {
-		await visitStory(page, 'altum-components-suggestfield--playground');
+		await visitStory(page, 'altum-components-formfield-suggestfield--playground');
 		const input = page.getByRole('combobox').first();
 		await input.click();
 		await page.keyboard.type('Каз');

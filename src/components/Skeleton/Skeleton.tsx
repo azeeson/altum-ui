@@ -1,27 +1,23 @@
-import type {
-	SkeletonProps,
-	SkeletonTextProps,
-	SkeletonAvatarProps,
-	SkeletonCardProps,
-	SkeletonTableProps,
-} from './Skeleton.types';
+import type {SkeletonProps} from './Skeleton.types';
 export type {
+	SkeletonVariant,
 	SkeletonProps,
-	SkeletonTextProps,
-	SkeletonAvatarProps,
-	SkeletonCardProps,
-	SkeletonTableProps,
 } from './Skeleton.types';
 
 import {forwardRef, type CSSProperties} from 'react';
 import styles from './Skeleton.module.css';
 import {cn} from '../../utils/cn';
-import {mergeStyles} from '../../utils/mergeStyles';
+import {toCssSize} from '../../utils/cssSize';
 
-function toCss(value: string | number | undefined, fallback: string): string {
-	if (value === undefined) return fallback;
-	return typeof value === 'number' ? `${value}px` : value;
-}
+const bar = (width: string | number, height: string | number, extra?: string) => (
+	<i
+		className={cn(styles.bar, extra)}
+		style={{
+			width: toCssSize(width),
+			height: toCssSize(height),
+		}}
+	/>
+);
 
 /**
  * Плейсхолдер загрузки с пульсирующей анимацией.
@@ -29,158 +25,70 @@ function toCss(value: string | number | undefined, fallback: string): string {
  * @component
  * @example
  * <Skeleton width={200} height={16} />
- * <Skeleton.Text lines={3} />
+ * <Skeleton variant="text" lines={3} />
  */
-const SkeletonRoot = forwardRef<HTMLDivElement, SkeletonProps>(function SkeletonRoot(
+export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(function Skeleton(
 	{
+		variant = 'block',
 		width = '100%',
 		height = '16px',
 		circle = false,
+		lines,
+		lastWidth = '64%',
+		size = 40,
+		avatar = true,
+		rows = 5,
+		columns = 4,
 		className,
 		style,
 		...rest
 	},
 	ref,
 ) {
-	const internalStyle: CSSProperties = {
-		width: toCss(width, '100%'),
-		height: toCss(height, '16px'),
-		borderRadius: circle ? '50%' : undefined,
-	};
+	const n = Math.max(1, lines ?? (variant === 'card' ? 2 : 3));
+	const lineBars = variant === 'text' || variant === 'card'
+		? Array.from({length: n}, (_, index) => bar(index === n - 1 ? lastWidth : width, 12))
+		: null;
+	const isBar = variant === 'block' || variant === 'avatar';
 
 	return (
 		<div
 			ref={ref}
-			className={cn(styles.skeleton, className)}
-			style={mergeStyles(internalStyle, style)}
-			{...rest}
-			aria-hidden
-		/>
-	);
-});
-
-const SkeletonText = forwardRef<HTMLDivElement, SkeletonTextProps>(function SkeletonText(
-	{
-		lines = 3,
-		width = '100%',
-		lastWidth = '64%',
-		className,
-		...rest
-	},
-	ref,
-) {
-	return (
-		<div
-			ref={ref}
-			className={cn(styles.presetStack, className)}
+			className={cn(
+				styles.root,
+				styles[variant],
+				(circle || variant === 'avatar') && styles.circle,
+				className,
+			)}
+			style={{
+				...(isBar
+					? {
+						width: toCssSize(variant === 'avatar' ? size : width),
+						height: toCssSize(variant === 'avatar' ? size : height),
+					}
+					: null),
+				...(variant === 'table' ? {'--altum-skeleton-cols': columns} as CSSProperties : null),
+				...style,
+			}}
 			{...rest}
 			aria-hidden
 		>
-			{Array.from({length: Math.max(1, lines)}, (_, index) => (
-				<SkeletonRoot
-					key={index}
-					width={index === lines - 1 ? lastWidth : width}
-					height={12}
-					className={styles.textLine}
-				/>
-			))}
+			{variant === 'text' && lineBars}
+			{variant === 'card' && (
+				<>
+					{avatar ? bar(40, 40, styles.circle) : null}
+					<div className={styles.col}>
+						{bar('40%', 14)}
+						{lineBars}
+					</div>
+				</>
+			)}
+			{variant === 'table' && Array.from(
+				{length: columns * (rows + 1)},
+				(_, index) => bar(index < columns ? '80%' : '70%', 12, index < columns ? styles.head : undefined),
+			)}
 		</div>
 	);
 });
 
-const SkeletonAvatar = forwardRef<HTMLDivElement, SkeletonAvatarProps>(function SkeletonAvatar(
-	{size = 40, className, ...rest},
-	ref,
-) {
-	return (
-		<SkeletonRoot
-			ref={ref}
-			{...rest}
-			width={size}
-			height={size}
-			circle
-			className={className}
-		/>
-	);
-});
-
-const SkeletonCard = forwardRef<HTMLDivElement, SkeletonCardProps>(function SkeletonCard(
-	{
-		avatar = true,
-		lines = 2,
-		className,
-		...rest
-	},
-	ref,
-) {
-	return (
-		<div
-			ref={ref}
-			className={cn(styles.card, className)}
-			{...rest}
-			aria-hidden
-		>
-			{avatar && <SkeletonAvatar size={40} />}
-			<div className={styles.cardBody}>
-				<SkeletonRoot width='40%' height={14} />
-				<SkeletonText lines={lines} />
-			</div>
-		</div>
-	);
-});
-
-const SkeletonTable = forwardRef<HTMLDivElement, SkeletonTableProps>(function SkeletonTable(
-	{
-		rows = 5,
-		columns = 4,
-		className,
-		...rest
-	},
-	ref,
-) {
-	return (
-		<div
-			ref={ref}
-			className={cn(styles.table, className)}
-			{...rest}
-			aria-hidden
-		>
-			<div className={styles.tableHeader}>
-				{Array.from({length: columns}, (_, index) => (
-					<SkeletonRoot
-						key={`h-${index}`}
-						height={12}
-						width='80%'
-					/>
-				))}
-			</div>
-			{Array.from({length: rows}, (_, rowIndex) => (
-				<div key={`r-${rowIndex}`} className={styles.tableRow}>
-					{Array.from({length: columns}, (_, colIndex) => (
-						<SkeletonRoot
-							key={`c-${colIndex}`}
-							height={12}
-							width='70%'
-						/>
-					))}
-				</div>
-			))}
-		</div>
-	);
-});
-
-SkeletonRoot.displayName = 'Skeleton';
-SkeletonText.displayName = 'Skeleton.Text';
-SkeletonAvatar.displayName = 'Skeleton.Avatar';
-SkeletonCard.displayName = 'Skeleton.Card';
-SkeletonTable.displayName = 'Skeleton.Table';
-
-/**
- * Skeleton с пресетами `.Text` / `.Avatar` / `.Card` / `.Table`.
- */
-export const Skeleton = Object.assign(SkeletonRoot, {
-	Text: SkeletonText,
-	Avatar: SkeletonAvatar,
-	Card: SkeletonCard,
-	Table: SkeletonTable,
-});
+Skeleton.displayName = 'Skeleton';

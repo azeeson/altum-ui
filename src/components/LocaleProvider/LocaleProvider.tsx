@@ -10,18 +10,16 @@ export type {
 } from './LocaleProvider.types';
 
 import React, {useMemo} from 'react';
+import {builtInMessages} from '../../locales/messages';
 import {
-	builtInMessages,
 	deepMergeMessages,
 	translate,
-} from '../../locales';
+} from '../../locales/translate';
 import {
 	LocaleContext,
 	defaultLocaleContext,
 	type LocaleContextValue,
 } from '../../locales/localeContext';
-
-export {useLocale, useT} from '../../locales/localeContext';
 
 /**
  * Провайдер локали и переводов встроенных строк библиотеки.

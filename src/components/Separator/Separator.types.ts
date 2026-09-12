@@ -32,5 +32,3 @@ export interface SeparatorProps extends Omit<ComponentPropsWithoutRef<'div'>, 'c
 	/** Отступ после разделителя (block-end / inline-end). */
 	end?: SeparatorSpace;
 }
-
-export type SpacerProps = Pick<SeparatorProps, 'children' | 'className' | 'start' | 'end' | 'decorative' | 'style'>;

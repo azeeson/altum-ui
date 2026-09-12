@@ -1,0 +1,14 @@
+.bubble {
+  fill: var(--altum-color-surface);
+  stroke: var(--altum-color-border);
+  stroke-width: 1;
+  filter: drop-shadow(var(--altum-shadow-surface));
+}
+
+.text {
+  font-size: var(--altum-g-font-size-xs);
+  font-weight: var(--altum-g-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+
+  fill: var(--altum-color-input-text);
+}

@@ -3,9 +3,9 @@ import React, {useId, useState} from 'react';
 import {ButtonBase} from '../base/ButtonBase';
 import {ChartBase, ChartLegend} from '../base/ChartBase';
 import {DialogBase} from '../base/DialogBase';
-import {FieldBase} from '../base/FieldBase';
-import {ListOptionBase, ListOptionBaseLabel} from '../base/ListOptionBase';
-import {MediaRowBase} from '../base/MediaRowBase';
+import {FieldBase, FieldBaseIcon, fieldSurfaceClassName, useFieldControlAttrs} from '../base/FieldBase';
+import listboxStyles from '../components/Listbox/Listbox.module.css';
+import unstyled from '../styles/unstyledControl.module.css';
 import {ToggleControlBase} from '../base/ToggleControlBase';
 import {IconClipboard} from '../icons/icons/IconClipboard';
 import {Layout} from '../components/Layout/Layout';
@@ -22,35 +22,45 @@ export default meta;
 
 type Story = StoryObj;
 
+function FieldBaseStoryInput(props: React.ComponentPropsWithoutRef<'input'>) {
+	const attrs = useFieldControlAttrs();
+	return (
+		<input
+			{...props}
+			{...attrs}
+		/>
+	);
+}
+
 export const FieldBaseClear: Story = {
 	render: function FieldBaseClearRender() {
 		const id = useId();
 		const [value, setValue] = useState('');
 		return (
-			<FieldBase.Root hasValue={Boolean(value)} width='md'>
-				<FieldBase.Control>
-					<FieldBase.Prefix>
-						<FieldBase.Icon>
-							<IconClipboard />
-						</FieldBase.Icon>
-					</FieldBase.Prefix>
-					<input
-						id={id}
-						value={value}
-						onChange={(event) => setValue(event.target.value)}
-					/>
-					<FieldBase.Label htmlFor={id}>
-						Сумма
-					</FieldBase.Label>
-					<FieldBase.Postfix>
-						<FieldBase.Clear onClick={() => setValue('')} />
-						<span aria-hidden>
-							₽
-						</span>
-					</FieldBase.Postfix>
-				</FieldBase.Control>
-				<FieldBase.Error error={value ? undefined : 'Введите сумму'} />
-			</FieldBase.Root>
+			<FieldBase
+				id={id}
+				label='Сумма'
+				hasValue={Boolean(value)}
+				width='md'
+				error={value ? undefined : 'Введите сумму'}
+				prefix={(
+					<FieldBaseIcon>
+						<IconClipboard />
+					</FieldBaseIcon>
+				)}
+				postfix={(
+					<span aria-hidden>
+						₽
+					</span>
+				)}
+				onClear={() => setValue('')}
+			>
+				<FieldBaseStoryInput
+					className={fieldSurfaceClassName()}
+					value={value}
+					onChange={(event) => setValue(event.target.value)}
+				/>
+			</FieldBase>
 		);
 	},
 };
@@ -84,16 +94,10 @@ export const ToggleControlBaseLabel: Story = {
 		return (
 			<ToggleControlBase
 				id={id}
+				type='checkbox'
 				label='Согласен'
-				controlType='checkbox'
-				input={(
-					<input
-						id={id}
-						type='checkbox'
-						checked={checked}
-						onChange={(event) => setChecked(event.target.checked)}
-					/>
-				)}
+				checked={checked}
+				onChange={(event) => setChecked(event.target.checked)}
 				boxContent={checked ? '✓' : ''}
 			/>
 		);
@@ -156,27 +160,15 @@ export const ChartBaseLegend: Story = {
 	),
 };
 
-export const MediaRowBaseArticle: Story = {
-	render: () => (
-		<MediaRowBase as='article'>
-			<MediaRowBase.Content>
-				<MediaRowBase.Title>
-					Заголовок строки
-				</MediaRowBase.Title>
-				<MediaRowBase.Description>
-					Описание
-				</MediaRowBase.Description>
-			</MediaRowBase.Content>
-		</MediaRowBase>
-	),
-};
-
 export const ListOptionBaseSelected: Story = {
 	render: () => (
-		<ListOptionBase selected aria-selected='true'>
-			<ListOptionBaseLabel>
+		<button
+			className={`${unstyled.control} ${listboxStyles.option} ${listboxStyles.selected}`}
+			aria-selected='true'
+		>
+			<span className={listboxStyles.label}>
 				Выбранная опция
-			</ListOptionBaseLabel>
-		</ListOptionBase>
+			</span>
+		</button>
 	),
 };

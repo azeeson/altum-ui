@@ -1,27 +1,17 @@
 import type {
-	ActionListItem as ActionListItemData,
-	ActionListGroup as ActionListGroupData,
+	ActionListItem,
 	ActionListHandle,
-	ActionListRootProps,
-	ActionListSearchProps,
-	ActionListGroupProps,
-	ActionListGroupLabelProps,
-	ActionListEmptyProps,
+	ActionListProps,
 } from './ActionList.types';
 export type {
+	ActionListItem,
+	ActionListGroup,
 	ActionListHandle,
-	ActionListRootProps,
-	ActionListSearchProps,
-	ActionListGroupProps,
-	ActionListGroupLabelProps,
-	ActionListEmptyProps,
+	ActionListProps,
 } from './ActionList.types';
 
-/* eslint-disable @stylistic/max-len -- Длинное выражение колбэка остаётся читаемым как один предикат. */
 import React, {
 	forwardRef,
-	useCallback,
-	useEffect,
 	useId,
 	useImperativeHandle,
 	useMemo,
@@ -30,30 +20,22 @@ import React, {
 } from 'react';
 import {Listbox, type ListboxGroup, type ListboxHandle, type ListboxOption} from '../Listbox/Listbox';
 import {handleListHighlightKeyDown} from '../../utils/keyboard';
-import {getListboxOptionDomId, moveListboxHighlight} from '../../utils/listboxOptions';
+import {filterListboxOptions, getListboxOptionDomId} from '../../utils/listboxOptions';
 import {cn} from '../../utils/cn';
-import {composeEventHandlers} from '../../utils/composeEvents';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
-import {fieldSurfaceClassName} from '../../base/FieldBase';
+import {useControlledStateWithCallback} from '../../hooks/useControlledState';
+import {useLocale} from '../../locales/localeContext';
+import {FieldBaseIcon} from '../../base/FieldBase';
+import {TextField} from '../TextField/TextField';
+import {IconSearch} from '../../icons/icons/IconSearch';
 import styles from './ActionList.module.css';
 
-type ActionListChild = React.ReactElement<ActionListGroupProps | ActionListSearchProps | ActionListEmptyProps>;
-
-function getItemText(item: ActionListItemData): string {
-	if (item.textValue) return item.textValue;
-	return typeof item.label === 'string' || typeof item.label === 'number' ? String(item.label) : item.id;
+function itemText(item: ActionListItem): string {
+	const label = item.textValue
+		?? (typeof item.label === 'string' || typeof item.label === 'number' ? String(item.label) : item.id);
+	return [label, ...(item.keywords ?? []), typeof item.description === 'string' ? item.description : ''].join(' ');
 }
 
-function matchesQuery(item: ActionListItemData, query: string): boolean {
-	const normalized = query.trim().toLowerCase();
-	if (!normalized) return true;
-	return [getItemText(item), ...(item.keywords ?? []), typeof item.description === 'string' ? item.description : '']
-		.join(' ')
-		.toLowerCase()
-		.includes(normalized);
-}
-
-function renderItemLabel(item: ActionListItemData): React.ReactNode {
+function renderItemLabel(item: ActionListItem): React.ReactNode {
 	return (
 		<>
 			{item.icon && (
@@ -80,195 +62,129 @@ function renderItemLabel(item: ActionListItemData): React.ReactNode {
 	);
 }
 
-function marker(displayName: string): React.FC<Record<string, unknown>> {
-	const Component = () => null;
-	Component.displayName = displayName;
-	return Component;
-}
-
-export const ActionListSearch = marker('ActionList.Search');
-export const ActionListGroup = marker('ActionList.Group');
-export const ActionListGroupLabel = marker('ActionList.GroupLabel');
-export const ActionListItem = marker('ActionList.Item');
-export const ActionListSeparator = marker('ActionList.Separator');
-export const ActionListEmpty = marker('ActionList.Empty');
-
-function extractItems(children: React.ReactNode): ActionListItemData[] {
-	return React.Children.toArray(children).flatMap((child) => {
-		if (!React.isValidElement(child)) return [];
-		if (child.type === ActionListItem) return [child.props as ActionListItemData];
-		return [];
-	});
-}
-
-function extractGroups(children: React.ReactNode): {
-	groups: ActionListGroupData[];
-	search?: ActionListSearchProps;
-	empty?: React.ReactNode;
-} {
-	const result: ActionListGroupData[] = [];
-	let search: ActionListSearchProps | undefined;
-	let empty: React.ReactNode;
-	React.Children.forEach(children, (child) => {
-		if (!React.isValidElement(child)) return;
-		const element = child as ActionListChild;
-		if (element.type === ActionListSearch) {
-			search = element.props as ActionListSearchProps;
-		} else if (element.type === ActionListGroup) {
-			const group = element.props as ActionListGroupProps;
-			const label = React.Children.toArray(group.children).find(
-				(item) => React.isValidElement(item) && item.type === ActionListGroupLabel,
-			) as React.ReactElement<ActionListGroupLabelProps> | undefined;
-			result.push({
-				id: group.id,
-				label: label ? String(label.props.children) : group.id,
-				items: extractItems(group.children),
-			});
-		} else if (element.type === ActionListEmpty) {
-			empty = (element.props as ActionListEmptyProps).children;
-		}
-	});
-	return {
-		groups: result,
-		search,
-		empty
-	};
-}
-
 /**
- * Составной список действий с поиском, группами и клавиатурной навигацией.
+ * Список действий с поиском, группами и клавиатурной навигацией.
  *
  * @component
  * @example
- * <ActionList.Root><ActionList.Group id="actions"><ActionList.GroupLabel>Действия</ActionList.GroupLabel><ActionList.Item id="add" label="Добавить" /></ActionList.Group></ActionList.Root>
+ * <ActionList
+ *   items={[{id: 'add', label: 'Добавить', groupId: 'actions'}]}
+ *   groups={[{id: 'actions', label: 'Действия'}]}
+ *   filterable
+ *   onAction={handleAction}
+ * />
  */
-const ActionListRoot = forwardRef<ActionListHandle, ActionListRootProps>(function ActionListRoot(
+export const ActionList = forwardRef<ActionListHandle, ActionListProps>(function ActionList(
 	{
-		children,
+		items,
+		groups,
 		className = '',
 		id: providedId,
 		'aria-label': ariaLabelProp,
 		onAction,
 		onHighlightChange,
-		onKeyDown,
+		filterable = false,
+		filterPlaceholder,
+		query: queryProp,
+		onQueryChange,
+		emptyText,
 		...rest
 	},
 	ref,
 ) {
 	const {t} = useLocale();
-	const {groups, search, empty} = useMemo(() => extractGroups(children), [children]);
 	const generatedId = useId();
 	const listId = providedId ?? generatedId;
 	const listRef = useRef<ListboxHandle>(null);
-	const [internalQuery, setInternalQuery] = useState('');
-	const [highlight, setHighlight] = useState(0);
-	const query = search?.query ?? internalQuery;
-	const {
-		visible: searchVisible = true,
-		placeholder: searchPlaceholder,
-		className: searchClassName,
-		onChange: searchOnChange,
-		'aria-label': searchAriaLabel,
-		query: _ignoredQuery,
-		onQueryChange: _ignoredOnQueryChange,
-		...searchRest
-	} = search ?? {};
-	void _ignoredQuery;
-	void _ignoredOnQueryChange;
-	const setQuery = (next: string) => {
-		search?.onQueryChange?.(next);
-		if (search?.query === undefined) setInternalQuery(next);
+	const [query, setQuery] = useControlledStateWithCallback(queryProp, '', onQueryChange);
+	const [highlight, setHighlight] = useState(-1);
+	const listboxOptions = useMemo((): ListboxOption[] => filterListboxOptions({
+		query,
+		options: items.map((item) => ({
+			value: item.id,
+			label: renderItemLabel(item),
+			textValue: itemText(item),
+			disabled: item.disabled,
+			groupId: item.groupId,
+			buttonProps: item.buttonProps,
+		})),
+	}), [items, query]);
+	const listboxGroups = useMemo((): ListboxGroup[] | undefined => {
+		if (!groups?.length) return undefined;
+		const used = new Set(
+			listboxOptions.map((option) => option.groupId).filter((id): id is string => Boolean(id)),
+		);
+		return groups.filter((group) => used.has(group.id));
+	}, [listboxOptions, groups]);
+	const activateById = (itemId: string) => {
+		const item = items.find((entry) => entry.id === itemId);
+		if (!item || item.disabled) return undefined;
+		item.onSelect?.();
+		onAction?.(item);
+		return item;
 	};
-	const updateHighlight = useCallback((index: number) => {
+	const updateHighlight = (index: number) => {
 		setHighlight(index);
 		onHighlightChange?.(index);
-	}, [onHighlightChange]);
-	const flatItems = useMemo(() => groups.flatMap((group) => group.items
-		.filter((item) => matchesQuery(item, query))
-		.map((item) => ({
-			item,
-			group
-		}))), [groups, query]);
-	const listboxOptions = useMemo((): ListboxOption[] => flatItems.map(({item, group}) => ({
-		value: item.id,
-		label: renderItemLabel(item),
-		textValue: getItemText(item),
-		disabled: item.disabled,
-		groupId: group.id,
-		buttonProps: item.buttonProps,
-	})), [flatItems]);
-	const listboxGroups = useMemo((): ListboxGroup[] => {
-		const seen = new Set<string>();
-		const result: ListboxGroup[] = [];
-		for (const {group} of flatItems) {
-			if (seen.has(group.id)) continue;
-			seen.add(group.id);
-			result.push({
-				id: group.id,
-				label: group.label
-			});
-		}
-		return result;
-	}, [flatItems]);
-	const activateById = useCallback((itemId: string) => {
-		const entry = flatItems.find(({item}) => item.id === itemId);
-		if (!entry || entry.item.disabled) return undefined;
-		entry.item.onSelect?.();
-		onAction?.(entry.item);
-		return entry.item;
-	}, [flatItems, onAction]);
-	useEffect(() => {
-		if (flatItems.length === 0) return updateHighlight(-1);
-		if (highlight < 0 || highlight >= flatItems.length || flatItems[highlight]?.item.disabled) {
-			updateHighlight(moveListboxHighlight(-1, flatItems.length, 1, {isDisabled: (index) => !!flatItems[index]?.item.disabled}));
-		}
-	}, [flatItems, highlight, updateHighlight]);
-	useImperativeHandle(ref, () => ({
-		highlightNext: () => listRef.current?.highlightNext(),
-		highlightPrev: () => listRef.current?.highlightPrev(),
-		highlightFirst: () => listRef.current?.highlightFirst(),
-		highlightLast: () => listRef.current?.highlightLast(),
-		selectHighlighted: () => {
-			const entry = flatItems[listRef.current?.getHighlightedIndex() ?? highlight];
-			return entry ? activateById(entry.item.id) : undefined;
+	};
+	useImperativeHandle(ref, () => {
+		const list = () => listRef.current;
+		return {
+			highlightNext: () => list()?.highlightNext(),
+			highlightPrev: () => list()?.highlightPrev(),
+			highlightFirst: () => list()?.highlightFirst(),
+			highlightLast: () => list()?.highlightLast(),
+			selectHighlighted: () => {
+				const id = list()?.selectHighlighted();
+				return id ? items.find((item) => item.id === id) : undefined;
+			},
+			getHighlightedIndex: () => list()?.getHighlightedIndex() ?? -1,
+			getActiveDescendantId: () => list()?.getActiveDescendantId(),
+			getListId: () => listId,
+		};
+	}, [items, listId]);
+	const filterLabel = filterPlaceholder ?? t('actionList.filterPlaceholder');
+	const nav = {
+		onNext: () => listRef.current?.highlightNext(),
+		onPrev: () => listRef.current?.highlightPrev(),
+		onFirst: () => listRef.current?.highlightFirst(),
+		onLast: () => listRef.current?.highlightLast(),
+		onSelect: () => {
+			const id = listboxOptions[highlight]?.value;
+			if (id) activateById(id);
 		},
-		getHighlightedIndex: () => listRef.current?.getHighlightedIndex() ?? -1,
-		getActiveDescendantId: () => highlight >= 0 ? getListboxOptionDomId(listId, highlight) : undefined,
-		getListId: () => listId,
-	}), [
-		activateById,
-		flatItems,
-		highlight,
-		listId
-	]);
-	const activeDescendantId = highlight >= 0 ? getListboxOptionDomId(listId, highlight) : undefined;
+	};
+
 	return (
 		<div
 			className={cn(styles.root, className)}
 			{...rest}
-			onKeyDown={composeEventHandlers(onKeyDown, (event) => handleListHighlightKeyDown(event, {
-				onNext: () => listRef.current?.highlightNext(),
-				onPrev: () => listRef.current?.highlightPrev(),
-				onFirst: () => listRef.current?.highlightFirst(),
-				onLast: () => listRef.current?.highlightLast(),
-				onSelect: () => { const entry = flatItems[highlight]; if (entry) activateById(entry.item.id); },
-			}))}
 		>
-			{search && searchVisible !== false && (
+			{filterable && (
 				<div className={styles.filter}>
-					<input
+					<TextField
 						type='search'
-						className={cn(fieldSurfaceClassName(), styles.filterInput, searchClassName)}
+						size='sm'
+						width='full'
+						labelPlacement='none'
+						keepPlaceholder
+						label={filterLabel}
+						placeholder={filterLabel}
 						value={query}
-						placeholder={searchPlaceholder ?? t('actionList.filterPlaceholder')}
-						aria-label={searchAriaLabel ?? searchPlaceholder ?? t('actionList.filterPlaceholder')}
+						autoComplete='off'
+						prefix={(
+							<FieldBaseIcon>
+								<IconSearch />
+							</FieldBaseIcon>
+						)}
+						role='combobox'
+						aria-expanded
 						aria-controls={listId}
 						aria-autocomplete='list'
-						aria-activedescendant={activeDescendantId}
-						onChange={composeEventHandlers(searchOnChange, (event) => {
-							setQuery(event.target.value);
-						})}
-						{...searchRest}
+						aria-activedescendant={highlight >= 0 ? getListboxOptionDomId(listId, highlight) : undefined}
+						autoFocus
+						onChange={(event) => setQuery(event.target.value)}
+						onKeyDown={(event) => handleListHighlightKeyDown(event, nav)}
 					/>
 				</div>
 			)}
@@ -281,9 +197,9 @@ const ActionListRoot = forwardRef<ActionListHandle, ActionListRootProps>(functio
 				navigation='highlight'
 				highlightedIndex={highlight}
 				onHighlightChange={updateHighlight}
-				preventOptionMouseDown={!!search}
+				preventOptionMouseDown={filterable || queryProp !== undefined}
 				multiline
-				noOptionsText={typeof empty === 'string' ? empty : t('actionList.empty')}
+				noOptionsText={emptyText ?? t('actionList.empty')}
 				aria-label={ariaLabelProp ?? t('actionList.ariaLabel')}
 				onSelect={activateById}
 			/>
@@ -291,13 +207,4 @@ const ActionListRoot = forwardRef<ActionListHandle, ActionListRootProps>(functio
 	);
 });
 
-ActionListRoot.displayName = 'ActionList.Root';
-export const ActionList = Object.assign(ActionListRoot, {
-	Root: ActionListRoot,
-	Search: ActionListSearch,
-	Group: ActionListGroup,
-	GroupLabel: ActionListGroupLabel,
-	Item: ActionListItem,
-	Separator: ActionListSeparator,
-	Empty: ActionListEmpty,
-});
+ActionList.displayName = 'ActionList';

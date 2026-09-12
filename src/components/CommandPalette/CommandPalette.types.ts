@@ -2,35 +2,23 @@ import type {
 	ComponentPropsWithoutRef,
 	ReactNode,
 } from 'react';
+import type {ActionListGroup, ActionListItem} from '../ActionList/ActionList.types';
 
-export type {ActionListGroup as CommandPaletteGroup, ActionListItem as CommandPaletteItem} from '../ActionList/ActionList.types';
+export type {ActionListGroup as CommandPaletteGroup, ActionListItem as CommandPaletteItem};
 
-/** Свойства корня `CommandPalette`. */
-export interface CommandPaletteRootProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'title'> {
+/** Свойства `CommandPalette`. */
+export interface CommandPaletteProps extends Omit<
+	ComponentPropsWithoutRef<'div'>,
+	'children' | 'title' | 'onSelect'
+> {
 	open: boolean;
-	onClose: () => void;
-	onOpenChange?: (open: boolean) => void;
-	children: ReactNode;
+	onOpenChange: (open: boolean) => void;
 	title?: string;
-	className?: string;
-}
-
-/** Свойства поля поиска `CommandPalette.Input`. */
-export interface CommandPaletteInputProps extends Omit<ComponentPropsWithoutRef<'input'>, 'children'> {
+	items: ActionListItem[];
+	groups?: ActionListGroup[];
 	placeholder?: string;
-}
-
-/** Свойства списка результатов `CommandPalette.List`. */
-export interface CommandPaletteListProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
-	children: ReactNode;
-}
-
-/** Свойства слота `CommandPalette.Empty`. */
-export interface CommandPaletteEmptyProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
-	children?: ReactNode;
-}
-
-/** Свойства слота `CommandPalette.Footer`. */
-export interface CommandPaletteFooterProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
-	children: ReactNode;
+	emptyText?: string;
+	footer?: ReactNode;
+	onAction?: (item: ActionListItem) => void;
+	className?: string;
 }

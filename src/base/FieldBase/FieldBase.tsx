@@ -1,283 +1,165 @@
 import type {
-	ControlSize,
 	FieldWidth,
-	FieldLabelPlacement,
-	FieldBaseRootProps,
-	FieldBaseLabelProps,
-	FieldBaseControlProps,
-	FieldBasePrefixProps,
-	FieldBasePostfixProps,
+	FieldBaseHostProps,
 	FieldBaseButtonProps,
 	FieldBaseIconProps,
-	FieldBaseClearProps,
-	FieldBaseErrorProps,
-	FieldBaseHelperProps,
-	FieldBaseProps,
 } from './FieldBase.types';
 export type {
 	ControlSize,
 	FieldWidth,
 	FieldLabelPlacement,
-	FieldBaseRootProps,
-	FieldBaseLabelProps,
-	FieldBaseControlProps,
-	FieldBasePrefixProps,
-	FieldBasePostfixProps,
+	FieldBaseProps,
+	FieldBaseHostProps,
 	FieldBaseButtonProps,
 	FieldBaseIconProps,
-	FieldBaseClearProps,
-	FieldBaseErrorProps,
-	FieldBaseHelperProps,
-	FieldBaseProps,
 } from './FieldBase.types';
 
-import React, {createContext, forwardRef, useContext} from 'react';
+import React, {createContext, forwardRef, useMemo} from 'react';
 import styles from './FieldBase.module.css';
+import unstyled from '../../styles/unstyledControl.module.css';
 import {cn} from '../../utils/cn';
 import {composeEventHandlers} from '../../utils/composeEvents';
-import {ButtonBase} from '../ButtonBase';
 import {IconCross} from '../../icons/icons/IconCross';
-import {useLocale} from '../../locales';
+import {useLocale} from '../../locales/localeContext';
+import {useRequiredContext} from '../../hooks/useRequiredContext';
+import {FormMessage} from '../../components/FormMessage/FormMessage';
+
+interface FieldControlContextValue {
+	id: string;
+	invalid: boolean;
+	describedBy?: string;
+	ariaLabel?: string;
+}
+
+const FieldControlContext = createContext<FieldControlContextValue | null>(null);
+
+/**
+ * aria/id контрола из оболочки `FieldBase`. Вызывать только у потомка базы.
+ *
+ * @param extra - Свои `aria-describedby` / `aria-label` (мержатся с полем).
+ */
+export function useFieldControlAttrs(extra?: {
+	'aria-describedby'?: string;
+	'aria-label'?: string;
+}) {
+	const ctx = useRequiredContext(
+		FieldControlContext,
+		'useFieldControlAttrs должен вызываться внутри FieldBase',
+	);
+	return {
+		id: ctx.id,
+		'aria-invalid': ctx.invalid || undefined,
+		'aria-describedby': [ctx.describedBy, extra?.['aria-describedby']].filter(Boolean).join(' ')
+			|| undefined,
+		'aria-label': extra?.['aria-label'] ?? ctx.ariaLabel,
+	};
+}
 
 /**
  * Хешированные классы поверхности контрола. Продукты не импортируют CSS-модуль базы.
  */
-export function fieldSurfaceClassName(options?: {readOnly?: boolean}): string {
+export function fieldSurfaceClassName(options?: {
+	readOnly?: boolean;
+	/** Показать placeholder (поиск в оверлее). Иначе floating-label прячет его. */
+	keepPlaceholder?: boolean;
+	autoResize?: boolean;
+}): string {
 	return cn(
 		styles.controlSurface,
 		options?.readOnly ? styles.controlSurfaceReadOnly : '',
+		options?.keepPlaceholder ? styles.controlSurfaceKeepPlaceholder : '',
+		options?.autoResize ? styles.controlSurfaceAutoResize : '',
 	);
+}
+
+/** Рамка / фон / radius поля — для `.fieldBody` и ячеек PinInput. */
+export function fieldChromeClassName(): string {
+	return styles.chrome;
+}
+
+/** Абсолютный слой поверх control (маска). */
+export function fieldOverlayClassName(): string {
+	return styles.controlOverlay;
 }
 
 const WIDTH_CLASS: Record<FieldWidth, string> = {
-	xxs: styles.widthXxs,
-	xs: styles.widthXs,
-	sm: styles.widthSm,
-	md: styles.widthMd,
-	lg: styles.widthLg,
-	xl: styles.widthXl,
+	md: '',
 	full: styles.widthFull,
 };
 
-/** ButtonIcon size под высоту chrome: md/lg → sm. */
-function affixButtonSize(fieldSize: ControlSize): ControlSize {
-	if (fieldSize === 'sm') return fieldSize;
-	return 'sm';
-}
-
-interface FieldBaseContextValue {
-	labelPlacement: FieldLabelPlacement;
-	size: ControlSize;
-	disabled: boolean;
-	readOnly: boolean;
-	hasValue: boolean;
-}
-
-const FieldBaseContext = createContext<FieldBaseContextValue | null>(null);
-
-function useFieldBase(component: string): FieldBaseContextValue {
-	const context = useContext(FieldBaseContext);
-	if (!context) throw new Error(`${component} должен использоваться внутри FieldBase.Root`);
-	return context;
-}
-
-const FieldBaseRoot = forwardRef<HTMLDivElement, FieldBaseRootProps>(function FieldBaseRoot(
-	{
-		children,
-		size = 'md',
-		width = 'full',
-		labelPlacement = 'inline',
-		error,
-		helperText: _helperText,
-		disabled = false,
-		readOnly = false,
-		hasValue = false,
-		open = false,
-		focused = false,
-		className,
-		style,
-		...rest
-	},
-	ref,
-) {
-	const hasError = !!error;
-
-	const rootClassName = cn(
-		styles.root,
-		size !== 'md' ? styles[size] : '',
-		WIDTH_CLASS[width],
-		labelPlacement === 'outside' ? styles.placementOutside : '',
-		labelPlacement === 'none' ? styles.placementNone : '',
-		hasError ? styles.error : '',
-		disabled ? styles.disabled : '',
-		readOnly ? styles.readOnly : '',
-		hasValue ? styles.hasValue : '',
-		open ? styles.isOpen : '',
-		focused ? styles.focused : '',
-		className,
-	);
-
-	return (
-		<FieldBaseContext.Provider value={{
-			labelPlacement,
-			size,
-			disabled,
-			readOnly,
-			hasValue
-		}}
-		>
-			<div
-				ref={ref}
-				className={rootClassName}
-				style={style}
-				{...rest}
-				data-field-size={size}
-				data-field-width={width}
-				data-label-placement={labelPlacement}
-				data-field-disabled={disabled || undefined}
-				data-field-error={hasError || undefined}
-			>
-				{children}
-			</div>
-		</FieldBaseContext.Provider>
-	);
-});
-
-FieldBaseRoot.displayName = 'FieldBase.Root';
-
-const FieldBaseLabel = forwardRef<HTMLLabelElement, FieldBaseLabelProps>(function FieldBaseLabel(
-	{
-		placement,
-		className,
-		style,
-		...props
-	},
-	ref,
-) {
-	const {labelPlacement} = useFieldBase('FieldBase.Label');
-	const resolvedPlacement = placement ?? labelPlacement;
-	if (resolvedPlacement === 'none') return null;
-	return (
-		<label
-			ref={ref}
-			className={cn(
-				resolvedPlacement === 'outside' ? styles.labelOutside : styles.inputLabel,
-				className,
-			)}
-			{...props}
-			style={style}
-		/>
-	);
-});
-
-FieldBaseLabel.displayName = 'FieldBase.Label';
-
-const FieldBaseControl = forwardRef<HTMLDivElement, FieldBaseControlProps>(function FieldBaseControl(
-	{className, style, ...props},
-	ref,
-) {
-	return (
-		<div
-			ref={ref}
-			className={cn(styles.fieldBody, className)}
-			style={style}
-			{...props}
-		/>
-	);
-});
-
-FieldBaseControl.displayName = 'FieldBase.Control';
-
-const FieldBasePrefix = forwardRef<HTMLSpanElement, FieldBasePrefixProps>(function FieldBasePrefix(
-	{className, style, ...props},
-	ref,
-) {
-	return (
-		<span
-			ref={ref}
-			className={cn(styles.prefixWrapper, className)}
-			style={style}
-			{...props}
-		/>
-	);
-});
-
-FieldBasePrefix.displayName = 'FieldBase.Prefix';
-
-const FieldBasePostfix = forwardRef<HTMLSpanElement, FieldBasePostfixProps>(function FieldBasePostfix(
-	{className, style, ...props},
-	ref,
-) {
-	return (
-		<span
-			ref={ref}
-			className={cn(styles.postfixWrapper, className)}
-			style={style}
-			{...props}
-		/>
-	);
-});
-
-FieldBasePostfix.displayName = 'FieldBase.Postfix';
-
-const FieldBaseButton = forwardRef<HTMLButtonElement, FieldBaseButtonProps>(
+/**
+ * Affix-кнопка внутри prefix/postfix поля.
+ *
+ * @component
+ * @example
+ * <TextField postfix={<FieldBaseButton aria-label="Время" icon={<IconClock />} />} />
+ */
+export const FieldBaseButton = forwardRef<HTMLButtonElement, FieldBaseButtonProps>(
 	function FieldBaseButton(
 		{
-			variant = 'ghost',
-			size: sizeProp,
 			className,
-			style,
+			icon,
+			children,
+			type = 'button',
 			...props
 		},
 		ref,
 	) {
-		const {size: fieldSize} = useFieldBase('FieldBase.Button');
-		const {icon, children, ...buttonProps} = props;
 		return (
-			<ButtonBase
+			<button
 				ref={ref}
-				variant={variant}
-				size={sizeProp ?? affixButtonSize(fieldSize)}
-				className={cn(styles.affixButton, className)}
-				style={style}
-				{...buttonProps}
+				type={type}
+				className={cn(unstyled.control, styles.affixButton, className)}
+				{...props}
 			>
 				{icon ?? children}
-			</ButtonBase>
+			</button>
 		);
 	},
 );
 
-FieldBaseButton.displayName = 'FieldBase.Button';
+FieldBaseButton.displayName = 'FieldBaseButton';
 
-const FieldBaseIcon = forwardRef<HTMLSpanElement, FieldBaseIconProps>(function FieldBaseIcon(
-	{
-		className,
-		style,
-		children,
-		...props
+/**
+ * Декоративная иконка affix поля.
+ *
+ * @component
+ * @example
+ * <TextField prefix={<FieldBaseIcon><IconSearch /></FieldBaseIcon>} />
+ */
+export const FieldBaseIcon = forwardRef<HTMLSpanElement, FieldBaseIconProps>(
+	function FieldBaseIcon(
+		{
+			className,
+			children,
+			...props
+		},
+		ref,
+	) {
+		return (
+			<span
+				ref={ref}
+				className={cn(styles.affixIcon, className)}
+				{...props}
+			>
+				{children}
+			</span>
+		);
 	},
-	ref,
-) {
-	return (
-		<span
-			ref={ref}
-			className={cn(styles.affixIcon, className)}
-			style={style}
-			{...props}
-		>
-			{children}
-		</span>
-	);
-});
+);
 
-FieldBaseIcon.displayName = 'FieldBase.Icon';
+FieldBaseIcon.displayName = 'FieldBaseIcon';
 
-const FieldBaseClear = forwardRef<HTMLButtonElement, FieldBaseClearProps>(function FieldBaseClear(
+const FieldBaseClear = forwardRef<HTMLButtonElement, {
+	visible?: boolean;
+	className?: string;
+	onClick?: React.MouseEventHandler<HTMLButtonElement>;
+	onMouseDown?: React.MouseEventHandler<HTMLButtonElement>;
+	'aria-label'?: string;
+}>(function FieldBaseClear(
 	{
 		visible,
 		className,
-		style,
 		onClick,
 		onMouseDown,
 		...props
@@ -285,235 +167,168 @@ const FieldBaseClear = forwardRef<HTMLButtonElement, FieldBaseClearProps>(functi
 	ref,
 ) {
 	const {t} = useLocale();
-	const {disabled, readOnly, hasValue} = useFieldBase('FieldBase.Clear');
-	const showClear = visible ?? (hasValue && !disabled && !readOnly);
+	const hidden = visible === false;
+	const forced = visible === true;
 	return (
 		<FieldBaseButton
 			ref={ref}
 			{...props}
-			type={props.type ?? 'button'}
-			className={cn(styles.clearBtn, !showClear ? styles.clearBtnHidden : '', className)}
-			style={style}
+			className={cn(styles.clearBtn, hidden ? styles.clearBtnHidden : '', className)}
 			aria-label={props['aria-label'] ?? t('common.clear')}
-			aria-hidden={!showClear}
-			tabIndex={showClear ? props.tabIndex ?? 0 : -1}
 			icon={<IconCross size={12} aria-hidden />}
-			onClick={(event) => {
-				if (!showClear) return;
-				composeEventHandlers(onClick, (clickEvent) => {
-					clickEvent.preventDefault();
-					clickEvent.stopPropagation();
-				})(event);
-			}}
+			onClick={composeEventHandlers(onClick, (event) => {
+				event.preventDefault();
+				event.stopPropagation();
+			})}
 			onMouseDown={composeEventHandlers(onMouseDown, (event) => {
 				event.preventDefault();
 			})}
 			data-field-clear-btn=''
+			data-visible={forced ? 'true' : undefined}
 		/>
 	);
 });
 
-FieldBaseClear.displayName = 'FieldBase.Clear';
+FieldBaseClear.displayName = 'FieldBaseClear';
 
-const FieldBaseError = forwardRef<HTMLParagraphElement, FieldBaseErrorProps>(function FieldBaseError(
-	{error, className, id, ...rest},
-	ref,
-) {
-	if (typeof error !== 'string') return null;
-	return (
-		<p
-			ref={ref}
-			className={cn(styles.errorText, className)}
-			id={id}
-			{...rest}
-			data-type='error'
-			role='alert'
-		>
-			{error}
-		</p>
-	);
-});
-
-FieldBaseError.displayName = 'FieldBase.Error';
-
-const FieldBaseHelper = forwardRef<HTMLSpanElement, FieldBaseHelperProps>(function FieldBaseHelper(
+/**
+ * Оболочка поля: label / prefix / control / postfix / clear / error.
+ *
+ * @component
+ * @example
+ * <FieldBase
+ *   id={id}
+ *   label="Эл. почта"
+ *   hasValue={Boolean(email)}
+ *   prefix={<FieldBaseIcon><IconUser /></FieldBaseIcon>}
+ * >
+ *   <input id={id} />
+ * </FieldBase>
+ */
+export const FieldBase = forwardRef<HTMLDivElement, FieldBaseHostProps>(function FieldBase(
 	{
-		children,
+		label,
+		labelPlacement = 'inline',
+		size = 'md',
+		width = 'md',
+		error,
 		helperText,
+		footer,
+		disabled = false,
+		readOnly = false,
+		prefix,
+		postfix,
+		onClear,
+		clearLabel,
+		id,
+		hasValue = false,
+		focused = false,
+		open = false,
+		chrome = true,
 		className,
 		style,
-		id,
+		children,
+		controlOverlay,
+		labelId,
 		...rest
 	},
 	ref,
 ) {
-	const text = children ?? helperText;
-	if (!text) return null;
+	const hasError = !!error;
+	const errorId = typeof error === 'string' ? `${id}-error` : undefined;
+	const helperId = helperText && !hasError ? `${id}-helper` : undefined;
+	const describedBy = [errorId, helperId].filter(Boolean).join(' ') || undefined;
+	const controlCtx = useMemo<FieldControlContextValue>(() => ({
+		id,
+		invalid: hasError,
+		describedBy,
+		ariaLabel: labelPlacement === 'none' && label ? label : undefined,
+	}), [
+		describedBy,
+		hasError,
+		id,
+		label,
+		labelPlacement
+	]);
+
 	return (
-		<span
+		<div
 			ref={ref}
-			className={cn(styles.helperText, className)}
+			className={cn(
+				styles.root,
+				size !== 'md' ? styles[size] : '',
+				WIDTH_CLASS[width],
+				labelPlacement === 'outside' ? styles.placementOutside : '',
+				labelPlacement === 'none' ? styles.placementNone : '',
+				chrome ? '' : styles.chromeOff,
+				hasError ? styles.error : '',
+				disabled ? styles.disabled : '',
+				readOnly ? styles.readOnly : '',
+				hasValue ? styles.hasValue : '',
+				open ? styles.isOpen : '',
+				focused ? styles.focused : '',
+				className,
+			)}
 			style={style}
-			id={id}
 			{...rest}
+			data-field-size={size}
+			data-field-width={width}
+			data-label-placement={labelPlacement}
+			data-field-disabled={disabled || undefined}
+			data-field-error={hasError || undefined}
 		>
-			{text}
-		</span>
+			{labelPlacement === 'outside' ? (
+				<label
+					className={styles.labelOutside}
+					htmlFor={id}
+					id={labelId}
+				>
+					{label}
+				</label>
+			) : null}
+			<div className={cn(styles.chrome, styles.fieldBody)} data-field-chrome=''>
+				{prefix ? (
+					<span className={cn(styles.affix, styles.affixStart)}>
+						{prefix}
+					</span>
+				) : null}
+				<FieldControlContext.Provider value={controlCtx}>
+					<div className={styles.controlSlot}>
+						{children}
+						{controlOverlay}
+						{labelPlacement === 'inline' ? (
+							<label
+								className={styles.inputLabel}
+								htmlFor={id}
+								id={labelId}
+							>
+								{label}
+							</label>
+						) : null}
+					</div>
+				</FieldControlContext.Provider>
+				{(onClear || postfix) ? (
+					<span className={cn(styles.affix, styles.affixEnd)}>
+						{onClear ? (
+							<FieldBaseClear aria-label={clearLabel} onClick={onClear} />
+						) : null}
+						{postfix}
+					</span>
+				) : null}
+			</div>
+			{helperText && !hasError ? (
+				<FormMessage id={helperId}>
+					{helperText}
+				</FormMessage>
+			) : null}
+			{typeof error === 'string' ? (
+				<FormMessage variant='error' id={errorId}>
+					{error}
+				</FormMessage>
+			) : null}
+			{footer}
+		</div>
 	);
 });
 
-FieldBaseHelper.displayName = 'FieldBase.Helper';
-
-interface FieldBaseLayoutProps extends FieldBaseProps {
-	id: string;
-	hasValue: boolean;
-	focused?: boolean;
-	open?: boolean;
-	className?: string;
-	control: React.ReactNode;
-	/** Абсолютный слой поверх control (например маска MaskedField). */
-	controlOverlay?: React.ReactNode;
-	onClear?: () => void;
-	labelId?: string;
-	rootProps?: Omit<React.HTMLAttributes<HTMLDivElement>, 'className' | 'children'>;
-	ref?: React.Ref<HTMLDivElement>;
-}
-
-const FieldBaseLayout = forwardRef<HTMLDivElement, FieldBaseLayoutProps>(
-	function FieldBaseLayout(
-		{
-			label,
-			labelPlacement = 'inline',
-			size = 'md',
-			width = 'full',
-			error,
-			helperText,
-			disabled = false,
-			readOnly = false,
-			prefix,
-			postfix,
-			onClear,
-			clearLabel,
-			id,
-			hasValue,
-			focused = false,
-			open = false,
-			className,
-			control,
-			controlOverlay,
-			labelId,
-			rootProps,
-		},
-		ref,
-	) {
-		const errorId = typeof error === 'string' ? `${id}-error` : undefined;
-		const helperId = helperText ? `${id}-helper` : undefined;
-		const existingAriaLabel = React.isValidElement(control)
-			? (control.props as {'aria-label'?: string})['aria-label']
-			: undefined;
-		const existingDescribedBy = React.isValidElement(control)
-			? (control.props as {'aria-describedby'?: string})['aria-describedby']
-			: undefined;
-		const describedBy = [errorId, helperId, existingDescribedBy]
-			.filter(Boolean)
-			.join(' ')
-		|| undefined;
-
-		const controlNode = React.isValidElement(control)
-			? React.cloneElement(
-				control as React.ReactElement<Record<string, unknown>>,
-				{
-					'aria-invalid': error ? true : undefined,
-					'aria-describedby': describedBy,
-					'aria-label': existingAriaLabel ?? (
-						labelPlacement === 'none' && label ? label : undefined
-					),
-				},
-			)
-			: control;
-
-		return (
-			<FieldBaseRoot
-				ref={ref}
-				size={size}
-				width={width}
-				labelPlacement={labelPlacement}
-				error={error}
-				helperText={helperText}
-				disabled={disabled}
-				readOnly={readOnly}
-				hasValue={hasValue}
-				open={open}
-				focused={focused}
-				className={className}
-				{...rootProps}
-			>
-				{labelPlacement === 'outside' && (
-					<FieldBaseLabel
-						placement='outside'
-						htmlFor={id}
-						id={labelId}
-					>
-						{label}
-					</FieldBaseLabel>
-				)}
-				<FieldBaseControl>
-					{prefix && (
-						<FieldBasePrefix>
-							{prefix}
-						</FieldBasePrefix>
-					)}
-					{controlNode}
-					{controlOverlay}
-					{labelPlacement === 'inline' && (
-						<FieldBaseLabel htmlFor={id} id={labelId}>
-							{label}
-						</FieldBaseLabel>
-					)}
-					{(onClear || postfix) && (
-						<FieldBasePostfix>
-							{onClear && (
-								<FieldBaseClear aria-label={clearLabel} onClick={onClear} />
-							)}
-							{postfix}
-						</FieldBasePostfix>
-					)}
-				</FieldBaseControl>
-				{helperText ? (
-					<FieldBaseHelper id={helperId} helperText={helperText} />
-				) : null}
-				<FieldBaseError id={errorId} error={error} />
-			</FieldBaseRoot>
-		);
-	}
-);
-
-FieldBaseLayout.displayName = 'FieldBase.Layout';
-
-/**
- * Составная оболочка поля: label / prefix / control / postfix / clear / error.
- *
- * @component
- * @example
- * <FieldBase.Root width="md" hasValue={Boolean(email)}>
- *   <FieldBase.Control>
- *     <input id={id} />
- *     <FieldBase.Label htmlFor={id}>Эл. почта</FieldBase.Label>
- *   </FieldBase.Control>
- * </FieldBase.Root>
- */
-export const FieldBase = Object.assign(FieldBaseRoot, {
-	Root: FieldBaseRoot,
-	Label: FieldBaseLabel,
-	Prefix: FieldBasePrefix,
-	Control: FieldBaseControl,
-	Postfix: FieldBasePostfix,
-	Button: FieldBaseButton,
-	Icon: FieldBaseIcon,
-	Clear: FieldBaseClear,
-	Error: FieldBaseError,
-	Helper: FieldBaseHelper,
-	Layout: FieldBaseLayout,
-});
-
-
+FieldBase.displayName = 'FieldBase';

@@ -1,0 +1,36 @@
+.target {
+  min-width: 0;
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+    outline-offset: var(--altum-focus-ring-offset);
+  }
+}
+
+.host.host {
+  display: contents;
+}
+
+.anchor {
+  position: fixed;
+
+  width: 0;
+  height: 0;
+
+  pointer-events: none;
+}
+
+.menu {
+  --altum-menu-min-width: 180px;
+  --altum-menu-max-width: 320px;
+  --altum-menu-max-height: 360px;
+
+  overflow: auto;
+
+  min-width: var(--altum-menu-min-width);
+  max-width: min(var(--altum-menu-max-width), calc(100vw - var(--altum-g-space-4)));
+  max-height: min(var(--altum-menu-max-height), calc(100vh - var(--altum-g-space-4)));
+}

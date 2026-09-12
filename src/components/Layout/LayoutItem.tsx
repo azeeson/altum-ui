@@ -1,6 +1,7 @@
-import {forwardRef, type ElementType} from 'react';
+import {forwardRef} from 'react';
+import {As} from '../../base/As';
 import {cn} from '../../utils/cn';
-import {flexStyles as styles} from './layoutClasses';
+import flexChild from '../../styles/flexChild.module.css';
 import type {LayoutItemProps} from './Layout.types';
 
 export type {LayoutItemProps} from './Layout.types';
@@ -17,31 +18,26 @@ export type {LayoutItemProps} from './Layout.types';
  */
 export const LayoutItem = forwardRef<HTMLElement, LayoutItemProps>(function LayoutItem(
 	{
-		children,
 		grow = false,
 		shrink = true,
 		className,
-		style,
-		as: Component = 'div',
+		as = 'div',
 		...rest
 	},
 	ref,
 ) {
-	const Element = Component as ElementType;
 	return (
-		<Element
+		<As
 			ref={ref}
+			as={as}
 			className={cn(
-				styles.item,
-				grow && styles.itemGrow,
-				!shrink && styles.itemShrink0,
+				flexChild.child,
+				grow && flexChild.grow,
+				shrink === false && flexChild.noShrink,
 				className,
 			)}
-			style={style}
 			{...rest}
-		>
-			{children}
-		</Element>
+		/>
 	);
 });
 

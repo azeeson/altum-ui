@@ -1,15 +1,21 @@
 import React, {cloneElement, forwardRef, isValidElement} from 'react';
 import type {ReactElement} from 'react';
 import {composeRefs, type PossibleRef} from './composeRefs';
+import {composeEventHandlers} from './composeEvents';
 import {cn} from './cn';
 import {mergeStyles} from './mergeStyles';
 
 type AnyProps = Record<string, unknown>;
 
+function isEventHandlerKey(key: string): boolean {
+	return key.length > 2 && key.startsWith('on') && key.charCodeAt(2) >= 65 && key.charCodeAt(2) <= 90;
+}
+
 /**
- * Мержит slot-пропсы в единственный React-элемент (asChild).
+ * Мержит slot-пропсы в единственный React-элемент.
  * className склеивается через {@link cn}, style — через {@link mergeStyles}
- * (slot перекрывает decorative style child).
+ * (slot перекрывает decorative style child). Обработчики `on*` склеиваются:
+ * сначала child, затем slot, если `defaultPrevented` ещё false.
  */
 export function mergeSlotProps<P extends AnyProps>(
 	slotProps: P,
@@ -23,13 +29,27 @@ export function mergeSlotProps<P extends AnyProps>(
 	const childStyle = childProps.style as React.CSSProperties | undefined;
 	const childRef = childProps.ref as PossibleRef<HTMLElement> | undefined;
 
-	return {
+	const merged: AnyProps = {
 		...childProps,
 		...slotProps,
 		className: cn(slotClassName, childClassName),
 		style: mergeStyles(childStyle, slotStyle),
 		ref: composeRefs(ref, childRef),
 	};
+
+	for (const key of Object.keys(merged)) {
+		if (!isEventHandlerKey(key)) continue;
+		const slotHandler = slotProps[key];
+		const childHandler = childProps[key];
+		if (typeof slotHandler === 'function' && typeof childHandler === 'function') {
+			merged[key] = composeEventHandlers(
+				childHandler as (event: {defaultPrevented: boolean}) => void,
+				slotHandler as (event: {defaultPrevented: boolean}) => void,
+			);
+		}
+	}
+
+	return merged;
 }
 
 export type SlotProps = React.HTMLAttributes<HTMLElement> & {
@@ -39,8 +59,7 @@ export type SlotProps = React.HTMLAttributes<HTMLElement> & {
 };
 
 /**
- * Slot: рендерит children as-is или (при одном элементе) пробрасывает ref/props.
- * Используется Button/Link `asChild` без лишней DOM-обёртки.
+ * Slot: пробрасывает ref/props в единственный дочерний React-элемент без DOM-обёртки.
  *
  * @component
  * @example
@@ -53,7 +72,7 @@ export const Slot = forwardRef<HTMLElement, SlotProps>(function Slot(
 	ref,
 ) {
 	if (!isValidElement(children)) {
-		throw new Error('Slot: asChild требует единственный дочерний React-элемент');
+		throw new Error('Slot требует единственный дочерний React-элемент');
 	}
 
 	return cloneElement(

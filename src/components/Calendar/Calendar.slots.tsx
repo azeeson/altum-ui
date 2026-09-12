@@ -1,9 +1,8 @@
 import React, {forwardRef} from 'react';
-import {IconChevronLeft} from '../../icons/icons/IconChevronLeft';
-import {IconChevronRight} from '../../icons/icons/IconChevronRight';
+import {ChevronButton} from '../../base/ChevronButton';
 import {cn} from '../../utils/cn';
 import {composeEventHandlers} from '../../utils/composeEvents';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useLocale} from '../../locales/localeContext';
 import {useCalendarContext} from './Calendar.context';
 import {
 	CalendarDaysPanel,
@@ -18,6 +17,8 @@ import {
 	type CalendarTitleProps,
 	YEARS_PER_PAGE,
 } from './Calendar.types';
+import unstyled from '../../styles/unstyledControl.module.css';
+import chrome from '../../styles/calendarChrome.module.css';
 import styles from './Calendar.module.css';
 
 export const CalendarRoot = forwardRef<HTMLDivElement, CalendarRootProps>(function CalendarRoot(
@@ -47,7 +48,7 @@ export const CalendarHeader = forwardRef<HTMLDivElement, CalendarHeaderProps>(fu
 	return (
 		<div
 			ref={ref}
-			className={cn(styles.calendarHeader, className)}
+			className={cn(chrome.header, styles.calendarHeader, className)}
 			{...rest}
 		>
 			{children}
@@ -63,80 +64,51 @@ export const CalendarTitle = forwardRef<HTMLSpanElement, CalendarTitleProps>(fun
 ) {
 	const {messages, t} = useLocale();
 	const months = messages.calendar.months;
-	const {
-		year,
-		month,
-		view,
-		yearPageStart,
-		setView,
-	} = useCalendarContext('Calendar.Title');
-
-	if (view === 'years') {
-		const endYear = yearPageStart + YEARS_PER_PAGE - 1;
-		return (
-			<span
-				ref={ref}
-				className={cn(styles.calendarTitle, className)}
-				{...rest}
-			>
-				{yearPageStart}
-				{' '}
-				–
-				{endYear}
-			</span>
-		);
-	}
-
-	if (view === 'months') {
-		return (
-			<span
-				ref={ref}
-				className={cn(styles.calendarTitle, className)}
-				{...rest}
-			>
-				<button
-					type='button'
-					className={styles.calendarTitleButton}
-					onClick={(event) => {
-						event.stopPropagation();
-						setView('years');
-					}}
-					aria-label={t('calendar.selectYear', {year})}
-				>
-					{year}
-				</button>
-			</span>
-		);
-	}
+	const {year, month, view, yearPageStart, setView} = useCalendarContext('Calendar.Title');
+	const monthName = months[month] ?? '';
+	const titleBtnClass = cn(unstyled.control, chrome.cell, styles.calendarTitleButton);
 
 	return (
 		<span
 			ref={ref}
-			className={cn(styles.calendarTitle, styles.calendarTitleSplit, className)}
+			className={cn(
+				styles.calendarTitle,
+				view === 'days' ? styles.calendarTitleSplit : '',
+				className,
+			)}
 			{...rest}
 		>
-			<button
-				type='button'
-				className={styles.calendarTitleButton}
-				onClick={(event) => {
-					event.stopPropagation();
-					setView('months');
-				}}
-				aria-label={t('calendar.selectMonth', {month: months[month] ?? ''})}
-			>
-				{months[month]}
-			</button>
-			<button
-				type='button'
-				className={styles.calendarTitleButton}
-				onClick={(event) => {
-					event.stopPropagation();
-					setView('years');
-				}}
-				aria-label={t('calendar.selectYear', {year})}
-			>
-				{year}
-			</button>
+			{view === 'years' && `${yearPageStart} – ${yearPageStart + YEARS_PER_PAGE - 1}`}
+			{view === 'months' && (
+				<button
+					type='button'
+					className={titleBtnClass}
+					onClick={() => setView('years')}
+					aria-label={t('calendar.selectYear', {year})}
+				>
+					{year}
+				</button>
+			)}
+			{view === 'days' && (
+				<>
+					<button
+						type='button'
+						className={titleBtnClass}
+						onClick={() => setView('months')}
+						aria-label={t('calendar.selectMonth', {month: monthName})}
+					>
+						{monthName}
+					</button>
+					<button
+						type='button'
+						className={titleBtnClass}
+						onClick={() => setView('years')}
+						aria-label={t('calendar.selectYear', {year})}
+					>
+						{year}
+					</button>
+				</>
+			)}
 		</span>
 	);
 });
@@ -148,7 +120,6 @@ export const CalendarNav = forwardRef<HTMLButtonElement, CalendarNavProps>(funct
 		direction,
 		className,
 		'aria-label': ariaLabel,
-		children,
 		onClick,
 		...rest
 	},
@@ -157,7 +128,6 @@ export const CalendarNav = forwardRef<HTMLButtonElement, CalendarNavProps>(funct
 	const {messages} = useLocale();
 	const {view, shiftView} = useCalendarContext('Calendar.Nav');
 	const isPrev = direction === 'prev';
-
 	const defaultLabel = view === 'days'
 		? (isPrev ? messages.calendar.prevMonth : messages.calendar.nextMonth)
 		: view === 'months'
@@ -165,21 +135,14 @@ export const CalendarNav = forwardRef<HTMLButtonElement, CalendarNavProps>(funct
 			: (isPrev ? messages.calendar.prevYears : messages.calendar.nextYears);
 
 	return (
-		<button
+		<ChevronButton
 			ref={ref}
-			className={cn(styles.calBtn, className)}
-			onClick={composeEventHandlers(onClick, (event) => {
-				event.stopPropagation();
-				shiftView(isPrev ? -1 : 1);
-			})}
-			{...rest}
-			type='button'
+			direction={direction}
+			className={cn(unstyled.control, chrome.navBtn, className)}
+			onClick={composeEventHandlers(onClick, () => shiftView(isPrev ? -1 : 1))}
 			aria-label={ariaLabel ?? defaultLabel}
-		>
-			{children ?? (isPrev
-				? <IconChevronLeft size={16} aria-hidden />
-				: <IconChevronRight size={16} aria-hidden />)}
-		</button>
+			{...rest}
+		/>
 	);
 });
 
@@ -189,32 +152,34 @@ export const CalendarBody = forwardRef<HTMLDivElement, CalendarBodyProps>(functi
 	{className, renderDayCell: renderDayCellProp, ...rest},
 	ref,
 ) {
-	const {
-		view,
-		renderDayCell: renderDayCellFromContext,
-	} = useCalendarContext('Calendar.Body');
+	const {view, renderDayCell: renderDayCellFromContext} = useCalendarContext('Calendar.Body');
 	const renderDayCell = renderDayCellProp ?? renderDayCellFromContext;
 
 	if (view === 'months') {
 		return (
-			<div ref={ref} {...rest}>
-				<CalendarMonthsPanel className={className} />
-			</div>
+			<CalendarMonthsPanel
+				ref={ref}
+				className={className}
+				{...rest}
+			/>
 		);
 	}
-
 	if (view === 'years') {
 		return (
-			<div ref={ref} {...rest}>
-				<CalendarYearsPanel className={className} />
-			</div>
+			<CalendarYearsPanel
+				ref={ref}
+				className={className}
+				{...rest}
+			/>
 		);
 	}
-
 	return (
-		<div ref={ref} {...rest}>
-			<CalendarDaysPanel className={className} renderDayCell={renderDayCell} />
-		</div>
+		<CalendarDaysPanel
+			ref={ref}
+			className={className}
+			renderDayCell={renderDayCell}
+			{...rest}
+		/>
 	);
 });
 

@@ -1,8 +1,12 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {Bubble, BubbleProps} from './Bubble';
-import {Stack} from '../Layout/Layout';
+import {Avatar} from '../Avatar/Avatar';
+import {Card} from '../Card/Card';
+import {Inline, Stack} from '../Layout/Layout';
+import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
+import {playClick} from '../../storybook/play';
 
 const longMessage = [
 	'Проверил все изменения в ветке feature/calendar-board.',
@@ -31,6 +35,13 @@ export default {
 			},
 			description: 'Визуальный вариант пузыря',
 		},
+		align: {
+			control: {
+				type: 'select',
+				options: ['start', 'end'],
+			},
+			description: 'Выравнивание в ленте',
+		},
 		group: {
 			control: {
 				type: 'select',
@@ -46,6 +57,16 @@ export default {
 		collapsible: {
 			control: 'boolean',
 			description: 'Сворачиваемый длинный контент',
+		},
+		collapsedLines: {
+			control: 'number',
+			description: 'Видимые строки в свёрнутом виде',
+		},
+		meta: {
+			control: 'text',
+		},
+		children: {
+			control: 'text',
 		},
 	},
 } satisfies Meta<typeof Bubble>;
@@ -64,6 +85,8 @@ export const Playground: Story<BubbleProps> = {
 		variant: 'outgoing',
 		meta: 'Вы · 10:05',
 		children: 'Сообщение готово к отправке.',
+		group: 'single',
+		collapsible: false,
 	},
 	parameters: story('Базовый пузырь — настройка через Controls.'),
 };
@@ -154,13 +177,30 @@ export const WithReactions: Story<BubbleProps> = {
 	parameters: story('Реакции под пузырём с toggle по клику.'),
 };
 
+export const Collapsible: Story<BubbleProps> = {
+	render: () => (
+		<div style={{
+			maxWidth: 360,
+			padding: 'var(--altum-g-space-4)'
+		}}
+		>
+			<Bubble
+				variant='outgoing'
+				collapsible
+				collapsedLines={3}
+			>
+				{longMessage}
+			</Bubble>
+		</div>
+	),
+	parameters: story('Длинный текст свёрнут до `collapsedLines`.'),
+};
+
 export const Thread: Story<BubbleProps> = {
 	render: () => (
-		<div
+		<Stack
+			gap='none'
 			style={{
-				display: 'flex',
-				flexDirection: 'column',
-				gap: 'var(--altum-g-space-1)',
 				maxWidth: 360,
 				padding: 'var(--altum-g-space-4)',
 			}}
@@ -201,9 +241,80 @@ export const Thread: Story<BubbleProps> = {
 			>
 				{longMessage}
 			</Bubble>
-		</div>
+		</Stack>
 	),
 	parameters: story(
 		'Демо переписки: входящие/исходящие группы, реакции и сворачиваемый длинный текст.',
 	),
+};
+
+export const Interaction: Story<BubbleProps> = {
+	render: function InteractionRender() {
+		const [active, setActive] = useState(false);
+		return (
+			<div style={{
+				maxWidth: 360,
+				padding: 'var(--altum-g-space-4)'
+			}}
+			>
+				<Bubble
+					variant='outgoing'
+					collapsible
+					collapsedLines={2}
+					reactions={[
+						{
+							emoji: '👍',
+							count: active ? 2 : 1,
+							active,
+							onClick: () => setActive((value) => !value),
+						},
+					]}
+				>
+					{longMessage}
+				</Bubble>
+			</div>
+		);
+	},
+	play: async ({canvasElement}) => {
+		await playClick(canvasElement, 'button[aria-expanded="false"]');
+		await playClick(canvasElement, 'button[aria-pressed]');
+	},
+	parameters: story('Play: раскрыть длинный текст и переключить реакцию.'),
+};
+
+export const UsageExample: Story<BubbleProps> = {
+	render: () => (
+		<div style={{maxWidth: 400}}>
+			<Card>
+				<Stack gap='md'>
+					<Inline gap='sm' align='center'>
+						<Avatar
+							name='Алексей Иванов'
+							size='sm'
+							status='online'
+						/>
+						<Text size='sm' weight='medium'>
+							Алексей Иванов
+						</Text>
+					</Inline>
+					<Stack gap='xs'>
+						<Bubble variant='incoming' group='first'>
+							Можешь глянуть PR?
+						</Bubble>
+						<Bubble
+							variant='incoming'
+							group='last'
+							meta='10:02'
+						>
+							Там правки по Accordion и Tooltip.
+						</Bubble>
+						<Bubble variant='outgoing' meta='Вы · 10:05'>
+							Смотрю — напишу в треде.
+						</Bubble>
+					</Stack>
+				</Stack>
+			</Card>
+		</div>
+	),
+	parameters: story('Чат в карточке: аватар собеседника и лента пузырей.'),
 };

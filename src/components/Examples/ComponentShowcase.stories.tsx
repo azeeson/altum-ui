@@ -3,7 +3,6 @@ import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {Accordion} from '../Accordion/Accordion';
 import {Alert} from '../Alert/Alert';
-import {ActionList} from '../ActionList/ActionList';
 import {AspectRatio} from '../AspectRatio/AspectRatio';
 import {Attachment} from '../Attachment/Attachment';
 import {Avatar} from '../Avatar/Avatar';
@@ -21,11 +20,11 @@ import {Collapse} from '../Collapse/Collapse';
 import {ColorSwatchGroup} from '../ColorSwatchGroup/ColorSwatchGroup';
 import {CommandPalette} from '../CommandPalette/CommandPalette';
 import {ConfirmDialog} from '../ConfirmDialog/ConfirmDialog';
-import {DatePicker} from '../DatePicker/DatePicker';
-import {DateRangePicker} from '../DateRangePicker/DateRangePicker';
+import {DateField} from '../DateField/DateField';
+import {DateRangeField} from '../DateRangeField/DateRangeField';
 import {DescriptionList} from '../DescriptionList/DescriptionList';
 import {DonutChart} from '../DonutChart/DonutChart';
-import {DropdownMenu} from '../DropdownMenu/DropdownMenu';
+import {Menu} from '../Menu/Menu';
 import {Dropdown} from '../Dropdown/Dropdown';
 import {EmptyState} from '../EmptyState/EmptyState';
 import {FieldLabel} from '../FieldLabel/FieldLabel';
@@ -74,12 +73,13 @@ import {Tabs} from '../Tabs/Tabs';
 import {Text} from '../Text/Text';
 import {TextField} from '../TextField/TextField';
 import {TextareaField} from '../TextareaField/TextareaField';
-import {TimePicker, TimePickerField} from '../TimePicker/TimePicker';
+import {TimeField} from '../TimeField/TimeField';
 import {Timeline} from '../Timeline/Timeline';
 import {Title} from '../Title/Title';
 import {Tooltip} from '../Tooltip/Tooltip';
 import {UploadZone} from '../UploadZone/UploadZone';
 import {IconDocument} from '../../icons/icons/IconDocument';
+import {IconGraphBar} from '../../icons/icons/IconGraphBar';
 import {IconPlus} from '../../icons/icons/IconPlus';
 import {demoImage} from '../../storybook/demoImages';
 import {componentParameters, story, Story} from '../../storybook/meta';
@@ -207,7 +207,7 @@ function DemoFilterBar({
 									key={item.id}
 									size='sm'
 									variant={item.active ? 'tinted' : 'secondary'}
-									active={!!item.active}
+									as={item.active ? 'toggle' : 'chip'}
 									onClick={onFilterChange
 										? () => onFilterChange(item.id, !item.active)
 										: undefined}
@@ -260,20 +260,23 @@ const COMMAND_GROUPS = [
 	{
 		id: 'nav',
 		label: 'Навигация',
-		items: [
-			{
-				id: 'forms',
-				label: 'Формы'
-			},
-			{
-				id: 'data',
-				label: 'Данные'
-			},
-			{
-				id: 'feedback',
-				label: 'Состояния'
-			},
-		],
+	},
+];
+const COMMAND_ITEMS = [
+	{
+		id: 'forms',
+		groupId: 'nav',
+		label: 'Формы'
+	},
+	{
+		id: 'data',
+		groupId: 'nav',
+		label: 'Данные'
+	},
+	{
+		id: 'feedback',
+		groupId: 'nav',
+		label: 'Состояния'
 	},
 ];
 
@@ -415,64 +418,62 @@ const ComponentShowcaseDemo = () => {
 						/>
 					</div>
 					<Inline gap='lg'>
-						<Card>
-							<Card.Header>
+						<Card
+							header={(
 								<Title level={4}>
 									Flex + Grid
 								</Title>
-							</Card.Header>
-							<Card.Body>
-								<Grid columns={3} gap={12}>
-									<div className={styles.panel}>
-										A
-									</div>
-									<div className={styles.panel}>
-										B
-									</div>
-									<div className={styles.panel}>
-										C
-									</div>
-								</Grid>
-								<Separator />
-								<Split align='center'>
-									<Text size='sm'>
-										Separator выше
-									</Text>
-									<Link href='#'>
-										Link
-									</Link>
-								</Split>
-							</Card.Body>
+							)}
+						>
+							<Grid columns={3} gap={12}>
+								<div className={styles.panel}>
+									A
+								</div>
+								<div className={styles.panel}>
+									B
+								</div>
+								<div className={styles.panel}>
+									C
+								</div>
+							</Grid>
+							<Separator />
+							<Split align='center'>
+								<Text size='sm'>
+									Separator выше
+								</Text>
+								<Link href='#'>
+									Link
+								</Link>
+							</Split>
 						</Card>
-						<Card>
-							<Card.Header>
+						<Card
+							header={(
 								<Title level={4}>
 									Sidebar
 								</Title>
-							</Card.Header>
-							<Card.Body>
-								<div className={styles.sidebarPreview}>
-									<Sidebar
-										value={sidebarId}
-										onChange={setSidebarId}
-									>
-										<Sidebar.Header>
-											<Sidebar.Title>
-												altum
-											</Sidebar.Title>
-											<Sidebar.Collapse />
-										</Sidebar.Header>
-										<Sidebar.Content>
-											<Sidebar.Item value='forms' icon='📝'>
-												Формы
-											</Sidebar.Item>
-											<Sidebar.Item value='data' icon='📊'>
-												Данные
-											</Sidebar.Item>
-										</Sidebar.Content>
-									</Sidebar>
-								</div>
-							</Card.Body>
+							)}
+						>
+							<div className={styles.sidebarPreview}>
+								<Sidebar
+									value={sidebarId}
+									onChange={setSidebarId}
+								>
+									<Sidebar.Header>
+										<Sidebar.Title>
+											altum
+										</Sidebar.Title>
+										<Sidebar.Collapse />
+									</Sidebar.Header>
+									<Sidebar.Content>
+										<Sidebar.Item value='forms' icon={<IconDocument size={18} />}>
+											Формы
+										</Sidebar.Item>
+										<Sidebar.Item value='data' icon={<IconGraphBar size={18} />}>
+											Данные
+										</Sidebar.Item>
+									</Sidebar.Content>
+								</Sidebar>
+							</div>
 						</Card>
 					</Inline>
 					<div className={styles.grid2}>
@@ -499,15 +500,10 @@ const ComponentShowcaseDemo = () => {
 						</ScrollArea>
 					</div>
 					<Accordion>
-						<Accordion.Item value='acc1'>
-							<Accordion.Trigger>
-								Accordion
-							</Accordion.Trigger>
-							<Accordion.Content>
-								<Text>
-									Раскрывающийся блок с Collapse внутри.
-								</Text>
-							</Accordion.Content>
+						<Accordion.Item value='acc1' title='Accordion'>
+							<Text>
+								Раскрывающийся блок с Collapse внутри.
+							</Text>
 						</Accordion.Item>
 					</Accordion>
 					<Button
@@ -558,7 +554,7 @@ const ComponentShowcaseDemo = () => {
 							onChange={(e) => setPassword(e.target.value)}
 							showStrength
 						/>
-						<Select.Root
+						<Select
 							options={[
 								{
 									label: 'Опция 1',
@@ -571,51 +567,41 @@ const ComponentShowcaseDemo = () => {
 							]}
 							value={selectVal}
 							onChange={(value) => { if (!Array.isArray(value)) setSelectVal(value); }}
-						>
-							<Select.Trigger label='Select' />
-							<Select.Panel>
-								<Select.Filter />
-								<Select.List />
-							</Select.Panel>
-						</Select.Root>
-						<DatePicker
-							label='DatePicker'
+							label='Select'
+							filterable
+						/>
+						<DateField
+							label='DateField'
 							value={pickerDate}
 							onChange={setPickerDate}
 						/>
-						<DateRangePicker
-							label='DateRangePicker'
+						<DateRangeField
+							label='DateRangeField'
 							value={dateRange}
 							onChange={setDateRange}
 						/>
-						<TimePickerField
-							label='TimePickerField'
+						<TimeField
+							label='TimeField'
 							value={time}
 							onChange={setTime}
 						/>
 					</div>
-					<Fieldset variant='card'>
-						<Fieldset.Inner>
-							<Fieldset.Legend>
-								Код и оценка
-							</Fieldset.Legend>
-							<Fieldset.Description>
-								PinInput + Rating
-							</Fieldset.Description>
-							<Fieldset.Content>
-								<Stack gap='md'>
-									<PinInput
-										length={4}
-										value={pin}
-										onChange={setPin}
-									/>
-									<Rating value={rating} onChange={setRating} />
-									<FormMessage variant='hint'>
-										Подсказка FormMessage / FieldError
-									</FormMessage>
-								</Stack>
-							</Fieldset.Content>
-						</Fieldset.Inner>
+					<Fieldset
+						variant='card'
+						legend='Код и оценка'
+						description='PinInput + Rating'
+					>
+						<Stack gap='md'>
+							<PinInput
+								length={4}
+								value={pin}
+								onChange={setPin}
+							/>
+							<Rating value={rating} onChange={setRating} />
+							<FormMessage variant='hint'>
+								Подсказка FormMessage / FieldError
+							</FormMessage>
+						</Stack>
 					</Fieldset>
 					<CheckboxGroup
 						label='CheckboxGroup'
@@ -783,60 +769,59 @@ const ComponentShowcaseDemo = () => {
 						gap='sm'
 						align='center'
 					>
-						<Dropdown>
-							<Dropdown.Trigger asChild>
-								<Button variant='secondary'>
+						<Dropdown
+							renderTrigger={(props, ref) => (
+								<Button
+									variant='secondary'
+									{...props}
+									ref={ref}>
 									Dropdown
 								</Button>
-							</Dropdown.Trigger>
-							<Dropdown.Content>
-								<Stack
-									gap='xs'
-									style={{padding: 8}}
-								>
-									<Button variant='secondary' size='sm'>
-										Пункт 1
-									</Button>
-									<Button variant='secondary' size='sm'>
-										Пункт 2
-									</Button>
-								</Stack>
-							</Dropdown.Content>
+							)}
+						>
+							<Stack
+								gap='xs'
+								style={{padding: 8}}
+							>
+								<Button variant='secondary' size='sm'>
+									Пункт 1
+								</Button>
+								<Button variant='secondary' size='sm'>
+									Пункт 2
+								</Button>
+							</Stack>
 						</Dropdown>
-						<DropdownMenu
+						<Menu
 							trigger={(
 								<Button variant='secondary' size='sm'>
-									DropdownMenu
+									Menu
 								</Button>
 							)}
-							groups={[
+							items={[
 								{
-									id: 'g',
-									label: '',
-									items: [
-										{
-											id: 'edit',
-											label: 'Редактировать'
-										},
-										{
-											id: 'delete',
-											label: 'Удалить'
-										},
-									],
-								}
+									id: 'edit',
+									label: 'Редактировать'
+								},
+								{
+									id: 'delete',
+									label: 'Удалить'
+								},
 							]}
 						/>
-						<Popover>
-							<Popover.Trigger asChild>
-								<Button variant='secondary' size='sm'>
+						<Popover
+							renderTrigger={(props, ref) => (
+								<Button
+									variant='secondary'
+									size='sm'
+									{...props}
+									ref={ref}>
 									Popover
 								</Button>
-							</Popover.Trigger>
-							<Popover.Content>
-								<Text size='sm'>
-									Контент Popover
-								</Text>
-							</Popover.Content>
+							)}
+						>
+							<Text size='sm'>
+								Контент Popover
+							</Text>
 						</Popover>
 					</Inline>
 					<Inline gap='sm'>
@@ -953,18 +938,18 @@ const ComponentShowcaseDemo = () => {
 								Badge
 							</Button>
 						</Badge>
-						<Chip mode='tag' size='sm'>
+						<Chip as='tag' size='sm'>
 							Тег
 						</Chip>
-						<Chip active onClick={() => undefined}>
+						<Chip as='toggle' onClick={() => undefined}>
 							Chip
 						</Chip>
 						<Chip
-							mode='tag'
+							as='tag'
 							variant='success'
 							size='sm'
 						>
-							mode=tag
+							as=tag
 						</Chip>
 						<Avatar name='Набор UI' size='md' />
 						<Text size='sm' color='secondary'>
@@ -973,24 +958,17 @@ const ComponentShowcaseDemo = () => {
 							<RelativeTime date={1_700_000_000_000 - 1000 * 60 * 95} />
 						</Text>
 					</Inline>
-					<Item>
-						<Item.Media variant='icon'>
-							<IconDocument size={18} />
-						</Item.Media>
-						<Item.Content>
-							<Item.Title>
-								Составной Item
-							</Item.Title>
-							<Item.Description>
-								Медиа / Заголовок / Описание / Действия
-							</Item.Description>
-						</Item.Content>
-						<Item.Actions>
+					<Item
+						media={<IconDocument size={18} />}
+						mediaVariant='icon'
+						title='Составной Item'
+						description='Медиа / Заголовок / Описание / Действия'
+						actions={(
 							<Button size='sm' variant='secondary'>
 								Открыть
 							</Button>
-						</Item.Actions>
-					</Item>
+						)}
+					/>
 					<DescriptionList
 						layout='inline'
 						items={[
@@ -1008,29 +986,27 @@ const ComponentShowcaseDemo = () => {
 							},
 						]}
 					/>
-					<Table.Root>
-						<Table.Content
-							columns={[
-								{
-									key: 'name',
-									header: 'Имя',
-									sortable: true
-								},
-								{
-									key: 'role',
-									header: 'Роль'
-								},
-								{
-									key: 'status',
-									header: 'Статус'
-								},
-							]}
-							data={TABLE_ROWS}
-							rowKey={(r) => r.id}
-							selectedKeys={selectedKeys}
-							onSelectionChange={setSelectedKeys}
-						/>
-					</Table.Root>
+					<Table
+						columns={[
+							{
+								key: 'name',
+								header: 'Имя',
+								sortable: true
+							},
+							{
+								key: 'role',
+								header: 'Роль'
+							},
+							{
+								key: 'status',
+								header: 'Статус'
+							},
+						]}
+						data={TABLE_ROWS}
+						rowKey={(r) => r.id}
+						selectedKeys={selectedKeys}
+						onSelectionChange={setSelectedKeys}
+					/>
 					<Pagination
 						currentPage={page}
 						totalPages={5}
@@ -1164,17 +1140,12 @@ const ComponentShowcaseDemo = () => {
 			content: (
 				<div className={styles.section}>
 					{alertVisible && (
-						<Alert variant='warning'>
-							<Alert.Icon />
-							<Alert.Body>
-								<Alert.Title>
-									Alert
-								</Alert.Title>
-								<Alert.Content>
-									Inline status-блок (бывший Callout).
-								</Alert.Content>
-							</Alert.Body>
-							<Alert.Close onClose={() => setAlertVisible(false)} />
+						<Alert
+							variant='warning'
+							title='Alert'
+							onClose={() => setAlertVisible(false)}
+						>
+							Inline status-блок (бывший Callout).
 						</Alert>
 					)}
 					<Steps
@@ -1223,9 +1194,9 @@ const ComponentShowcaseDemo = () => {
 					</Inline>
 					{showSkeleton ? (
 						<Stack gap='sm'>
-							<Skeleton.Text lines={2} />
-							<Skeleton.Avatar />
-							<Skeleton.Card />
+							<Skeleton variant='text' lines={2} />
+							<Skeleton variant='avatar' />
+							<Skeleton variant='card' />
 						</Stack>
 					) : (
 						<EmptyState
@@ -1238,7 +1209,7 @@ const ComponentShowcaseDemo = () => {
 							)}
 						/>
 					)}
-					<Tooltip content='Tooltip подсказка' asChild>
+					<Tooltip content='Tooltip подсказка'>
 						<Button variant='secondary' size='sm'>
 							Наведите
 						</Button>
@@ -1264,23 +1235,15 @@ const ComponentShowcaseDemo = () => {
 							label='Ассистент печатает'
 						/>
 						<Marker variant='note'>
-							<Marker.Content>
-								Marker: системная заметка
-							</Marker.Content>
+							Marker: системная заметка
 						</Marker>
-						<Attachment size='sm' status='done'>
-							<Attachment.Media>
-								<IconDocument size={18} />
-							</Attachment.Media>
-							<Attachment.Content>
-								<Attachment.Title>
-									spec.pdf
-								</Attachment.Title>
-								<Attachment.Description>
-									124 KB
-								</Attachment.Description>
-							</Attachment.Content>
-						</Attachment>
+						<Attachment
+							size='sm'
+							status='done'
+							media={<IconDocument size={18} />}
+							title='spec.pdf'
+							description='124 KB'
+						/>
 						<TextareaField
 							label='Сообщение'
 							value={composerText}
@@ -1307,7 +1270,12 @@ const ComponentShowcaseDemo = () => {
 			content: (
 				<div className={styles.section}>
 					<div className={styles.grid2}>
-						<Calendar.Provider value={calendarDate} onChange={setCalendarDate}>
+						<Calendar.Provider
+							value={calendarDate}
+							onChange={(next) => {
+								if (next instanceof Date) setCalendarDate(next);
+							}}
+						>
 							<Calendar.Root>
 								<Calendar.Header>
 									<Calendar.Nav direction='prev' />
@@ -1325,7 +1293,7 @@ const ComponentShowcaseDemo = () => {
 							</Text>
 							{color && (
 								<Chip
-									mode='tag'
+									as='tag'
 									size='sm'
 									variant='info'
 								>
@@ -1341,19 +1309,12 @@ const ComponentShowcaseDemo = () => {
 						</div>
 					</div>
 					<div className={styles.galleryWrap}>
-						<ImageGallery images={[demoImage(2), demoImage(3)]}>
-							<ImageGallery.Viewport>
-								<ImageGallery.Prev />
-								<ImageGallery.Image />
-								<ImageGallery.Next />
-							</ImageGallery.Viewport>
-							<ImageGallery.Thumbnails>
-								<ImageGallery.Thumb index={0} />
-								<ImageGallery.Thumb index={1} />
-							</ImageGallery.Thumbnails>
-						</ImageGallery>
+						<ImageGallery images={[demoImage(2), demoImage(3)]} />
 					</div>
-					<TimePicker value={time} onChange={setTime} />
+					<TimeField
+						label='Время'
+						value={time}
+						onChange={setTime} />
 				</div>
 			),
 		},
@@ -1399,7 +1360,7 @@ const ComponentShowcaseDemo = () => {
 
 			<Sheet
 				open={sidebarOpen}
-				onClose={() => setSidebarOpen(false)}
+				onOpenChange={setSidebarOpen}
 				mode='sidebar'
 				direction='start'
 				backdrop
@@ -1418,7 +1379,7 @@ const ComponentShowcaseDemo = () => {
 
 			<Sheet
 				open={sheetOpen}
-				onClose={() => setSheetOpen(false)}
+				onOpenChange={setSheetOpen}
 				mode='sheet'
 				showHandle
 			>
@@ -1436,7 +1397,7 @@ const ComponentShowcaseDemo = () => {
 
 			<Modal
 				open={modalOpen}
-				onClose={() => setModalOpen(false)}
+				onOpenChange={setModalOpen}
 			>
 				<Modal.Header>
 					<Modal.Title>
@@ -1465,27 +1426,20 @@ const ComponentShowcaseDemo = () => {
 				title='Подтвердить действие?'
 				message='Это демонстрация ConfirmDialog'
 				confirmLabel='Да'
-				onCancel={() => setConfirmOpen(false)}
+				onOpenChange={setConfirmOpen}
 				onConfirm={() => setConfirmOpen(false)}
 			/>
 
-			<CommandPalette.Root open={paletteOpen} onClose={() => setPaletteOpen(false)}>
-				<CommandPalette.Input />
-				<CommandPalette.List>
-					{COMMAND_GROUPS.map((group) => (
-						<ActionList.Group key={group.id} id={group.id}>
-							<ActionList.GroupLabel>
-								{group.label}
-							</ActionList.GroupLabel>
-							{group.items.map((item) => <ActionList.Item key={item.id} {...item} />)}
-						</ActionList.Group>
-					))}
-				</CommandPalette.List>
-			</CommandPalette.Root>
+			<CommandPalette
+				open={paletteOpen}
+				onOpenChange={setPaletteOpen}
+				items={COMMAND_ITEMS}
+				groups={COMMAND_GROUPS}
+			/>
 
 			<ImageLightbox
 				open={lightboxOpen}
-				onClose={() => setLightboxOpen(false)}
+				onOpenChange={setLightboxOpen}
 				images={[demoImage(4)]}
 			/>
 

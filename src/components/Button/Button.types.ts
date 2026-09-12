@@ -12,10 +12,10 @@ export type {ButtonVariant, ButtonStatus};
 /**
  * Свойства `Button`.
  */
-export interface ButtonProps extends Omit<ButtonBaseProps, 'contentClassName'> {
+export interface ButtonProps extends ButtonBaseProps {
 	iconStart?: ReactNode;
 	iconEnd?: ReactNode;
-	/** Состояние загрузки: спиннер, клики блокируются. */
+	/** Состояние загрузки: спиннер, клики блокируются, заливка как у enabled. */
 	loading?: boolean;
 	fullWidth?: boolean;
 	/**

@@ -27,16 +27,7 @@ export interface ProgressProps extends Omit<ComponentPropsWithoutRef<'div'>, 'ch
 /**
  * Свойства кругового `ProgressCircle`.
  */
-export interface ProgressCircleProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
-	percentage?: number;
-	indeterminate?: boolean;
-	/** Токен размера. @default `'md'` */
-	size?: ControlSize;
+export interface ProgressCircleProps extends ProgressProps {
 	/** Диаметр SVG в px; перекрывает токен `size`. */
 	diameter?: number;
-	label?: React.ReactNode;
-	valueText?: React.ReactNode;
-	/** Показать valueText. @default true */
-	showValueText?: boolean;
-	variant?: ProgressVariant;
 }

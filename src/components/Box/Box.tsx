@@ -1,8 +1,4 @@
 import type {
-	BoxVariant,
-	BoxShadow,
-	BoxPadding,
-	BoxRadius,
 	BoxProps,
 } from './Box.types';
 export type {
@@ -19,80 +15,9 @@ import {forwardRef, type ButtonHTMLAttributes, type ElementType} from 'react';
 import styles from './Box.module.css';
 import {cn} from '../../utils/cn';
 
-/** Исторические дефолты рамки/тени по варианту (перекрываются пропами). */
-const VARIANT_CHROME: Record<BoxVariant, {
-	border: boolean;
-	shadow: BoxShadow
-}> = {
-	outlined: {
-		border: true,
-		shadow: 'none'
-	},
-	elevated: {
-		border: false,
-		shadow: 'sm'
-	},
-	floating: {
-		border: true,
-		shadow: 'md'
-	},
-	tinted: {
-		border: true,
-		shadow: 'none'
-	},
-	secondary: {
-		border: true,
-		shadow: 'none'
-	},
-	muted: {
-		border: false,
-		shadow: 'none'
-	},
-	glass: {
-		border: true,
-		shadow: 'sm'
-	},
-	overlay: {
-		border: true,
-		shadow: 'none'
-	},
-	ghost: {
-		border: false,
-		shadow: 'none'
-	},
-	plain: {
-		border: false,
-		shadow: 'none'
-	},
-};
-
-const PADDING_CLASS: Record<BoxPadding, string> = {
-	none: styles.paddingNone,
-	xs: styles.paddingXs,
-	sm: styles.paddingSm,
-	md: styles.paddingMd,
-	lg: styles.paddingLg,
-	xl: styles.paddingXl,
-};
-
-const RADIUS_CLASS: Record<BoxRadius, string> = {
-	none: styles.radiusNone,
-	sm: styles.radiusSm,
-	md: styles.radiusMd,
-	lg: styles.radiusLg,
-};
-
-const SHADOW_CLASS: Record<BoxShadow, string> = {
-	none: styles.shadowNone,
-	sm: styles.shadowSm,
-	md: styles.shadowMd,
-	lg: styles.shadowLg,
-};
-
 /**
  * Примитив поверхности: заливка (`variant`) + `border` / `borderStyle` / `shadow`.
- * Адаптивные варианты переопределяют element CSS-переменные (`--altum-field-*`, `--altum-color-button-*`, …),
- * чтобы вложенные контролы подхватывали цвета через каскад.
+ * Не переопределяет element-токены потомков — кнопки, чипы и поля остаются на глобальной палитре.
  *
  * @component
  * @example
@@ -103,9 +28,9 @@ const SHADOW_CLASS: Record<BoxShadow, string> = {
 export const Box = forwardRef<HTMLElement, BoxProps>(function Box(
 	{
 		variant = 'outlined',
-		border: borderProp,
+		border,
 		borderStyle = 'solid',
-		shadow: shadowProp,
+		shadow,
 		as: Component = 'div',
 		padding = 'none',
 		radius = 'md',
@@ -115,10 +40,6 @@ export const Box = forwardRef<HTMLElement, BoxProps>(function Box(
 	},
 	ref,
 ) {
-	const chrome = VARIANT_CHROME[variant];
-	const border = borderProp ?? chrome.border;
-	const shadow = shadowProp ?? chrome.shadow;
-
 	const buttonProps = Component === 'button'
 		? {type: (rest as ButtonHTMLAttributes<HTMLButtonElement>).type ?? 'button'}
 		: undefined;
@@ -131,11 +52,13 @@ export const Box = forwardRef<HTMLElement, BoxProps>(function Box(
 			className={cn(
 				styles.root,
 				styles[variant],
-				border ? styles.bordered : styles.borderNone,
-				border ? (borderStyle === 'dashed' ? styles.borderDashed : styles.borderSolid) : '',
-				SHADOW_CLASS[shadow],
-				PADDING_CLASS[padding],
-				RADIUS_CLASS[radius],
+				border === true && styles.bordered,
+				border === false && styles.unbordered,
+				border !== false && borderStyle === 'dashed' && styles.dashed,
+				shadow === 'none' && styles.noShadow,
+				shadow && shadow !== 'none' && styles[`shadow_${shadow}`],
+				padding !== 'none' && styles[`pad_${padding}`],
+				radius !== 'md' && styles[`radius_${radius}`],
 				className,
 			)}
 			{...rest}

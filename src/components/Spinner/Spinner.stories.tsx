@@ -3,6 +3,8 @@ import React from 'react';
 import {Spinner, type SpinnerProps, type SpinnerSize, type SpinnerVariant} from './Spinner';
 import {Inline, Stack} from '../Layout/Layout';
 import {Text} from '../Text/Text';
+import {Button} from '../Button/Button';
+import {Card} from '../Card/Card';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 const SIZES: SpinnerSize[] = ['sm', 'md', 'lg'];
@@ -26,6 +28,7 @@ export default {
 				type: 'select',
 				options: VARIANTS,
 			},
+			description: 'spin — круг; typing — точки в пузыре; dots — inline; pulse — диск',
 		},
 		size: {
 			control: {
@@ -38,6 +41,10 @@ export default {
 				],
 			},
 			description: 'sm | md | lg, либо px для spin',
+		},
+		label: {
+			control: 'text',
+			description: 'Подпись рядом с индикатором (dots / typing)',
 		},
 	},
 } satisfies Meta<typeof Spinner>;
@@ -91,33 +98,14 @@ export const SpinSizes: Story<SpinnerProps> = {
 	parameters: story('`spin`: токены sm/md/lg и кастомный px.'),
 };
 
-export const DotsAndPulse: Story<SpinnerProps> = {
+export const WithLabel: Story<SpinnerProps> = {
 	render: () => (
 		<Stack gap='md'>
-			<Inline gap='md' align='center'>
-				<Spinner variant='dots' size='sm' />
-				<Spinner
-					variant='dots'
-					size='md'
-					label='Загрузка'
-				/>
-				<Spinner variant='dots' size='lg' />
-			</Inline>
-			<Inline gap='md' align='center'>
-				<Spinner variant='pulse' size='sm' />
-				<Spinner variant='pulse' size='md' />
-				<Spinner variant='pulse' size='lg' />
-			</Inline>
-		</Stack>
-	),
-	parameters: story('`dots` — inline-точки; `pulse` — пульсирующий диск.'),
-};
-
-export const Typing: Story<SpinnerProps> = {
-	render: () => (
-		<Stack gap='md'>
-			<Spinner variant='typing' size='sm' />
-			<Spinner variant='typing' size='md' />
+			<Spinner
+				variant='dots'
+				size='md'
+				label='Загрузка'
+			/>
 			<Spinner
 				variant='typing'
 				size='lg'
@@ -125,5 +113,31 @@ export const Typing: Story<SpinnerProps> = {
 			/>
 		</Stack>
 	),
-	parameters: story('`variant="typing"` — точки в пузыре «печатает…».'),
+	parameters: story('Подпись `label` рядом с `dots` и `typing`.'),
+};
+
+export const UsageExample: Story<SpinnerProps> = {
+	render: () => (
+		<Card
+			style={{maxWidth: 360}}
+			header={(
+				<Text weight='bold'>
+					Сохранение отчёта
+				</Text>
+			)}
+		>
+			<Stack gap='md'>
+				<Inline gap='sm' align='center'>
+					<Spinner variant='dots' size='sm' />
+					<Text size='sm'>
+						Отправляем данные на сервер…
+					</Text>
+				</Inline>
+				<Button loading>
+					Сохранить
+				</Button>
+			</Stack>
+		</Card>
+	),
+	parameters: story('Спиннер в карточке рядом с кнопкой в состоянии loading.'),
 };

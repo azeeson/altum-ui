@@ -2,49 +2,26 @@ import type {
 	ComponentPropsWithoutRef,
 } from 'react';
 
+export type SkeletonVariant = 'block' | 'text' | 'avatar' | 'card' | 'table';
+
 /**
- * Свойства базового `Skeleton`.
+ * Свойства `Skeleton`.
+ * Пресеты задаются `variant`: `text` / `avatar` / `card` / `table` (без variant — блок).
  */
 export interface SkeletonProps extends ComponentPropsWithoutRef<'div'> {
+	variant?: SkeletonVariant;
 	width?: string | number;
 	height?: string | number;
 	circle?: boolean;
-}
-
-/**
- * Свойства `Skeleton.Text`.
- */
-export interface SkeletonTextProps extends ComponentPropsWithoutRef<'div'> {
-	/** Число строк. @default 3 */
+	/** Число строк для `text` / `card`. */
 	lines?: number;
-	width?: string | number;
 	lastWidth?: string | number;
-}
-
-/**
- * Свойства `Skeleton.Avatar`.
- */
-export interface SkeletonAvatarProps extends ComponentPropsWithoutRef<'div'> {
-	/** Диаметр. @default 40 */
+	/** Диаметр для `avatar`. @default 40 */
 	size?: number;
-}
-
-/**
- * Свойства `Skeleton.Card`.
- */
-export interface SkeletonCardProps extends ComponentPropsWithoutRef<'div'> {
-	/** Показать avatar. @default true */
+	/** Показать avatar в пресете `card`. @default true */
 	avatar?: boolean;
-	/** Число текстовых строк. @default 2 */
-	lines?: number;
-}
-
-/**
- * Свойства `Skeleton.Table`.
- */
-export interface SkeletonTableProps extends ComponentPropsWithoutRef<'div'> {
-	/** Число строк. @default 5 */
+	/** Число строк таблицы. @default 5 */
 	rows?: number;
-	/** Число колонок. @default 4 */
+	/** Число колонок таблицы. @default 4 */
 	columns?: number;
 }

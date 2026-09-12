@@ -7,7 +7,7 @@ import type {
  * Свойства `ScrollArea`.
  */
 export interface ScrollAreaProps extends ComponentPropsWithoutRef<'div'> {
-	/** Макс. высота (CSS). @default '240px' */
+	/** Макс. высота (CSS). Без значения — по контенту / родителю. */
 	maxHeight?: string | number;
 	/** Макс. ширина (CSS) */
 	maxWidth?: string | number;

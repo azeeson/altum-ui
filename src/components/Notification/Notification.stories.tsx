@@ -5,9 +5,12 @@ import {
 	NotificationContainer,
 	NotificationItem,
 	type NotificationPosition,
+	type NotificationProps,
 } from './Notification';
 import {NotificationProvider, notify} from './toast';
 import {Button} from '../Button/Button';
+import {Text} from '../Text/Text';
+import {Stack, Inline} from '../Layout/Layout';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 const POSITIONS: NotificationPosition[] = [
@@ -24,70 +27,105 @@ export default {
 	component: Notification,
 	tags: ['autodocs'],
 	parameters: componentParameters('Стек всплывающих уведомлений с типами, действиями и автоскрытием.'),
-	argTypes: {},
+	argTypes: {
+		variant: {
+			control: 'select',
+			options: [
+				'info',
+				'success',
+				'warning',
+				'error'
+			],
+		},
+		title: {control: 'text'},
+		description: {control: 'text'},
+		duration: {control: 'number'},
+		progress: {control: 'boolean'},
+		pauseOnHover: {control: 'boolean'},
+		onClose: {action: 'onClose'},
+	},
 } satisfies Meta<typeof Notification>;
 
-export const Playground: Story<Record<string, never>> = {
+export const Playground: Story<NotificationProps> = {
 	render: function PlaygroundRender() {
 		const [visible, setVisible] = useState(false);
 
-		const handleSuccess = () => {
-			setVisible(true);
-		};
-
 		return (
 			<>
-				<Button variant='primary' onClick={handleSuccess}>
+				<Button variant='primary' onClick={() => setVisible(true)}>
 					Показать уведомление
 				</Button>
 				<Notification.Viewport>
 					{visible && (
-						<Notification.Root variant='success' onClose={() => setVisible(false)}>
-							<Notification.Title>
-								Успешная операция
-							</Notification.Title>
-							<Notification.Description>
-								Данные обновлены в базе
-							</Notification.Description>
-							<Notification.Close />
-						</Notification.Root>
+						<Notification
+							variant='success'
+							title='Успешная операция'
+							description='Данные обновлены в базе'
+							onClose={() => setVisible(false)}
+						/>
 					)}
 				</Notification.Viewport>
 			</>
 		);
 	},
-	parameters: story('Используйте панель Controls для настройки.'),
+	parameters: story('Декларативный toast: `title` / `description`.'),
+};
+
+export const Variants: Story<NotificationProps> = {
+	render: () => (
+		<Stack gap='sm' style={{maxWidth: 360}}>
+			<Notification
+				duration={0}
+				variant='info'
+				title='Информация'
+				description='Нейтральный статус без автоскрытия.'
+			/>
+			<Notification
+				duration={0}
+				variant='success'
+				title='Готово'
+				description='Изменения сохранены.'
+			/>
+			<Notification
+				duration={0}
+				variant='warning'
+				title='Внимание'
+				description='Проверьте доступ к API.'
+			/>
+			<Notification
+				duration={0}
+				variant='error'
+				title='Ошибка'
+				description='Не удалось отправить форму.'
+			/>
+		</Stack>
+	),
+	parameters: story('Все варианты: info / success / warning / error.'),
 };
 
 export const WithActions: Story<Record<string, never>> = {
 	render: function WithActionsRender() {
 		const [visible, setVisible] = useState(false);
 
-		const handleStaticWithActions = () => {
-			setVisible(true);
-		};
-
 		return (
 			<>
-				<Button variant='secondary' onClick={handleStaticWithActions}>
+				<Button variant='secondary' onClick={() => setVisible(true)}>
 					Статичное с кнопками
 				</Button>
 				<Notification.Viewport position='top-right'>
 					{visible && (
-						<Notification.Root duration={0} onClose={() => setVisible(false)}>
-							<Notification.Title>
-								Доступно обновление
-							</Notification.Title>
-							<Notification.Description>
-								Желаете перезагрузить вкладку сейчас?
-							</Notification.Description>
-							<Notification.Close />
-							<Notification.Actions>
-								<Button size='sm' onClick={() => setVisible(false)}>
-									Обновить
-								</Button>
-							</Notification.Actions>
-						</Notification.Root>
+						<Notification
+							duration={0}
+							title='Доступно обновление'
+							description='Желаете перезагрузить вкладку сейчас?'
+							onClose={() => setVisible(false)}
+							actions={[
+								{
+									label: 'Обновить',
+									onClick: () => setVisible(false),
+								},
+							]}
+						/>
 					)}
 				</Notification.Viewport>
 			</>
@@ -296,4 +334,95 @@ export const Stacked: Story<Record<string, never>> = {
 		);
 	},
 	parameters: story('Стопка с анимацией раскрытия; `position` — угол или центр сверху/снизу.'),
+};
+
+export const OverflowText: Story<NotificationProps> = {
+	render: () => (
+		<div style={{maxWidth: 360}}>
+			<Notification
+				duration={0}
+				variant='warning'
+				title='Не удалось синхронизировать очень длинное название производственного регламента'
+				description='Проверьте подключение к сети, права доступа к архиву и повторите попытку через несколько минут — черновик сохранён локально.'
+			/>
+		</div>
+	),
+	parameters: story('Длинные title и description в карточке toast.'),
+};
+
+export const UsageExample: Story<Record<string, never>> = {
+	render: function UsageExampleRender() {
+		const [list, setList] = useState<NotificationItem[]>([]);
+
+		return (
+			<Stack gap='md'>
+				<Text size='sm'>
+					Сохраните черновик — справа появится toast с отменой.
+				</Text>
+				<Inline gap='sm'>
+					<Button
+						variant='primary'
+						onClick={() => {
+							const id = Date.now().toString();
+							setList((prev) => [
+								{
+									id,
+									title: 'Черновик сохранён',
+									description: 'Можно отменить в течение 4 секунд',
+									variant: 'success',
+									duration: 4000,
+									progress: true,
+									actions: [
+										{
+											label: 'Отменить',
+											variant: 'secondary',
+											onClick: () => undefined,
+										},
+									],
+								},
+								...prev,
+							]);
+						}}
+					>
+						Сохранить черновик
+					</Button>
+				</Inline>
+				<NotificationContainer
+					notifications={list}
+					position='bottom-right'
+					onClose={(id) => setList((prev) => prev.filter((item) => item.id !== id))}
+				/>
+			</Stack>
+		);
+	},
+	parameters: story('Кнопка в контенте страницы и toast с обратным отсчётом.'),
+};
+
+export const Interaction: Story<NotificationProps> = {
+	render: function InteractionRender() {
+		const [visible, setVisible] = useState(false);
+		return (
+			<>
+				<Button variant='primary' onClick={() => setVisible(true)}>
+					Показать уведомление
+				</Button>
+				<Notification.Viewport>
+					{visible && (
+						<Notification
+							duration={0}
+							variant='success'
+							title='Успешная операция'
+							description='Данные обновлены в базе'
+							onClose={() => setVisible(false)}
+						/>
+					)}
+				</Notification.Viewport>
+			</>
+		);
+	},
+	play: async ({canvasElement}) => {
+		const trigger = canvasElement.querySelector('button');
+		trigger?.click();
+	},
+	parameters: story('Play: показ toast по клику.'),
 };

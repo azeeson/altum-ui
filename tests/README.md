@@ -28,8 +28,9 @@ npx playwright install chromium
 
 | Путь | Назначение |
 |------|------------|
-| `tests/visual/all-stories.spec.ts` | Скриншот `#storybook-root` для каждой story (закрытое состояние) |
+| `tests/visual/all-stories.spec.ts` | Скриншот `#storybook-root` для каждой story (закрытое состояние, светлая тема) |
 | `tests/visual/open-states.spec.ts` | Скриншот viewport с открытыми оверлеями / всплывающими панелями |
+| `tests/visual/dark-theme.spec.ts` | Выборка stories + focus/hover в тёмной теме (`chromium-dark`) |
 | `tests/behavior/` | Клики, клавиатура, перетаскивание, оверлеи |
 | `tests/unit/` | Чистая логика без UI (контент Badge, хелперы MaskedField) |
 | `tests/helpers/` | `visitStory`, загрузка `index.json` |
@@ -43,10 +44,15 @@ npx playwright install chromium
 - Пропускают `Examples/*` и `Test/VisualOpenStates` (тяжёлые / дублирующие)
 - Снапшот `#storybook-root` — кнопки-триггеры, закрытые поля и т.д.
 
+### Тёмная тема (`dark-theme.spec.ts`)
+
+- Проект Playwright `chromium-dark` (`colorScheme: 'dark'`, Storybook `globals=theme:dark`)
+- Выборка ключевых stories; открытые Modal / Sheet / Menu / Select / Command Palette; `:focus-visible` на Button, hover на Card, Switch on
+
 ### Открытые состояния (`open-states.spec.ts`)
 
 - **Статические stories** (`src/test-stories/VisualOpenStates.stories.tsx`) — Modal, ConfirmDialog, Sheet, ImageLightbox, Dropdown, Tooltip уже открыты
-- **Интерактивные сценарии** — клик/hover перед скриншотом для Select, CustomSelect, DatePicker, TimePickerField и playground-оверлеев
+- **Интерактивные сценарии** — клик/hover перед скриншотом для Select, CustomSelect, DateField, TimeField и playground-оверлеев
 - Скриншот **всего viewport** (`page`), т.к. оверлеи рендерятся в портал вне `#storybook-root`
 
 Снапшоты: `all-stories.spec.ts-snapshots/` и `open-states.spec.ts-snapshots/` (Chromium / darwin). Файлы хранятся в git.
@@ -62,13 +68,13 @@ npx playwright install chromium
 - **Tabs / Accordion / SegmentedControl** — смена активного раздела
 - **TextField / TextareaField / Fieldset / FieldLabel** — базовый ввод и разметка
 - **MaskedField** — маска, caret, paste, clear; harness — `altum/Test/MaskedField`
-- **actions-extra** — ButtonIcon, ButtonGroup, OverflowActions, OverflowGroup, ActionSheetTrigger, Link, SkipLink, Steps
-- **media-calendar** — галерея, lightbox, crop, upload, FileList, Rating, ColorSwatchGroup, Calendar, DateRangePicker, DayStrip, CalendarBoard, TimePicker
+- **actions-extra** — ButtonIcon, ButtonGroup, Overflow, Link, SkipLink, Steps
+- **media-calendar** — галерея, lightbox, crop, upload, FileList, Rating, ColorSwatchGroup, Calendar, DateRangeField, DayStrip, CalendarBoard, TimeField
 - **content-charts** — SwipeToAction, PullToRefresh, Timeline, ScrollArea, Item, Card, Bubble, Alert, FocusTrap, charts
-- **content-primitives** — Avatar, Badge, Box, Container/Page, Grid, Layout (Stack/Inline/Split/ControlRow), Skeleton/Spinner, FormMessage, EmptyState, Text, Title, Separator/Spacer, VisuallyHidden, RelativeTime, Kbd, Marker, Media, AspectRatio, Attachment, DescriptionList, StatBadge, SafeArea, GrabHandle
+- **content-primitives** — Avatar, Badge, Box, Container/Page, Grid, Layout (Stack/Inline/Split/ControlRow), Skeleton/Spinner, FormMessage, EmptyState, Text, Title, Separator, VisuallyHidden, RelativeTime, Kbd, Marker, Media, AspectRatio, Attachment, DescriptionList, StatBadge, SafeArea
 - **hooks** — `useForm` (валидация) и константа `MOBILE_MEDIA_QUERY`
-- **fields-extra** — PasswordField, SearchField, NumberField, PinInput, Slider, DatePicker, TimePickerField, SuggestField, Switch, SelectionGroup
-- **base** — семейные базы из `src/base/` через стенд `altum/Test/Base` (FieldBase Clear, ButtonBase, ToggleControlBase, DialogBase, ChartBase, MediaRowBase, ListOptionBase)
+- **fields-extra** — PasswordField, SearchField, NumberField, PinInput, Slider, DateField, TimeField, SuggestField, Switch
+- **base** — семейные базы из `src/base/` через стенд `altum/Test/Base` (FieldBase Clear, ButtonBase, ToggleControlBase, DialogBase, ChartBase)
 
 `visitStory` падает, если iframe показывает оверлей ошибки Storybook или `pageerror`. Визуальные снапшоты всех stories (`all-stories`) поэтому тоже проверяют, что компонент монтируется. Семейные базы `{Family}Base` живут в `src/base/` без каталожных stories: поведение — `tests/behavior/base.spec.ts`, визуально — `Test/Base` и публичные обёртки.
 

@@ -5,19 +5,19 @@
 			if (mode !== 'dark' && mode !== 'light') mode = 'light';
 			document.documentElement.setAttribute('data-altum-manager-theme', mode);
 			document.documentElement.style.background =
-				mode === 'dark' ? '#131721' : '#f8fafc';
+				mode === 'dark' ? '#141416' : '#f8fafc';
 		} catch (e) {}
 	})();
 </script>
 <style>
 	/* Запасной вариант, если тема Emotion не успевает на reload — стабильные селекторы SB7 */
 	html[data-altum-manager-theme='dark'] body {
-		background: #131721 !important;
+		background: #141416 !important;
 		color: #f8fafc;
 	}
 
 	html[data-altum-manager-theme='dark'] nav.sidebar-container {
-		background: #131721 !important;
+		background: #141416 !important;
 		color: #f8fafc !important;
 	}
 

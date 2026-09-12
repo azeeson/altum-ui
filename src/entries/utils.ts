@@ -35,10 +35,10 @@ export {adjustElementHeight, getTextareaMinHeightPx} from '../utils/autoHeight';
 export {getFormControlState} from '../utils/formControl';
 export {
 	parseKeyboardShortcut,
-	matchesKeyboardShortcut,
 	formatKeyboardShortcut,
 	formatAriaKeyShortcuts,
 } from '../utils/keyboardShortcut';
+export {matchesKeyboardShortcut} from '../utils/keyboardShortcut.match';
 export type {KeyboardShortcutParts} from '../utils/keyboardShortcut';
 
 export {composeRefs} from '../utils/composeRefs';
@@ -46,6 +46,10 @@ export type {PossibleRef} from '../utils/composeRefs';
 export {composeEventHandlers} from '../utils/composeEvents';
 
 export {cn} from '../utils/cn';
+export {clamp} from '../utils/clamp';
+export {formatBytes} from '../utils/formatBytes';
+export {toggleSet} from '../utils/toggleSet';
+export {liveStatus} from '../utils/liveStatus';
 export {controlTrackClassName} from '../utils/controlTrack';
 export type {ControlTrackVariant} from '../utils/controlTrack';
 export {mergeStyles} from '../utils/mergeStyles';

@@ -1,0 +1,16 @@
+/* Hover серии SVG-графика: навешивайте cn(item, dimmed, active). */
+
+.item {
+  cursor: pointer;
+
+  transition: opacity 0.2s ease-in-out, filter 0.2s ease-in-out;
+}
+
+.dimmed {
+  opacity: 0.35;
+}
+
+.active {
+  opacity: 1;
+  filter: brightness(1.05);
+}

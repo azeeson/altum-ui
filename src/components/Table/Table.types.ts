@@ -1,8 +1,6 @@
 import type React from 'react';
-import type {
-	ComponentPropsWithoutRef,
-} from 'react';
-import type {ActionListGroup} from '../ActionList/ActionList.types';
+import type {ComponentPropsWithoutRef, ReactNode} from 'react';
+import type {ActionListItem} from '../ActionList/ActionList.types';
 import type {Density} from '../../types';
 
 export type TableSortDirection = 'asc' | 'desc';
@@ -24,7 +22,7 @@ export interface Column<T> {
 }
 
 /**
- * Пагинация таблицы (toolbar / data-режим).
+ * Пагинация таблицы.
  */
 export interface TablePagination {
 	page: number;
@@ -36,13 +34,16 @@ export interface TablePagination {
 	totalItems?: number;
 }
 
+export interface TableEmptyConfig {
+	title?: string;
+	description?: string;
+	action?: ReactNode;
+}
+
 /**
- * Свойства `Table.Content`.
+ * Свойства `Table`.
  */
-export interface TableContentProps<T> extends Omit<
-	ComponentPropsWithoutRef<'table'>,
-	'children'
-> {
+export interface TableProps<T> extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
 	columns: Column<T>[];
 	data: T[];
 	stickyHeader?: boolean;
@@ -64,51 +65,37 @@ export interface TableContentProps<T> extends Omit<
 	/** Контент раскрытой строки */
 	renderExpandedRow?: (row: T) => React.ReactNode;
 	/** Меню действий строки (⋯) */
-	rowActions?: (row: T) => ActionListGroup[];
+	rowActions?: (row: T) => ActionListItem[];
 	rowActionsLabel?: string;
-}
-
-export interface TableRootProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
-	children: React.ReactNode;
-}
-
-export interface TableContextValue {
-	ariaLabel?: string;
-	loading: boolean;
-	isEmpty: boolean;
-}
-
-export interface TableToolbarProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
-	children: React.ReactNode;
-}
-
-export interface TableLoadingProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
-	/** Показывает скелетон вместо содержимого таблицы. */
+	toolbar?: ReactNode;
 	loading?: boolean;
-	/** Количество строк в скелетоне. @default 5 */
-	rows?: number;
+	/** Количество строк скелетона. @default 5 */
+	loadingRows?: number;
+	empty?: ReactNode | TableEmptyConfig;
+	footer?: TablePagination;
 }
 
-export interface TableEmptyProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
-	children?: React.ReactNode;
-	title?: string;
-	description?: string;
-	action?: React.ReactNode;
-}
+/** @deprecated Используйте {@link TableProps}. */
+export type TableContentProps<T> = TableProps<T>;
 
-export interface TableFooterProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
-	pagination: TablePagination;
+export interface TableViewProps<T> extends Omit<ComponentPropsWithoutRef<'table'>, 'children'> {
+	data: T[];
+	stickyHeader?: boolean;
+	rowKey: (row: T) => string | number;
+	selectedKeys?: Set<string | number>;
+	onSelectionChange?: (keys: Set<string | number>) => void;
+	density?: TableDensity;
+	sortKey?: string | null;
+	sortDirection?: TableSortDirection;
+	onSortChange?: (key: string, direction: TableSortDirection) => void;
+	expandedKeys?: Set<string | number>;
+	onExpandedChange?: (keys: Set<string | number>) => void;
+	renderExpandedRow?: (row: T) => React.ReactNode;
+	effectiveColumns: Column<T>[];
 }
 
 export interface TableRowActionsProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
-	groups: ActionListGroup[];
-}
-
-export interface TableViewProps<T> extends Omit<
-	TableContentProps<T>,
-	'rowActions' | 'rowActionsLabel'
-> {
-	effectiveColumns: Column<T>[];
+	items: ActionListItem[];
 }
 
 export interface TableRowComponentProps<T> {
@@ -119,8 +106,10 @@ export interface TableRowComponentProps<T> {
 	isExpanded: boolean;
 	isRowSelected: boolean;
 	onSelectionChange?: (keys: Set<string | number>) => void;
-	selectedKeys?: Set<string | number>;
 	stickyLeftOffsets: Record<string, number>;
+	controlSticky?: boolean;
+	selectStickyLeft?: number;
+	stickyLeftEdgeKeyId?: string;
 	colWidths: Record<string, number>;
 	colCount: number;
 	renderExpandedRow?: (row: T) => React.ReactNode;

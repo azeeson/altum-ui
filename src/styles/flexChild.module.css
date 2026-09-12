@@ -1,0 +1,13 @@
+/* Flex-ребёнок: min-width и рост/сжатие. Контейнер — `Flex`. */
+
+.child {
+  min-width: 0;
+}
+
+.grow {
+  flex: 1 1 auto;
+}
+
+.noShrink {
+  flex-shrink: 0;
+}

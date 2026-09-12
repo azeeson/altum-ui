@@ -3,15 +3,14 @@
 
   box-sizing: border-box;
 
-  font-family: inherit;
+  width: 100%;
 
   transition: var(--altum-transition-smooth);
 
-  & .containerDefault {
-    width: 100%;
+  &.default {
     max-width: 100%;
 
-    border: 2px dashed var(--altum-color-upload-border);
+    border: 1px dashed var(--altum-color-upload-border);
     border-radius: var(--altum-g-radius);
 
     text-align: center;
@@ -20,94 +19,61 @@
 
     cursor: pointer;
 
-    &:hover:not(.disabled) {
+    &:hover:not(.disabled):not(.readOnly) {
       border-color: var(--altum-color-border-hover);
 
       background-color: var(--altum-color-option-hover);
-
-      transform: translateY(-1px);
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      &:hover:not(.disabled) {
-        transform: none;
-      }
     }
   }
 
-  & .containerCustom {
-    width: 100%;
+  &.custom {
     height: 100%;
   }
 
-  & .hiddenInput {
-    position: absolute;
+  &.readOnly.default,
+  &.readOnly.default:hover {
+    border-color: var(--altum-field-border-readonly);
 
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
+    background-color: var(--altum-field-bg-readonly);
 
-    width: 1px;
-    height: 1px;
+    cursor: default;
+  }
 
-    margin: -1px;
-    padding: 0;
+  &.disabled.default,
+  &.disabled.default:hover {
+    opacity: var(--altum-opacity-disabled);
+    background-color: var(--altum-color-option-hover);
 
-    border: 0;
+    cursor: not-allowed;
+  }
+
+  &.readOnly .uploadLabel {
+    cursor: default;
   }
 
   & .overlay {
     position: absolute;
-    top: 0;
-    left: 0;
+    inset: 0;
     z-index: var(--altum-g-z-upload);
 
-    display: flex;
-    box-sizing: border-box;
+    display: grid;
 
-    justify-content: center;
-    align-items: center;
-
-    width: 100%;
-    height: 100%;
-
-    border: 2px dashed var(--altum-color-border-hover);
-    border-radius: var(--altum-g-radius);
-
-    opacity: 0.95;
-    background-color: var(--altum-color-bg);
-    backdrop-filter: blur(2px);
-
-    pointer-events: none;
-
-    animation: fadeIn 0.15s ease-out forwards;
-
-    @media (prefers-reduced-motion: reduce) {
-      animation: none;
-    }
-  }
-
-  & .overlayContent {
-    display: flex;
-
-    flex-direction: column;
-    align-items: center;
+    align-content: center;
+    place-items: center;
     gap: var(--altum-g-space-3);
 
     font-size: var(--altum-g-font-size-base);
     font-weight: var(--altum-g-font-weight-medium);
 
     color: var(--altum-color-field-text);
+    background-color: var(--altum-color-bg);
+    backdrop-filter: blur(2px);
 
-    & .uploadIcon {
-      font-size: var(--altum-g-font-size-3xl);
-
-      color: var(--altum-color-border-hover);
-    }
+    pointer-events: none;
   }
 
   & .uploadLabel {
     display: flex;
-    box-sizing: border-box;
 
     flex-direction: column;
     align-items: center;
@@ -118,22 +84,12 @@
     padding: var(--altum-g-space-6) var(--altum-g-space-4);
 
     cursor: pointer;
-
-    & + .overlay {
-      border: 0;
-    }
-  }
-
-  & .uploadLabelReadOnly {
-    cursor: default;
   }
 
   & .uploadIcon {
     font-size: var(--altum-g-font-size-2xl);
 
     color: var(--altum-field-label);
-
-    transition: var(--altum-transition-smooth);
   }
 
   & .uploadText {
@@ -147,60 +103,5 @@
     font-weight: var(--altum-g-font-weight-medium);
 
     color: var(--altum-color-border-hover);
-  }
-}
-
-
-
-.readOnly.containerDefault,
-.readOnly.containerDefault:hover {
-  border-style: dashed;
-  border-color: var(--altum-field-border-readonly);
-
-  background-color: var(--altum-field-bg-readonly);
-
-  cursor: default;
-
-  transform: none;
-}
-
-.disabled.containerDefault,
-.disabled.containerDefault:hover {
-  border-style: dashed;
-  border-color: var(--altum-color-upload-border);
-
-  opacity: var(--altum-opacity-disabled);
-  background-color: var(--altum-color-option-hover);
-
-  cursor: not-allowed;
-
-  transform: none;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 0.95;
   }
 }

@@ -9,11 +9,10 @@ export type {
 } from './Bubble.types';
 
 import {forwardRef, useId, useState, type CSSProperties} from 'react';
-import {Box, type BoxVariant} from '../Box/Box';
+import unstyled from '../../styles/unstyledControl.module.css';
 import styles from './Bubble.module.css';
 import {cn} from '../../utils/cn';
-import {mergeStyles} from '../../utils/mergeStyles';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useLocale} from '../../locales/localeContext';
 
 /**
  * Пузырь сообщения в переписке.
@@ -45,27 +44,21 @@ export const Bubble = forwardRef<HTMLDivElement, BubbleProps>(function Bubble(
 	const contentId = useId();
 	const resolvedAlign = align ?? (variant === 'outgoing' ? 'end' : 'start');
 
-	const boxVariant: BoxVariant =
-		variant === 'outgoing' ? 'tinted'
-			: variant === 'system' ? 'ghost'
-				: 'muted';
-	const boxBorder = variant === 'outgoing' || variant === 'system';
-	const boxBorderStyle = variant === 'system' ? 'dashed' as const : 'solid' as const;
-	const boxPadding = variant === 'system' ? 'xs' as const : 'sm' as const;
-
-	const bodyStyle = collapsible && !expanded
-		? mergeStyles({'--altum-bubble-lines': collapsedLines} as CSSProperties, undefined)
-		: undefined;
-
 	return (
 		<div
 			ref={ref}
 			className={cn(
 				styles.wrap,
-				resolvedAlign === 'end' ? styles.alignEnd : styles.alignStart,
+				resolvedAlign === 'end' ? styles.alignEnd : '',
+				collapsible ? styles.collapsible : '',
 				className,
 			)}
-			style={style}
+			style={collapsible
+				? {
+					['--altum-bubble-lines' as string]: collapsedLines,
+					...style,
+				} as CSSProperties
+				: style}
 			{...rest}
 		>
 			{meta && (
@@ -73,26 +66,14 @@ export const Bubble = forwardRef<HTMLDivElement, BubbleProps>(function Bubble(
 					{meta}
 				</div>
 			)}
-			<Box
-				variant={boxVariant}
-				border={boxBorder}
-				borderStyle={boxBorderStyle}
-				shadow='none'
-				padding={boxPadding}
-				radius='lg'
-				className={cn(styles.bubble, styles[variant], styles[`group_${group}`])}
-			>
-				<div
-					id={contentId}
-					className={cn(styles.body, collapsible && !expanded ? styles.collapsed : '')}
-					style={bodyStyle}
-				>
+			<div className={cn(styles.bubble, styles[variant], styles[`group_${group}`])}>
+				<div id={contentId} className={styles.body}>
 					{children}
 				</div>
 				{collapsible && (
 					<button
 						type='button'
-						className={styles.toggle}
+						className={cn(unstyled.control, styles.toggle)}
 						aria-expanded={expanded}
 						aria-controls={contentId}
 						onClick={() => setExpanded((value) => !value)}
@@ -100,7 +81,7 @@ export const Bubble = forwardRef<HTMLDivElement, BubbleProps>(function Bubble(
 						{expanded ? collapseLabel ?? t('bubble.collapse') : expandLabel ?? t('bubble.expand')}
 					</button>
 				)}
-			</Box>
+			</div>
 			{reactions && reactions.length > 0 && (
 				<div
 					className={styles.reactions}
@@ -111,7 +92,11 @@ export const Bubble = forwardRef<HTMLDivElement, BubbleProps>(function Bubble(
 						<button
 							key={reaction.emoji}
 							type='button'
-							className={cn(styles.reaction, reaction.active ? styles.reactionActive : '')}
+							className={cn(
+								unstyled.control,
+								styles.reaction,
+								reaction.active ? styles.reactionActive : '',
+							)}
 							onClick={reaction.onClick}
 							aria-pressed={reaction.active}
 							aria-label={

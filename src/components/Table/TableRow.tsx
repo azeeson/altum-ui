@@ -1,7 +1,8 @@
- 
 import React, {memo} from 'react';
 import styles from './Table.module.css';
+import unstyled from '../../styles/unstyledControl.module.css';
 import {cn} from '../../utils/cn';
+import {Checkbox} from '../Checkbox/Checkbox';
 import type {TableRowComponentProps} from './Table.types';
 
 function renderCellValue<T extends object>(row: T, key: string): React.ReactNode {
@@ -20,6 +21,9 @@ const TableRowInner = memo(function TableRow<T extends object>({
 	isRowSelected,
 	onSelectionChange,
 	stickyLeftOffsets,
+	controlSticky = false,
+	selectStickyLeft = 0,
+	stickyLeftEdgeKeyId,
 	colWidths,
 	colCount,
 	renderExpandedRow,
@@ -34,10 +38,17 @@ const TableRowInner = memo(function TableRow<T extends object>({
 				aria-selected={onSelectionChange ? isRowSelected : undefined}
 			>
 				{canExpand && (
-					<td className={styles.controlCol}>
+					<td
+						className={cn(styles.controlCol, controlSticky && styles.stickyLeft)}
+						style={controlSticky ? {left: 0} : undefined}
+					>
 						<button
 							type='button'
-							className={cn(styles.expandBtn, isExpanded ? styles.expandBtnOpen : '')}
+							className={cn(
+								unstyled.control,
+								styles.expandBtn,
+								isExpanded && styles.expandBtnOpen,
+							)}
 							aria-expanded={isExpanded}
 							aria-label={isExpanded ? t('common.collapse') : t('table.expandColumn')}
 							onClick={() => onToggleExpand(rKey)}
@@ -47,9 +58,13 @@ const TableRowInner = memo(function TableRow<T extends object>({
 					</td>
 				)}
 				{onSelectionChange && (
-					<td className={styles.controlCol}>
-						<input
-							type='checkbox'
+					<td
+						className={cn(styles.controlCol, controlSticky && styles.stickyLeft)}
+						style={controlSticky ? {left: selectStickyLeft} : undefined}
+					>
+						<Checkbox
+							size='sm'
+							labelVisibility='hidden'
 							checked={isRowSelected || false}
 							aria-label={t('table.selectRow', {id: rKey})}
 							onChange={() => onSelectRow(rKey)}
@@ -59,9 +74,9 @@ const TableRowInner = memo(function TableRow<T extends object>({
 				{columns.map((col) => {
 					const key = String(col.key);
 					const stickyClass = col.sticky === 'left'
-						? styles.stickyLeft
+						? cn(styles.stickyLeft, key === stickyLeftEdgeKeyId && styles.stickyLeftEdge)
 						: col.sticky === 'right'
-							? styles.stickyRight
+							? cn(styles.stickyRight, styles.stickyRightEdge)
 							: '';
 					return (
 						<td
@@ -82,9 +97,7 @@ const TableRowInner = memo(function TableRow<T extends object>({
 			{canExpand && isExpanded && (
 				<tr className={styles.expandedRow}>
 					<td colSpan={colCount}>
-						<div className={styles.expandedContent}>
-							{renderExpandedRow?.(row)}
-						</div>
+						{renderExpandedRow?.(row)}
 					</td>
 				</tr>
 			)}

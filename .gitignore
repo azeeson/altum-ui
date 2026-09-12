@@ -36,3 +36,6 @@ altum-*.tgz
 
 .cursorrules
 .cursor
+
+# Local one-off audit/probe scripts
+/tmp/

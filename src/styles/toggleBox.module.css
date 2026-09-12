@@ -1,0 +1,84 @@
+/**
+ * Общая поверхность бокса Checkbox / Radio.
+ * Навешивайте список: cn(box.root, chrome.root) на label, то же для input/box.
+ */
+
+.root {
+  &[data-align='start'] .box {
+    margin-top: var(--altum-toggle-align-nudge);
+  }
+
+  &:hover .input:not(:checked):not(:disabled, [aria-readonly='true']) ~ .box {
+    border-color: var(--altum-color-border-hover);
+  }
+
+  &:active .input:not(:disabled, [aria-readonly='true']) ~ .box {
+    border-color: var(--altum-color-border-hover);
+  }
+
+  &:has(.input[aria-readonly='true']) .box {
+    border-style: dashed;
+    border-color: var(--altum-color-control-border-readonly);
+
+    background-color: var(--altum-color-control-bg-readonly);
+  }
+
+  &:has(.input[aria-readonly='true']):hover .box {
+    border-color: var(--altum-color-control-border-readonly);
+  }
+
+  & .input:checked ~ .box {
+    border-color: var(--altum-color-control-border-checked);
+
+    background-color: var(--altum-color-control-bg-checked);
+
+    &::after {
+      opacity: 1;
+    }
+  }
+
+  & .input:focus-visible ~ .box {
+    outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+    outline-offset: var(--altum-focus-ring-offset);
+  }
+}
+
+.input {
+  appearance: none;
+}
+
+.box {
+  position: relative;
+
+  display: inline-block;
+  box-sizing: border-box;
+
+  width: var(--altum-toggle-box-size);
+  height: var(--altum-toggle-box-size);
+
+  border: 1px solid var(--altum-color-control-border);
+
+  background-color: var(--altum-color-control-bg);
+
+  transition: var(--altum-transition-smooth);
+
+  &::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    content: '';
+
+    opacity: 0;
+
+    transition: var(--altum-transition-smooth);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &::after {
+      transition: none;
+    }
+  }
+}

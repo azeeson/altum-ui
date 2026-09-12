@@ -4,10 +4,13 @@ import {ButtonGroup, ButtonGroupRootProps} from './ButtonGroup';
 import {IconChevronUp} from '../../icons/icons/IconChevronUp';
 import {IconChevronDown} from '../../icons/icons/IconChevronDown';
 import {IconAlignLeft} from '../../icons/icons/IconAlignLeft';
+import {IconAlignCenter} from '../../icons/icons/IconAlignCenter';
+import {IconAlignRight} from '../../icons/icons/IconAlignRight';
 import {IconMenu} from '../../icons/icons/IconMenu';
 import {IconViewList} from '../../icons/icons/IconViewList';
 import {Text} from '../Text/Text';
-import {Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout/Layout';
+import {Card} from '../Card/Card';
 import {componentParameters, story, Story} from '../../storybook/meta';
 import type {ButtonVariant} from '../../base/ButtonBase';
 
@@ -25,7 +28,7 @@ export default {
 	tags: ['autodocs'],
 	parameters: {
 		...componentParameters(
-			'Составная группа кнопок: `ButtonGroup` + `ButtonGroup.Item`. Стили на Root (`variant` / `status` / `size`), toggle через `active` на Item.',
+			'Составная группа: `mode` `button` / `toggle` / `multi_toggle`. Стили на Root, в `button` выбранность через `active` на Item.',
 		),
 	},
 	argTypes: {
@@ -33,9 +36,17 @@ export default {
 			control: {type: 'select'},
 			options: ['sm', 'md', 'lg'],
 		},
+		mode: {
+			control: {type: 'select'},
+			options: ['button', 'toggle', 'multi_toggle'],
+		},
+		itemFit: {
+			control: {type: 'select'},
+			options: ['equal', 'content'],
+		},
 		variant: {
 			control: {type: 'select'},
-			options: VARIANTS,
+			options: [...VARIANTS, 'plain'],
 		},
 		status: {
 			control: {type: 'select'},
@@ -43,6 +54,21 @@ export default {
 		},
 		borderless: {
 			control: 'boolean',
+		},
+		disabled: {
+			control: 'boolean',
+		},
+		readOnly: {
+			control: 'boolean',
+		},
+		width: {
+			control: {
+				type: 'select',
+				options: ['auto', 'full'],
+			},
+		},
+		onChange: {
+			action: 'change',
 		},
 	},
 } satisfies Meta<typeof ButtonGroup>;
@@ -86,31 +112,133 @@ export const WithLabels: Story<ButtonGroupRootProps> = {
 	parameters: story('Иконка + подпись.'),
 };
 
-export const ToggleToolbar: Story<ButtonGroupRootProps> = {
-	render: function ToggleToolbarRender() {
-		const [bold, setBold] = useState(false);
-		const [italic, setItalic] = useState(true);
+export const ExclusiveToggle: Story<ButtonGroupRootProps> = {
+	render: function ExclusiveToggleRender() {
+		const [align, setAlign] = useState('left');
 
 		return (
-			<ButtonGroup aria-label='Форматирование' variant='secondary'>
+			<ButtonGroup
+				mode='toggle'
+				value={align}
+				onChange={(next) => {
+					if (typeof next === 'string') setAlign(next);
+				}}
+				aria-label='Выравнивание'
+				variant='secondary'
+			>
 				<ButtonGroup.Item
-					active={bold}
-					onClick={() => setBold((value) => !value)}
-					aria-label='Жирный'
-				>
+					value='left'
+					icon={<IconAlignLeft />}
+					aria-label='Слева'
+				/>
+				<ButtonGroup.Item
+					value='center'
+					icon={<IconAlignCenter />}
+					aria-label='По центру'
+				/>
+				<ButtonGroup.Item
+					value='right'
+					icon={<IconAlignRight />}
+					aria-label='Справа'
+				/>
+			</ButtonGroup>
+		);
+	},
+	parameters: story('`mode="toggle"` — один активный пункт, слайдер как у SegmentedControl.'),
+};
+
+export const ToggleToolbar: Story<ButtonGroupRootProps> = {
+	render: function ToggleToolbarRender() {
+		const [marks, setMarks] = useState<string[]>(['italic']);
+
+		return (
+			<ButtonGroup
+				aria-label='Форматирование'
+				variant='secondary'
+				mode='multi_toggle'
+				value={marks}
+				onChange={(next) => setMarks(Array.isArray(next) ? next : [next])}
+			>
+				<ButtonGroup.Item value='bold' aria-label='Жирный'>
 					Ж
 				</ButtonGroup.Item>
-				<ButtonGroup.Item
-					active={italic}
-					onClick={() => setItalic((value) => !value)}
-					aria-label='Курсив'
-				>
+				<ButtonGroup.Item value='italic' aria-label='Курсив'>
 					К
 				</ButtonGroup.Item>
 			</ButtonGroup>
 		);
 	},
-	parameters: story('Независимые toggle-кнопки с `active` и `aria-pressed`.'),
+	parameters: story('`mode="multi_toggle"` — несколько активных пунктов, `aria-pressed`.'),
+};
+
+const FIT_OPTIONS = [
+	{
+		label: '1-й',
+		value: '1',
+	},
+	{
+		label: '5-й',
+		value: '5',
+	},
+	{
+		label: 'Последний',
+		value: 'last',
+	},
+];
+
+export const ItemFitContent: Story<ButtonGroupRootProps> = {
+	render: function ItemFitContentRender() {
+		const [equal, setEqual] = useState('5');
+		const [content, setContent] = useState('5');
+
+		return (
+			<Stack gap='md' style={{maxWidth: 560}}>
+				<div>
+					<Text size='sm'>
+						itemFit=&quot;equal&quot;
+					</Text>
+					<ButtonGroup
+						mode='toggle'
+						width='full'
+						itemFit='equal'
+						value={equal}
+						onChange={(next) => {
+							if (typeof next === 'string') setEqual(next);
+						}}
+						aria-label='Equal'
+					>
+						{FIT_OPTIONS.map((option) => (
+							<ButtonGroup.Item key={option.value} value={option.value}>
+								{option.label}
+							</ButtonGroup.Item>
+						))}
+					</ButtonGroup>
+				</div>
+				<div>
+					<Text size='sm'>
+						itemFit=&quot;content&quot;
+					</Text>
+					<ButtonGroup
+						mode='toggle'
+						width='full'
+						itemFit='content'
+						value={content}
+						onChange={(next) => {
+							if (typeof next === 'string') setContent(next);
+						}}
+						aria-label='Content'
+					>
+						{FIT_OPTIONS.map((option) => (
+							<ButtonGroup.Item key={option.value} value={option.value}>
+								{option.label}
+							</ButtonGroup.Item>
+						))}
+					</ButtonGroup>
+				</div>
+			</Stack>
+		);
+	},
+	parameters: story('`itemFit`: равные доли vs ширина от контента, трек на 100%.'),
 };
 
 export const AllVariants: Story<ButtonGroupRootProps> = {
@@ -202,4 +330,137 @@ export const Sizes: Story<ButtonGroupRootProps> = {
 		</Stack>
 	),
 	parameters: story('Размеры `sm` / `md` / `lg`.'),
+};
+
+export const Disabled: Story<ButtonGroupRootProps> = {
+	render: () => (
+		<ButtonGroup
+			disabled
+			aria-label='Заблокировано'
+			variant='secondary'
+		>
+			<ButtonGroup.Item active>
+				One
+			</ButtonGroup.Item>
+			<ButtonGroup.Item>
+				Two
+			</ButtonGroup.Item>
+			<ButtonGroup.Item>
+				Three
+			</ButtonGroup.Item>
+		</ButtonGroup>
+	),
+	parameters: story('`disabled` на корне блокирует все пункты.'),
+};
+
+export const Danger: Story<ButtonGroupRootProps> = {
+	render: () => (
+		<ButtonGroup
+			status='danger'
+			variant='secondary'
+			aria-label='Опасные действия'
+		>
+			<ButtonGroup.Item>
+				Удалить
+			</ButtonGroup.Item>
+			<ButtonGroup.Item>
+				Архив
+			</ButtonGroup.Item>
+		</ButtonGroup>
+	),
+	parameters: story('`status="danger"` на треке группы.'),
+};
+
+export const Interaction: Story<ButtonGroupRootProps> = {
+	render: function InteractionRender() {
+		const [align, setAlign] = useState('left');
+		return (
+			<Stack gap='sm'>
+				<ButtonGroup
+					mode='toggle'
+					value={align}
+					onChange={(next) => {
+						if (typeof next === 'string') setAlign(next);
+					}}
+					aria-label='Выравнивание'
+				>
+					<ButtonGroup.Item
+						value='left'
+						icon={<IconAlignLeft />}
+						aria-label='Слева'
+					/>
+					<ButtonGroup.Item
+						value='center'
+						icon={<IconAlignCenter />}
+						aria-label='По центру'
+					/>
+					<ButtonGroup.Item
+						value='right'
+						icon={<IconAlignRight />}
+						aria-label='Справа'
+					/>
+				</ButtonGroup>
+				<Text size='sm' color='muted'>
+					{align}
+				</Text>
+			</Stack>
+		);
+	},
+	play: async ({canvasElement}) => {
+		const center = canvasElement.querySelector('[aria-label="По центру"]') as HTMLButtonElement | null;
+		center?.click();
+		center?.focus();
+	},
+	parameters: story('Play выбирает выравнивание по центру.'),
+};
+
+export const UsageExample: Story<ButtonGroupRootProps> = {
+	render: function UsageExampleRender() {
+		const [view, setView] = useState('list');
+		return (
+			<Card
+				style={{maxWidth: 420}}
+				header={(
+					<Inline
+						gap='sm'
+						style={{
+							width: '100%',
+							justifyContent: 'space-between'
+						}}
+					>
+						<Text weight='bold'>
+							Документы
+						</Text>
+						<ButtonGroup
+							mode='toggle'
+							size='sm'
+							value={view}
+							onChange={(next) => {
+								if (typeof next === 'string') setView(next);
+							}}
+							aria-label='Вид'
+						>
+							<ButtonGroup.Item
+								value='list'
+								icon={<IconViewList />}
+								aria-label='Список'
+							/>
+							<ButtonGroup.Item
+								value='menu'
+								icon={<IconMenu />}
+								aria-label='Сетка'
+							/>
+						</ButtonGroup>
+					</Inline>
+				)}
+			>
+				<Text size='sm'>
+					Режим:
+					{' '}
+					{view === 'list' ? 'список' : 'сетка'}
+				</Text>
+			</Card>
+		);
+	},
+	parameters: story('Переключатель вида в шапке карточки.'),
 };

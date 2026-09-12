@@ -1,0 +1,6 @@
+/* Отступ сообщения под полем. Цвет и кегль — `Text`. */
+
+.message {
+  margin-top: var(--altum-field-message-gap, var(--altum-g-space-1));
+  margin-left: var(--altum-form-helper-indent, var(--altum-g-space-1));
+}

@@ -1,20 +1,13 @@
-.badgeContainer {
+.wrap {
   position: relative;
 
   display: inline-flex;
-  /* Overlay-бейдж может выступать за триггер, не обрезаясь. */
   overflow: visible;
 
   margin-top: calc(var(--altum-badge-overhang) * -1);
   margin-right: calc(var(--altum-badge-overhang) * -1);
-
-  /* Зарезервировать место, чтобы выступ от translate реже упирался в край родителя. */
   padding-top: var(--altum-badge-overhang);
   padding-right: var(--altum-badge-overhang);
-
-  & .badge {
-    z-index: var(--altum-g-z-local);
-  }
 }
 
 .badge {
@@ -34,15 +27,16 @@
   font-weight: var(--altum-g-font-weight-bold);
   line-height: 1;
 
+  translate: 0 var(--altum-badge-digit-nudge);
+
   &.overlay {
     position: absolute;
     top: var(--altum-badge-overhang);
     right: var(--altum-badge-overhang);
 
-    /* Частичный выступ — полностью виден в reserved padding; меньше риск обрезки. */
     transform: translate(40%, -40%);
+
     &.sm {
-      /* Плотнее «висит» на компактных icon-кнопках. */
       max-width: calc(var(--altum-badge-size-sm) + var(--altum-g-space-2));
 
       padding-inline: var(--altum-control-inset);
@@ -77,28 +71,6 @@
     font-size: var(--altum-badge-font-size-sm, var(--altum-badge-font-size));
   }
 
-  &.danger {
-    color: var(--altum-color-danger-text);
-    background-color: var(--altum-color-status-error);
-  }
-
-  &.success {
-    color: var(--altum-color-brand-text);
-    background-color: var(--altum-color-status-success);
-  }
-
-  &.info {
-    color: var(--altum-color-brand-text);
-    background-color: var(--altum-color-status-info);
-  }
-
-  &.warning {
-    border-color: var(--altum-color-status-warning-border);
-
-    color: var(--altum-color-status-warning-fg);
-    background-color: var(--altum-color-status-warning-bg);
-  }
-
   &.primary {
     color: var(--altum-color-brand-text);
     background-color: var(--altum-color-brand);
@@ -109,30 +81,19 @@
     background-color: var(--altum-color-text-secondary);
   }
 
-  &.badgeDot.md {
+  &.dot {
     width: var(--altum-g-space-2);
     min-width: var(--altum-g-space-2);
     height: var(--altum-g-space-2);
 
     padding: 0;
+
+    translate: none;
   }
 
-  &.badgeDot.sm {
+  &.dot.sm {
     width: calc(var(--altum-g-space-1) + var(--altum-control-inset));
     min-width: calc(var(--altum-g-space-1) + var(--altum-control-inset));
     height: calc(var(--altum-g-space-1) + var(--altum-control-inset));
-
-    padding: 0;
-  }
-
-  /*
-   * Dot warning: сплошная заливка статуса + кольцо поверхности (как error/success/info).
-   * Мягкие `--altum-color-status-warning-bg/border` на счётчиках оставляем для WCAG текста.
-   */
-
-  &.badgeDot.warning {
-    border-color: var(--altum-color-surface);
-
-    background-color: var(--altum-color-status-warning);
   }
 }

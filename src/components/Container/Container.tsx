@@ -8,7 +8,8 @@ export type {
 	PageProps,
 } from './Container.types';
 
-import {forwardRef, type ElementType} from 'react';
+import {forwardRef} from 'react';
+import {As} from '../../base/As';
 import styles from './Container.module.css';
 import {cn} from '../../utils/cn';
 
@@ -21,33 +22,26 @@ import {cn} from '../../utils/cn';
  */
 export const Container = forwardRef<HTMLElement, ContainerProps>(function Container(
 	{
-		children,
 		size = 'lg',
 		padded = true,
-		as: Component = 'div',
+		as = 'div',
 		className,
-		style,
 		...rest
 	},
 	ref,
 ) {
-	const Element = Component as ElementType;
-
 	return (
-		<Element
-			ref={ref as never}
+		<As
+			ref={ref}
+			as={as}
 			className={cn(
 				styles.container,
-				styles[size],
-				padded ? styles.padded : '',
+				padded === false && styles.flush,
 				className,
 			)}
+			data-size={size === 'lg' ? undefined : size}
 			{...rest}
-			style={style}
-			data-size={size}
-		>
-			{children}
-		</Element>
+		/>
 	);
 });
 
@@ -75,7 +69,7 @@ export const Page = forwardRef<HTMLDivElement, PageProps>(function Page(
 	return (
 		<div
 			ref={ref}
-			className={cn(styles.page, verticalPadding ? styles.pageVertical : '', className)}
+			className={cn(styles.page, verticalPadding && styles.pageVertical, className)}
 			style={style}
 		>
 			<Container

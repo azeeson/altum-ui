@@ -15,9 +15,10 @@ export type {
 
 import React, {createContext, forwardRef, useContext, useId} from 'react';
 import styles from './Tabs.module.css';
+import unstyled from '../../styles/unstyledControl.module.css';
+import scroll from '../../styles/scroll.module.css';
 import {SelectionGroup, useSelectionGroupContext} from '../SelectionGroup/SelectionGroup';
 import {cn} from '../../utils/cn';
-import {useControlledStateWithCallback} from '../../hooks/useControlledState';
 
 const TabsIdContext = createContext<string>('');
 
@@ -33,7 +34,7 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(function TabsList(
 	return (
 		<SelectionGroup.List
 			ref={ref}
-			className={cn(styles.tabsHeader, className)}
+			className={cn(scroll.area, styles.tabsHeader, className)}
 			{...rest}
 			role='tablist'
 			aria-orientation={orientation}
@@ -64,15 +65,13 @@ const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(function Tab
 			value={value}
 			id={`${tabsId}-tab-${value}`}
 			disabled={disabled}
-			className={cn(styles.tab, isActive ? styles.active : '', disabled ? styles.disabled : '', className)}
+			className={cn(unstyled.control, styles.tab, isActive && styles.active, className)}
 			{...rest}
 			role='tab'
 			aria-selected={isActive}
 			aria-controls={`${tabsId}-tabpanel-${value}`}
 		>
-			<span className={styles.tabLabel}>
-				{children}
-			</span>
+			{children}
 			{(badgeDot || badge != null) && (
 				badgeDot
 					? <span className={styles.tabBadgeDot} aria-hidden />
@@ -121,27 +120,10 @@ const TabsPanel = forwardRef<HTMLDivElement, TabsPanelProps>(function TabsPanel(
  *   <Tabs.Panel value="info"><InfoTab /></Tabs.Panel>
  * </Tabs>
  */
-function findFirstTriggerValue(children: React.ReactNode): string | undefined {
-	let found: string | undefined;
-	React.Children.forEach(children, (child) => {
-		if (found != null || !React.isValidElement(child)) return;
-		const type = child.type as {displayName?: string};
-		if (type === TabsTrigger || type?.displayName === 'Tabs.Trigger') {
-			found = (child.props as TabsTriggerProps).value;
-			return;
-		}
-		const nested = (child.props as {children?: React.ReactNode}).children;
-		if (nested != null) {
-			found = findFirstTriggerValue(nested);
-		}
-	});
-	return found;
-}
-
 const TabsRoot = forwardRef<HTMLDivElement, TabsProps>(function TabsRoot(
 	{
-		value: controlledActiveId,
-		defaultValue: defaultActiveId,
+		value,
+		defaultValue,
 		onChange,
 		variant = 'line',
 		orientation = 'horizontal',
@@ -152,23 +134,18 @@ const TabsRoot = forwardRef<HTMLDivElement, TabsProps>(function TabsRoot(
 	ref,
 ) {
 	const tabsId = useId();
-	const fallbackId = defaultActiveId || findFirstTriggerValue(children) || '';
-	const [activeId, setActiveId] = useControlledStateWithCallback(
-		controlledActiveId,
-		fallbackId,
-		onChange,
-	);
 	return (
 		<TabsIdContext.Provider value={tabsId}>
 			<SelectionGroup.Root
 				ref={ref}
-				value={activeId}
-				onChange={setActiveId}
+				value={value}
+				defaultValue={defaultValue}
+				onChange={onChange}
 				orientation={orientation}
 				className={cn(
 					styles.tabsContainer,
-					variant === 'pill' ? styles.pill : '',
-					orientation === 'vertical' ? styles.vertical : '',
+					variant === 'pill' && styles.pill,
+					orientation === 'vertical' && styles.vertical,
 					className,
 				)}
 				{...rest}

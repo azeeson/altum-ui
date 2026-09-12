@@ -318,7 +318,7 @@
   margin: 0;
 
   font-size: var(--altum-g-font-size-sm);
-  line-height: var(--altum-g-line-height-relaxed, 1.45);
+  line-height: var(--altum-g-line-height-base);
 }
 
 .composerWrap {

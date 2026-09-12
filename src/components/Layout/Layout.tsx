@@ -1,14 +1,15 @@
-import {forwardRef, type ElementType} from 'react';
-import {Grid, GridItem} from '../Grid/Grid';
+import {forwardRef, type CSSProperties} from 'react';
+import {As} from '../../base/As';
 import {cn} from '../../utils/cn';
+import {mergeStyles} from '../../utils/mergeStyles';
 import styles from './Layout.module.css';
 import {ControlRow} from './ControlRow';
 import {Inline} from './Inline';
 import {LayoutItem} from './LayoutItem';
 import {Split} from './Split';
-import {Stack} from './Stack';
 import type {
 	LayoutContentProps,
+	LayoutFooterAlign,
 	LayoutFooterProps,
 	LayoutHeaderProps,
 	LayoutRootProps,
@@ -35,6 +36,13 @@ export type {SplitProps} from './Layout.types';
 export {ControlRow} from './ControlRow';
 export type {ControlRowProps} from './Layout.types';
 
+const FOOTER_JUSTIFY: Record<LayoutFooterAlign, CSSProperties['justifyContent']> = {
+	start: 'flex-start',
+	center: 'center',
+	end: 'flex-end',
+	'space-between': 'space-between',
+};
+
 /**
  * Корневая колонка панели: `Header` / `Content` / `Footer`.
  * Скролл живёт на корне (`overflow-y: auto`); Content не создаёт свой scrollport.
@@ -49,26 +57,16 @@ export type {ControlRowProps} from './Layout.types';
  * </Layout>
  */
 export const LayoutRoot = forwardRef<HTMLElement, LayoutRootProps>(function LayoutRoot(
-	{
-		children,
-		className,
-		as: Component = 'div',
-		style,
-		...rest
-	},
+	{as = 'div', className, ...rest},
 	ref,
 ) {
-	const Element = Component as ElementType;
-
 	return (
-		<Element
-			ref={ref as never}
+		<As
+			ref={ref}
+			as={as}
 			className={cn(styles.root, className)}
-			style={style}
 			{...rest}
-		>
-			{children}
-		</Element>
+		/>
 	);
 });
 
@@ -80,31 +78,16 @@ export const LayoutRoot = forwardRef<HTMLElement, LayoutRootProps>(function Layo
  * <Layout.Header sticky as="header">Заголовок</Layout.Header>
  */
 export const LayoutHeader = forwardRef<HTMLElement, LayoutHeaderProps>(function LayoutHeader(
-	{
-		children,
-		className,
-		sticky = false,
-		as: Component = 'header',
-		style,
-		...rest
-	},
+	{as = 'header', className, sticky = false, ...rest},
 	ref,
 ) {
-	const Element = Component as ElementType;
-
 	return (
-		<Element
-			ref={ref as never}
-			className={cn(
-				styles.header,
-				sticky && styles.headerSticky,
-				className,
-			)}
-			style={style}
+		<As
+			ref={ref}
+			as={as}
+			className={cn(styles.header, sticky && styles.sticky, className)}
 			{...rest}
-		>
-			{children}
-		</Element>
+		/>
 	);
 });
 
@@ -116,26 +99,16 @@ export const LayoutHeader = forwardRef<HTMLElement, LayoutHeaderProps>(function 
  * <Layout.Content as="main">…</Layout.Content>
  */
 export const LayoutContent = forwardRef<HTMLElement, LayoutContentProps>(function LayoutContent(
-	{
-		children,
-		className,
-		as: Component = 'div',
-		style,
-		...rest
-	},
+	{as = 'div', className, ...rest},
 	ref,
 ) {
-	const Element = Component as ElementType;
-
 	return (
-		<Element
-			ref={ref as never}
+		<As
+			ref={ref}
+			as={as}
 			className={cn(styles.content, className)}
-			style={style}
 			{...rest}
-		>
-			{children}
-		</Element>
+		/>
 	);
 });
 
@@ -150,32 +123,23 @@ export const LayoutContent = forwardRef<HTMLElement, LayoutContentProps>(functio
  */
 export const LayoutFooter = forwardRef<HTMLElement, LayoutFooterProps>(function LayoutFooter(
 	{
-		children,
+		as = 'footer',
 		className,
 		sticky = false,
 		align = 'start',
-		as: Component = 'footer',
 		style,
 		...rest
 	},
 	ref,
 ) {
-	const Element = Component as ElementType;
-
 	return (
-		<Element
-			ref={ref as never}
-			className={cn(
-				styles.footer,
-				styles[`footerAlign_${align}`],
-				sticky && styles.footerSticky,
-				className,
-			)}
-			style={style}
+		<As
+			ref={ref}
+			as={as}
+			className={cn(styles.footer, sticky && styles.sticky, className)}
+			style={mergeStyles({justifyContent: FOOTER_JUSTIFY[align]}, style)}
 			{...rest}
-		>
-			{children}
-		</Element>
+		/>
 	);
 });
 
@@ -185,14 +149,14 @@ LayoutContent.displayName = 'Layout.Content';
 LayoutFooter.displayName = 'Layout.Footer';
 
 /**
- * Панель Header / Content / Footer + namespace к layout-примитивам.
+ * Панель Header / Content / Footer. Примитивы `Stack` / `Grid` — отдельные экспорты.
  *
  * @component
  * @example
  * <Layout>
  *   <Layout.Header sticky>Заголовок</Layout.Header>
  *   <Layout.Content>
- *     <Layout.Stack gap="md">…</Layout.Stack>
+ *     <Stack gap="md">…</Stack>
  *   </Layout.Content>
  *   <Layout.Footer sticky>Действия</Layout.Footer>
  * </Layout>
@@ -201,11 +165,8 @@ export const Layout = Object.assign(LayoutRoot, {
 	Header: LayoutHeader,
 	Content: LayoutContent,
 	Footer: LayoutFooter,
-	Stack,
 	Inline,
 	Split,
 	ControlRow,
 	Item: LayoutItem,
-	Grid,
-	GridItem,
 });

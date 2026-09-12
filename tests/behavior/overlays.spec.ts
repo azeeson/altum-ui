@@ -77,6 +77,21 @@ test.describe('Sheet', () => {
 		await page.getByRole('button').first().click();
 		await expect(page.getByRole('dialog')).toBeVisible();
 	});
+
+	test('без backdrop прижат к нижнему краю viewport', async ({page}) => {
+		await visitStory(page, 'altum-components-sheet--with-controls');
+
+		await page.getByRole('button', {name: 'Фильтры'}).click();
+		const dialog = page.getByRole('dialog');
+		await expect(dialog).toBeVisible();
+
+		const box = await dialog.boundingBox();
+		const viewport = page.viewportSize();
+		expect(box).toBeTruthy();
+		expect(viewport).toBeTruthy();
+		expect(box!.y).toBeGreaterThan(viewport!.height / 2);
+		expect(box!.y + box!.height).toBeGreaterThan(viewport!.height - 8);
+	});
 });
 
 test.describe('Tooltip', () => {

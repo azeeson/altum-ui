@@ -1,6 +1,6 @@
 import type {ControlTrackVariant} from './controlTrack.types';
 import {cn} from './cn';
-import styles from './controlTrack.module.css';
+import styles from '../styles/ControlTrack.module.css';
 
 export type {ControlTrackVariant} from './controlTrack.types';
 

@@ -6,15 +6,15 @@ import {
 	weekdayLabelFor,
 } from '../Calendar/Calendar.utils';
 import {SegmentedControl} from '../SegmentedControl/SegmentedControl';
-import {IconChevronLeft} from '../../icons/icons/IconChevronLeft';
-import {IconChevronRight} from '../../icons/icons/IconChevronRight';
+import {ChevronButton} from '../../base/ChevronButton';
 import {
 	useCalendarBoard,
 	type CalendarBoardView,
 } from './CalendarBoard.context';
 import styles from './CalendarBoard.module.css';
 import {cn} from '../../utils/cn';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import unstyled from '../../styles/unstyledControl.module.css';
+import {useLocale} from '../../locales/localeContext';
 import type {
 	CalendarBoardViewSwitchProps,
 	CalendarBoardRootProps,
@@ -147,22 +147,18 @@ export const CalendarBoardNav = forwardRef<HTMLDivElement, CalendarBoardNavProps
 			className={cn(styles.nav, className)}
 			{...rest}
 		>
-			<button
-				type='button'
-				className={styles.navBtn}
+			<ChevronButton
+				direction='prev'
+				className={cn(unstyled.control, styles.navBtn)}
 				aria-label={messages.calendarBoard.prevPeriod}
 				onClick={() => shift(-1)}
-			>
-				<IconChevronLeft size={16} />
-			</button>
-			<button
-				type='button'
-				className={styles.navBtn}
+			/>
+			<ChevronButton
+				direction='next'
+				className={cn(unstyled.control, styles.navBtn)}
 				aria-label={messages.calendarBoard.nextPeriod}
 				onClick={() => shift(1)}
-			>
-				<IconChevronRight size={16} />
-			</button>
+			/>
 		</div>
 	);
 });

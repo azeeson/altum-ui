@@ -10,7 +10,7 @@ export type {DropdownMobileSheetProps} from './Dropdown.types';
 export const DropdownMobileSheet: React.FC<DropdownMobileSheetProps> = ({
 	sheetRef,
 	open,
-	onClose,
+	onOpenChange,
 	zIndex,
 	mobileTitle,
 	mobileLeftControls,
@@ -20,10 +20,11 @@ export const DropdownMobileSheet: React.FC<DropdownMobileSheetProps> = ({
 	<Sheet
 		ref={sheetRef}
 		open={open}
-		onClose={onClose}
+		onOpenChange={onOpenChange}
 		mode='sheet'
 		direction='end'
 		backdrop={false}
+		dismiss='all'
 		zIndex={zIndex}
 	>
 		{(mobileTitle != null

@@ -12,9 +12,12 @@ export type {
 	PaginationProps,
 } from './Pagination.types';
 
-import React, {createContext, forwardRef, useContext, useMemo} from 'react';
+import {createContext, forwardRef, useMemo, type ButtonHTMLAttributes} from 'react';
 import styles from './Pagination.module.css';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import unstyled from '../../styles/unstyledControl.module.css';
+import {useLocale} from '../../locales/localeContext';
+import {useRequiredContext} from '../../hooks/useRequiredContext';
+import {Select} from '../Select';
 import {cn} from '../../utils/cn';
 
 interface PaginationContextValue {
@@ -26,10 +29,18 @@ interface PaginationContextValue {
 const PaginationContext = createContext<PaginationContextValue | null>(null);
 
 function usePaginationContext() {
-	const ctx = useContext(PaginationContext);
-	if (!ctx) throw new Error('Вложенный компонент Pagination должен использоваться внутри Pagination');
-	return ctx;
+	return useRequiredContext(
+		PaginationContext,
+		'Вложенный компонент Pagination должен использоваться внутри Pagination',
+	);
 }
+
+const DEFAULT_PAGE_SIZES = [
+	10,
+	25,
+	50,
+	100,
+];
 
 const PaginationRoot = forwardRef<HTMLElement, PaginationRootProps>(function PaginationRoot(
 	{
@@ -38,26 +49,46 @@ const PaginationRoot = forwardRef<HTMLElement, PaginationRootProps>(function Pag
 		onPageChange,
 		className,
 		children,
+		totalItems,
+		pageSize,
+		onPageSizeChange,
+		pageSizeOptions,
+		'aria-label': ariaLabel,
 		...rest
 	},
 	ref,
 ) {
 	const {t} = useLocale();
-	const {'aria-label': restAriaLabel, ...navRest} = rest;
-	const contextValue = useMemo(() => ({
-		currentPage,
-		totalPages,
-		onPageChange,
-	}), [currentPage, totalPages, onPageChange]);
+	const chrome = children ?? (
+		<>
+			{totalItems != null && pageSize != null ? (
+				<PaginationSummary totalItems={totalItems} pageSize={pageSize} />
+			) : null}
+			<PaginationControls />
+			{pageSize != null && onPageSizeChange != null ? (
+				<PaginationPageSize
+					pageSize={pageSize}
+					onPageSizeChange={onPageSizeChange}
+					pageSizeOptions={pageSizeOptions}
+				/>
+			) : null}
+		</>
+	);
 	return (
-		<PaginationContext.Provider value={contextValue}>
+		<PaginationContext.Provider
+			value={{
+				currentPage,
+				totalPages,
+				onPageChange,
+			}}
+		>
 			<nav
 				ref={ref}
 				className={cn(styles.pagination, className)}
-				aria-label={restAriaLabel ?? t('pagination.ariaLabel')}
-				{...navRest}
+				aria-label={ariaLabel ?? t('pagination.ariaLabel')}
+				{...rest}
 			>
-				{children}
+				{chrome}
 			</nav>
 		</PaginationContext.Provider>
 	);
@@ -88,33 +119,40 @@ const PaginationSummary = forwardRef<HTMLSpanElement, PaginationSummaryProps>(fu
 	const {currentPage} = usePaginationContext();
 	const {t} = useLocale();
 
-	const summary = useMemo(() => {
-		if (totalItems == null || pageSize == null || totalItems <= 0) return null;
-		const start = Math.min(totalItems, (currentPage - 1) * pageSize + 1);
-		const end = Math.min(totalItems, currentPage * pageSize);
-		return t('pagination.summary', {
-			start,
-			end,
-			total: totalItems,
-		});
-	}, [
-		currentPage,
-		pageSize,
-		t,
-		totalItems
-	]);
+	if (totalItems == null || pageSize == null || totalItems <= 0) return null;
 
-	if (!summary) return null;
+	const start = Math.min(totalItems, (currentPage - 1) * pageSize + 1);
+	const end = Math.min(totalItems, currentPage * pageSize);
+
 	return (
 		<span
 			ref={ref}
 			className={cn(styles.summary, className)}
 			{...rest}
 		>
-			{summary}
+			{t('pagination.summary', {
+				start,
+				end,
+				total: totalItems,
+			})}
 		</span>
 	);
 });
+
+function PageButton({
+	active,
+	className,
+	...rest
+}: ButtonHTMLAttributes<HTMLButtonElement> & {active?: boolean}) {
+	return (
+		<button
+			type='button'
+			className={cn(unstyled.control, styles.pagBtn, active && styles.active, className)}
+			aria-current={active ? 'page' : undefined}
+			{...rest}
+		/>
+	);
+}
 
 const PaginationControls = forwardRef<HTMLDivElement, PaginationControlsProps>(function PaginationControls(
 	{className, ...rest},
@@ -122,10 +160,7 @@ const PaginationControls = forwardRef<HTMLDivElement, PaginationControlsProps>(f
 ) {
 	const {currentPage, totalPages, onPageChange} = usePaginationContext();
 	const {t} = useLocale();
-	const pages = useMemo(
-		() => buildPageItems(currentPage, Math.max(1, totalPages)),
-		[currentPage, totalPages],
-	);
+	const pages = buildPageItems(currentPage, Math.max(1, totalPages));
 
 	return (
 		<div
@@ -133,15 +168,13 @@ const PaginationControls = forwardRef<HTMLDivElement, PaginationControlsProps>(f
 			className={cn(styles.controls, className)}
 			{...rest}
 		>
-			<button
-				type='button'
-				className={styles.pagBtn}
+			<PageButton
 				disabled={currentPage <= 1}
 				aria-label={t('pagination.prev')}
 				onClick={() => onPageChange(currentPage - 1)}
 			>
 				{'<'}
-			</button>
+			</PageButton>
 
 			{pages.map((page, index) => {
 				if (page === 'ellipsis') {
@@ -155,72 +188,69 @@ const PaginationControls = forwardRef<HTMLDivElement, PaginationControlsProps>(f
 						</span>
 					);
 				}
-				const isActive = page === currentPage;
 				return (
-					<button
+					<PageButton
 						key={page}
-						type='button'
-						className={cn(styles.pagBtn, isActive ? styles.active : '')}
+						active={page === currentPage}
 						aria-label={t('pagination.page', {page})}
-						aria-current={isActive ? 'page' : undefined}
 						onClick={() => onPageChange(page)}
 					>
 						{page}
-					</button>
+					</PageButton>
 				);
 			})}
 
-			<button
-				type='button'
-				className={styles.pagBtn}
+			<PageButton
 				disabled={currentPage >= totalPages}
 				aria-label={t('pagination.next')}
 				onClick={() => onPageChange(currentPage + 1)}
 			>
 				{'>'}
-			</button>
+			</PageButton>
 		</div>
 	);
 });
 
-const PaginationPageSize = forwardRef<HTMLLabelElement, PaginationPageSizeProps>(function PaginationPageSize(
+const PaginationPageSize = forwardRef<HTMLDivElement, PaginationPageSizeProps>(function PaginationPageSize(
 	{
 		pageSize,
 		onPageSizeChange,
-		pageSizeOptions = [
-			10,
-			25,
-			50,
-			100
-		],
+		pageSizeOptions = DEFAULT_PAGE_SIZES,
 		className,
 		...rest
 	},
 	ref,
 ) {
 	const {t} = useLocale();
+	const options = useMemo(
+		() => pageSizeOptions.map((size) => ({
+			value: String(size),
+			label: String(size),
+		})),
+		[pageSizeOptions],
+	);
+	const label = t('pagination.pageSizeLabel');
+
 	return (
-		<label
+		<div
 			ref={ref}
 			className={cn(styles.pageSize, className)}
 			{...rest}
 		>
-			<span className={styles.pageSizeLabel}>
-				{t('pagination.pageSizeLabel')}
-			</span>
-			<select
-				className={styles.pageSizeSelect}
-				value={pageSize}
-				aria-label={t('pagination.pageSizeAria')}
-				onChange={(event) => onPageSizeChange(Number(event.target.value))}
-			>
-				{pageSizeOptions.map((size) => (
-					<option key={size} value={size}>
-						{size}
-					</option>
-				))}
-			</select>
-		</label>
+			<Select
+				label={label}
+				labelPlacement='none'
+				size='sm'
+				width='full'
+				options={options}
+				value={String(pageSize)}
+				onChange={(next) => {
+					const raw = Array.isArray(next) ? next[0] : next;
+					const size = Number(raw);
+					if (Number.isFinite(size)) onPageSizeChange(size);
+				}}
+			/>
+		</div>
 	);
 });
 

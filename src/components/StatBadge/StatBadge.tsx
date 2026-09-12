@@ -7,6 +7,7 @@ export type {
 
 import {forwardRef} from 'react';
 import styles from './StatBadge.module.css';
+import status from '../../styles/status.module.css';
 import {cn} from '../../utils/cn';
 
 /**
@@ -32,12 +33,12 @@ export const StatBadge = forwardRef<HTMLDivElement, StatBadgeProps>(function Sta
 			ref={ref}
 			className={cn(
 				styles.statBadge,
-				styles[variant],
-				size === 'sm' ? styles.sm : '',
+				variant !== 'default' && status[variant],
+				size === 'sm' && styles.sm,
 				className,
 			)}
-			{...rest}
 			aria-label={`${value} ${label}`}
+			{...rest}
 		>
 			<span className={styles.value}>
 				{value}

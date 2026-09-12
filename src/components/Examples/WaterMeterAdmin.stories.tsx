@@ -6,7 +6,7 @@ import {Button} from '../Button/Button';
 import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
 import {Card} from '../Card/Card';
 import {ConfirmDialog} from '../ConfirmDialog/ConfirmDialog';
-import {DatePicker} from '../DatePicker/DatePicker';
+import {DateField} from '../DateField/DateField';
 import {Sheet} from '../Sheet/Sheet';
 import {Inline, Split} from '../Layout/Layout';
 import {LineChart} from '../LineChart/LineChart';
@@ -25,9 +25,14 @@ import {Table} from '../Table/Table';
 import {Chip} from '../Chip/Chip';
 import {Text} from '../Text/Text';
 import {TextField} from '../TextField/TextField';
-import {TimePickerField} from '../TimePicker/TimePicker';
+import {TimeField} from '../TimeField/TimeField';
 import {Title} from '../Title/Title';
 import {Tooltip} from '../Tooltip/Tooltip';
+import {IconClipboard} from '../../icons/icons/IconClipboard';
+import {IconGear} from '../../icons/icons/IconGear';
+import {IconGraphBar} from '../../icons/icons/IconGraphBar';
+import {IconGraphLine} from '../../icons/icons/IconGraphLine';
+import {IconMeter} from '../../icons/icons/IconMeter';
 import {IconPlus} from '../../icons/icons/IconPlus';
 import {componentParameters, story, Story} from '../../storybook/meta';
 import styles from './WaterMeterAdmin.stories.module.css';
@@ -313,19 +318,19 @@ const WaterMeterAdminDemo = () => {
 						<Sidebar.Collapse />
 					</Sidebar.Header>
 					<Sidebar.Content>
-						<Sidebar.Item value='dashboard' icon='📊'>
+						<Sidebar.Item value='dashboard' icon={<IconGraphBar size={18} />}>
 							Дашборд
 						</Sidebar.Item>
-						<Sidebar.Item value='meters' icon='💧'>
+						<Sidebar.Item value='meters' icon={<IconMeter size={18} />}>
 							Счётчики
 						</Sidebar.Item>
-						<Sidebar.Item value='readings' icon='📝'>
+						<Sidebar.Item value='readings' icon={<IconClipboard size={18} />}>
 							Показания
 						</Sidebar.Item>
-						<Sidebar.Item value='reports' icon='📈'>
+						<Sidebar.Item value='reports' icon={<IconGraphLine size={18} />}>
 							Отчёты
 						</Sidebar.Item>
-						<Sidebar.Item value='settings' icon='⚙️'>
+						<Sidebar.Item value='settings' icon={<IconGear size={18} />}>
 							Настройки
 						</Sidebar.Item>
 					</Sidebar.Content>
@@ -357,7 +362,7 @@ const WaterMeterAdminDemo = () => {
 									Уведомления
 								</Button>
 							</Badge>
-							<Tooltip content='Добавить показания' asChild>
+							<Tooltip content='Добавить показания'>
 								<ButtonIcon
 									icon={<IconPlus size={18} />}
 									aria-label='Добавить показания'
@@ -408,7 +413,7 @@ const WaterMeterAdminDemo = () => {
 							/>
 						</div>
 						<div className={styles.filterField}>
-							<Select.Root
+							<Select
 								options={BUILDINGS}
 								value={building}
 								onChange={(val) => {
@@ -416,13 +421,9 @@ const WaterMeterAdminDemo = () => {
 									setBuilding(val);
 									setPage(1);
 								}}
-							>
-								<Select.Trigger label='Дом' />
-								<Select.Panel>
-									<Select.Filter />
-									<Select.List />
-								</Select.Panel>
-							</Select.Root>
+								label='Дом'
+								filterable
+							/>
 						</div>
 						<SegmentedControl
 							options={[
@@ -452,99 +453,21 @@ const WaterMeterAdminDemo = () => {
 						/>
 					</div>
 
-					<Card className={styles.tableCard}>
-						<Card.Header>
+					<Card
+						className={styles.tableCard}
+						header={(
 							<Split align='center'>
 								<Title level={4}>
 									Реестр счётчиков
 								</Title>
-								<Chip mode='tag' variant='secondary'>
+								<Chip as='tag' variant='secondary'>
 									{filtered.length}
 									{' '}
 									шт.
 								</Chip>
 							</Split>
-						</Card.Header>
-						<Card.Body>
-							<Table.Root aria-label='Таблица счётчиков воды'>
-								<Table.Content
-									columns={[
-										{
-											key: 'serialNumber',
-											header: 'Серийный №',
-											sortable: true
-										},
-										{
-											key: 'address',
-											header: 'Адрес',
-											sortable: true
-										},
-										{
-											key: 'apartment',
-											header: 'Квартира'
-										},
-										{
-											key: 'lastReading',
-											header: 'Показание, м³',
-											sortable: true,
-											render: (row) => row.lastReading.toFixed(1),
-										},
-										{
-											key: 'delta',
-											header: 'Расход',
-											render: (row) => (
-												<Text size='sm'>
-													+
-													{(row.lastReading - row.previousReading).toFixed(1)}
-												</Text>
-											),
-										},
-										{
-											key: 'status',
-											header: 'Статус',
-											render: (row) => (
-												<Chip mode='tag' variant={row.status === 'active' ? 'primary' : 'secondary'}>
-													{STATUS_LABEL[row.status]}
-												</Chip>
-											),
-										},
-										{
-											key: 'lastCheckDate',
-											header: 'Проверка',
-											render: (row) => formatDate(row.lastCheckDate),
-										},
-										{
-											key: 'actions',
-											header: '',
-											render: (row) => (
-												<Inline gap='xs'>
-													<Button
-														size='sm'
-														variant='secondary'
-														onClick={() => setDetailMeter(row)}
-													>
-														Детали
-													</Button>
-													<Button
-														size='sm'
-														variant='secondary'
-														status='danger'
-														onClick={() => setDeleteTarget(row)}
-													>
-														Удалить
-													</Button>
-												</Inline>
-											),
-										},
-									]}
-									data={pageItems}
-									rowKey={(row) => row.id}
-									selectedKeys={selectedKeys}
-									onSelectionChange={setSelectedKeys}
-								/>
-							</Table.Root>
-						</Card.Body>
-						<Card.Actions>
+						)}
+						actions={(
 							<Split
 								align='center'
 								gap='sm'
@@ -562,14 +485,93 @@ const WaterMeterAdminDemo = () => {
 									<Pagination.Controls />
 								</Pagination>
 							</Split>
-						</Card.Actions>
+						)}
+					>
+						<Table
+							aria-label='Таблица счётчиков воды'
+							columns={[
+								{
+									key: 'serialNumber',
+									header: 'Серийный №',
+									sortable: true
+								},
+								{
+									key: 'address',
+									header: 'Адрес',
+									sortable: true
+								},
+								{
+									key: 'apartment',
+									header: 'Квартира'
+								},
+								{
+									key: 'lastReading',
+									header: 'Показание, м³',
+									sortable: true,
+									render: (row) => row.lastReading.toFixed(1),
+								},
+								{
+									key: 'delta',
+									header: 'Расход',
+									render: (row) => (
+										<Text size='sm'>
+											+
+											{(row.lastReading - row.previousReading).toFixed(1)}
+										</Text>
+									),
+								},
+								{
+									key: 'status',
+									header: 'Статус',
+									render: (row) => (
+										<Chip as='tag' variant={row.status === 'active' ? 'primary' : 'secondary'}>
+											{STATUS_LABEL[row.status]}
+										</Chip>
+									),
+								},
+								{
+									key: 'lastCheckDate',
+									header: 'Проверка',
+									render: (row) => formatDate(row.lastCheckDate),
+								},
+								{
+									key: 'actions',
+									header: '',
+									render: (row) => (
+										<Inline gap='xs'>
+											<Button
+												size='sm'
+												variant='secondary'
+												onClick={() => setDetailMeter(row)}
+											>
+												Детали
+											</Button>
+											<Button
+												size='sm'
+												variant='secondary'
+												status='danger'
+												onClick={() => setDeleteTarget(row)}
+											>
+												Удалить
+											</Button>
+										</Inline>
+									),
+								},
+							]}
+							data={pageItems}
+							rowKey={(row) => row.id}
+							selectedKeys={selectedKeys}
+							onSelectionChange={setSelectedKeys}
+						/>
 					</Card>
 				</div>
 			</div>
 
 			<Sheet
 				open={!!detailMeter}
-				onClose={() => setDetailMeter(null)}
+				onOpenChange={(open) => {
+					if (!open) setDetailMeter(null);
+				}}
 				mode='sidebar'
 				direction='end'
 				width={420}
@@ -658,7 +660,7 @@ const WaterMeterAdminDemo = () => {
 
 			<Modal
 				open={readingModalOpen}
-				onClose={() => setReadingModalOpen(false)}
+				onOpenChange={setReadingModalOpen}
 			>
 				<Modal.Header>
 					<Modal.Title>
@@ -685,7 +687,7 @@ const WaterMeterAdminDemo = () => {
 								value: val ?? 0
 							}))}
 						/>
-						<DatePicker
+						<DateField
 							label='Дата снятия'
 							value={readingForm.date}
 							onChange={(date) => {
@@ -696,7 +698,7 @@ const WaterMeterAdminDemo = () => {
 								}));
 							}}
 						/>
-						<TimePickerField
+						<TimeField
 							label='Время'
 							value={readingForm.time}
 							onChange={(time) => setReadingForm((f) => ({
@@ -724,7 +726,7 @@ const WaterMeterAdminDemo = () => {
 				message={deleteTarget ? `Счётчик ${deleteTarget.serialNumber} будет удалён из реестра.` : ''}
 				confirmLabel='Удалить'
 				status='danger'
-				onCancel={() => setDeleteTarget(null)}
+				onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}
 				onConfirm={confirmDelete}
 			/>
 

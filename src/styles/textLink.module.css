@@ -1,0 +1,17 @@
+/* Подчёркивание текстовой ссылки (Link и Button variant="link"). */
+
+.link {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 72%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+
+  transition: color 0.2s ease-in-out, text-decoration-color 0.2s ease-in-out;
+
+  &:hover:not(:disabled):not([aria-disabled='true']) {
+    text-decoration: underline;
+    text-decoration-color: currentColor;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+}

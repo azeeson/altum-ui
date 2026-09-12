@@ -292,24 +292,18 @@ export const WithItem: Story = {
 					items={items}
 					onOrderChange={setItems}
 					renderItem={(row) => (
-						<Item interactive>
-							<Item.Media variant='icon'>
-								{row.icon}
-							</Item.Media>
-							<Item.Content>
-								<Item.Title>
-									{row.title}
-								</Item.Title>
-								<Item.Description>
-									{row.description}
-								</Item.Description>
-							</Item.Content>
-							<Item.Actions>
+						<Item
+							interactive
+							media={row.icon}
+							mediaVariant='icon'
+							title={row.title}
+							description={row.description}
+							actions={(
 								<Button size='sm' variant='ghost'>
 									Открыть
 								</Button>
-							</Item.Actions>
-						</Item>
+							)}
+						/>
 					)}
 				/>
 			</div>
@@ -366,33 +360,29 @@ export const WithSwipeToAction: Story = {
 										: action
 								))}
 							>
-								<Item>
-									<Item.Content>
-										<Item.Title>
-											{row.title}
-										</Item.Title>
-										<Item.Description>
-											{row.description}
-										</Item.Description>
-									</Item.Content>
-									<Item.Actions>
-										<Button
-											size='sm'
-											variant='ghost'
-											onClick={() => archive(row.id)}
-										>
-											Архив
-										</Button>
-										<Button
-											size='sm'
-											variant='primary'
-											status='danger'
-											onClick={() => remove(row.id)}
-										>
-											Удал.
-										</Button>
-									</Item.Actions>
-								</Item>
+								<Item
+									title={row.title}
+									description={row.description}
+									actions={(
+										<>
+											<Button
+												size='sm'
+												variant='ghost'
+												onClick={() => archive(row.id)}
+											>
+												Архив
+											</Button>
+											<Button
+												size='sm'
+												variant='primary'
+												status='danger'
+												onClick={() => remove(row.id)}
+											>
+												Удал.
+											</Button>
+										</>
+									)}
+								/>
 							</SwipeToAction>
 						);
 					}}

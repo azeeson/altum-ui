@@ -11,18 +11,18 @@ test.describe('Popover', () => {
 	});
 });
 
-test.describe('DropdownMenu', () => {
+test.describe('Menu', () => {
 	test('открывает меню с иконки-триггера', async ({page}) => {
-		await visitStory(page, 'altum-components-dropdownmenu--playground');
+		await visitStory(page, 'altum-components-menu--playground');
 		await page.getByRole('button', {name: /Меню действий/i}).click();
 		await expect(page.getByRole('listbox').or(page.getByRole('menu'))).toBeVisible({timeout: 5000});
 		await page.keyboard.press('Escape');
 	});
 });
 
-test.describe('ContextMenu', () => {
+test.describe('Menu context', () => {
 	test('открывается по правому клику', async ({page}) => {
-		await visitStory(page, 'altum-components-contextmenu--playground');
+		await visitStory(page, 'altum-components-menu--context');
 		const surface = page.getByText(/Правый клик/i);
 		await expect(surface).toBeVisible();
 		await surface.click({button: 'right'});

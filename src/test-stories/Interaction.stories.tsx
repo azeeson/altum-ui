@@ -43,7 +43,7 @@ export const ModalBlocksBackground: Story = {
 						Открыть модалку
 					</Button>
 				</div>
-				<Modal open={open} onClose={() => setOpen(false)}>
+				<Modal open={open} onOpenChange={setOpen}>
 					<Modal.Header>
 						<Modal.Title>
 							Тестовая модалка

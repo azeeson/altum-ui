@@ -17,6 +17,8 @@ export default tseslint.config(
 			'.cursor/**',
 			'agent-transcripts/**',
 			'scripts/**',
+			// Локальные одноразовые скрипты аудита — не часть библиотеки
+			'tmp/**',
 			// Сгенерированные d.ts после build — не линтить
 			'types/**',
 		],
@@ -71,8 +73,6 @@ export default tseslint.config(
 						'../FieldBase/*',
 						'../ChartBase/*',
 						'../ToggleControlBase/*',
-						'../MediaRowBase/*',
-						'../ListOptionBase/*',
 					],
 					message: 'Import from the folder barrel (e.g. ../../base/ButtonBase), not a nested file.',
 				}],

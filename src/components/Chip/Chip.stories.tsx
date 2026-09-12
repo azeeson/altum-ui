@@ -6,6 +6,9 @@ import {IconCheckmark} from '../../icons/icons/IconCheckmark';
 import {IconQuestion} from '../../icons/icons/IconQuestion';
 import {IconFlag} from '../../icons/icons/IconFlag';
 import {IconBell} from '../../icons/icons/IconBell';
+import {Card} from '../Card/Card';
+import {Stack} from '../Layout/Layout';
+import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
@@ -13,15 +16,15 @@ export default {
 	component: Chip,
 	tags: ['autodocs'],
 	parameters: componentParameters(
-		'Компактный чип или тег (`mode="tag"`): статусы, размеры, active, иконка, удаление. Группировка — ChipGroup.',
+		'Компактный чип, тег или toggle (`as`): статусы, размеры, иконка, удаление. Группировка — ChipGroup.',
 	),
 	argTypes: {
-		mode: {
+		as: {
 			control: {
 				type: 'select',
-				options: ['chip', 'tag']
+				options: ['chip', 'tag', 'toggle']
 			},
-			description: 'chip — скругление radius-sm; tag — pill',
+			description: 'chip — скругление radius-sm; tag — pill; toggle — выбранный фильтр',
 		},
 		variant: {
 			control: {
@@ -45,9 +48,17 @@ export default {
 			},
 			description: 'Размер чипа',
 		},
-		active: {
+		disabled: {
 			control: 'boolean',
-			description: 'Выбранное состояние',
+		},
+		children: {
+			control: 'text',
+		},
+		onClick: {
+			action: 'click',
+		},
+		onRemove: {
+			action: 'remove',
 		},
 	},
 } satisfies Meta<typeof Chip>;
@@ -56,10 +67,9 @@ export const Playground: Story<ChipProps> = {
 	args: {
 		children: 'alex@example.com',
 		size: 'md',
-		active: false,
 		onRemove: () => {},
 	},
-	parameters: story('Панель Controls: variant, size, active, onRemove.'),
+	parameters: story('Панель Controls: variant, size, as, onRemove.'),
 };
 
 export const Variants: Story<ChipProps> = {
@@ -144,26 +154,25 @@ export const Modes: Story<ChipProps> = {
 					color: 'var(--altum-color-muted)'
 				}}
 				>
-					mode=&quot;chip&quot; — небольшое скругление (`--altum-g-radius-sm`)
+					as=&quot;chip&quot; — небольшое скругление (`--altum-g-radius-sm`)
 				</div>
 				<ChipGroup aria-label='Режим chip'>
 					<Chip
-						mode='chip'
+						as='toggle'
 						variant='primary'
-						active
 						onClick={() => {}}
 					>
 						Фильтр
 					</Chip>
 					<Chip
-						mode='chip'
+						as='chip'
 						variant='tinted'
 						onClick={() => {}}
 					>
 						Тонированный
 					</Chip>
 					<Chip
-						mode='chip'
+						as='chip'
 						variant='success'
 						onRemove={() => {}}
 					>
@@ -178,24 +187,24 @@ export const Modes: Story<ChipProps> = {
 					color: 'var(--altum-color-muted)'
 				}}
 				>
-					mode=&quot;tag&quot; — pill (скруглённые края)
+					as=&quot;tag&quot; — pill (скруглённые края)
 				</div>
 				<ChipGroup aria-label='Режим tag'>
-					<Chip mode='tag' variant='primary'>
+					<Chip as='tag' variant='primary'>
 						Статус
 					</Chip>
-					<Chip mode='tag' variant='success'>
+					<Chip as='tag' variant='success'>
 						Готово
 					</Chip>
 					<Chip
-						mode='tag'
+						as='tag'
 						variant='warning'
 						onRemove={() => {}}
 					>
 						С удалением
 					</Chip>
 					<Chip
-						mode='tag'
+						as='tag'
 						variant='info'
 						onClick={() => {}}
 					>
@@ -249,7 +258,7 @@ export const Active: Story<ChipProps> = {
 					<Chip
 						key={filter.id}
 						variant={filter.variant}
-						active={selected.includes(filter.id)}
+						as={selected.includes(filter.id) ? 'toggle' : 'chip'}
 						onClick={() => toggle(filter.id)}
 					>
 						{filter.label}
@@ -258,7 +267,7 @@ export const Active: Story<ChipProps> = {
 			</ChipGroup>
 		);
 	},
-	parameters: story('active + onClick — toggle-фильтры с aria-pressed.'),
+	parameters: story('`as="toggle"` + onClick — фильтры с aria-pressed.'),
 };
 
 export const WithIcon: Story<ChipProps> = {
@@ -315,17 +324,149 @@ export const Removable: Story<ChipProps> = {
 };
 
 export const Clickable: Story<ChipProps> = {
+	render: function ClickableRender() {
+		const [log, setLog] = useState('—');
+		return (
+			<Stack gap='sm'>
+				<ChipGroup aria-label='Кликабельные чипы'>
+					<Chip variant='primary' onClick={() => setLog('Активные')}>
+						Фильтр: Активные
+					</Chip>
+					<Chip variant='info' onClick={() => setLog('Инфо')}>
+						Инфо-фильтр
+					</Chip>
+				</ChipGroup>
+				<Text size='sm' color='muted'>
+					Выбрано:
+					{' '}
+					{log}
+				</Text>
+			</Stack>
+		);
+	},
+	parameters: story('Кликабельный чип-фильтр.'),
+};
+
+export const Disabled: Story<ChipProps> = {
 	render: () => (
-		<ChipGroup aria-label='Кликабельные чипы'>
-			<Chip variant='primary' onClick={() => alert('Основной')}>
-				Фильтр: Активные
+		<ChipGroup aria-label='Заблокированные'>
+			<Chip disabled>
+				Chip
 			</Chip>
-			<Chip variant='info' onClick={() => alert('Инфо')}>
-				Инфо-фильтр
+			<Chip
+				as='tag'
+				variant='info'
+				disabled
+				onRemove={() => {}}
+			>
+				Tag
+			</Chip>
+			<Chip
+				as='toggle'
+				disabled
+				onClick={() => {}}
+			>
+				Toggle
 			</Chip>
 		</ChipGroup>
 	),
-	parameters: story('Кликабельный чип-фильтр.'),
+	parameters: story('`disabled` снимает клик и удаление.'),
+};
+
+export const OverflowText: Story<ChipProps> = {
+	render: () => (
+		<div style={{maxWidth: 200}}>
+			<Chip
+				variant='secondary'
+				onRemove={() => {}}
+			>
+				Очень длинная метка фильтра, которая не помещается в одну строку
+			</Chip>
+		</div>
+	),
+	parameters: story('Длинный текст внутри чипа.'),
+};
+
+export const Interaction: Story<ChipProps> = {
+	render: function InteractionRender() {
+		const [chips, setChips] = useState(['React', 'TypeScript']);
+		return (
+			<ChipGroup aria-label='Удаление'>
+				{chips.map((chip) => (
+					<Chip
+						key={chip}
+						variant='secondary'
+						onRemove={() => setChips((current) => current.filter((item) => item !== chip))}
+						removeLabel={`Удалить ${chip}`}
+					>
+						{chip}
+					</Chip>
+				))}
+			</ChipGroup>
+		);
+	},
+	play: async ({canvasElement}) => {
+		const remove = canvasElement.querySelector('[aria-label="Удалить React"]') as HTMLButtonElement | null;
+		remove?.click();
+	},
+	parameters: story('Play удаляет чип React.'),
+};
+
+export const UsageExample: Story<ChipProps> = {
+	render: function UsageExampleRender() {
+		const [selected, setSelected] = useState<string[]>(['inbox']);
+		const toggle = (id: string) => {
+			setSelected((current) => (
+				current.includes(id)
+					? current.filter((item) => item !== id)
+					: [...current, id]
+			));
+		};
+		return (
+			<Card
+				style={{maxWidth: 400}}
+				header={(
+					<Text weight='bold'>
+						Фильтры почты
+					</Text>
+				)}
+			>
+				<Stack gap='md'>
+					<ChipGroup aria-label='Фильтры'>
+						{[
+							{
+								id: 'inbox',
+								label: 'Входящие'
+							},
+							{
+								id: 'starred',
+								label: 'Избранное'
+							},
+							{
+								id: 'done',
+								label: 'Готово'
+							},
+						].map((filter) => (
+							<Chip
+								key={filter.id}
+								as={selected.includes(filter.id) ? 'toggle' : 'chip'}
+								variant='secondary'
+								onClick={() => toggle(filter.id)}
+							>
+								{filter.label}
+							</Chip>
+						))}
+					</ChipGroup>
+					<Text size='sm' color='muted'>
+						Выбрано:
+						{' '}
+						{selected.join(', ') || 'нет'}
+					</Text>
+				</Stack>
+			</Card>
+		);
+	},
+	parameters: story('Группа фильтров-чипов в карточке.'),
 };
 
 export const Group: Story<ChipProps> = {
@@ -404,7 +545,7 @@ export const Group: Story<ChipProps> = {
 					].map((label) => (
 						<Chip
 							key={label}
-							mode='tag'
+							as='tag'
 							variant='info'
 							size='sm'
 						>

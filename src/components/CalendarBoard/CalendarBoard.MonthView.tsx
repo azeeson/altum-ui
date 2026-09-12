@@ -3,12 +3,13 @@ import {
 	isSameDay,
 	isToday,
 	startOfDay,
+	weekdayLabels,
 } from '../Calendar/Calendar.utils';
 import {
 	packSpanSegments,
 	resolveAllDay,
 	segmentSpanByWeeks,
-} from '../Calendar/calendar.schedule';
+} from './calendar.schedule';
 import {
 	useCalendarBoard,
 	type CalendarBoardDayCellRenderProps,
@@ -17,8 +18,9 @@ import {
 import {CalendarBoardTaskChip} from './CalendarBoard.TaskChip';
 import {buildMonthWeeks, calendarDateKey, isMultiDayTask} from './CalendarBoard.utils';
 import styles from './CalendarBoard.module.css';
+import unstyled from '../../styles/unstyledControl.module.css';
 import {cn} from '../../utils/cn';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useLocale} from '../../locales/localeContext';
 
 import type {CalendarBoardMonthProps} from './CalendarBoard.types';
 
@@ -48,10 +50,7 @@ export const CalendarBoardMonth = forwardRef<HTMLDivElement, CalendarBoardMonthP
 
 	const monthIndex = viewDate.getMonth();
 
-	const weekdayLabels = useMemo(() => {
-		if (weekStartsOn === 1) return weekdaysShort;
-		return [weekdaysShort[6] ?? '', ...weekdaysShort.slice(0, 6)];
-	}, [weekdaysShort, weekStartsOn]);
+	const weekdayRow = weekdayLabels(weekdaysShort, weekStartsOn);
 
 	const multiDayTasks = useMemo(
 		() => tasks.filter((task) => resolveAllDay(task) && isMultiDayTask(task.start, task.end)),
@@ -100,7 +99,7 @@ export const CalendarBoardMonth = forwardRef<HTMLDivElement, CalendarBoardMonthP
 			{...rest}
 		>
 			<div className={styles.weekdayRow} role='row'>
-				{weekdayLabels.map((label) => (
+				{weekdayRow.map((label) => (
 					<div
 						key={label}
 						className={styles.weekdayLabel}
@@ -165,7 +164,7 @@ export const CalendarBoardMonth = forwardRef<HTMLDivElement, CalendarBoardMonthP
 										>
 											<button
 												type='button'
-												className={styles.dayNumberBtn}
+												className={cn(unstyled.control, styles.dayNumberBtn)}
 												onClick={() => {
 													setSelectedDate(date);
 													setViewDate(date);

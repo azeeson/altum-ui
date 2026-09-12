@@ -1,4 +1,6 @@
-import type {LayoutGap} from '../Layout/Layout.types';
+import {resolveSpacingCss} from '../../utils/spacing';
+import {toCssSize} from '../../utils/cssSize';
+import type {SpacingToken} from '../../types/spacing';
 
 export interface AdaptiveValue<T> {
 	xs?: T;
@@ -19,7 +21,7 @@ export const GRID_BREAKPOINTS = {
 
 type GridBreakpoint = keyof typeof GRID_BREAKPOINTS;
 
-const BREAKPOINT_KEYS: GridBreakpoint[] = [
+const BPS: GridBreakpoint[] = [
 	'xs',
 	'sm',
 	'md',
@@ -28,26 +30,39 @@ const BREAKPOINT_KEYS: GridBreakpoint[] = [
 ];
 
 /** Токенный gap как у `Stack` / `Inline`. */
-export type GridGapToken = LayoutGap;
+export type GridGapToken = SpacingToken;
 
-const GAP_TOKENS: Record<GridGapToken, string> = {
-	none: '0',
-	xs: 'var(--altum-g-space-1)',
-	sm: 'var(--altum-g-space-2)',
-	md: 'var(--altum-g-space-3)',
-	lg: 'var(--altum-g-space-4)',
-	xl: 'var(--altum-g-space-6)',
-};
-
-export function resolveGapCss(value: number | string): string {
-	if (typeof value === 'number') return `${value}px`;
-	if (value in GAP_TOKENS) return GAP_TOKENS[value as GridGapToken];
-	return value;
+export function isAdaptiveValue<T>(value: unknown): value is AdaptiveValue<T> {
+	return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function resolveMinColumnWidth(value: number | string): string {
-	if (typeof value === 'number') return `${value}px`;
-	return value;
+/**
+ * Заполняет CSS-переменные на всех брейкпоинтах: скаляр — одно значение,
+ * AdaptiveValue — каскад вперёд от последнего заданного.
+ */
+export function setResponsive<T>(
+	target: Record<string, string | number | undefined>,
+	prefix: string,
+	value: T | AdaptiveValue<T>,
+	format: (value: T) => string | undefined,
+	fallback: string,
+): void {
+	if (!isAdaptiveValue<T>(value)) {
+		const formatted = format(value) ?? fallback;
+		for (const bp of BPS) {
+			target[`${prefix}-${bp}`] = formatted;
+		}
+		return;
+	}
+	let last = fallback;
+	for (const bp of BPS) {
+		const raw = value[bp];
+		if (raw !== undefined) {
+			const formatted = format(raw);
+			if (formatted !== undefined) last = formatted;
+		}
+		target[`${prefix}-${bp}`] = last;
+	}
 }
 
 export function resolveColumnsTemplate(value: number | string): string {
@@ -61,26 +76,12 @@ export function resolveAutoColumnsTemplate(
 	mode: 'autoFit' | 'autoFill',
 	minColumnWidth: number | string,
 ): string {
-	const min = resolveMinColumnWidth(minColumnWidth);
 	const autoFn = mode === 'autoFit' ? 'auto-fit' : 'auto-fill';
-	return `repeat(${autoFn}, minmax(${min}, 1fr))`;
+	return `repeat(${autoFn}, minmax(${toCssSize(minColumnWidth)}, 1fr))`;
 }
 
-export function applyAdaptiveVars<T>(
-	target: Record<string, string | number | undefined>,
-	obj: AdaptiveValue<T>,
-	prefix: string,
-	formatter: (value: T) => string | undefined,
-): void {
-	for (const key of BREAKPOINT_KEYS) {
-		const value = obj[key];
-		if (value !== undefined) {
-			const formatted = formatter(value);
-			if (formatted !== undefined) {
-				target[`${prefix}-${key}`] = formatted;
-			}
-		}
-	}
+export function resolveGapCss(value: number | string): string {
+	return resolveSpacingCss(value);
 }
 
 export function resolveGridColumnValue(
@@ -108,6 +109,20 @@ export function resolveGridRowValue(rowSpan?: number): string | undefined {
 	return `span ${rowSpan}`;
 }
 
-export function isAdaptiveValue<T>(value: unknown): value is AdaptiveValue<T> {
-	return typeof value === 'object' && value !== null && !Array.isArray(value);
+export function setGridItemColumnVars(
+	target: Record<string, string | number | undefined>,
+	span?: number | AdaptiveValue<number>,
+	colStart?: number | AdaptiveValue<number>,
+	colEnd?: number | AdaptiveValue<number>,
+): void {
+	if (span === undefined && colStart === undefined && colEnd === undefined) return;
+	let last = 'auto';
+	for (const bp of BPS) {
+		const s = isAdaptiveValue(span) ? span[bp] : span;
+		const start = isAdaptiveValue(colStart) ? colStart[bp] : colStart;
+		const end = isAdaptiveValue(colEnd) ? colEnd[bp] : colEnd;
+		const value = resolveGridColumnValue(s, start, end);
+		if (value !== undefined) last = value;
+		target[`--altum-grid-item-col-${bp}`] = last;
+	}
 }

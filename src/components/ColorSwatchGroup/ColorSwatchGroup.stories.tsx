@@ -1,6 +1,10 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {ColorSwatchGroup, ColorSwatchGroupProps} from './ColorSwatchGroup';
+import {Stack} from '../Layout/Layout';
+import {Text} from '../Text/Text';
+import {Card} from '../Card/Card';
+import {Button} from '../Button/Button';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 const LIST_COLORS = [
@@ -30,6 +34,15 @@ export default {
 			},
 			description: 'Размер образцов',
 		},
+		disabled: {
+			control: 'boolean',
+		},
+		readOnly: {
+			control: 'boolean',
+		},
+		onChange: {
+			action: 'change',
+		},
 	},
 } satisfies Meta<typeof ColorSwatchGroup>;
 
@@ -41,29 +54,20 @@ export const Playground: Story<ColorSwatchGroupProps> = {
 				{...args}
 				colors={LIST_COLORS}
 				value={color}
-				onChange={setColor}
+				onChange={(next) => {
+					setColor(next);
+					args.onChange?.(next);
+				}}
 			/>
 		);
 	},
 	args: {
 		label: 'Цвет списка',
+		size: 'md',
+		disabled: false,
+		readOnly: false,
 	},
 	parameters: story('Используйте панель Controls для настройки.'),
-};
-
-export const Small: Story<ColorSwatchGroupProps> = {
-	render: function SmallRender() {
-		const [color, setColor] = useState(LIST_COLORS[0]);
-		return (
-			<ColorSwatchGroup
-				colors={LIST_COLORS}
-				value={color}
-				onChange={setColor}
-				size='sm'
-			/>
-		);
-	},
-	parameters: story('Компактный размер цветовых образцов.'),
 };
 
 export const Sizes: Story<ColorSwatchGroupProps> = {
@@ -72,12 +76,7 @@ export const Sizes: Story<ColorSwatchGroupProps> = {
 		const [mdColor, setMdColor] = useState(LIST_COLORS[4]);
 
 		return (
-			<div style={{
-				display: 'flex',
-				flexDirection: 'column',
-				gap: 'var(--altum-g-space-4)',
-			}}
-			>
+			<Stack gap='md'>
 				<ColorSwatchGroup
 					label='sm'
 					colors={LIST_COLORS}
@@ -92,8 +91,99 @@ export const Sizes: Story<ColorSwatchGroupProps> = {
 					onChange={setMdColor}
 					size='md'
 				/>
-			</div>
+			</Stack>
 		);
 	},
 	parameters: story('Сравнение размеров `sm` и `md`.'),
+};
+
+export const States: Story<ColorSwatchGroupProps> = {
+	render: () => (
+		<Stack gap='md'>
+			<ColorSwatchGroup
+				label='disabled'
+				colors={LIST_COLORS}
+				value={LIST_COLORS[4]}
+				onChange={() => {}}
+				disabled
+			/>
+			<ColorSwatchGroup
+				label='readOnly'
+				colors={LIST_COLORS}
+				value={LIST_COLORS[1]}
+				onChange={() => {}}
+				readOnly
+			/>
+		</Stack>
+	),
+	parameters: story('`disabled` и `readOnly`.'),
+};
+
+export const Empty: Story<ColorSwatchGroupProps> = {
+	render: () => (
+		<ColorSwatchGroup
+			label='Пустая палитра'
+			colors={[]}
+			onChange={() => {}}
+		/>
+	),
+	parameters: story('Пустой массив `colors`.'),
+};
+
+export const Interaction: Story<ColorSwatchGroupProps> = {
+	render: function InteractionRender() {
+		const [color, setColor] = useState(LIST_COLORS[0]);
+		return (
+			<Stack gap='sm'>
+				<ColorSwatchGroup
+					label='Палитра'
+					colors={LIST_COLORS}
+					value={color}
+					onChange={setColor}
+				/>
+				<Text size='sm' color='muted'>
+					{color}
+				</Text>
+			</Stack>
+		);
+	},
+	play: async ({canvasElement}) => {
+		const swatch = canvasElement.querySelector(`[aria-label="${LIST_COLORS[4]}"]`) as HTMLButtonElement | null;
+		swatch?.click();
+		swatch?.focus();
+	},
+	parameters: story('Play выбирает синий образец.'),
+};
+
+export const UsageExample: Story<ColorSwatchGroupProps> = {
+	render: function UsageExampleRender() {
+		const [color, setColor] = useState(LIST_COLORS[4]);
+		return (
+			<Card
+				style={{maxWidth: 360}}
+				header={(
+					<Text weight='bold'>
+						Цвет метки
+					</Text>
+				)}
+			>
+				<Stack gap='md'>
+					<ColorSwatchGroup
+						colors={LIST_COLORS}
+						value={color}
+						onChange={setColor}
+						size='sm'
+					/>
+					<Button
+						size='sm'
+						variant='secondary'
+						onClick={() => setColor(LIST_COLORS[4])}
+					>
+						Сбросить
+					</Button>
+				</Stack>
+			</Card>
+		);
+	},
+	parameters: story('Выбор цвета метки в карточке настроек.'),
 };

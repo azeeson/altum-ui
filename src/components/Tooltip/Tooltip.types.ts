@@ -1,12 +1,18 @@
 import type {
 	ReactNode,
 } from 'react';
+import type {AnchorSide} from '../../types';
 import type {WithEnrichedChildren} from '../../utils/renderChildren';
 
 /**
- * Позиция подсказки (`TooltipPosition`).
+ * Сторона подсказки относительно триггера (`TooltipSide`).
  */
-export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
+export type TooltipSide = AnchorSide;
+
+/**
+ * @deprecated Используйте {@link TooltipSide}.
+ */
+export type TooltipPosition = TooltipSide;
 
 /**
  * Slot-пропсы триггера Tooltip (через `renderChildren`).
@@ -18,12 +24,14 @@ export type TooltipTriggerProps = {
 
 type TooltipBaseProps = {
 	content: ReactNode;
-	position?: TooltipPosition;
-	className?: string;
+	/** Сторона панели. @default `'top'` */
+	side?: TooltipSide;
 	/**
-	 * Контролируемая видимость.
-	 * Без `onOpenChange` и `open={true}` — принудительно открыт (Storybook).
+	 * @deprecated Используйте `side`.
 	 */
+	position?: TooltipSide;
+	className?: string;
+	/** Контролируемая видимость. */
 	open?: boolean;
 	defaultOpen?: boolean;
 	onOpenChange?: (open: boolean) => void;
@@ -35,17 +43,17 @@ type TooltipBaseProps = {
 	disabled?: boolean;
 	/**
 	 * Обернуть триггер в span (нужно для disabled-кнопок без pointer events).
-	 * При `asChild` оборачивает children в `span` перед `cloneElement`.
+	 * Для элемент-child оборачивает children в `span` перед slot-merge.
 	 * @default auto — true, если единственный child disabled
 	 */
 	wrap?: boolean;
-	/** Показать стрелку. @default false */
+	/** Стрелка к триггеру. @default true */
 	arrow?: boolean;
 };
 
 /**
- * Свойства `Tooltip` — тонкая обёртка над `Popover` (`trigger="hover"`, `Content variant="tooltip"`).
+ * Свойства `Tooltip` — тонкая обёртка над `Popover` (`trigger="hover"`, `variant="tooltip"`).
  *
- * Триггер: `WithEnrichedChildren` — `asChild` + `children` (элемент или render-prop).
+ * Триггер: элемент-child (slot) или render-prop.
  */
 export type TooltipProps = WithEnrichedChildren<TooltipBaseProps, TooltipTriggerProps>;

@@ -1,7 +1,6 @@
 import {forwardRef} from 'react';
-import {cn} from '../../utils/cn';
+import {Inline} from './Inline';
 import {LayoutItem} from './LayoutItem';
-import {alignClass, flexStyles as styles, gapClass, justifyClass} from './layoutClasses';
 import type {ControlRowProps} from './Layout.types';
 
 export type {LayoutAlign, LayoutGap, LayoutJustify, ControlRowProps} from './Layout.types';
@@ -22,38 +21,13 @@ type ControlRowComponent = typeof ControlRowInner & {
  *   <Button variant="primary">Найти</Button>
  * </ControlRow>
  */
-const ControlRowInner = forwardRef<HTMLDivElement, ControlRowProps>(function ControlRow(
-	{
-		children,
-		gap = 'sm',
-		align = 'center',
-		justify = 'start',
-		wrap = true,
-		className,
-		role,
-		style,
-		...rest
-	},
-	ref,
-) {
+const ControlRowInner = forwardRef<HTMLDivElement, ControlRowProps>(function ControlRow(props, ref) {
 	return (
-		<div
+		<Inline
 			ref={ref}
-			className={cn(
-				styles.base,
-				styles.controlRow,
-				!wrap && styles.controlRowNowrap,
-				gapClass(gap),
-				alignClass(align),
-				justifyClass(justify),
-				className,
-			)}
-			style={style}
-			{...rest}
-			role={role ?? 'group'}
-		>
-			{children}
-		</div>
+			{...props}
+			role={props.role ?? 'group'}
+		/>
 	);
 });
 

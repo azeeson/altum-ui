@@ -4,6 +4,7 @@ import {SegmentedControl, SegmentedControlProps} from './SegmentedControl';
 import {Text} from '../Text/Text';
 import {TextField} from '../TextField/TextField';
 import {Inline, Stack} from '../Layout/Layout';
+import {Card} from '../Card/Card';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 const OPTIONS = [
@@ -40,7 +41,7 @@ export default {
 	title: 'altum/Components/SegmentedControl',
 	component: SegmentedControl,
 	tags: ['autodocs'],
-	parameters: componentParameters('Переключатель сегментов для выбора одного значения из набора опций.'),
+	parameters: componentParameters('Переключатель сегментов: обёртка над ButtonGroup (`mode="toggle"`, `width="full"`).'),
 	argTypes: {
 		size: {
 			control: {
@@ -73,6 +74,15 @@ export default {
 			},
 			description: 'equal — равная ширина; content — по контенту, суммарно на всю ширину',
 		},
+		disabled: {
+			control: 'boolean',
+		},
+		readOnly: {
+			control: 'boolean',
+		},
+		onChange: {
+			action: 'change',
+		},
 	},
 } satisfies Meta<typeof SegmentedControl>;
 
@@ -90,7 +100,7 @@ export const Playground: Story<SegmentedControlProps> = {
 	},
 	args: {
 		size: 'md',
-		variant: 'primary',
+		variant: 'secondary',
 		itemFit: 'equal',
 	},
 	parameters: story('Используйте панель Controls для настройки.'),
@@ -115,7 +125,7 @@ export const HeightsVsTextField: Story<SegmentedControlProps> = {
 								label={`Field ${size}`}
 								labelPlacement='outside'
 								size={size}
-								width='sm'
+								width='md'
 								defaultValue='1'
 							/>
 							<div style={{
@@ -386,4 +396,87 @@ export const ItemFitContent: Story<SegmentedControlProps> = {
 		);
 	},
 	parameters: story('Сравнение равных сегментов и ширины по контенту.'),
+};
+
+export const Disabled: Story<SegmentedControlProps> = {
+	render: () => (
+		<SegmentedControl
+			options={OPTIONS}
+			value='one'
+			onChange={() => {}}
+			disabled
+		/>
+	),
+	parameters: story('`disabled` блокирует смену сегмента.'),
+};
+
+export const Interaction: Story<SegmentedControlProps> = {
+	render: function InteractionRender() {
+		const [value, setValue] = useState('one');
+		return (
+			<Stack gap='sm'>
+				<SegmentedControl
+					options={OPTIONS}
+					value={value}
+					onChange={setValue}
+				/>
+				<Text size='sm' color='muted'>
+					{value}
+				</Text>
+			</Stack>
+		);
+	},
+	play: async ({canvasElement}) => {
+		const two = Array.from(canvasElement.querySelectorAll('button'))
+			.find((button) => button.textContent?.includes('Панель 2'));
+		two?.click();
+		two?.focus();
+	},
+	parameters: story('Play выбирает «Панель 2».'),
+};
+
+export const UsageExample: Story<SegmentedControlProps> = {
+	render: function UsageExampleRender() {
+		const [period, setPeriod] = useState('week');
+		return (
+			<Card
+				style={{maxWidth: 420}}
+				header={(
+					<Text weight='bold'>
+						Аналитика
+					</Text>
+				)}
+			>
+				<Stack gap='md'>
+					<SegmentedControl
+						options={[
+							{
+								label: 'День',
+								value: 'day'
+							},
+							{
+								label: 'Неделя',
+								value: 'week'
+							},
+							{
+								label: 'Месяц',
+								value: 'month'
+							},
+						]}
+						value={period}
+						onChange={setPeriod}
+						size='sm'
+						variant='secondary'
+					/>
+					<Text size='sm'>
+						Сводка за
+						{' '}
+						{period === 'day' ? 'день' : period === 'week' ? 'неделю' : 'месяц'}
+						.
+					</Text>
+				</Stack>
+			</Card>
+		);
+	},
+	parameters: story('Сегменты периода в карточке аналитики.'),
 };

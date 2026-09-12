@@ -1,0 +1,30 @@
+.root {
+  --altum-toggle-radio-dot-size: var(--altum-toggle-radio-dot);
+
+  &[data-size='sm'] {
+    --altum-toggle-radio-dot-size: var(--altum-toggle-radio-dot-sm);
+  }
+
+  &[data-size='lg'] {
+    --altum-toggle-radio-dot-size: var(--altum-toggle-radio-dot-lg);
+  }
+
+  & .box {
+    border-radius: 50%;
+
+    &::after {
+      width: var(--altum-toggle-radio-dot-size);
+      height: var(--altum-toggle-radio-dot-size);
+
+      border-radius: 50%;
+
+      background-color: var(--altum-color-control-mark-color);
+
+      transform: translate(-50%, -50%) scale(0.5);
+    }
+  }
+
+  & .input:checked ~ .box::after {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}

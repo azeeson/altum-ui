@@ -3,7 +3,7 @@ import type {
 	ComponentPropsWithoutRef,
 } from 'react';
 
-import type {ControlSize} from '../../types';
+import type {ControlSize, LabelSide} from '../../types';
 
 /**
  * Свойства `Radio`.
@@ -13,10 +13,16 @@ export interface RadioProps extends Omit<ComponentPropsWithoutRef<'input'>, 'siz
 	readOnly?: boolean;
 	/** @default 'md' */
 	size?: ControlSize;
+	/** Сторона лейбла. @default 'end' */
+	labelSide?: LabelSide;
+	/**
+	 * Значение, без native event — как `Switch.onChange`.
+	 */
+	onCheckedChange?: (checked: boolean) => void;
 }
 
 /**
- * Свойства `Radio`.
+ * Свойства `RadioGroup`.
  */
 export interface RadioGroupProps extends Omit<ComponentPropsWithoutRef<'fieldset'>, 'children' | 'onChange'> {
 	name: string;
@@ -33,4 +39,6 @@ export interface RadioGroupProps extends Omit<ComponentPropsWithoutRef<'fieldset
 	disabled?: boolean;
 	/** @default 'md' */
 	size?: ControlSize;
+	/** Сторона лейбла у каждого `Radio`. @default 'end' */
+	labelSide?: LabelSide;
 }

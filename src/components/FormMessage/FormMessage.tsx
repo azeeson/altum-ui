@@ -1,16 +1,21 @@
 import type {
 	FormMessageProps,
-	FieldErrorProps,
 } from './FormMessage.types';
 export type {
 	FormMessageVariant,
 	FormMessageProps,
-	FieldErrorProps,
 } from './FormMessage.types';
 
 import {forwardRef} from 'react';
-import styles from './FormMessage.module.css';
+import {Text} from '../Text/Text';
+import fieldMessage from '../../styles/fieldMessage.module.css';
 import {cn} from '../../utils/cn';
+
+const COLOR = {
+	hint: 'muted',
+	error: 'error',
+	success: 'success',
+} as const;
 
 /**
  * Inline-сообщение под полем или над формой: подсказка, ошибка, успех.
@@ -22,54 +27,23 @@ import {cn} from '../../utils/cn';
 export const FormMessage = forwardRef<HTMLParagraphElement, FormMessageProps>(function FormMessage(
 	{
 		variant = 'hint',
-		children,
 		className,
-		style,
 		role,
-		id,
 		...rest
 	},
 	ref,
 ) {
-	const resolvedRole = role ?? (variant === 'error' ? 'alert' : undefined);
-
 	return (
-		<p
+		<Text
 			ref={ref}
-			className={cn(styles.message, styles[variant], className)}
-			style={style}
-			id={id}
+			as='p'
+			size='xs'
 			{...rest}
-			data-variant={variant}
-			role={resolvedRole}
-		>
-			{children}
-		</p>
+			color={COLOR[variant]}
+			className={cn(fieldMessage.message, className)}
+			role={role ?? (variant === 'error' ? 'alert' : undefined)}
+		/>
 	);
 });
 
 FormMessage.displayName = 'FormMessage';
-
-/**
- * Ошибка поля формы (`FormMessage variant="error"`).
- *
- * @component
- * @example
- * <FieldError>{errors.password}</FieldError>
- */
-export const FieldError = forwardRef<HTMLParagraphElement, FieldErrorProps>(function FieldError(
-	{children, ...rest},
-	ref,
-) {
-	return (
-		<FormMessage
-			ref={ref}
-			{...rest}
-			variant='error'
-		>
-			{children}
-		</FormMessage>
-	);
-});
-
-FieldError.displayName = 'FieldError';

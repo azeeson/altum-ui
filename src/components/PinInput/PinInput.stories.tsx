@@ -1,13 +1,53 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {PinInput, PinInputProps} from './PinInput';
-import {componentParameters, story, Story} from '../../storybook/meta';
+import {Button} from '../Button/Button';
+import {Card} from '../Card/Card';
+import {Stack, Inline} from '../Layout/Layout';
+import {Text} from '../Text/Text';
+import {
+	componentParameters,
+	fieldArgTypes,
+	story,
+	Story,
+} from '../../storybook/meta';
+import {playFocus, playType} from '../../storybook/play';
 
 export default {
-	title: 'altum/Components/PinInput',
+	title: 'altum/Components/FormField/PinInput',
 	component: PinInput,
 	tags: ['autodocs'],
 	parameters: componentParameters('PIN / OTP ввод.'),
+	args: {
+		length: 6,
+		size: 'md',
+		numeric: true,
+		masked: false,
+	},
+	argTypes: {
+		...fieldArgTypes,
+		length: {
+			control: 'number',
+			description: 'Число ячеек',
+		},
+		numeric: {
+			control: 'boolean',
+			description: 'Только цифры',
+		},
+		masked: {
+			control: 'boolean',
+			description: 'Скрыть символы (как пароль)',
+		},
+		autoFocus: {
+			control: 'boolean',
+			description: 'Фокус первой ячейки',
+		},
+		size: {
+			control: 'inline-radio',
+			options: ['sm', 'md', 'lg'],
+			description: 'Размер ячеек',
+		},
+	},
 } satisfies Meta<typeof PinInput>;
 
 export const Playground: Story<PinInputProps> = {
@@ -17,20 +57,17 @@ export const Playground: Story<PinInputProps> = {
 			<PinInput
 				{...args}
 				value={value}
-				onChange={setValue}
+				onChange={(next) => {
+					args.onChange?.(next);
+					setValue(next);
+				}}
 			/>
 		);
 	},
 	args: {
 		length: 6,
 		size: 'md',
-		autoFocus: true
-	},
-	argTypes: {
-		size: {
-			control: 'inline-radio',
-			options: ['sm', 'md', 'lg'],
-		},
+		autoFocus: true,
 	},
 	parameters: story('Шесть цифр, paste поддерживается. `size` = `--altum-control-height-*`.'),
 };
@@ -49,16 +86,33 @@ export const FourDigits: Story<PinInputProps> = {
 	parameters: story('Короткий код из 4 цифр.'),
 };
 
+export const Sizes: Story<PinInputProps> = {
+	render: function SizesRender() {
+		const [value, setValue] = useState('12');
+		return (
+			<Stack gap='lg'>
+				{(['sm', 'md', 'lg'] as const).map((size) => (
+					<PinInput
+						key={size}
+						label={`Код (${size})`}
+						labelPlacement='outside'
+						length={4}
+						size={size}
+						value={value}
+						onChange={setValue}
+					/>
+				))}
+			</Stack>
+		);
+	},
+	parameters: story('Размеры ячеек `sm`–`lg`.'),
+};
+
 export const States: Story<PinInputProps> = {
 	render: function StatesRender() {
 		const [value, setValue] = useState('12');
 		return (
-			<div style={{
-				display: 'flex',
-				flexDirection: 'column',
-				gap: 'var(--altum-g-space-4)',
-			}}
-			>
+			<Stack gap='md'>
 				<PinInput
 					length={4}
 					value={value}
@@ -77,8 +131,108 @@ export const States: Story<PinInputProps> = {
 					onChange={() => {}}
 					masked
 				/>
-			</div>
+			</Stack>
 		);
 	},
 	parameters: story('error, disabled и masked.'),
+};
+
+export const Empty: Story<PinInputProps> = {
+	render: () => (
+		<PinInput
+			label='Код из SMS'
+			labelPlacement='outside'
+			length={6}
+			helperText='Придёт в течение минуты'
+			value=''
+			onChange={() => undefined}
+		/>
+	),
+	parameters: story('Пустые ячейки с подсказкой.'),
+};
+
+export const OverflowText: Story<PinInputProps> = {
+	render: () => (
+		<div style={{maxWidth: 280}}>
+			<PinInput
+				label='Код подтверждения из письма, которое мы отправили на почту'
+				labelPlacement='outside'
+				length={6}
+				value='12'
+				onChange={() => undefined}
+			/>
+		</div>
+	),
+	parameters: story('Длинный outside-лейбл над группой ячеек.'),
+};
+
+export const Focused: Story<PinInputProps> = {
+	render: function FocusedRender() {
+		const [value, setValue] = useState('');
+		return (
+			<PinInput
+				length={4}
+				value={value}
+				onChange={setValue}
+			/>
+		);
+	},
+	play: async ({canvasElement}) => {
+		await playFocus(canvasElement, 'input');
+	},
+	parameters: story('Фокус первой ячейки.'),
+};
+
+export const Interaction: Story<PinInputProps> = {
+	render: function InteractionRender() {
+		const [value, setValue] = useState('');
+		return (
+			<PinInput
+				length={4}
+				value={value}
+				onChange={setValue}
+			/>
+		);
+	},
+	play: async ({canvasElement}) => {
+		await playType(canvasElement, '1234', 'input');
+	},
+	parameters: story('Play: ввод 4 цифр в первую ячейку (paste-семантика).'),
+};
+
+export const UsageExample: Story<PinInputProps> = {
+	render: function UsageExampleRender() {
+		const [code, setCode] = useState('');
+		const complete = code.length === 6;
+		return (
+			<Card
+				header='Подтверждение'
+				style={{maxWidth: 400}}
+				actions={(
+					<Inline gap='sm' justify='end'>
+						<Button
+							variant='primary'
+							disabled={!complete}
+						>
+							Продолжить
+						</Button>
+					</Inline>
+				)}
+			>
+				<Stack gap='md'>
+					<Text size='sm' color='secondary'>
+						Введите код из SMS, отправленный на +7 ••• ••• 12-34
+					</Text>
+					<PinInput
+						label='Код'
+						labelPlacement='none'
+						length={6}
+						value={code}
+						onChange={setCode}
+					/>
+				</Stack>
+			</Card>
+		);
+	},
+	parameters: story('OTP в карточке подтверждения с кнопкой.'),
 };

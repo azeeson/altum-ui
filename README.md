@@ -1,4 +1,4 @@
-# altum
+# altum (altum-ui)
 
 Библиотека React + TypeScript-компонентов: CSS Modules, дизайн-токены через `ThemeProvider`, адаптация оверлеев под мобильный sheet, плавающие лейблы. Без Tailwind, Radix и headless UI.
 

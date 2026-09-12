@@ -124,8 +124,6 @@
   margin-bottom: var(--altum-g-space-4);
 
   border-bottom: 1px solid var(--altum-color-border);
-
-  scrollbar-width: thin;
 }
 
 .tab {
@@ -137,21 +135,15 @@
   align-items: center;
   gap: var(--altum-g-space-2);
 
+  min-width: 0;
   min-height: var(--altum-control-height-sm);
 
   padding: var(--altum-g-space-2) var(--altum-g-space-1);
 
-  border: none;
-
-  font-family: inherit;
   font-size: var(--altum-g-font-size-base);
   font-weight: var(--altum-g-font-weight-medium);
 
   color: var(--altum-field-label);
-  background-color: transparent;
-
-  cursor: pointer;
-  appearance: none;
 
   transition: var(--altum-transition-smooth);
 
@@ -161,12 +153,10 @@
 
   &:focus-visible {
     border-radius: var(--altum-g-radius-sm);
-    outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
-    outline-offset: var(--altum-focus-ring-offset);
   }
 
-  & .tabLabel {
-    min-width: 0;
+  &:disabled {
+    opacity: var(--altum-opacity-disabled);
   }
 
   & .tabBadge {
@@ -207,7 +197,7 @@
 
       border-radius: 2px;
 
-      background-color: var(--altum-color-brand);
+      background-color: var(--altum-color-tabs-indicator);
     }
 
     & .tabBadge {
@@ -226,34 +216,10 @@
 
     background-color: var(--altum-color-status-error);
   }
-
-  &.disabled {
-    opacity: var(--altum-opacity-disabled);
-
-    cursor: not-allowed;
-    pointer-events: none;
-  }
 }
 
 .tabPanel {
   flex: 1;
 
   min-width: 0;
-
-  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tabPanel {
-    animation: none;
-  }
 }

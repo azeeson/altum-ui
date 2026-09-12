@@ -1,8 +1,5 @@
 export {Skeleton} from './Skeleton';
 export type {
+	SkeletonVariant,
 	SkeletonProps,
-	SkeletonTextProps,
-	SkeletonAvatarProps,
-	SkeletonCardProps,
-	SkeletonTableProps,
 } from './Skeleton.types';

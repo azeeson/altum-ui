@@ -8,8 +8,9 @@ export type {
 import {forwardRef, type CSSProperties} from 'react';
 import styles from './ColorSwatchGroup.module.css';
 import {cn} from '../../utils/cn';
-import {mergeStyles} from '../../utils/mergeStyles';
-import {SelectionGroup} from '../SelectionGroup/SelectionGroup';
+import {composeEventHandlers} from '../../utils/composeEvents';
+import {useRovingList} from '../../hooks/useRovingList';
+import {SelectionGroup, SELECTION_VALUE_ATTR} from '../SelectionGroup/SelectionGroup';
 
 /**
  * Группа цветовых swatch-кнопок для выбора одного значения из палитры.
@@ -36,6 +37,10 @@ export const ColorSwatchGroup = forwardRef<HTMLDivElement, ColorSwatchGroupProps
 		ref,
 	) {
 		const isReadOnly = readOnly && !disabled;
+		const roving = useRovingList('horizontal', (el) => {
+			const next = el.getAttribute(SELECTION_VALUE_ATTR);
+			if (next) onChange(next);
+		});
 
 		return (
 			<SelectionGroup.Root
@@ -47,8 +52,8 @@ export const ColorSwatchGroup = forwardRef<HTMLDivElement, ColorSwatchGroupProps
 				className={cn(
 					styles.group,
 					styles[size],
-					isReadOnly ? styles.readOnly : '',
-					disabled ? styles.disabled : '',
+					isReadOnly && styles.readOnly,
+					disabled && styles.disabled,
 					className,
 				)}
 				style={style}
@@ -57,27 +62,25 @@ export const ColorSwatchGroup = forwardRef<HTMLDivElement, ColorSwatchGroupProps
 				aria-label={label}
 				aria-readonly={isReadOnly || undefined}
 				aria-disabled={disabled || undefined}
+				onKeyDown={composeEventHandlers(onKeyDown, disabled || isReadOnly ? undefined : roving)}
 			>
-				<SelectionGroup.List className={styles.list} onKeyDown={onKeyDown}>
-					{colors.map((color) => {
-						const isSelected = value === color;
-						return (
-							<SelectionGroup.Item
-								key={color}
-								value={color}
-								role='radio'
-								aria-checked={isSelected}
-								aria-label={color}
-								className={cn(
-									styles.swatch,
-									isSelected ? styles.selected : '',
-									isReadOnly ? styles.swatchReadOnly : '',
-								)}
-								style={mergeStyles({'--altum-swatch-color': color} as CSSProperties, undefined)}
-							/>
-						);
-					})}
-				</SelectionGroup.List>
+				{colors.map((color) => {
+					const isSelected = value === color;
+					return (
+						<SelectionGroup.Item
+							key={color}
+							value={color}
+							role='radio'
+							aria-checked={isSelected}
+							aria-label={color}
+							className={cn(
+								styles.swatch,
+								isSelected && styles.selected,
+							)}
+							style={{'--altum-swatch-color': color} as CSSProperties}
+						/>
+					);
+				})}
 			</SelectionGroup.Root>
 		);
 	},

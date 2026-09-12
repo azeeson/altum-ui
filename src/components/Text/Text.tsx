@@ -6,7 +6,8 @@ export type {
 } from './Text.types';
 
 import {forwardRef} from 'react';
-import styles from './Text.module.css';
+import {Type} from '../../base/Type';
+import colors from './Text.module.css';
 import {cn} from '../../utils/cn';
 
 /**
@@ -14,7 +15,7 @@ import {cn} from '../../utils/cn';
  * По умолчанию рендерит **`span`** (inline). Для блочного текста (заголовок + подсказка
  * друг под другом) передайте `as="p"` или `as="div"` — иначе соседние `Text` склеятся
  * в одну строку без пробела.
- * Семантические цвета (`primary` / `secondary` / …) читают `--altum-type-*` (адаптация в `Box`).
+ * Семантические цвета (`primary` / `secondary` / …) читают `--altum-type-*`.
  *
  * @component
  * @example
@@ -24,32 +25,21 @@ import {cn} from '../../utils/cn';
  */
 export const Text = forwardRef<HTMLElement, TextProps>(function Text(
 	{
-		size = 'md',
-		weight = 'normal',
 		color = 'primary',
-		children,
 		className,
-		style,
-		as: Component = 'span',
 		...rest
 	},
 	ref,
 ) {
 	return (
-		<Component
+		<Type
 			ref={ref}
 			className={cn(
-				styles.text,
-				styles[size],
-				styles[weight],
-				styles[`col_${color}`],
+				color !== 'primary' && colors[`col_${color}`],
 				className,
 			)}
-			style={style}
 			{...rest}
-		>
-			{children}
-		</Component>
+		/>
 	);
 });
 

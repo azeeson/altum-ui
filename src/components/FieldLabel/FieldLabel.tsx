@@ -8,11 +8,21 @@ export type {
 	FieldLabelProps,
 } from './FieldLabel.types';
 
-import {forwardRef, useId, type CSSProperties} from 'react';
+import {forwardRef, type CSSProperties} from 'react';
+import {As} from '../../base/As';
+import {Flex} from '../../base/Flex';
+import {Type} from '../../base/Type';
 import {toCssSize} from '../../utils/cssSize';
+import {mergeStyles} from '../../utils/mergeStyles';
+import {useFallbackId} from '../../hooks/useFallbackId';
 import styles from './FieldLabel.module.css';
 import {cn} from '../../utils/cn';
-import {mergeStyles} from '../../utils/mergeStyles';
+
+const TYPE_SIZE = {
+	sm: 'xs',
+	md: 'sm',
+	lg: 'md',
+} as const;
 
 /**
  * Обёртка «подпись + контент» для полей формы в vertical и horizontal раскладках.
@@ -42,49 +52,49 @@ export const FieldLabel = forwardRef<HTMLDivElement, FieldLabelProps>(function F
 	},
 	ref,
 ) {
-	const generatedId = useId();
-	const labelId = providedId ?? generatedId;
-
-	const rootClasses = cn(
-		styles.fieldLabel,
-		styles[size],
-		styles[layout],
-		layout === 'horizontal' ? styles[`align_${align}`] : '',
-		layout === 'horizontal' ? styles[`justify_${justify}`] : '',
-		layout === 'horizontal' && labelWidth !== undefined ? styles.fixedLabelWidth : '',
-		className,
-	);
-
-	const rootStyle = mergeStyles(
-		labelWidth !== undefined
-			? ({'--altum-field-label-width': toCssSize(labelWidth)} as CSSProperties)
-			: undefined,
-		style,
-	);
-
-	const LabelTag = htmlFor ? 'label' : 'span';
+	const uid = useFallbackId(providedId);
+	const labelledBy = htmlFor ? undefined : uid;
+	const horizontal = layout === 'horizontal';
 
 	return (
-		<div
+		<Flex
 			ref={ref}
-			className={rootClasses}
-			style={rootStyle}
+			direction={horizontal ? 'row' : 'column'}
+			gap={horizontal ? 'lg' : 'xs'}
+			align={horizontal ? align : 'start'}
+			justify={horizontal ? justify : 'start'}
+			wrap={false}
+			className={cn(
+				horizontal && styles.horizontal,
+				horizontal && justify === 'between' && styles.between,
+				horizontal && labelWidth !== undefined && styles.fixed,
+				className,
+			)}
+			style={mergeStyles(
+				labelWidth !== undefined
+					? ({'--altum-field-label-width': toCssSize(labelWidth)} as CSSProperties)
+					: undefined,
+				style,
+			)}
 			{...rest}
 		>
-			<LabelTag
-				id={htmlFor ? undefined : labelId}
-				htmlFor={htmlFor}
+			<Type
+				as={htmlFor ? 'label' : 'span'}
+				id={labelledBy}
+				size={TYPE_SIZE[size]}
+				weight='medium'
 				className={cn(styles.label, labelClassName)}
+				{...(htmlFor ? {htmlFor} : null) as object}
 			>
 				{label}
-			</LabelTag>
-			<div
+			</Type>
+			<As
 				className={cn(styles.content, contentClassName)}
-				aria-labelledby={htmlFor ? undefined : labelId}
+				aria-labelledby={labelledBy}
 			>
 				{children}
-			</div>
-		</div>
+			</As>
+		</Flex>
 	);
 });
 

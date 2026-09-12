@@ -7,11 +7,22 @@ export interface CalendarDayCell {
 }
 
 /**
- * Диапазон дат для режима `Calendar` / `DateRangePicker`.
+ * Диапазон дат для режима `Calendar` / `DateRangeField`.
  */
 export interface DateRangeValue {
 	start?: Date;
 	end?: Date;
+}
+
+/** Событие планировщика: all-day или с временем. `end` — exclusive. */
+export interface CalendarScheduleEvent {
+	id: string;
+	title: string;
+	start: Date;
+	/** Exclusive конец интервала. */
+	end: Date;
+	allDay?: boolean;
+	color?: string;
 }
 
 export type CalendarViewMode = 'days' | 'months' | 'years';
@@ -31,11 +42,9 @@ export interface CalendarDayCellRenderProps {
 export interface CalendarProviderProps {
 	/** Режим выбора. @default 'single' */
 	selectionMode?: CalendarSelectionMode;
-	value?: Date;
-	onChange?: (date: Date) => void;
-	/** Диапазон при `selectionMode="range"` */
-	rangeValue?: DateRangeValue;
-	onRangeChange?: (range: DateRangeValue) => void;
+	/** Дата или диапазон — в зависимости от `selectionMode`. */
+	value?: Date | DateRangeValue;
+	onChange?: (value: Date | DateRangeValue) => void;
 	viewDate?: Date;
 	onViewDateChange?: (date: Date) => void;
 	renderDayCell?: (props: CalendarDayCellRenderProps) => React.ReactNode;

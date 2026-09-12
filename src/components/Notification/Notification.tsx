@@ -1,70 +1,39 @@
-import type {NotificationItem, NotificationPosition, NotificationViewportProps, NotificationRootProps, NotificationTitleProps, NotificationDescriptionProps, NotificationActionsProps, NotificationCloseProps} from './Notification.types';
+import type {
+	NotificationItem,
+	NotificationPosition,
+	NotificationViewportProps,
+	NotificationProps,
+} from './Notification.types';
 export type {
 	NotificationAction,
 	NotificationItem,
 	NotificationPosition,
 	NotificationViewportProps,
+	NotificationProps,
 	NotificationRootProps,
-	NotificationTitleProps,
-	NotificationDescriptionProps,
-	NotificationActionsProps,
-	NotificationCloseProps,
 } from './Notification.types';
 
 /* eslint-disable react-hooks/set-state-in-effect -- Эффекты синхронизируют состояние со сбросами пропов и обновлениями ResizeObserver. */
-/* eslint-disable react-hooks/refs -- Callback-ref намеренно синхронизируется во время render для тайминга анимации. */
 import React, {createContext, forwardRef, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {IconCross} from '../../icons/icons/IconCross';
-import {MediaRowBase} from '../../base/MediaRowBase';
+import {Button} from '../Button/Button';
+import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
+import overlayClose from '../../styles/overlayClose.module.css';
 import styles from './Notification.module.css';
 import {cn} from '../../utils/cn';
 import {composeEventHandlers} from '../../utils/composeEvents';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useLocale} from '../../locales/localeContext';
 import type {NotificationProviderProps} from './toast';
 import {createLibraryPortal} from '../../utils/portal';
 import {useDocumentKeyDown} from '../../hooks/useDocumentKeyDown';
-import {formatKeyboardShortcut, matchesKeyboardShortcut} from '../../utils/keyboardShortcut';
+import {formatKeyboardShortcut} from '../../utils/keyboardShortcut';
+import {matchesKeyboardShortcut} from '../../utils/keyboardShortcut.match';
 
-const POSITION_CLASS: Record<NotificationPosition, string> = {
-	'top-left': styles.posTopLeft,
-	'top-right': styles.posTopRight,
-	'top-center': styles.posTopCenter,
-	'bottom-left': styles.posBottomLeft,
-	'bottom-right': styles.posBottomRight,
-	'bottom-center': styles.posBottomCenter,
-};
-
-const ENTER_CLASS: Record<NotificationPosition, string> = {
-	'top-left': styles.enterLeft,
-	'top-right': styles.enterRight,
-	'top-center': styles.enterTop,
-	'bottom-left': styles.enterLeft,
-	'bottom-right': styles.enterRight,
-	'bottom-center': styles.enterBottom,
-};
-
-const EXIT_CLASS: Record<NotificationPosition, string> = {
-	'top-left': styles.exitLeft,
-	'top-right': styles.exitRight,
-	'top-center': styles.exitTop,
-	'bottom-left': styles.exitLeft,
-	'bottom-right': styles.exitRight,
-	'bottom-center': styles.exitBottom,
-};
-
-function isTopPosition(position: NotificationPosition): boolean {
-	return position.startsWith('top-');
-}
-
-interface NotificationViewportContextValue {
-	position: NotificationPosition;
-}
-
-const NotificationViewportContext = createContext<NotificationViewportContextValue>({
+const NotificationViewportContext = createContext<{position: NotificationPosition}>({
 	position: 'bottom-right',
 });
 
-/** Портальный контейнер для declarative toast-уведомлений. */
+/** Портальный контейнер для toast-уведомлений. */
 const NotificationViewport = forwardRef<HTMLDivElement, NotificationViewportProps>(
 	function NotificationViewport(
 		{
@@ -77,26 +46,19 @@ const NotificationViewport = forwardRef<HTMLDivElement, NotificationViewportProp
 		},
 		ref,
 	) {
-		const topAnchor = isTopPosition(position);
 		const viewportValue = useMemo(() => ({position}), [position]);
 
 		return createLibraryPortal(
 			<NotificationViewportContext.Provider value={viewportValue}>
 				<div
 					ref={ref}
-					className={cn(
-						styles.notificationsContainer,
-						POSITION_CLASS[position],
-						topAnchor ? styles.anchorTop : styles.anchorBottom,
-						className,
-					)}
+					className={cn(styles.notificationsContainer, className)}
 					data-position={position}
 					{...rest}
 				>
 					<NotificationStack
 						stacked={stacked}
 						stackDepth={stackDepth}
-						fromTop={topAnchor}
 					>
 						{children}
 					</NotificationStack>
@@ -110,14 +72,12 @@ interface NotificationStackProps {
 	children?: React.ReactNode;
 	stacked: boolean;
 	stackDepth: number;
-	fromTop: boolean;
 }
 
 const NotificationStack: React.FC<NotificationStackProps> = ({
 	children,
 	stacked,
 	stackDepth,
-	fromTop,
 }) => {
 	const [expanded, setExpanded] = useState(!stacked);
 	const frontRef = useRef<HTMLDivElement>(null);
@@ -145,7 +105,6 @@ const NotificationStack: React.FC<NotificationStackProps> = ({
 			className={cn(
 				styles.stack,
 				expanded ? styles.stackExpanded : styles.stackCollapsed,
-				fromTop ? styles.stackFromTop : styles.stackFromBottom,
 			)}
 			style={{
 				['--altum-stack-depth' as string]: String(visibleDepth),
@@ -172,7 +131,7 @@ const NotificationStack: React.FC<NotificationStackProps> = ({
 					ref={index === 0 ? frontRef : undefined}
 					className={cn(
 						styles.stackItem,
-						index >= visibleDepth ? styles.stackItemHidden : '',
+						index >= visibleDepth && styles.stackItemHidden,
 					)}
 					style={{['--altum-stack-i' as string]: String(index)}}
 				>
@@ -183,82 +142,8 @@ const NotificationStack: React.FC<NotificationStackProps> = ({
 	);
 };
 
-interface NotificationContextValue {
-	close: () => void;
-}
-
-const NotificationContext = createContext<NotificationContextValue | null>(null);
-
-function useNotificationContext(component: string): NotificationContextValue {
-	const context = useContext(NotificationContext);
-	if (!context) throw new Error(`${component} должен использоваться внутри Notification.Root`);
-	return context;
-}
-
-interface NotificationProgressProps {
-	duration: number;
-	paused: boolean;
-	onComplete?: () => void;
-}
-
-/** Изолированный прогресс: тики rAF не перерисовывают детей Notification.Provider. */
-const NotificationProgress: React.FC<NotificationProgressProps> = ({
-	duration,
-	paused,
-	onComplete,
-}) => {
-	const [remainingMs, setRemainingMs] = useState(duration);
-	const remainingRef = useRef(duration);
-	const lastTickRef = useRef<number | null>(null);
-	const onCompleteRef = useRef(onComplete);
-	onCompleteRef.current = onComplete;
-
-	useEffect(() => {
-		remainingRef.current = duration;
-		setRemainingMs(duration);
-		lastTickRef.current = null;
-	}, [duration]);
-
-	useEffect(() => {
-		if (duration <= 0) return undefined;
-
-		let frame = 0;
-		const tick = (now: number) => {
-			if (lastTickRef.current == null) {
-				lastTickRef.current = now;
-			}
-
-			if (!paused) {
-				const delta = now - lastTickRef.current;
-				remainingRef.current = Math.max(0, remainingRef.current - delta);
-				setRemainingMs(remainingRef.current);
-				if (remainingRef.current <= 0) {
-					onCompleteRef.current?.();
-					return;
-				}
-			}
-
-			lastTickRef.current = now;
-			frame = requestAnimationFrame(tick);
-		};
-
-		frame = requestAnimationFrame(tick);
-		return () => cancelAnimationFrame(frame);
-	}, [duration, paused]);
-
-	const progressRatio = duration > 0 ? remainingMs / duration : 0;
-	return (
-		<div className={styles.progressTrack} aria-hidden>
-			<div
-				className={styles.progressBar}
-				style={{transform: `scaleX(${progressRatio})`}}
-			/>
-		</div>
-	);
-};
-
 /**
- * Тост / баннер уведомления: variant, автозакрытие, пауза по hover.
+ * Тост / баннер: `title`, `description`, `actions`. Императивно — `notify()` + `NotificationProvider`.
  *
  * @component
  * @example
@@ -266,14 +151,16 @@ const NotificationProgress: React.FC<NotificationProgressProps> = ({
  *   <Button onClick={() => notify({title: 'Сохранено', variant: 'success'})}>Тост</Button>
  * </NotificationProvider>
  */
-const NotificationRoot = forwardRef<HTMLDivElement, NotificationRootProps>(function NotificationRoot(
+const NotificationCard = forwardRef<HTMLDivElement, NotificationProps>(function Notification(
 	{
 		variant = 'info',
 		duration = 3000,
 		progress = duration > 0,
 		pauseOnHover = true,
 		onClose,
-		children,
+		title,
+		description,
+		actions,
 		className,
 		onMouseEnter,
 		onMouseLeave,
@@ -282,6 +169,7 @@ const NotificationRoot = forwardRef<HTMLDivElement, NotificationRootProps>(funct
 	ref,
 ) {
 	const {position} = useContext(NotificationViewportContext);
+	const {t} = useLocale();
 	const [paused, setPaused] = useState(false);
 	const [exiting, setExiting] = useState(false);
 	const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -299,121 +187,97 @@ const NotificationRoot = forwardRef<HTMLDivElement, NotificationRootProps>(funct
 		if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
 	}, []);
 
-	const contextValue = useMemo<NotificationContextValue>(() => ({close}), [close]);
-	const showProgress = progress && duration > 0 && !exiting;
-
 	return (
-		<NotificationContext.Provider value={contextValue}>
-			<MediaRowBase
-				ref={ref}
-				className={cn(
-					styles.notification,
-					styles[variant],
-					exiting ? EXIT_CLASS[position] : ENTER_CLASS[position],
-					className,
-				)}
-				data-variant={variant}
-				onMouseEnter={composeEventHandlers(onMouseEnter, () => {
-					if (pauseOnHover) setPaused(true);
-				})}
-				onMouseLeave={composeEventHandlers(onMouseLeave, () => {
-					if (pauseOnHover) setPaused(false);
-				})}
-				{...rest}
-				role={variant === 'error' ? 'alert' : 'status'}
-				aria-live={variant === 'error' || variant === 'warning' ? 'assertive' : 'polite'}
-			>
-				{children}
-
-				{showProgress && (
-					<NotificationProgress
-						duration={duration}
-						paused={paused}
-						onComplete={close}
+		<div
+			ref={ref}
+			className={cn(
+				styles.notification,
+				styles[variant],
+				exiting && styles.exit,
+				className,
+			)}
+			data-variant={variant}
+			data-position={position}
+			onMouseEnter={composeEventHandlers(onMouseEnter, () => {
+				if (pauseOnHover) setPaused(true);
+			})}
+			onMouseLeave={composeEventHandlers(onMouseLeave, () => {
+				if (pauseOnHover) setPaused(false);
+			})}
+			{...rest}
+			role={variant === 'error' ? 'alert' : 'status'}
+			aria-live={variant === 'error' || variant === 'warning' ? 'assertive' : 'polite'}
+		>
+			<div className={styles.title}>
+				{title}
+			</div>
+			{description != null && description !== '' ? (
+				<div className={styles.description}>
+					{description}
+				</div>
+			) : null}
+			<ButtonIcon
+				appearance='diskClose'
+				className={styles.close}
+				aria-label={t('common.close')}
+				icon={(
+					<IconCross
+						className={overlayClose.icon}
+						size={16}
+						aria-hidden
 					/>
 				)}
-			</MediaRowBase>
-		</NotificationContext.Provider>
+				onClick={close}
+			/>
+			{actions?.length ? (
+				<div className={styles.actions}>
+					{actions.map((action, index) => (
+						<Button
+							key={`${action.label}-${index}`}
+							size='sm'
+							variant={action.variant === 'secondary' ? 'secondary' : 'primary'}
+							onClick={() => {
+								action.onClick();
+								close();
+							}}
+						>
+							{action.label}
+							{(action.shortcutLabel ?? action.shortcut) && (
+								<span className={styles.actionShortcut}>
+									{action.shortcutLabel ?? formatKeyboardShortcut(action.shortcut!)}
+								</span>
+							)}
+						</Button>
+					))}
+				</div>
+			) : null}
+
+			{progress && duration > 0 && !exiting && (
+				<div className={styles.progressTrack} aria-hidden>
+					<div
+						className={styles.progressBar}
+						style={{
+							animationDuration: `${duration}ms`,
+							animationPlayState: paused ? 'paused' : 'running',
+						}}
+						onAnimationEnd={close}
+					/>
+				</div>
+			)}
+		</div>
 	);
 });
-const NotificationTitle = forwardRef<HTMLDivElement, NotificationTitleProps>(
-	function NotificationTitle({className, ...rest}, ref) {
-		return (
-			<MediaRowBase.Title
-				ref={ref}
-				className={cn(styles.title, className)}
-				{...rest}
-			/>
-		);
-	},
-);
-const NotificationDescription = forwardRef<HTMLDivElement, NotificationDescriptionProps>(
-	function NotificationDescription({className, ...rest}, ref) {
-		return (
-			<MediaRowBase.Description
-				ref={ref}
-				className={cn(styles.description, className)}
-				{...rest}
-			/>
-		);
-	},
-);
-const NotificationActions = forwardRef<HTMLDivElement, NotificationActionsProps>(
-	function NotificationActions({className, ...rest}, ref) {
-		return (
-			<MediaRowBase.Actions
-				ref={ref}
-				className={cn(styles.actions, className)}
-				{...rest}
-			/>
-		);
-	},
-);
-const NotificationClose = forwardRef<HTMLButtonElement, NotificationCloseProps>(
-	function NotificationClose({className, onClick, 'aria-label': ariaLabel, ...rest}, ref) {
-		const {close} = useNotificationContext('Notification.Close');
-		const {t} = useLocale();
-		return (
-			<button
-				ref={ref}
-				type='button'
-				className={cn(styles.close, className)}
-				{...rest}
-				aria-label={ariaLabel ?? t('common.close')}
-				onClick={composeEventHandlers(onClick, () => {
-					close();
-				})}
-			>
-				<IconCross size={16} />
-			</button>
-		);
-	},
-);
 
-NotificationRoot.displayName = 'Notification';
+NotificationCard.displayName = 'Notification';
 NotificationViewport.displayName = 'Notification.Viewport';
-NotificationTitle.displayName = 'Notification.Title';
-NotificationDescription.displayName = 'Notification.Description';
-NotificationActions.displayName = 'Notification.Actions';
-NotificationClose.displayName = 'Notification.Close';
 
-export const Notification = Object.assign(NotificationRoot, {
-	Root: NotificationRoot,
+export const Notification = Object.assign(NotificationCard, {
 	Viewport: NotificationViewport,
-	Title: NotificationTitle,
-	Description: NotificationDescription,
-	Actions: NotificationActions,
-	Close: NotificationClose,
 }) as React.ForwardRefExoticComponent<
-	NotificationRootProps & React.RefAttributes<HTMLDivElement>
+	NotificationProps & React.RefAttributes<HTMLDivElement>
 > & {
-	Root: typeof NotificationRoot;
 	Provider: React.FC<NotificationProviderProps>;
 	Viewport: typeof NotificationViewport;
-	Title: typeof NotificationTitle;
-	Description: typeof NotificationDescription;
-	Actions: typeof NotificationActions;
-	Close: typeof NotificationClose;
 };
 
 interface NotificationContainerProps extends Omit<NotificationViewportProps, 'children'> {
@@ -421,13 +285,11 @@ interface NotificationContainerProps extends Omit<NotificationViewportProps, 'ch
 	onClose: (id: string) => void;
 }
 
-interface NotificationItemRendererProps {
+/** Рендерит данные императивного уведомления. */
+export const NotificationItemRenderer: React.FC<{
 	item: NotificationItem;
 	onClose: (id: string) => void;
-}
-
-/** Рендерит данные императивного уведомления через составной API. */
-export const NotificationItemRenderer: React.FC<NotificationItemRendererProps> = ({item, onClose}) => {
+}> = ({item, onClose}) => {
 	const close = useCallback(() => onClose(item.id), [item.id, onClose]);
 
 	useDocumentKeyDown((event) => {
@@ -443,48 +305,16 @@ export const NotificationItemRenderer: React.FC<NotificationItemRendererProps> =
 	});
 
 	return (
-		<NotificationRoot
+		<Notification
 			variant={item.variant}
 			duration={item.duration}
 			progress={item.progress}
 			pauseOnHover={item.pauseOnHover}
 			onClose={close}
-		>
-			<NotificationTitle>
-				{item.title}
-			</NotificationTitle>
-			{item.description && (
-				<NotificationDescription>
-					{item.description}
-				</NotificationDescription>
-			)}
-			<NotificationClose />
-			{item.actions?.length ? (
-				<NotificationActions>
-					{item.actions.map((action, index) => (
-						<button
-							key={`${action.label}-${index}`}
-							type='button'
-							className={cn(
-								styles.actionBtn,
-								action.variant === 'secondary' && styles.actionBtnSecondary,
-							)}
-							onClick={() => {
-								action.onClick();
-								close();
-							}}
-						>
-							{action.label}
-							{(action.shortcutLabel ?? action.shortcut) && (
-								<span className={styles.actionShortcut}>
-									{action.shortcutLabel ?? formatKeyboardShortcut(action.shortcut!)}
-								</span>
-							)}
-						</button>
-					))}
-				</NotificationActions>
-			) : null}
-		</NotificationRoot>
+			title={item.title}
+			description={item.description}
+			actions={item.actions}
+		/>
 	);
 };
 

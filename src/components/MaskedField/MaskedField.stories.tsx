@@ -1,31 +1,37 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {MaskedField, MaskedFieldProps} from './MaskedField';
-import {Stack} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout/Layout';
 import {Button} from '../Button/Button';
-import {componentParameters, story, Story} from '../../storybook/meta';
+import {Fieldset} from '../Fieldset/Fieldset';
+import {TextField} from '../TextField/TextField';
+import {
+	componentParameters,
+	fieldArgTypes,
+	STORY_OVERFLOW_LABEL,
+	story,
+	Story,
+} from '../../storybook/meta';
+import {playFocus, playType} from '../../storybook/play';
 
 export default {
-	title: 'altum/Components/MaskedField',
+	title: 'altum/Components/FormField/MaskedField',
 	component: MaskedField,
 	tags: ['autodocs'],
-	parameters: componentParameters('Текстовое поле с маской ввода для дат, телефонов и других форматов.'),
+	parameters: componentParameters(
+		'Текстовое поле с маской ввода для дат, телефонов и других форматов.',
+	),
+	args: {
+		label: 'Дата рождения (ДД.ММ.ГГГГ)',
+		mask: '99.99.9999',
+		size: 'md',
+		labelPlacement: 'inline',
+	},
 	argTypes: {
-		label: {
-			control: 'text',
-			description: 'Метка поля',
-		},
+		...fieldArgTypes,
 		mask: {
 			control: 'text',
-			description: 'Шаблон маски (9 — цифра)',
-		},
-		size: {
-			control: 'inline-radio',
-			options: ['sm', 'md', 'lg'],
-		},
-		labelPlacement: {
-			control: 'inline-radio',
-			options: ['inline', 'outside', 'none'],
+			description: 'Шаблон маски (`9` — цифра)',
 		},
 		maskAsPlaceholder: {
 			control: 'boolean',
@@ -42,7 +48,10 @@ export const Playground: Story<MaskedFieldProps> = {
 				<MaskedField
 					{...args}
 					value={val}
-					onChange={setVal}
+					onChange={(next) => {
+						args.onChange?.(next);
+						setVal(next);
+					}}
 					id='story-mask-playground'
 				/>
 			</div>
@@ -98,11 +107,7 @@ export const SizesAndPlacement: Story<MaskedFieldProps> = {
 		const [phone, setPhone] = useState('900');
 		const [date, setDate] = useState('1507');
 		return (
-			<Stack
-				gap='lg'
-			
-				style={{maxWidth: 360}}
-			>
+			<Stack gap='lg' style={{maxWidth: 360}}>
 				{(['sm', 'md', 'lg'] as const).map((size) => (
 					<MaskedField
 						key={size}
@@ -116,13 +121,10 @@ export const SizesAndPlacement: Story<MaskedFieldProps> = {
 					/>
 				))}
 				{(['sm', 'md', 'lg'] as const).map((size) => (
-					<div
+					<Inline
 						key={`c-${size}`}
-						style={{
-							display: 'flex',
-							gap: 'var(--altum-g-space-2)',
-							alignItems: 'center',
-						}}
+						gap='sm'
+						align='center'
 					>
 						<MaskedField
 							label='Дата'
@@ -138,7 +140,7 @@ export const SizesAndPlacement: Story<MaskedFieldProps> = {
 						<Button size={size}>
 							OK
 						</Button>
-					</div>
+					</Inline>
 				))}
 			</Stack>
 		);
@@ -188,6 +190,64 @@ export const LabelPlacement: Story<MaskedFieldProps> = {
 	parameters: story('`labelPlacement` + `maskAsPlaceholder` вне inline.'),
 };
 
+export const Disabled: Story<MaskedFieldProps> = {
+	render: () => (
+		<Stack gap='md' style={{maxWidth: 300}}>
+			<MaskedField
+				label='Телефон'
+				mask='+7 (999) 999-99-99'
+				value='9123456789'
+				onChange={() => undefined}
+				disabled
+				width='full'
+			/>
+			<MaskedField
+				label='Телефон'
+				mask='+7 (999) 999-99-99'
+				value='912'
+				onChange={() => undefined}
+				error='Неполный номер'
+				width='full'
+			/>
+		</Stack>
+	),
+	parameters: story('`disabled` и ошибка незавершённой маски.'),
+};
+
+export const Empty: Story<MaskedFieldProps> = {
+	render: () => (
+		<div style={{maxWidth: 300}}>
+			<MaskedField
+				label='Дата'
+				mask='99.99.9999'
+				value=''
+				onChange={() => undefined}
+				helperText='Формат ДД.ММ.ГГГГ'
+				width='full'
+			/>
+		</div>
+	),
+	parameters: story('Пустая маска с подсказкой.'),
+};
+
+export const OverflowText: Story<MaskedFieldProps> = {
+	render: function OverflowRender() {
+		const [val, setVal] = useState('15071990');
+		return (
+			<div style={{maxWidth: 240}}>
+				<MaskedField
+					label={STORY_OVERFLOW_LABEL}
+					mask='99.99.9999'
+					value={val}
+					onChange={setVal}
+					width='full'
+				/>
+			</div>
+		);
+	},
+	parameters: story('Длинный floating label на узком поле.'),
+};
+
 export const WithClear: Story<MaskedFieldProps> = {
 	render: function WithClearRender() {
 		const [val, setVal] = useState('9123456789');
@@ -206,4 +266,91 @@ export const WithClear: Story<MaskedFieldProps> = {
 		);
 	},
 	parameters: story('Кнопка очистки при `onClear` — сбрасывает цифры маски.'),
+};
+
+export const Focused: Story<MaskedFieldProps> = {
+	render: function FocusedRender() {
+		const [val, setVal] = useState('1507');
+		return (
+			<div style={{maxWidth: 300}}>
+				<MaskedField
+					label='Дата'
+					mask='99.99.9999'
+					value={val}
+					onChange={setVal}
+					width='full'
+				/>
+			</div>
+		);
+	},
+	play: async ({canvasElement}) => {
+		await playFocus(canvasElement);
+	},
+	parameters: story('Программный фокус — chrome и оверлей маски.'),
+};
+
+export const Interaction: Story<MaskedFieldProps> = {
+	render: function InteractionRender() {
+		const [val, setVal] = useState('');
+		return (
+			<div style={{maxWidth: 300}}>
+				<MaskedField
+					label='Телефон'
+					mask='+7 (999) 999-99-99'
+					value={val}
+					onChange={setVal}
+					width='full'
+				/>
+			</div>
+		);
+	},
+	play: async ({canvasElement}) => {
+		await playType(canvasElement, '9123456789');
+	},
+	parameters: story('Play: набор цифр по маске телефона.'),
+};
+
+export const UsageExample: Story<MaskedFieldProps> = {
+	render: function UsageExampleRender() {
+		const [name, setName] = useState('');
+		const [phone, setPhone] = useState('');
+		const [birth, setBirth] = useState('');
+		return (
+			<div style={{maxWidth: 400}}>
+				<Fieldset
+					legend='Контакты'
+					description='Телефон и дата рождения по маске.'
+					footer={(
+						<Inline gap='sm' justify='end'>
+							<Button variant='primary'>
+								Продолжить
+							</Button>
+						</Inline>
+					)}
+				>
+					<TextField
+						label='Имя'
+						value={name}
+						onChange={(e) => setName(e.target.value)}
+						width='full'
+					/>
+					<MaskedField
+						label='Телефон'
+						mask='+7 (999) 999-99-99'
+						value={phone}
+						onChange={setPhone}
+						width='full'
+					/>
+					<MaskedField
+						label='Дата рождения'
+						mask='99.99.9999'
+						value={birth}
+						onChange={setBirth}
+						width='full'
+					/>
+				</Fieldset>
+			</div>
+		);
+	},
+	parameters: story('Контактная форма: TextField + две маски.'),
 };

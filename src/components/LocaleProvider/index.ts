@@ -1,4 +1,5 @@
-export {LocaleProvider, useLocale, useT} from './LocaleProvider';
+export {LocaleProvider} from './LocaleProvider';
+export {useLocale, useT} from '../../locales/localeContext';
 export type {
 	LocaleCode,
 	Messages,

@@ -4,6 +4,7 @@ import type {DropdownProps, DropdownTriggerAttrs} from '../Dropdown/Dropdown';
 import type {ListboxFilterFn, ListboxGroup} from '../../utils/listboxOptions';
 import type {ListboxProps} from '../Listbox/Listbox';
 import type {FieldBaseProps} from '../../base/FieldBase';
+import type {TextFieldProps} from '../TextField/TextField.types';
 import type {
 	CustomSelectOption,
 	CustomSelectRenderTargetContext,
@@ -51,6 +52,7 @@ export interface CustomSelectShellProps
 	/** `aria-haspopup` на кнопке. @default 'listbox' */
 	popupRole?: 'listbox' | 'tree' | 'dialog' | 'menu';
 	children: ReactNode;
+	/** Скрытый сайзер ширины триггера (самый длинный пункт). */
 	sizerContent?: ReactNode;
 	triggerClassName?: string;
 	triggerAs?: 'button' | 'div';
@@ -62,12 +64,12 @@ export interface CustomSelectShellProps
 }
 
 export interface CustomSelectFilterProps extends Omit<
-	ComponentPropsWithoutRef<'input'>,
-	'value' | 'type'
+	TextFieldProps,
+	'value' | 'type' | 'prefix' | 'label'
 > {
 	autoFocus?: boolean;
-	/** className оболочки вокруг search-input. */
-	wrapperClassName?: string;
+	/** @default locale `customSelect.filterPlaceholder` */
+	label?: string;
 }
 
 export interface CustomSelectListProps extends Omit<
@@ -108,6 +110,10 @@ export interface CustomSelectRootProps extends Omit<
 	onFilterQueryChange?: (query: string) => void;
 	renderTarget: (ctx: CustomSelectRenderTargetContext) => ReactNode;
 	align?: DropdownProps['align'];
+	/**
+	 * Ширина панели относительно триггера.
+	 * @default `'trigger-fit'` — не уже триггера, растёт по пунктам, не шире вьюпорта
+	 */
 	widthMode?: DropdownProps['widthMode'];
 	triggerMode?: DropdownProps['triggerMode'];
 	mobileTitle?: ReactNode;

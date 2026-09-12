@@ -1,37 +1,21 @@
-/* Десктоп: chrome панели (позиция/анимация — Overlay) */
-
 .root {
-  display: contents;
+  display: inline-block;
 }
 
-.dropdownOverlay {
+.panel {
   box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: auto;
 
   color: var(--altum-color-text);
+
+  &.mobile {
+    width: 100%;
+  }
 }
 
-/* Мобильный: контент внутри Sheet (без собственной «шторки») */
-
-.mobilePanel {
-  box-sizing: border-box;
-  overflow-x: hidden;
-  overflow-y: auto;
-
-  width: 100%;
-
-  color: var(--altum-color-text);
-}
-
-/* Панель с внутренним скроллом (TimePicker, DatePicker) */
-
-.dropdownPanelContentScroll {
-  box-sizing: border-box;
+.contentScroll {
   overflow: hidden;
 
   padding-block: var(--altum-g-space-1);
-  &.mobilePanel {
-    overflow: hidden;
-  }
 }

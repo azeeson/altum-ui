@@ -6,7 +6,6 @@
   overflow: hidden;
 
   flex-direction: column;
-  /* Высота от flex-родителя (`align-self: stretch`), не 100vh — иначе демо/shell разъезжаются. */
   align-self: stretch;
 
   width: var(--altum-sidebar-width);
@@ -20,14 +19,14 @@
 
   transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 
-  & .mobileSidebar {
+  &.mobileSidebar {
     width: 100%;
     height: 100%;
 
     border-right: 0;
   }
 
-  & .collapsed {
+  &.collapsed {
     width: var(--altum-sidebar-width-collapsed);
     & .menuItem {
       justify-content: center;
@@ -66,31 +65,7 @@
   }
 
   & .toggleBtn {
-    display: inline-flex;
-
-    justify-content: center;
-    align-items: center;
-
-    padding: var(--altum-g-space-1);
-
-    border: none;
-    border-radius: var(--altum-g-radius-sm);
-
     color: var(--altum-color-muted);
-    background-color: transparent;
-
-    cursor: pointer;
-
-    transition: var(--altum-transition-smooth);
-    &:hover:not(:disabled) {
-      color: var(--altum-color-input-text);
-      background-color: var(--altum-color-option-hover);
-    }
-
-    &:focus-visible {
-      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
-      outline-offset: var(--altum-focus-ring-offset);
-    }
   }
 
   & .sidebarMenu {
@@ -113,7 +88,13 @@
   & .toggleIcon {
     display: inline-flex;
 
+    color: inherit;
+
     transition: transform 0.2s ease;
+
+    & svg {
+      fill: currentColor;
+    }
 
     &.toggleIconCollapsed {
       transform: rotate(180deg);
@@ -130,23 +111,14 @@
 
     padding: var(--altum-g-space-2) var(--altum-g-space-3);
 
-    border: none;
     border-radius: var(--altum-g-radius-sm);
 
-    font: inherit;
     text-align: left;
     text-decoration: none;
 
     color: var(--altum-color-text-secondary);
-    background-color: transparent;
-
-    cursor: pointer;
 
     transition: var(--altum-transition-smooth);
-    &:focus-visible {
-      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
-      outline-offset: calc(var(--altum-focus-ring-offset) * -1);
-    }
 
     &:hover:not(:disabled) {
       color: var(--altum-color-input-text);
@@ -160,20 +132,29 @@
 
     &.disabled {
       opacity: var(--altum-opacity-disabled);
-
-      cursor: not-allowed;
     }
   }
 
   & .menuIcon {
     display: inline-flex;
 
+    flex-shrink: 0;
     justify-content: center;
     align-items: center;
 
-    min-width: var(--altum-g-space-5);
+    width: var(--altum-control-icon-size-md);
+    height: var(--altum-control-icon-size-md);
 
-    font-size: var(--altum-g-font-size-lg);
+    color: inherit;
+
+    & svg {
+      display: block;
+
+      width: 100%;
+      height: 100%;
+
+      fill: currentColor;
+    }
   }
 
   & .menuLabel {
@@ -207,9 +188,8 @@
     padding: var(--altum-g-space-2) var(--altum-g-space-3);
 
     font-size: var(--altum-g-font-size-xs);
-    font-weight: var(--altum-g-font-weight-semibold);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    font-weight: var(--altum-g-font-weight-medium);
+    line-height: var(--altum-g-line-height-xs);
 
     color: var(--altum-color-muted);
   }
@@ -220,35 +200,3 @@
     border-top: 1px solid var(--altum-color-border);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

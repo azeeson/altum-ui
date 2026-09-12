@@ -43,6 +43,11 @@ export interface CheckboxProps extends Omit<ComponentPropsWithoutRef<'input'>, '
 	 * @default mode=task → 'start', иначе 'center'
 	 */
 	align?: 'start' | 'center';
+	/**
+	 * Значение, без native event — как `Switch.onChange`.
+	 * Native `onChange` сохраняется.
+	 */
+	onCheckedChange?: (checked: boolean) => void;
 }
 
 /**

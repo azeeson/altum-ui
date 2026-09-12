@@ -9,10 +9,11 @@ export type {
 	StepsProps,
 } from './Steps.types';
 
-import React, {forwardRef} from 'react';
+import {forwardRef} from 'react';
 import styles from './Steps.module.css';
+import unstyled from '../../styles/unstyledControl.module.css';
 import {cn} from '../../utils/cn';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useLocale} from '../../locales/localeContext';
 
 function resolveStatus(item: StepItem, index: number, currentStep: number): StepStatus {
 	if (item.status) return item.status;
@@ -57,58 +58,55 @@ export const Steps = forwardRef<HTMLOListElement, StepsProps>(function Steps(
 			className={cn(
 				styles.steps,
 				styles[orientation],
-				styles[size],
-				showConnectors ? '' : styles.noConnectors,
+				size !== 'md' && styles[size],
+				!showConnectors && styles.noConnectors,
 				className,
 			)}
 			aria-label={ariaLabel ?? t('steps.ariaLabel')}
-			data-size={size}
 			{...rest}
 		>
 			{items.map((item, index) => {
 				const status = resolveStatus(item, index, currentStep);
 				const clickable = !!onStepClick && !item.disabled;
-
-				const itemClasses = cn(styles.stepItem, styles[`status_${status}`], clickable ? styles.clickable : '');
-
 				const mark = item.icon ?? (
 					status === 'complete' ? '✓' : status === 'error' ? '!' : index + 1
 				);
-
-				const content = (
+				const body = (
 					<>
-						<div className={styles.circle} aria-hidden>
+						<span className={styles.circle} aria-hidden>
 							{mark}
-						</div>
-						<div className={styles.labelBlock}>
-							<div className={styles.stepLabel}>
-								{item.title}
-							</div>
-							{item.description != null && (
-								<div className={styles.stepDesc}>
-									{item.description}
-								</div>
-							)}
-						</div>
+						</span>
+						<span className={styles.stepLabel}>
+							{item.title}
+						</span>
+						{item.description != null && (
+							<span className={styles.stepDesc}>
+								{item.description}
+							</span>
+						)}
 					</>
 				);
 
 				return (
 					<li
 						key={index}
-						className={itemClasses}
+						className={cn(styles.stepItem, styles[status])}
 						aria-current={status === 'current' ? 'step' : undefined}
 					>
 						{clickable ? (
 							<button
 								type='button'
-								className={styles.stepButton}
+								className={cn(unstyled.control, styles.body)}
 								disabled={item.disabled}
 								onClick={() => onStepClick(index)}
 							>
-								{content}
+								{body}
 							</button>
-						) : content}
+						) : (
+							<div className={styles.body}>
+								{body}
+							</div>
+						)}
 					</li>
 				);
 			})}

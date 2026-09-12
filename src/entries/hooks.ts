@@ -13,6 +13,7 @@ export {
 	useControlledState,
 	useControlledStateWithCallback,
 } from '../hooks/useControlledState';
+export {useNow} from '../hooks/useNow';
 export {useOverlay} from '../hooks/useOverlay';
 export type {UseOverlayOptions} from '../hooks/useOverlay';
 export {useFocusRestore} from '../hooks/useFocusRestore';
@@ -29,6 +30,7 @@ export {
 	usePrefersReducedMotion,
 	REDUCED_MOTION_QUERY,
 } from '../hooks/usePrefersReducedMotion';
+export {usePresence} from '../hooks/usePresence';
 
 export {useForm} from '../hooks/useForm';
 export type {ValidationRules} from '../hooks/useForm';

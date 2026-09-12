@@ -3,8 +3,8 @@ import {
 	addDays,
 	isToday,
 	startOfDay,
+	weekdayLabels,
 } from '../Calendar/Calendar.utils';
-import {Tooltip} from '../Tooltip/Tooltip';
 import {
 	useCalendarBoard,
 	type CalendarBoardTask,
@@ -12,8 +12,9 @@ import {
 } from './CalendarBoard.context';
 import {buildMonthWeeks, calendarDateKey} from './CalendarBoard.utils';
 import styles from './CalendarBoard.module.css';
+import unstyled from '../../styles/unstyledControl.module.css';
 import {cn} from '../../utils/cn';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useLocale} from '../../locales/localeContext';
 import type {CalendarBoardYearProps} from './CalendarBoard.types';
 
 export type {CalendarBoardYearProps} from './CalendarBoard.types';
@@ -53,10 +54,7 @@ export const CalendarBoardYear = forwardRef<HTMLDivElement, CalendarBoardYearPro
 		return map;
 	}, [tasks, year]);
 
-	const weekdayLabels = useMemo(() => {
-		if (weekStartsOn === 1) return weekdaysShort.map((name) => name[0] ?? '');
-		return [weekdaysShort[6]?.[0] ?? '', ...weekdaysShort.slice(0, 6).map((name) => name[0] ?? ''),];
-	}, [weekdaysShort, weekStartsOn]);
+	const labels = weekdayLabels(weekdaysShort, weekStartsOn).map((name) => name[0] ?? '');
 
 	return (
 		<div
@@ -93,7 +91,7 @@ export const CalendarBoardYear = forwardRef<HTMLDivElement, CalendarBoardYearPro
 					>
 						<button
 							type='button'
-							className={styles.yearMonthLabelBtn}
+							className={cn(unstyled.control, styles.yearMonthLabelBtn)}
 							onClick={() => {
 								setViewDate(monthDate);
 								setView('month');
@@ -101,8 +99,8 @@ export const CalendarBoardYear = forwardRef<HTMLDivElement, CalendarBoardYearPro
 						>
 							{months[monthIndex]}
 						</button>
-						<div className={styles.yearWeekdayRow}>
-							{weekdayLabels.map((label, index) => (
+						<div className={styles.yearCols}>
+							{labels.map((label, index) => (
 								<span key={`${label}-${index}`} className={styles.yearWeekday}>
 									{label}
 								</span>
@@ -110,23 +108,28 @@ export const CalendarBoardYear = forwardRef<HTMLDivElement, CalendarBoardYearPro
 						</div>
 						<div className={styles.yearWeeks}>
 							{weeks.map((week) => (
-								<div key={week[0]!.toISOString()} className={styles.yearWeek}>
+								<div key={week[0]!.toISOString()} className={styles.yearCols}>
 									{week.map((date) => {
 										const inMonth = date.getMonth() === monthIndex;
 										const dayTasks = tasksByDay.get(calendarDateKey(date)) ?? [];
 										const hasTask = dayTasks.length > 0;
 										const today = isToday(date);
 
-										const dayNode = (
+										return (
 											<button
+												key={date.toISOString()}
 												type='button'
 												disabled={!inMonth}
 												className={cn(
+													unstyled.control,
 													styles.yearDay,
 													!inMonth ? styles.yearDayOutside : '',
 													today ? styles.yearDayToday : '',
 													hasTask ? styles.yearDayHasTask : '',
 												)}
+												title={inMonth && hasTask
+													? dayTasks.map((task) => task.title).join('\n')
+													: undefined}
 												onClick={() => {
 													if (!inMonth) return;
 													setViewDate(date);
@@ -147,34 +150,6 @@ export const CalendarBoardYear = forwardRef<HTMLDivElement, CalendarBoardYearPro
 											>
 												{inMonth ? date.getDate() : ''}
 											</button>
-										);
-
-										if (!inMonth || !hasTask) {
-											return (
-												<span key={date.toISOString()} className={styles.yearDayWrap}>
-													{dayNode}
-												</span>
-											);
-										}
-
-										return (
-											<span key={date.toISOString()} className={styles.yearDayWrap}>
-												<Tooltip
-													position='top'
-													asChild
-													content={(
-														<ul className={styles.yearTooltipList}>
-															{dayTasks.map((task) => (
-																<li key={task.id}>
-																	{task.title}
-																</li>
-															))}
-														</ul>
-													)}
-												>
-													{dayNode}
-												</Tooltip>
-											</span>
 										);
 									})}
 								</div>

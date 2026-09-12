@@ -1,4 +1,7 @@
 .gallery {
+  --altum-image-gallery-chrome-in: opacity 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  --altum-image-gallery-chrome-out: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
   display: flex;
 
   flex-direction: column;
@@ -8,7 +11,7 @@
 
   font-family: var(--altum-g-font-family-ui);
 
-  & .empty {
+  &.empty {
     justify-content: center;
     align-items: center;
 
@@ -29,25 +32,9 @@
   & .mainArea {
     position: relative;
 
-    display: flex;
-
-    align-items: center;
-    gap: var(--altum-g-space-2);
+    overflow: var(--altum-image-gallery-viewport-overflow, hidden);
 
     width: 100%;
-    min-width: 0;
-  }
-
-  & .viewport {
-    position: relative;
-
-    display: flex;
-    overflow: hidden;
-
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-
     min-width: 0;
     height: var(--altum-image-gallery-viewport-height, min(60vh, 480px));
 
@@ -58,27 +45,26 @@
   }
 
   & .mainImage {
+    position: absolute;
+    inset: 0;
+    z-index: var(--altum-g-z-raised);
+
     width: 100%;
-    min-width: 0;
     height: 100%;
-    min-height: 0;
     object-fit: contain;
 
     user-select: none;
 
-    will-change: transform, opacity;
-  }
+    filter: var(--altum-image-gallery-image-filter, none);
 
-  & .slide_next {
-    animation: gallerySlideNext 0.42s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  & .slide_prev {
-    animation: gallerySlidePrev 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: galleryFade 0.32s ease;
   }
 
   & .navBtn {
-    flex-shrink: 0;
+    /* !important: перекрывает ButtonIcon `position: relative` */
+    position: absolute !important;
+    top: 50%;
+    z-index: var(--altum-g-z-raised-above);
 
     border: 1px solid var(--altum-image-gallery-nav-border, var(--altum-color-border)) !important;
 
@@ -86,10 +72,50 @@
     background-color: var(--altum-image-gallery-nav-bg, var(--altum-color-surface)) !important;
     box-shadow: var(--altum-shadow-surface);
 
+    /* Не `transform`: ButtonIcon `:active` задаёт `scale(0.95)` и затирал бы translateY. */
+    translate: 0 -50%;
+
     &:disabled {
       opacity: 0.35;
 
       pointer-events: none;
+    }
+  }
+
+  & .navPrev {
+    left: var(--altum-g-space-3);
+  }
+
+  & .navNext {
+    right: var(--altum-g-space-3);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    & .navBtn {
+      opacity: 0;
+
+      pointer-events: none;
+
+      transition: var(--altum-image-gallery-chrome-out);
+
+      &:disabled {
+        opacity: 0;
+      }
+    }
+
+    & .mainArea:hover .navBtn,
+    & .mainArea:focus-within .navBtn {
+      opacity: 1;
+
+      pointer-events: auto;
+
+      transition: var(--altum-image-gallery-chrome-in);
+
+      &:disabled {
+        opacity: 0.35;
+
+        pointer-events: none;
+      }
     }
   }
 
@@ -158,59 +184,18 @@
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@keyframes gallerySlideNext {
+@keyframes galleryFade {
   from {
     opacity: 0;
-
-    transform: translateX(var(--altum-g-space-7)) scale(0.98);
-  }
-  to {
-    opacity: 1;
-
-    transform: translateX(0) scale(1);
-  }
-}
-
-@keyframes gallerySlidePrev {
-  from {
-    opacity: 0;
-
-    transform: translateX(calc(var(--altum-g-space-7) * -1)) scale(0.98);
-  }
-  to {
-    opacity: 1;
-
-    transform: translateX(0) scale(1);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .slide_next,
-  .slide_prev {
-    transform: none;
-
+  .gallery .mainImage {
     animation: none;
   }
+
+  .gallery .navBtn {
+    transition: none;
+  }
 }
-
-
-
-
-
-
-
-

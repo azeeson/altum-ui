@@ -1,7 +1,7 @@
-/* Уведомление (Notification) */
-
 .notificationsContainer {
   --altum-notification-max-width: 360px;
+  --altum-notify-from-x: 0;
+  --altum-notify-from-y: 0;
 
   position: fixed;
   z-index: var(--altum-g-z-notification);
@@ -16,40 +16,54 @@
   max-width: var(--altum-notification-max-width);
 
   pointer-events: none;
-}
 
-.anchorTop {
-  top: max(var(--altum-g-space-6), env(safe-area-inset-top, 0px));
-  bottom: auto;
-}
+  &[data-position^='top'] {
 
-.anchorBottom {
-  top: auto;
-  /* Учесть home indicator */
-  bottom: max(
-    calc(var(--altum-g-space-6) + env(safe-area-inset-bottom, 0px)),
-    calc(var(--altum-notification-anchor-inset) + env(safe-area-inset-bottom, 0px) + var(--altum-g-space-3))
-  );
-}
+    --altum-notify-from-y: calc(-1 * var(--altum-g-space-5));
+    top: max(var(--altum-g-space-6), env(safe-area-inset-top, 0px));
+    bottom: auto;
+  }
 
-.posTopLeft,
-.posBottomLeft {
-  right: auto;
-  left: max(var(--altum-g-space-6), env(safe-area-inset-left, 0px));
-}
+  &[data-position^='bottom'] {
 
-.posTopRight,
-.posBottomRight {
-  right: max(var(--altum-g-space-6), env(safe-area-inset-right, 0px));
-  left: auto;
-}
+    --altum-notify-from-y: var(--altum-g-space-5);
+    top: auto;
+    bottom: max(
+      calc(var(--altum-g-space-6) + env(safe-area-inset-bottom, 0px)),
+      calc(var(--altum-notification-anchor-inset) + env(safe-area-inset-bottom, 0px) + var(--altum-g-space-3))
+    );
+  }
 
-.posTopCenter,
-.posBottomCenter {
-  right: auto;
-  left: 50%;
+  &[data-position$='left'] {
 
-  transform: translateX(-50%);
+    --altum-notify-from-x: calc(-1 * var(--altum-g-space-6));
+    --altum-notify-from-y: 0;
+    right: auto;
+    left: max(var(--altum-g-space-6), env(safe-area-inset-left, 0px));
+  }
+
+  &[data-position$='right'] {
+
+    --altum-notify-from-x: var(--altum-g-space-6);
+    --altum-notify-from-y: 0;
+    right: max(var(--altum-g-space-6), env(safe-area-inset-right, 0px));
+    left: auto;
+  }
+
+  &[data-position$='center'] {
+    right: auto;
+    left: 50%;
+
+    transform: translateX(-50%);
+  }
+
+  &[data-position^='top'] .stackCollapsed .stackItem:not(:first-child):not(.stackItemHidden) {
+    transform-origin: center top;
+  }
+
+  &[data-position^='bottom'] .stackCollapsed .stackItem:not(:first-child):not(.stackItemHidden) {
+    transform-origin: center bottom;
+  }
 }
 
 .stack {
@@ -113,30 +127,13 @@
   will-change: transform, margin-top;
 }
 
-/*
- * Свёртка в потоке: каждая следующая карточка сдвигается margin-top
- * на (badge-overhang − высота верхней) → в сумме высота ≈ front + (depth−1)*peek,
- * без «уезда» якоря. Margin анимируется при раскрытии.
- */
-
 .stackCollapsed .stackItem:not(:first-child):not(.stackItemHidden) {
-  /* Вложенный calc() в fallback var() ломает minify cssnano; 64px = space-8 * 2 */
   margin-top: calc(var(--altum-badge-overhang) - var(--altum-stack-front-h, var(--altum-notification-stack-front)));
 
   pointer-events: none;
 
   transform: scale(calc(1 - var(--altum-stack-i, 1) * 0.035));
 }
-
-.stackCollapsed.stackFromTop .stackItem:not(:first-child):not(.stackItemHidden) {
-  transform-origin: center top;
-}
-
-.stackCollapsed.stackFromBottom .stackItem:not(:first-child):not(.stackItemHidden) {
-  transform-origin: center bottom;
-}
-
-/* Карточки глубже stackDepth — вне потока, не раздувают стопку */
 
 .stackCollapsed .stackItemHidden {
   position: absolute;
@@ -186,6 +183,11 @@
   pointer-events: auto;
 
   transition: var(--altum-transition-smooth);
+  animation: notificationSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.exit {
+    animation: notificationSlideOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
 
   & .title {
     overflow: visible;
@@ -218,41 +220,8 @@
   }
 
   & .close {
-    display: inline-flex;
-    box-sizing: border-box;
-
-    justify-content: center;
-    align-items: center;
     grid-row: 1;
     grid-column: 2;
-
-    width: var(--altum-overlay-close-size);
-    height: var(--altum-overlay-close-size);
-
-    margin: calc(var(--altum-g-space-1) * -1) calc(var(--altum-g-space-1) * -1) 0 0;
-    padding: 0;
-
-    border: none;
-    border-radius: var(--altum-g-radius-sm);
-
-    font-size: var(--altum-g-font-size-base);
-
-    color: var(--altum-color-muted);
-    background-color: transparent;
-
-    cursor: pointer;
-
-    transition: var(--altum-transition-smooth);
-
-    &:hover:not(:disabled) {
-      color: var(--altum-color-input-text);
-      background-color: var(--altum-color-option-hover);
-    }
-
-    &:focus-visible {
-      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
-      outline-offset: var(--altum-focus-ring-offset);
-    }
   }
 
   & .actions {
@@ -261,51 +230,6 @@
     flex-wrap: wrap;
     gap: var(--altum-g-space-2);
     grid-column: 1 / -1;
-
-    margin-top: 0;
-    margin-left: 0;
-  }
-
-  & .actionBtn {
-    padding: var(--altum-g-space-1) var(--altum-g-space-3);
-
-    border: 1px solid var(--altum-color-brand-border);
-    border-radius: var(--altum-g-radius-sm);
-
-    font-size: var(--altum-g-font-size-xs);
-    font-weight: var(--altum-g-font-weight-medium);
-
-    color: var(--altum-color-brand-text);
-    background-color: var(--altum-color-brand);
-
-    cursor: pointer;
-
-    transition: var(--altum-transition-smooth);
-
-    &:hover:not(:disabled) {
-      background-color: var(--altum-color-brand-hover);
-    }
-
-    &:focus-visible {
-      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
-      outline-offset: var(--altum-focus-ring-offset);
-    }
-  }
-
-  & .actionBtnSecondary {
-    border-color: var(--altum-color-border);
-
-    color: var(--altum-color-text-secondary);
-    background-color: var(--altum-color-surface);
-
-    &:hover:not(:disabled) {
-      background-color: var(--altum-color-option-hover);
-    }
-
-    &:focus-visible {
-      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
-      outline-offset: var(--altum-focus-ring-offset);
-    }
   }
 
   & .actionShortcut {
@@ -334,205 +258,73 @@
     width: 100%;
     height: 100%;
 
-    background-color: var(--altum-color-brand);
+    background-color: color-mix(in srgb, var(--altum-color-input-text) 22%, transparent);
 
     transform-origin: left center;
 
-    transition: transform 0.1s linear;
+    animation: notificationProgress linear forwards;
   }
 
   &.info {
     border-left-color: var(--altum-color-status-info);
-
-    & .progressBar {
-      background-color: var(--altum-color-status-info);
-    }
   }
 
   &.success {
     border-left-color: var(--altum-color-status-success);
-
-    & .progressBar {
-      background-color: var(--altum-color-status-success);
-    }
   }
 
   &.warning {
     border-left-color: var(--altum-color-status-warning);
-
-    & .progressBar {
-      background-color: var(--altum-color-status-warning);
-    }
   }
 
   &.error {
     border-left-color: var(--altum-color-status-error);
-
-    & .progressBar {
-      background-color: var(--altum-color-status-error);
-    }
   }
 }
 
-.enterRight {
-  animation: notificationSlideInRight 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.enterLeft {
-  animation: notificationSlideInLeft 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.enterTop {
-  animation: notificationSlideInTop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.enterBottom {
-  animation: notificationSlideInBottom 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.exitRight {
-  animation: notificationSlideOutRight 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.exitLeft {
-  animation: notificationSlideOutLeft 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.exitTop {
-  animation: notificationSlideOutTop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.exitBottom {
-  animation: notificationSlideOutBottom 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes notificationSlideInRight {
+@keyframes notificationSlideIn {
   from {
     opacity: 0;
 
-    transform: translateX(var(--altum-g-space-6)) scale(0.96);
+    transform: translate(var(--altum-notify-from-x), var(--altum-notify-from-y)) scale(0.96);
   }
 
   to {
     opacity: 1;
 
-    transform: translateX(0) scale(1);
+    transform: translate(0, 0) scale(1);
   }
 }
 
-@keyframes notificationSlideInLeft {
-  from {
-    opacity: 0;
-
-    transform: translateX(calc(-1 * var(--altum-g-space-6))) scale(0.96);
-  }
-
-  to {
-    opacity: 1;
-
-    transform: translateX(0) scale(1);
-  }
-}
-
-@keyframes notificationSlideInTop {
-  from {
-    opacity: 0;
-
-    transform: translateY(calc(-1 * var(--altum-g-space-5))) scale(0.96);
-  }
-
-  to {
-    opacity: 1;
-
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes notificationSlideInBottom {
-  from {
-    opacity: 0;
-
-    transform: translateY(var(--altum-g-space-5)) scale(0.96);
-  }
-
-  to {
-    opacity: 1;
-
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes notificationSlideOutRight {
+@keyframes notificationSlideOut {
   from {
     opacity: 1;
 
-    transform: translateX(0) scale(1);
+    transform: translate(0, 0) scale(1);
   }
 
   to {
     opacity: 0;
 
-    transform: translateX(var(--altum-g-space-6)) scale(0.96);
+    transform: translate(var(--altum-notify-from-x), var(--altum-notify-from-y)) scale(0.96);
   }
 }
 
-@keyframes notificationSlideOutLeft {
+@keyframes notificationProgress {
   from {
-    opacity: 1;
-
-    transform: translateX(0) scale(1);
+    transform: scaleX(1);
   }
 
   to {
-    opacity: 0;
-
-    transform: translateX(calc(-1 * var(--altum-g-space-6))) scale(0.96);
-  }
-}
-
-@keyframes notificationSlideOutTop {
-  from {
-    opacity: 1;
-
-    transform: translateY(0) scale(1);
-  }
-
-  to {
-    opacity: 0;
-
-    transform: translateY(calc(-1 * var(--altum-g-space-5))) scale(0.96);
-  }
-}
-
-@keyframes notificationSlideOutBottom {
-  from {
-    opacity: 1;
-
-    transform: translateY(0) scale(1);
-  }
-
-  to {
-    opacity: 0;
-
-    transform: translateY(var(--altum-g-space-5)) scale(0.96);
+    transform: scaleX(0);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .notification,
-  .enterRight,
-  .enterLeft,
-  .enterTop,
-  .enterBottom,
-  .exitRight,
-  .exitLeft,
-  .exitTop,
-  .exitBottom {
-    animation: none;
-  }
-
+  .notification.exit,
   .progressBar {
-    transition: none;
+    animation: none;
   }
 
   .stack,

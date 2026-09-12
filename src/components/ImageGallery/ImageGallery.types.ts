@@ -1,8 +1,4 @@
-import type React from 'react';
-import type {
-	ComponentPropsWithoutRef,
-} from 'react';
-import type {ButtonIconProps} from '../ButtonIcon/ButtonIcon.types';
+import type {ComponentPropsWithoutRef} from 'react';
 
 /**
  * Публичный тип `ImageGalleryItem`.
@@ -21,21 +17,17 @@ export interface ImageGalleryProps extends Omit<ComponentPropsWithoutRef<'div'>,
 	index?: number;
 	defaultIndex?: number;
 	onIndexChange?: (index: number) => void;
+	/**
+	 * `default` — стрелки, миниатюры и счётчик.
+	 * `none` — только кадр (пустое состояние, если нет фото).
+	 * @default 'default'
+	 */
+	chrome?: 'default' | 'none';
+	/** Стрелки поверх кадра. @default `chrome === 'default'` */
+	showNav?: boolean;
+	/** Полоса миниатюр. @default `chrome === 'default'` */
+	showThumbnails?: boolean;
+	/** Счётчик «n / N». @default `chrome === 'default'` */
+	showCounter?: boolean;
 	enableKeyboard?: boolean;
-	children?: React.ReactNode;
 }
-
-export type ImageGalleryViewportProps = ComponentPropsWithoutRef<'div'>;
-
-export type ImageGalleryImageProps = Omit<ComponentPropsWithoutRef<'img'>, 'src' | 'alt'>;
-
-export type ImageGalleryNavProps = ComponentPropsWithoutRef<'div'>;
-
-export type ImageGalleryThumbnailsProps = ComponentPropsWithoutRef<'div'>;
-
-export interface ImageGalleryThumbProps extends Omit<ComponentPropsWithoutRef<'button'>, 'children'> {index: number}
-
-/** Свойства `ImageGallery.Prev` / `.Next` (слот `ButtonIcon` без `icon`). */
-export type ImageGalleryPrevProps = Omit<ButtonIconProps, 'icon'>;
-
-export type ImageGalleryNextProps = ImageGalleryPrevProps;

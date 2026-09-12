@@ -1,85 +1,34 @@
-.text {
-  margin: 0;
+.col_secondary {
+  color: var(--altum-color-type-secondary);
+}
 
-  font-family: var(--altum-g-font-family-ui);
+.col_tertiary {
+  color: var(--altum-color-type-tertiary);
+}
 
-  &.xs {
-    font-size: var(--altum-g-font-size-xs);
-    line-height: var(--altum-g-line-height-xs);
-  }
+.col_muted {
+  color: var(--altum-color-type-muted);
+}
 
-  &.sm {
-    font-size: var(--altum-g-font-size-sm);
-    line-height: var(--altum-g-line-height-sm);
-  }
+.col_info {
+  color: var(--altum-color-status-info);
+}
 
-  &.md {
-    font-size: var(--altum-g-font-size-base);
-    line-height: var(--altum-g-line-height-base);
-  }
+.col_success {
+  color: var(--altum-color-status-success);
+}
 
-  &.lg {
-    font-size: var(--altum-g-font-size-lg);
-    line-height: var(--altum-g-line-height-lg);
-  }
+.col_warning {
+  color: var(--altum-color-status-warning);
+}
 
-  &.xl {
-    font-size: var(--altum-g-font-size-xl);
-    line-height: var(--altum-g-line-height-xl);
-  }
+.col_error {
+  color: var(--altum-color-status-error);
+}
 
-  &.normal {
-    font-weight: var(--altum-g-font-weight-normal);
-  }
+.col_disabled {
+  color: var(--altum-color-type-disabled);
+  opacity: var(--altum-opacity-disabled);
 
-  &.medium {
-    font-weight: var(--altum-g-font-weight-medium);
-  }
-
-  &.semibold {
-    font-weight: var(--altum-g-font-weight-semibold);
-  }
-
-  &.bold {
-    font-weight: var(--altum-g-font-weight-bold);
-  }
-
-  &.col_primary {
-    color: var(--altum-color-type);
-  }
-
-  &.col_secondary {
-    color: var(--altum-color-type-secondary);
-  }
-
-  &.col_tertiary {
-    color: var(--altum-color-type-tertiary);
-  }
-
-  &.col_muted {
-    color: var(--altum-color-type-muted);
-  }
-
-  &.col_info {
-    color: var(--altum-color-status-info);
-  }
-
-  &.col_success {
-    color: var(--altum-color-status-success);
-  }
-
-  &.col_warning {
-    color: var(--altum-color-status-warning);
-  }
-
-  &.col_error {
-    color: var(--altum-color-status-error);
-  }
-
-  &.col_disabled {
-    color: var(--altum-color-type-disabled);
-    opacity: var(--altum-opacity-disabled);
-
-    cursor: not-allowed;
-  }
+  cursor: not-allowed;
 }

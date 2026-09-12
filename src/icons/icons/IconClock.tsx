@@ -1,27 +1,3 @@
-import React from 'react';
+import {createIcon} from '../createIcon';
 
-interface IconProps extends React.SVGProps<SVGSVGElement> {
-	/** Размер в px (или любой css‑единица) */
-	size?: number | string;
-	/** Цвет заливки */
-	color?: string;
-}
-
-export const IconClock: React.FC<IconProps> = ({
-	size = 24,
-	color = 'currentColor',
-	...props
-}) => (
-	<svg
-		width={size}
-		height={size}
-		fill={color}
-		viewBox='0 0 92 92'
-		{...props}
-	>
-		<path d='M46,0C20.6,0,0,20.6,0,46s20.6,46,46,46s46-20.6,46-46S71.4,0,46,0z M46,84C25,84,8,67,8,46S25,8,46,8s38,17,38,38
-	S67,84,46,84z M61.3,55.6c1.6,1.6,1.6,4.1,0,5.7c-0.8,0.8-1.8,1.2-2.8,1.2s-2-0.4-2.8-1.2L43.2,48.8C42.4,48.1,42,47.1,42,46V22.2
-	c0-2.2,1.8-4,4-4s4,1.8,4,4v22.2L61.3,55.6z'
-		/>
-	</svg>
-);
+export const IconClock = createIcon('M46,0C20.6,0,0,20.6,0,46s20.6,46,46,46s46-20.6,46-46S71.4,0,46,0z M46,84C25,84,8,67,8,46S25,8,46,8s38,17,38,38 S67,84,46,84z M61.3,55.6c1.6,1.6,1.6,4.1,0,5.7c-0.8,0.8-1.8,1.2-2.8,1.2s-2-0.4-2.8-1.2L43.2,48.8C42.4,48.1,42,47.1,42,46V22.2 c0-2.2,1.8-4,4-4s4,1.8,4,4v22.2L61.3,55.6z');

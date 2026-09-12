@@ -8,7 +8,5 @@ export type {
 	DropdownTriggerAttrs,
 	DropdownTriggerSlotProps,
 	DropdownProps,
-	DropdownTriggerProps,
-	DropdownContentProps,
 	DropdownMobileSheetProps,
 } from './Dropdown.types';

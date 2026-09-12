@@ -3,6 +3,8 @@ import React, {useState} from 'react';
 import {Modal, ModalProps} from './Modal';
 import {Button} from '../Button/Button';
 import {Text} from '../Text/Text';
+import {TextField} from '../TextField/TextField';
+import {Stack, Inline} from '../Layout/Layout';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
@@ -12,6 +14,11 @@ export default {
 	parameters: componentParameters(
 		'Модальное окно (составное): Header / Title / Close / Body / Footer. Header и Footer — sticky.',
 	),
+	argTypes: {
+		open: {control: 'boolean'},
+		'aria-label': {control: 'text'},
+		onOpenChange: {action: 'onOpenChange'},
+	},
 } satisfies Meta<typeof Modal>;
 
 export const Playground: Story<ModalProps> = {
@@ -22,7 +29,7 @@ export const Playground: Story<ModalProps> = {
 				<Button variant='primary' onClick={() => setIsOpen(true)}>
 					Показать диалог
 				</Button>
-				<Modal open={isOpen} onClose={() => setIsOpen(false)}>
+				<Modal open={isOpen} onOpenChange={setIsOpen}>
 					<Modal.Header>
 						<Modal.Title>
 							Системное оповещение
@@ -57,7 +64,7 @@ export const WithFooter: Story<ModalProps> = {
 				<Button variant='primary' onClick={() => setIsOpen(true)}>
 					Редактировать профиль
 				</Button>
-				<Modal open={isOpen} onClose={() => setIsOpen(false)}>
+				<Modal open={isOpen} onOpenChange={setIsOpen}>
 					<Modal.Header>
 						<Modal.Title>
 							Редактировать профиль
@@ -99,7 +106,7 @@ export const FooterAlignment: Story<ModalProps> = {
 				<Button variant='secondary' onClick={() => setIsOpen(true)}>
 					Удалить аккаунт
 				</Button>
-				<Modal open={isOpen} onClose={() => setIsOpen(false)}>
+				<Modal open={isOpen} onOpenChange={setIsOpen}>
 					<Modal.Header>
 						<Modal.Title>
 							Удалить аккаунт
@@ -142,7 +149,7 @@ export const StickySections: Story<ModalProps> = {
 				<Button variant='primary' onClick={() => setIsOpen(true)}>
 					Длинный контент
 				</Button>
-				<Modal open={isOpen} onClose={() => setIsOpen(false)}>
+				<Modal open={isOpen} onOpenChange={setIsOpen}>
 					<Modal.Header>
 						<Modal.Title>
 							Длинный список
@@ -215,7 +222,7 @@ export const FormFooter: Story<ModalProps> = {
 				>
 					Редактировать
 				</Button>
-				<Modal open={isOpen} onClose={() => setIsOpen(false)}>
+				<Modal open={isOpen} onOpenChange={setIsOpen}>
 					<Modal.Header>
 						<Modal.Title>
 							Настройки профиля
@@ -269,4 +276,143 @@ export const FormFooter: Story<ModalProps> = {
 		);
 	},
 	parameters: story('`Modal.FormFooter`: message слева, кнопки передаются children.'),
+};
+
+export const Opened: Story<ModalProps> = {
+	render: () => (
+		<Modal open onOpenChange={() => undefined}>
+			<Modal.Header showClose>
+				<Modal.Title>
+					Системное оповещение
+				</Modal.Title>
+			</Modal.Header>
+			<Modal.Body>
+				<Text size='md'>
+					Драйвер устройства успешно инициализирован в системе.
+				</Text>
+			</Modal.Body>
+			<Modal.Footer>
+				<Button variant='primary' size='sm'>
+					Закрыть
+				</Button>
+			</Modal.Footer>
+		</Modal>
+	),
+	parameters: story('Открытая модалка для визуальной регрессии chrome.'),
+};
+
+export const OverflowText: Story<ModalProps> = {
+	render: () => (
+		<Modal open onOpenChange={() => undefined}>
+			<Modal.Header>
+				<Modal.Title>
+					Очень длинный заголовок модального окна про уточнение юридических условий обработки данных
+				</Modal.Title>
+			</Modal.Header>
+			<Modal.Body>
+				<Text size='md'>
+					Текст, который проверяет перенос в теле диалога без горизонтального скролла всей модалки.
+				</Text>
+			</Modal.Body>
+			<Modal.Footer>
+				<Button variant='primary' size='sm'>
+					Понятно
+				</Button>
+			</Modal.Footer>
+		</Modal>
+	),
+	parameters: story('Длинный заголовок в шапке модалки.'),
+};
+
+export const UsageExample: Story<ModalProps> = {
+	render: function UsageExampleRender() {
+		const [open, setOpen] = useState(false);
+		const [name, setName] = useState('Мария Иванова');
+
+		return (
+			<>
+				<Button variant='primary' onClick={() => setOpen(true)}>
+					Редактировать имя
+				</Button>
+				<Modal open={open} onOpenChange={setOpen}>
+					<Modal.Header>
+						<Modal.Title>
+							Профиль
+						</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>
+						<Stack gap='md'>
+							<TextField
+								label='ФИО'
+								value={name}
+								onChange={(event) => setName(event.target.value)}
+								width='full'
+							/>
+							<Text size='sm' color='muted'>
+								Имя отображается в шапке кабинета и в уведомлениях.
+							</Text>
+						</Stack>
+					</Modal.Body>
+					<Modal.Footer>
+						<Inline gap='sm'>
+							<Button
+								variant='secondary'
+								size='sm'
+								onClick={() => setOpen(false)}
+							>
+								Отмена
+							</Button>
+							<Button
+								variant='primary'
+								size='sm'
+								onClick={() => setOpen(false)}
+							>
+								Сохранить
+							</Button>
+						</Inline>
+					</Modal.Footer>
+				</Modal>
+			</>
+		);
+	},
+	parameters: story('Форма редактирования профиля внутри модалки.'),
+};
+
+export const Interaction: Story<ModalProps> = {
+	render: function InteractionRender() {
+		const [open, setOpen] = useState(false);
+		return (
+			<>
+				<Button variant='primary' onClick={() => setOpen(true)}>
+					Показать диалог
+				</Button>
+				<Modal open={open} onOpenChange={setOpen}>
+					<Modal.Header>
+						<Modal.Title>
+							Системное оповещение
+						</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>
+						<Text size='md'>
+							Диалог открыт сценарием play.
+						</Text>
+					</Modal.Body>
+					<Modal.Footer>
+						<Button
+							variant='primary'
+							size='sm'
+							onClick={() => setOpen(false)}
+						>
+							Закрыть
+						</Button>
+					</Modal.Footer>
+				</Modal>
+			</>
+		);
+	},
+	play: async ({canvasElement}) => {
+		const trigger = canvasElement.querySelector('button');
+		trigger?.click();
+	},
+	parameters: story('Play: открытие модалки по клику на триггер.'),
 };

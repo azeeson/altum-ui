@@ -1,18 +1,14 @@
 import {createContext, useContext} from 'react';
 
 /**
- * Контекст `ActionSheetTrigger` → `OverflowActions` / `SwipeToAction`.
+ * Контекст `ActionSheetTrigger` → `Overflow` / `SwipeToAction`.
  */
 export interface ActionSheetContextValue {
-	/** Открыть overflow-меню вложенного OverflowActions. */
-	openOverflow: () => void;
-	/** Закрыть overflow-меню. */
-	closeOverflow: () => void;
 	overflowOpen: boolean;
 	setOverflowOpen: (open: boolean) => void;
 	/**
-	 * Показывать кнопку ⋯ у OverflowActions.
-	 * На touch + mobile по умолчанию `false` (меню открывается long-press).
+	 * Показывать кнопку ⋯ у Overflow.
+	 * На coarse + mobile по умолчанию `false` (меню открывается long-press).
 	 */
 	shouldShowOverflowTrigger: boolean;
 	/**

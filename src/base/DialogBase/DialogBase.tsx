@@ -6,6 +6,7 @@ import type {
 	DialogCloseProps,
 	DialogBodyProps,
 	DialogFooterProps,
+	DialogSurfaceProps,
 } from './DialogBase.types';
 export type {
 	DialogBaseContextValue,
@@ -16,14 +17,19 @@ export type {
 	DialogBodyProps,
 	DialogFooterProps,
 	DialogFooterAlign,
+	DialogSurfaceProps,
 } from './DialogBase.types';
 
 import {createContext, forwardRef, useContext} from 'react';
 import type {Ref} from 'react';
 import {ButtonBase} from '../ButtonBase';
-import {useLocale} from '../../locales';
+import {Box} from '../../components/Box/Box';
+import {IconCross} from '../../icons/icons/IconCross';
+import {useLocale} from '../../locales/localeContext';
 import {cn} from '../../utils/cn';
 import {composeEventHandlers} from '../../utils/composeEvents';
+import {markDialogTitle} from '../../utils/visitElementTree';
+import overlayClose from '../../styles/overlayClose.module.css';
 import styles from './DialogBase.module.css';
 
 const DialogBaseContext = createContext<DialogBaseContextValue | null>(null);
@@ -34,26 +40,6 @@ export function useDialogBaseContext(component: string): DialogBaseContextValue 
 		throw new Error(`${component} должен использоваться внутри DialogBase`);
 	}
 	return context;
-}
-
-function DialogCloseIcon() {
-	return (
-		<svg
-			className={styles.closeIcon}
-			width={12}
-			height={12}
-			viewBox='0 0 24 24'
-			aria-hidden
-		>
-			<path
-				d='M6 6l12 12M18 6L6 18'
-				fill='none'
-				stroke='currentColor'
-				strokeWidth={2.5}
-				strokeLinecap='round'
-			/>
-		</svg>
-	);
 }
 
 function DialogBaseProvider({
@@ -75,10 +61,42 @@ function DialogBaseProvider({
 }
 DialogBaseProvider.displayName = 'DialogBase.Provider';
 
+const DialogSurface = forwardRef<HTMLElement, DialogSurfaceProps>(function DialogSurface(
+	{
+		onClose,
+		titleId,
+		onDragHandlePointerDown,
+		className,
+		children,
+		variant = 'floating',
+		...rest
+	},
+	ref,
+) {
+	return (
+		<Box
+			ref={ref}
+			variant={variant}
+			className={cn(styles.shell, className)}
+			{...rest}
+		>
+			<DialogBaseProvider
+				onClose={onClose}
+				titleId={titleId}
+				onDragHandlePointerDown={onDragHandlePointerDown}
+			>
+				{children}
+			</DialogBaseProvider>
+		</Box>
+	);
+});
+DialogSurface.displayName = 'DialogBase.Surface';
+
 const DialogHeader = forwardRef<HTMLElement, DialogHeaderProps>(function DialogHeader(
 	{
 		children,
 		className,
+		contentClassName,
 		style,
 		showClose = true,
 		onPointerDown,
@@ -95,7 +113,7 @@ const DialogHeader = forwardRef<HTMLElement, DialogHeaderProps>(function DialogH
 			{...rest}
 			onPointerDown={composeEventHandlers(onPointerDown, onDragHandlePointerDown)}
 		>
-			<div className={styles.headerContent}>
+			<div className={cn(styles.headerContent, contentClassName)}>
 				{children}
 			</div>
 			{showClose ? <DialogClose /> : null}
@@ -147,14 +165,18 @@ const DialogClose = forwardRef<HTMLButtonElement, DialogCloseProps>(function Dia
 		<ButtonBase
 			ref={ref}
 			variant='ghost'
-			className={cn(styles.close, className)}
+			className={cn(overlayClose.close, className)}
 			style={style}
 			{...buttonProps}
 			{...rest}
 			aria-label={ariaLabel}
 			onClick={composeEventHandlers(onClick, () => onClose())}
 		>
-			<DialogCloseIcon />
+			<IconCross
+				className={overlayClose.icon}
+				size={16}
+				aria-hidden
+			/>
 		</ButtonBase>
 	);
 });
@@ -211,12 +233,14 @@ const DialogFooter = forwardRef<HTMLElement, DialogFooterProps>(function DialogF
 
 DialogHeader.displayName = 'DialogBase.Header';
 DialogTitle.displayName = 'DialogBase.Title';
+markDialogTitle(DialogTitle);
 DialogClose.displayName = 'DialogBase.Close';
 DialogBody.displayName = 'DialogBase.Body';
 DialogFooter.displayName = 'DialogBase.Footer';
 
 export const DialogBase = {
 	Provider: DialogBaseProvider,
+	Surface: DialogSurface,
 	Header: DialogHeader,
 	Title: DialogTitle,
 	Close: DialogClose,

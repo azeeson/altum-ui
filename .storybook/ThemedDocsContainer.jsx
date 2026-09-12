@@ -58,7 +58,7 @@ export const ThemedDocsContainer = (props) => {
 				data-theme={themeMode}
 				style={{
 					minHeight: '100%',
-					background: themeMode === 'dark' ? 'var(--bg-color-zone, #131721)' : 'var(--bg-color-zone, #f8fafc)',
+					background: themeMode === 'dark' ? 'var(--bg-color-zone, #141416)' : 'var(--bg-color-zone, #f8fafc)',
 					color: 'var(--text-color-zone, inherit)',
 				}}
 			>

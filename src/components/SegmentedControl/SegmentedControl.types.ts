@@ -1,12 +1,14 @@
 import type {ComponentPropsWithoutRef} from 'react';
 import type {SurfaceVariant} from '../../types';
+import type {ButtonGroupItemFit} from '../ButtonGroup/ButtonGroup.types';
 
 export interface SegmentOption<T = string> {
 	label: string;
 	value: T;
 }
 
-export type SegmentedItemFit = 'equal' | 'content';
+/** Алиас `ButtonGroupItemFit`: `equal` | `content`. */
+export type SegmentedItemFit = ButtonGroupItemFit;
 
 export interface SegmentedControlProps<T = string> extends Omit<
 	ComponentPropsWithoutRef<'div'>,
@@ -15,6 +17,7 @@ export interface SegmentedControlProps<T = string> extends Omit<
 	options: SegmentOption<T>[];
 	value: T;
 	onChange: (value: T) => void;
+	/** @default 'secondary' */
 	variant?: SurfaceVariant;
 	size?: 'sm' | 'md' | 'lg';
 	/**

@@ -1,6 +1,5 @@
 import {forwardRef} from 'react';
-import {cn} from '../../utils/cn';
-import {alignClass, flexStyles as styles, gapClass} from './layoutClasses';
+import {Inline} from './Inline';
 import type {SplitProps} from './Layout.types';
 
 export type {LayoutAlign, LayoutGap, SplitProps} from './Layout.types';
@@ -16,32 +15,15 @@ export type {LayoutAlign, LayoutGap, SplitProps} from './Layout.types';
  *   <Button size="sm">Добавить</Button>
  * </Split>
  */
-export const Split = forwardRef<HTMLDivElement, SplitProps>(function Split(
-	{
-		children,
-		gap = 'md',
-		align = 'center',
-		className,
-		style,
-		...rest
-	},
-	ref,
-) {
+export const Split = forwardRef<HTMLDivElement, SplitProps>(function Split(props, ref) {
 	return (
-		<div
+		<Inline
 			ref={ref}
-			className={cn(
-				styles.base,
-				styles.split,
-				gapClass(gap),
-				alignClass(align),
-				className,
-			)}
-			style={style}
-			{...rest}
-		>
-			{children}
-		</div>
+			gap='md'
+			align='center'
+			justify='between'
+			{...props}
+		/>
 	);
 });
 

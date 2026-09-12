@@ -6,40 +6,37 @@
   align-items: center;
   gap: var(--altum-g-space-2);
 
-  width: 100%;
+  width: fit-content;
   min-width: 0;
+  max-width: 100%;
+
+  margin-inline: auto;
 
   font-family: var(--altum-g-font-family-ui);
+  font-size: var(--altum-g-font-size-2xs);
+  font-weight: var(--altum-g-font-weight-medium);
+  line-height: 1.35;
 
   color: var(--altum-color-muted);
 
-  & .inner {
-    display: inline-flex;
-
-    align-items: center;
-    gap: var(--altum-g-space-2);
-
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  &.default .inner,
-  &.note .inner {
+  &.default,
+  &.note {
     padding: var(--altum-g-space-1) var(--altum-g-space-2);
 
     border-radius: var(--altum-g-radius);
   }
 
-  &.note .inner {
+  &.note {
     color: var(--altum-color-brand-tint-text);
     background: var(--altum-color-brand-tint);
   }
 
-  &.row .inner {
+  &.row {
     justify-content: flex-start;
 
     width: 100%;
 
+    margin-inline: 0;
     padding: var(--altum-g-space-2) var(--altum-g-space-3);
 
     border: 1px solid var(--altum-color-border);
@@ -51,15 +48,22 @@
 
   &.separator {
     gap: var(--altum-g-space-3);
-  }
 
-  & .line {
-    flex: 1 1 auto;
+    width: 100%;
 
-    min-width: var(--altum-g-space-4);
-    height: 1px;
+    margin-inline: 0;
 
-    background: var(--altum-color-border);
+    &::before,
+    &::after {
+      content: "";
+
+      flex: 1 1 auto;
+
+      min-width: var(--altum-g-space-4);
+      height: 1px;
+
+      background: var(--altum-color-border);
+    }
   }
 
   & .icon {
@@ -74,10 +78,6 @@
 
   & .content {
     min-width: 0;
-
-    font-size: var(--altum-g-font-size-2xs);
-    font-weight: var(--altum-g-font-weight-medium);
-    line-height: 1.35;
   }
 
   & .shimmer {

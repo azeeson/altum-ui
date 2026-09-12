@@ -111,13 +111,3 @@ export interface VirtualListProps<T> extends Omit<
 	 */
 	scrollMetricsStore?: VirtualScrollMetricsStore;
 }
-
-export interface VirtualListItemCellProps<T> {
-	item: T;
-	index: number;
-	top: number;
-	count: number;
-	itemKey: React.Key;
-	invokeRenderItem: (info: VirtualListRenderItemInfo<T>) => React.ReactNode;
-	assignNode: (index: number, node: HTMLDivElement | null) => void;
-}

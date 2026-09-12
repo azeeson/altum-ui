@@ -8,7 +8,7 @@ export type {
 	BackdropProps,
 } from './Backdrop.types';
 
-import {forwardRef} from 'react';
+import {forwardRef, type CSSProperties} from 'react';
 import {wrapOverlayDismiss} from '../../utils/overlayDismiss';
 import styles from './Backdrop.module.css';
 import {cn} from '../../utils/cn';
@@ -34,24 +34,22 @@ export const Backdrop = forwardRef<HTMLDivElement, BackdropProps>(function Backd
 	},
 	ref,
 ) {
-	const blurClass =
-		blur === 'md' ? styles.blurMd : blur === 'none' ? styles.blurNone : styles.blurSm;
-
-	const internalStyle = zIndex !== undefined ? {zIndex} : undefined;
-
 	return (
 		<div
 			ref={ref}
 			className={cn(
 				styles.backdrop,
-				blurClass,
-				variant === 'strong' ? styles.variantStrong : '',
-				position === 'absolute' ? styles.absolute : '',
-				onClick ? styles.dismissible : '',
+				variant === 'strong' && styles.strong,
+				position === 'absolute' && styles.absolute,
+				blur === 'none' && styles.noBlur,
+				onClick && styles.dismissible,
 				className,
 			)}
 			{...rest}
-			style={mergeStyles(internalStyle, style)}
+			style={mergeStyles({
+				...(zIndex !== undefined ? {zIndex} : null),
+				...(blur === 'md' ? {'--altum-backdrop-blur': '8px'} : null),
+			} as CSSProperties, style)}
 			onClick={onClick ? wrapOverlayDismiss(onClick) : undefined}
 			aria-hidden='true'
 		/>

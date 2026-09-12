@@ -6,11 +6,11 @@ export type {ButtonVariant, ButtonStatus};
 /**
  * Свойства `ButtonIcon`.
  */
-export interface ButtonIconProps extends Omit<ButtonBaseProps, 'contentClassName' | 'children'> {
+export interface ButtonIconProps extends Omit<ButtonBaseProps, 'children'> {
 	/** @default 'square' */
 	shape?: 'circle' | 'square';
 	/**
-	 * `diskClose` — круглая кнопка закрытия overlay (Modal / Sheet).
+	 * `diskClose` — кнопка закрытия overlay: `overlayClose` chrome, без дефолтной иконки. Передайте `icon` (обычно **`IconCross`** 16px).
 	 * @default 'default'
 	 */
 	appearance?: 'default' | 'diskClose';

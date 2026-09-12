@@ -17,6 +17,53 @@ export default {
 		'Ряд контролов формы и фильтров: TextField, Chip, Button, Select с общим выравниванием и токенным gap. '
 		+ 'Используйте вместо Inline, когда в линии есть поля; align="end" — рядом с floating-label.',
 	),
+	argTypes: {
+		gap: {
+			control: {
+				type: 'select',
+				options: [
+					'none',
+					'xs',
+					'sm',
+					'md',
+					'lg',
+					'xl'
+				],
+			},
+			description: 'Промежуток между контролами',
+		},
+		align: {
+			control: {
+				type: 'select',
+				options: [
+					'start',
+					'center',
+					'end',
+					'baseline',
+					'stretch'
+				],
+			},
+			description: 'Выравнивание по высоте',
+		},
+		justify: {
+			control: {
+				type: 'select',
+				options: [
+					'start',
+					'center',
+					'end',
+					'between',
+					'around',
+					'evenly'
+				],
+			},
+			description: 'Распределение по главной оси',
+		},
+		wrap: {
+			control: 'boolean',
+			description: 'Перенос на следующую строку',
+		},
+	},
 } satisfies Meta<typeof ControlRow>;
 
 const CITY_OPTIONS = [
@@ -31,30 +78,30 @@ const CITY_OPTIONS = [
 ];
 
 export const Playground: Story<ControlRowProps> = {
-	render: function FiltersWithSearchRender() {
+	render: function FiltersWithSearchRender(args) {
 		const [query, setQuery] = useState('');
 		const [active, setActive] = useState('all');
 		return (
 			<Stack gap='lg'>
 				<Text size='sm' color='muted'>
-					Chip + поле + кнопка (align=«center»). Поле растягивается через
+					Chip + поле + кнопка. Поле растягивается через
 					{' '}
 					<code>
 						ControlRow.Item grow
 					</code>
 					.
 				</Text>
-				<ControlRow gap='sm'>
+				<ControlRow {...args}>
 					<Chip
 						variant={active === 'all' ? 'tinted' : 'secondary'}
-						active={active === 'all'}
+						as={active === 'all' ? 'toggle' : 'chip'}
 						onClick={() => setActive('all')}
 					>
 						Все
 					</Chip>
 					<Chip
 						variant={active === 'mine' ? 'tinted' : 'secondary'}
-						active={active === 'mine'}
+						as={active === 'mine' ? 'toggle' : 'chip'}
 						onClick={() => setActive('mine')}
 					>
 						Мои
@@ -74,6 +121,11 @@ export const Playground: Story<ControlRowProps> = {
 			</Stack>
 		);
 	},
+	args: {
+		gap: 'sm',
+		align: 'center',
+		wrap: true,
+	},
 	parameters: story('Фильтры-чипы + поиск + действие в одном ряду.'),
 };
 
@@ -90,16 +142,13 @@ export const WithAlignEnd: Story<ControlRowProps> = {
 				</Text>
 				<ControlRow gap='sm' align='end'>
 					<ControlRow.Item grow>
-						<Select.Root
+						<Select
 							options={CITY_OPTIONS}
 							value={city}
 							onChange={(value) => { if (!Array.isArray(value)) setCity(value); }}
-						>
-							<Select.Trigger label='Город' width='full' />
-							<Select.Panel>
-								<Select.List />
-							</Select.Panel>
-						</Select.Root>
+							label='Город'
+							width='full'
+						/>
 					</ControlRow.Item>
 					<Button variant='secondary'>
 						Сброс
@@ -109,4 +158,49 @@ export const WithAlignEnd: Story<ControlRowProps> = {
 		);
 	},
 	parameters: story('Select + кнопка с выравниванием по низу полей.'),
+};
+
+export const Wrap: Story<ControlRowProps> = {
+	render: () => (
+		<div style={{maxWidth: 280}}>
+			<ControlRow gap='sm'>
+				<Button size='sm' variant='secondary'>
+					Фильтр
+				</Button>
+				<Button size='sm' variant='secondary'>
+					Сортировка
+				</Button>
+				<Button size='sm' variant='tinted'>
+					Применить очень длинное действие
+				</Button>
+			</ControlRow>
+		</div>
+	),
+	parameters: story('Перенос контролов на узкой ширине.'),
+};
+
+export const Interaction: Story<ControlRowProps> = {
+	render: Playground.render,
+	args: {
+		gap: 'sm',
+		align: 'center',
+	},
+	play: async ({canvasElement}) => {
+		const input = canvasElement.querySelector('input');
+		if (!(input instanceof HTMLInputElement)) {
+			throw new Error('Не найдено поле поиска в ControlRow');
+		}
+		input.focus();
+		input.value = 'отчёт';
+		input.dispatchEvent(new Event('input', {bubbles: true}));
+		const find = Array.from(canvasElement.querySelectorAll('button'))
+			.find((el) => el.textContent?.includes('Найти'));
+		find?.click();
+	},
+	parameters: story('Play: ввод в поле и клик «Найти».'),
+};
+
+export const UsageExample: Story<ControlRowProps> = {
+	render: WithAlignEnd.render,
+	parameters: story('Типовой ряд фильтра: Select + сброс.'),
 };

@@ -1,21 +1,23 @@
-import type {SuggestFieldOption, SuggestFieldProps} from './SuggestField.types';
+import type {SuggestFieldProps} from './SuggestField.types';
 export type {
 	SuggestFieldOption,
 	SuggestFieldProps,
 } from './SuggestField.types';
 
-import React, {forwardRef, useCallback, useEffect, useId, useMemo, useState} from 'react';
+import type React from 'react';
+import {forwardRef, useCallback, useId} from 'react';
 import {TextField} from '../TextField/TextField';
 import type {FieldBaseProps} from '../../base/FieldBase';
 import {CustomSelect, type CustomSelectRenderTargetContext} from '../CustomSelect/CustomSelect';
 import {useCustomSelectComboboxKeyboard} from '../CustomSelect/useCustomSelectComboboxKeyboard';
-import {type ListboxFilterFn, defaultListboxFilterFn, getListboxDisplayValue, getListboxOptionDomId, getListboxOptionText, matchListboxOption} from '../../utils/listboxOptions';
+import {defaultListboxFilterFn, getListboxOptionDomId} from '../../utils/listboxOptions';
 import {CustomSelectChevron} from '../CustomSelect/CustomSelect';
-import {FieldBase} from '../../base/FieldBase';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
-import {cn} from '../../utils/cn';
+import {FieldBaseIcon} from '../../base/FieldBase';
+import {useLocale} from '../../locales/localeContext';
 import {composeEventHandlers} from '../../utils/composeEvents';
-import styles from './SuggestField.module.css';
+import {cn} from '../../utils/cn';
+import {fieldPopupClassName} from '../../base/FieldPopup';
+import {useSuggestInput} from './useSuggestInput';
 
 interface SuggestFieldTriggerProps extends Omit<
 	FieldBaseProps,
@@ -26,16 +28,14 @@ interface SuggestFieldTriggerProps extends Omit<
 	inputText: string;
 	highlightedIndex: number;
 	placeholder?: string;
-	wrapperClassName: string;
-	className: string;
-	wrapperProps: Omit<
-		React.HTMLAttributes<HTMLDivElement>,
-		'className' | 'onChange' | 'prefix' | 'onFocus' | 'onBlur' | 'onClick' | 'onKeyDown'
-	>;
 	isInteractive: boolean;
 	isReadOnly: boolean;
 	name?: string;
 	required?: boolean;
+	wrapperProps: Omit<
+		React.HTMLAttributes<HTMLDivElement>,
+		'className' | 'onChange' | 'prefix' | 'onFocus' | 'onBlur' | 'onClick' | 'onKeyDown'
+	>;
 	onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	onBlurCommit: () => void;
 	onFocusOpen: () => void;
@@ -62,8 +62,6 @@ const SuggestFieldTrigger = forwardRef<HTMLInputElement, SuggestFieldTriggerProp
 			labelPlacement = 'inline',
 			placeholder,
 			prefix,
-			wrapperClassName,
-			className,
 			wrapperProps,
 			disabled = false,
 			error,
@@ -92,13 +90,7 @@ const SuggestFieldTrigger = forwardRef<HTMLInputElement, SuggestFieldTriggerProp
 			onEnter: onEnterCustom,
 			onEscape: onEscapeReset,
 		});
-
-		const {
-			onKeyDown: triggerKeyDown,
-			onClick: triggerClick,
-			...restTriggerAttrs
-		} = ctx.triggerAttrs;
-
+		const {onKeyDown: triggerKeyDown, onClick: triggerClick, ...restTriggerAttrs} = ctx.triggerAttrs;
 		const activeDescendantId = highlightedIndex >= 0
 			? getListboxOptionDomId(ctx.listboxId, highlightedIndex)
 			: undefined;
@@ -107,11 +99,6 @@ const SuggestFieldTrigger = forwardRef<HTMLInputElement, SuggestFieldTriggerProp
 			<div
 				ref={ctx.triggerRef}
 				{...wrapperProps}
-				className={cn(
-					styles.triggerWrap,
-					width === 'full' && styles.fullWidth,
-					wrapperClassName,
-				)}
 			>
 				<TextField
 					ref={ref}
@@ -132,7 +119,7 @@ const SuggestFieldTrigger = forwardRef<HTMLInputElement, SuggestFieldTriggerProp
 					error={error}
 					helperText={helperText}
 					active={ctx.open}
-					className={className}
+					type='text'
 					role='combobox'
 					aria-autocomplete='list'
 					aria-haspopup='listbox'
@@ -143,12 +130,12 @@ const SuggestFieldTrigger = forwardRef<HTMLInputElement, SuggestFieldTriggerProp
 					onClear={onClear ? onClearClick : undefined}
 					clearLabel={clearLabel}
 					postfix={(
-						<FieldBase.Icon>
+						<FieldBaseIcon>
 							<CustomSelectChevron
 								open={ctx.open}
 								readOnly={isReadOnly}
 							/>
-						</FieldBase.Icon>
+						</FieldBaseIcon>
 					)}
 					onFocus={composeEventHandlers(onFocus, () => {
 						if (!isInteractive) return;
@@ -177,13 +164,7 @@ SuggestFieldTrigger.displayName = 'SuggestField.Trigger';
  *
  * @component
  * @example
- * <SuggestField
- *   label="Город"
- *   options={cities}
- *   value={city}
- *   onChange={setCity}
- *   onClear={() => setCity('')}
- * />
+ * <SuggestField label="Город" options={cities} value={city} onChange={setCity} />
  */
 export const SuggestField = forwardRef<HTMLInputElement, SuggestFieldProps>(({
 	label,
@@ -196,7 +177,6 @@ export const SuggestField = forwardRef<HTMLInputElement, SuggestFieldProps>(({
 	placeholder,
 	prefix,
 	postfix: _,
-	wrapperClassName = '',
 	className = '',
 	error,
 	helperText,
@@ -218,164 +198,51 @@ export const SuggestField = forwardRef<HTMLInputElement, SuggestFieldProps>(({
 	...wrapperProps
 }, ref) => {
 	const {t} = useLocale();
-	const noOptionsText = noOptionsTextProp ?? t('suggestField.noOptions');
 	const generatedId = useId();
 	const inputId = providedId ?? generatedId;
-
-	const [internalValue, setInternalValue] = useState(defaultValue);
-	const isControlled = controlledValue !== undefined;
-	const currentValue = isControlled ? controlledValue : internalValue;
-
-	const [isOpen, setIsOpen] = useState(false);
-	const [isFocused, setIsFocused] = useState(false);
-	const [inputText, setInputText] = useState(() => getListboxDisplayValue(options, currentValue));
-	const [highlightedIndex, setHighlightedIndex] = useState(-1);
-
-	const isReadOnly = readOnly && !disabled;
-	const isInteractive = !disabled && !isReadOnly;
-
-	const filteredLen = useMemo(
-		() => filterListboxLength(options, inputText, filterFn),
-		[filterFn, inputText, options],
-	);
-
-	const syncInputFromValue = useCallback(() => {
-		setInputText(getListboxDisplayValue(options, currentValue));
-	}, [currentValue, options]);
-
-	useEffect(() => {
-		if (!isFocused) {
-			syncInputFromValue();
-		}
-	}, [isFocused, syncInputFromValue]);
-
-	useEffect(() => {
-		if (!isOpen) {
-			setHighlightedIndex(-1);
-			return;
-		}
-
-		setHighlightedIndex((prev) => {
-			if (filteredLen === 0) return -1;
-			if (prev < 0) return 0;
-			return Math.min(prev, filteredLen - 1);
-		});
-	}, [filteredLen, isOpen]);
-
-	const commitValue = useCallback((nextValue: string, displayText?: string) => {
-		if (!isControlled) {
-			setInternalValue(nextValue);
-		}
-		onChange?.(nextValue);
-		setInputText(displayText ?? getListboxDisplayValue(options, nextValue));
-	}, [isControlled, onChange, options]);
-
-	const handleClear = useCallback(() => {
-		commitValue('');
-		setIsOpen(false);
-		onClear?.();
-	}, [commitValue, onClear]);
-
-	const handleValueChange = useCallback((next: string | string[]) => {
-		const nextValue = typeof next === 'string' ? next : (next[0] ?? '');
-		const option = options.find((item) => item.value === nextValue);
-		commitValue(nextValue, option ? getListboxOptionText(option) : nextValue);
-		setIsOpen(false);
-	}, [commitValue, options]);
-
-	const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-		if (!isInteractive) return;
-
-		const nextText = event.target.value;
-		setInputText(nextText);
-		setIsOpen(true);
-
-		if (allowCustom) {
-			if (!isControlled) {
-				setInternalValue(nextText);
-			}
-			onChange?.(nextText);
-		}
-	}, [
+	const suggest = useSuggestInput({
+		optionsList: options,
+		controlledValue,
+		defaultValue,
+		disabled,
+		readOnly,
 		allowCustom,
-		isControlled,
-		isInteractive,
+		filterFn,
 		onChange,
-	]);
-
-	const handleBlurCommit = useCallback(() => {
-		if (allowCustom) {
-			syncInputFromValue();
-			return;
-		}
-
-		const matched = matchListboxOption(options, inputText);
-		if (matched) {
-			commitValue(matched.value);
-			return;
-		}
-
-		syncInputFromValue();
-	}, [
-		allowCustom,
-		commitValue,
-		inputText,
-		options,
-		syncInputFromValue,
-	]);
-
-	const handleEnterCustom = useCallback(() => {
-		if (allowCustom) {
-			commitValue(inputText);
-			setIsOpen(false);
-			return;
-		}
-
-		const matched = matchListboxOption(options, inputText);
-		if (matched) {
-			commitValue(matched.value);
-			setIsOpen(false);
-		}
-	}, [
-		allowCustom,
-		commitValue,
-		inputText,
-		options
-	]);
+		onClear,
+	});
 
 	const renderTarget = useCallback((ctx: CustomSelectRenderTargetContext) => (
 		<SuggestFieldTrigger
 			ref={ref}
 			ctx={ctx}
 			inputId={inputId}
-			inputText={inputText}
-			highlightedIndex={highlightedIndex}
+			inputText={suggest.inputText}
+			highlightedIndex={suggest.highlightedIndex}
 			label={label}
 			size={size}
 			width={width}
 			labelPlacement={labelPlacement}
 			placeholder={placeholder}
 			prefix={prefix}
-			wrapperClassName={wrapperClassName}
-			className={className}
 			wrapperProps={wrapperProps}
 			disabled={disabled}
 			error={error}
 			helperText={helperText}
-			isInteractive={isInteractive}
-			isReadOnly={isReadOnly}
+			isInteractive={suggest.isInteractive}
+			isReadOnly={suggest.isReadOnly}
 			name={name}
 			required={required}
-			onInputChange={handleInputChange}
-			onBlurCommit={handleBlurCommit}
+			onInputChange={(event) => suggest.handleInputChange(event.target.value)}
+			onBlurCommit={suggest.handleBlurCommit}
 			onFocusOpen={() => {
-				setIsFocused(true);
-				setIsOpen(true);
+				suggest.setIsFocused(true);
+				suggest.setIsOpen(true);
 			}}
-			onBlurClose={() => setIsFocused(false)}
-			onClearClick={handleClear}
-			onEnterCustom={handleEnterCustom}
-			onEscapeReset={syncInputFromValue}
+			onBlurClose={() => suggest.setIsFocused(false)}
+			onClearClick={suggest.handleClear}
+			onEnterCustom={suggest.handleEnterCustom}
+			onEscapeReset={suggest.syncInputFromValue}
 			onClear={onClear}
 			clearLabel={clearLabel}
 			onFocus={onFocus}
@@ -384,36 +251,26 @@ export const SuggestField = forwardRef<HTMLInputElement, SuggestFieldProps>(({
 			onKeyDown={onKeyDown}
 		/>
 	), [
-		className,
 		clearLabel,
 		disabled,
 		error,
 		helperText,
-		handleBlurCommit,
-		handleClear,
-		handleEnterCustom,
-		handleInputChange,
-		highlightedIndex,
 		inputId,
-		inputText,
-		isInteractive,
-		isReadOnly,
 		label,
 		labelPlacement,
 		name,
-		onClear,
-		onFocus,
 		onBlur,
+		onClear,
 		onClick,
+		onFocus,
 		onKeyDown,
 		placeholder,
 		prefix,
 		ref,
 		required,
 		size,
-		syncInputFromValue,
+		suggest,
 		width,
-		wrapperClassName,
 		wrapperProps,
 	]);
 
@@ -421,41 +278,33 @@ export const SuggestField = forwardRef<HTMLInputElement, SuggestFieldProps>(({
 		<CustomSelect.Root
 			options={options}
 			selectionMode='single'
-			value={currentValue}
-			onChange={handleValueChange}
-			open={isOpen}
-			onOpenChange={setIsOpen}
+			value={suggest.currentValue}
+			onChange={suggest.handleValueChange}
+			open={suggest.isOpen}
+			onOpenChange={suggest.setIsOpen}
 			disabled={disabled}
 			readOnly={readOnly}
 			filterFn={filterFn}
-			filterQuery={inputText}
+			filterQuery={suggest.inputText}
 			renderTarget={renderTarget}
 			widthMode='trigger'
 			align='auto'
 			triggerMode='combobox'
 			mobileTitle={label}
 			closeOnSelect
+			className={cn(fieldPopupClassName, className)}
 		>
 			<CustomSelect.List
 				aria-label={label}
 				navigation='highlight'
-				highlightedIndex={highlightedIndex}
-				onHighlightChange={setHighlightedIndex}
+				highlightedIndex={suggest.highlightedIndex}
+				onHighlightChange={suggest.setHighlightedIndex}
 				preventOptionMouseDown
-				noOptionsText={noOptionsText}
+				noOptionsText={noOptionsTextProp ?? t('suggestField.noOptions')}
 				showCheck={false}
 			/>
 		</CustomSelect.Root>
 	);
 });
-
-function filterListboxLength(
-	options: SuggestFieldOption[],
-	query: string,
-	filterFn: ListboxFilterFn<SuggestFieldOption>,
-): number {
-	if (!query.trim()) return options.length;
-	return options.filter((option) => filterFn(option, query)).length;
-}
 
 SuggestField.displayName = 'SuggestField';

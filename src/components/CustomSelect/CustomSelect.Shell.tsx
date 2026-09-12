@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react';
-import {FieldBase, fieldSurfaceClassName} from '../../base/FieldBase';
+import {FieldBase, FieldBaseIcon, fieldSurfaceClassName, useFieldControlAttrs} from '../../base/FieldBase';
 import {composeRefs} from '../../utils/composeRefs';
 import {cn} from '../../utils/cn';
 import shellStyles from './CustomSelect.Shell.module.css';
@@ -72,6 +72,85 @@ export const CustomSelectPlaceholder = forwardRef<HTMLSpanElement, CustomSelectP
 
 CustomSelectPlaceholder.displayName = 'CustomSelect.Placeholder';
 
+type TriggerAttrs = Omit<CustomSelectShellProps['triggerAttrs'], 'className'>;
+
+const ShellTrigger = forwardRef<HTMLElement, {
+	triggerAs: 'button' | 'div';
+	triggerAttrs: TriggerAttrs;
+	triggerProps?: CustomSelectShellProps['triggerProps'];
+	id: string;
+	open: boolean;
+	disabled: boolean;
+	readOnly: boolean;
+	isInteractive: boolean;
+	popupRole: NonNullable<CustomSelectShellProps['popupRole']>;
+	triggerClassName?: string;
+	sizerContent: React.ReactNode;
+	children: React.ReactNode;
+}>(function ShellTrigger(
+	{
+		triggerAs,
+		triggerAttrs,
+		triggerProps,
+		id,
+		open,
+		disabled,
+		readOnly,
+		isInteractive,
+		popupRole,
+		triggerClassName,
+		sizerContent,
+		children,
+	},
+	ref,
+) {
+	const a11y = useFieldControlAttrs();
+	const isButton = triggerAs === 'button';
+	const Tag = triggerAs;
+	return (
+		<Tag
+			ref={ref as never}
+			{...triggerAttrs}
+			{...triggerProps}
+			{...a11y}
+			id={id}
+			type={isButton ? 'button' : undefined}
+			disabled={isButton ? disabled : undefined}
+			role={isButton ? undefined : 'combobox'}
+			tabIndex={isButton || disabled ? undefined : 0}
+			aria-disabled={isButton ? undefined : (disabled || undefined)}
+			aria-readonly={readOnly || undefined}
+			aria-haspopup={popupRole}
+			aria-expanded={open}
+			className={cn(
+				fieldSurfaceClassName({readOnly}),
+				shellStyles.trigger,
+				triggerClassName,
+			)}
+			onClick={(event: React.MouseEvent<HTMLElement>) => {
+				if (!isInteractive) {
+					event.preventDefault();
+					return;
+				}
+				triggerAttrs.onClick?.(event);
+			}}
+			onKeyDown={(event: React.KeyboardEvent<HTMLElement>) => {
+				if (!isInteractive) return;
+				triggerAttrs.onKeyDown?.(event);
+			}}
+		>
+			<span className={shellStyles.triggerSizer} aria-hidden='true'>
+				{sizerContent}
+			</span>
+			<span className={shellStyles.triggerText}>
+				{children}
+			</span>
+		</Tag>
+	);
+});
+
+ShellTrigger.displayName = 'CustomSelect.ShellTrigger';
+
 /**
  * FieldBase + button trigger + chevron для Select.
  */
@@ -84,7 +163,7 @@ export const CustomSelectShell = forwardRef<HTMLDivElement, CustomSelectShellPro
 			label,
 			size = 'md',
 			labelPlacement = 'inline',
-			width = 'full',
+			width = 'md',
 			error,
 			helperText,
 			disabled = false,
@@ -107,78 +186,9 @@ export const CustomSelectShell = forwardRef<HTMLDivElement, CustomSelectShellPro
 		},
 		forwardedRef,
 	) {
-		const {
-			className: slotClassName,
-			...buttonTriggerAttrs
-		} = triggerAttrs;
-
-		const triggerContent = (
-			<>
-				<span className={shellStyles.triggerSizer} aria-hidden='true'>
-					{sizerContent}
-				</span>
-				<span className={shellStyles.triggerText}>
-					{children}
-				</span>
-			</>
-		);
-		const triggerHandlers = {
-			onClick: (event: React.MouseEvent<HTMLElement>) => {
-				if (!isInteractive) {
-					event.preventDefault();
-					return;
-				}
-				buttonTriggerAttrs.onClick?.(event);
-			},
-			onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => {
-				if (!isInteractive) return;
-				buttonTriggerAttrs.onKeyDown?.(event);
-			},
-		};
-
-		const control = triggerAs === 'button' ? (
-			<button
-				{...buttonTriggerAttrs}
-				{...triggerProps}
-				id={id}
-				type='button'
-				disabled={disabled}
-				aria-readonly={readOnly || undefined}
-				aria-haspopup={popupRole}
-				aria-expanded={open}
-				className={cn(
-					fieldSurfaceClassName({readOnly}),
-					shellStyles.trigger,
-					triggerClassName,
-				)}
-				{...triggerHandlers}
-			>
-				{triggerContent}
-			</button>
-		) : (
-			<div
-				{...buttonTriggerAttrs}
-				{...triggerProps}
-				id={id}
-				role='combobox'
-				tabIndex={disabled ? undefined : 0}
-				aria-disabled={disabled || undefined}
-				aria-readonly={readOnly || undefined}
-				aria-haspopup={popupRole}
-				aria-expanded={open}
-				className={cn(
-					fieldSurfaceClassName({readOnly}),
-					shellStyles.trigger,
-					triggerClassName,
-				)}
-				{...triggerHandlers}
-			>
-				{triggerContent}
-			</div>
-		);
-
+		const {className: slotClassName, ...attrs} = triggerAttrs;
 		return (
-			<FieldBase.Layout
+			<FieldBase
 				label={label}
 				labelPlacement={labelPlacement}
 				size={size}
@@ -189,9 +199,9 @@ export const CustomSelectShell = forwardRef<HTMLDivElement, CustomSelectShellPro
 				readOnly={readOnly}
 				prefix={prefix}
 				postfix={(
-					<FieldBase.Icon>
+					<FieldBaseIcon>
 						<CustomSelectChevron open={open} readOnly={readOnly} />
-					</FieldBase.Icon>
+					</FieldBaseIcon>
 				)}
 				onClear={onClear}
 				clearLabel={clearLabel}
@@ -201,19 +211,32 @@ export const CustomSelectShell = forwardRef<HTMLDivElement, CustomSelectShellPro
 				className={cn(
 					slotClassName,
 					labelPlacement === 'inline' && shellStyles.placementInline,
-					labelPlacement !== 'inline' && shellStyles.placementFlush,
+					width !== 'full' && shellStyles.fitContent,
 					className,
 				)}
-				control={control}
 				ref={composeRefs(
 					forwardedRef,
 					triggerRef as React.Ref<HTMLDivElement>,
 				)}
-				rootProps={{
-					...rest,
-					...wrapperProps,
-				}}
-			/>
+				{...rest}
+				{...wrapperProps}
+			>
+				<ShellTrigger
+					triggerAs={triggerAs}
+					triggerAttrs={attrs}
+					triggerProps={triggerProps}
+					id={id}
+					open={open}
+					disabled={disabled}
+					readOnly={readOnly}
+					isInteractive={isInteractive}
+					popupRole={popupRole}
+					triggerClassName={triggerClassName}
+					sizerContent={sizerContent}
+				>
+					{children}
+				</ShellTrigger>
+			</FieldBase>
 		);
 	},
 );

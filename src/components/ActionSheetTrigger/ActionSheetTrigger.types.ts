@@ -8,17 +8,12 @@ import type {
  */
 export interface ActionSheetTriggerProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
 	/**
-	 * Контент (строка, `SwipeToAction`, …) и вложенный `OverflowActions`.
+	 * Контент (строка, `SwipeToAction`, …) и вложенный `Overflow`.
 	 * Long-press по обёртке открывает overflow.
 	 */
 	children: React.ReactNode;
 	/**
-	 * Сливает long-press-обработчики в единственный child-элемент (`button` / `a`)
-	 * вместо обёртки-`div`. Child обязан быть одним React-элементом.
-	 */
-	asChild?: boolean;
-	/**
-	 * На touch + mobile показывать кнопку ⋯ у вложенного `OverflowActions`.
+	 * На touch + mobile показывать кнопку ⋯ у вложенного `Overflow`.
 	 * `false` — ⋯ скрыт (меню открывается long-press).
 	 * @default false
 	 */

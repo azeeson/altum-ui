@@ -1,6 +1,11 @@
 import type {Meta} from '@storybook/react';
 import React from 'react';
 import {Title, TitleProps} from './Title';
+import {Card} from '../Card/Card';
+import {Inline, Stack} from '../Layout/Layout';
+import {Text} from '../Text/Text';
+import {Badge} from '../Badge/Badge';
+import {Button} from '../Button/Button';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
@@ -46,12 +51,7 @@ export const Playground: Story<TitleProps> = {
 
 export const Levels: Story<TitleProps> = {
 	render: () => (
-		<div style={{
-			display: 'flex',
-			flexDirection: 'column',
-			gap: '12px',
-		}}
-		>
+		<Stack gap='sm'>
 			<Title level={1} weight='bold'>
 				Главный заголовок страницы (H1)
 			</Title>
@@ -64,7 +64,72 @@ export const Levels: Story<TitleProps> = {
 			<Title level={4} weight='normal'>
 				Метка блока формы (H4)
 			</Title>
-		</div>
+		</Stack>
 	),
 	parameters: story('Уровни H1–H4 с разным начертанием.'),
+};
+
+export const Weights: Story<TitleProps> = {
+	render: () => (
+		<Stack gap='sm'>
+			<Title level={3} weight='normal'>
+				normal
+			</Title>
+			<Title level={3} weight='medium'>
+				medium
+			</Title>
+			<Title level={3} weight='bold'>
+				bold
+			</Title>
+		</Stack>
+	),
+	parameters: story('Начертания на одном уровне H3.'),
+};
+
+export const OverflowText: Story<TitleProps> = {
+	render: () => (
+		<div style={{maxWidth: 240}}>
+			<Title level={2}>
+				Сверхдлинный заголовок раздела без пробелов-переносов: НастройкиИнтеграцийКалендаря
+			</Title>
+		</div>
+	),
+	parameters: story('Длинный заголовок в узком контейнере.'),
+};
+
+export const UsageExample: Story<TitleProps> = {
+	render: () => (
+		<div style={{maxWidth: 480}}>
+			<Card>
+				<Stack gap='sm'>
+					<Inline
+						gap='sm'
+						align='center'
+						wrap
+					>
+						<Title level={2}>
+							Проекты команды
+						</Title>
+						<Badge
+							label='12'
+							variant='info'
+							position='standalone'
+							size='sm'
+						/>
+					</Inline>
+					<Text
+						as='p'
+						size='sm'
+						color='secondary'
+					>
+						Активные репозитории и статус поставки за текущий спринт.
+					</Text>
+					<Button size='sm'>
+						Создать проект
+					</Button>
+				</Stack>
+			</Card>
+		</div>
+	),
+	parameters: story('Шапка страницы: Title + Badge + подзаголовок Text + действие.'),
 };

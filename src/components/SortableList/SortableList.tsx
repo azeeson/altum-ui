@@ -7,7 +7,7 @@ import {isKey} from '../../utils/keyboard';
 import styles from './SortableList.module.css';
 import {cn} from '../../utils/cn';
 import {mergeStyles} from '../../utils/mergeStyles';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useLocale} from '../../locales/localeContext';
 import {getSiblingShiftY, useSortableListDnD} from './useSortableListDnD';
 import type {SortableItem, SortableListProps} from './SortableList.types';
 
@@ -23,7 +23,7 @@ export type {SortableItem, SortableListVariant, SortableListProps} from './Sorta
  *   variant="plain"
  *   items={tasks}
  *   onOrderChange={setTasks}
- *   renderItem={(task) => <Item><Item.Title>{task.title}</Item.Title></Item>}
+ *   renderItem={(task) => <Item title={task.title} />}
  * />
  */
 const SortableListInner = forwardRef(function SortableList<

@@ -9,28 +9,34 @@
 .trigger {
   position: relative;
 
-  display: block;
+  display: grid;
   overflow: hidden;
 
-  height: var(--altum-field-control-height, calc(var(--altum-field-pad-top) + var(--altum-field-pad-bottom) + 1.25em));
-  min-height: var(--altum-field-control-height, calc(var(--altum-field-pad-top) + var(--altum-field-pad-bottom) + 1.25em));
+  align-content: center;
+
+  height: 100%;
+  min-height: 0;
 
   text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
 
   cursor: pointer;
-  appearance: none;
+
+  & .triggerSizer,
+  & .triggerText {
+    grid-area: 1 / 1;
+  }
 
   & .triggerSizer {
-    display: block;
+    display: flex;
     visibility: hidden;
     overflow: hidden;
 
-    height: 1.25em;
+    flex-direction: column;
+    align-items: flex-start;
 
-    padding-right: var(--altum-field-padding-end, var(--altum-field-input-size));
-    padding-left: max(0px, calc(var(--altum-field-padding-start) - var(--altum-field-padding-inline)));
+    height: 1.25em;
 
     font-weight: var(--altum-g-font-weight-medium);
     white-space: nowrap;
@@ -39,12 +45,6 @@
   }
 
   & .triggerText {
-    position: absolute;
-    top: var(--altum-field-pad-top);
-    right: var(--altum-field-padding-end);
-    bottom: var(--altum-field-pad-bottom);
-    left: var(--altum-field-padding-start);
-
     display: flex;
     overflow: hidden;
 
@@ -58,9 +58,10 @@
   }
 }
 
-.placementFlush .triggerText {
-  top: 0;
-  bottom: 0;
+/* `width="md"`: ширина по самому длинному пункту, не больше родителя и токена поля. */
+.fitContent {
+  width: max-content;
+  max-width: min(100%, var(--altum-field-width-default));
 }
 
 .placeholder {

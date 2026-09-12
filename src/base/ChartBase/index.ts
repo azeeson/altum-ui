@@ -1,23 +1,26 @@
+export {ChartBase} from './ChartBase';
+export {ChartLegend} from './ChartLegend';
+export {ChartYGrid} from './ChartYGrid';
+export {ChartHoverBubble} from './ChartHoverBubble';
+export {ChartCartesian} from './ChartCartesian';
+export {chartSeriesColor} from './colors';
+export {useChartWidth} from './useChartWidth';
 export {
-	ChartBase,
-	ChartLegend,
-	ChartYGrid,
-	ChartHoverBubble,
+	chartScale,
+	chartPointX,
+	chartBandX,
 	DEFAULT_CHART_PADDING,
-	chartCategoryClassName,
-	chartPlotRect,
 	linearYTicks,
-} from './ChartBase';
-export {
-	chartSeriesColor,
-	useChartContainerWidth,
-	useChartContainerSize,
-} from './ChartBase.utils';
+} from './cartesian';
 export type {
 	ChartPadding,
+	ChartSeries,
 	ChartYGridProps,
 	ChartLegendItem,
 	ChartLegendProps,
 	ChartHoverBubbleProps,
 	ChartBaseProps,
+	ChartXScale,
+	CartesianPlot,
+	ChartCartesianProps,
 } from './ChartBase.types';

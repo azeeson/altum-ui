@@ -21,6 +21,11 @@ export interface TextFieldProps
 	wrapperClassName?: string;
 	/** Визуальный focus, пока привязанный popup (календарь, список времени) открыт */
 	active?: boolean;
-	/** Слой поверх control внутри `FieldBase.Control` (маска и т.п.). */
+	/**
+	 * Не скрывать placeholder при фокусе пустого поля.
+	 * Нужен поиску в оверлее (`CustomSelect.Filter`, `ActionList`, `CommandPalette`).
+	 */
+	keepPlaceholder?: boolean;
+	/** Слой поверх control внутри `FieldBase` (маска и т.п.). */
 	controlOverlay?: ReactNode;
 }

@@ -1,29 +1,3 @@
-import React from 'react';
+import {createIcon} from '../createIcon';
 
-interface IconProps extends React.SVGProps<SVGSVGElement> {
-	/** Размер в px (или любой css‑единица) */
-	size?: number | string;
-	/** Цвет заливки */
-	color?: string;
-}
-
-export const IconMenu: React.FC<IconProps> = ({
-	size = 24,
-	color = 'currentColor',
-	...props
-}) => (
-	<svg
-		width={size}
-		height={size}
-		fill={color}
-		viewBox='0 0 92 92'
-		{...props}
-	>
-		<path
-			id='XMLID_101_'
-			d='M78,23.5H14c-3.6,0-6.5-2.9-6.5-6.5s2.9-6.5,6.5-6.5h64c3.6,0,6.5,2.9,6.5,6.5S81.6,23.5,78,23.5z M84.5,46
-	c0-3.6-2.9-6.5-6.5-6.5H14c-3.6,0-6.5,2.9-6.5,6.5s2.9,6.5,6.5,6.5h64C81.6,52.5,84.5,49.6,84.5,46z M84.5,75c0-3.6-2.9-6.5-6.5-6.5
-	H14c-3.6,0-6.5,2.9-6.5,6.5s2.9,6.5,6.5,6.5h64C81.6,81.5,84.5,78.6,84.5,75z'
-		/>
-	</svg>
-);
+export const IconMenu = createIcon('M78,23.5H14c-3.6,0-6.5-2.9-6.5-6.5s2.9-6.5,6.5-6.5h64c3.6,0,6.5,2.9,6.5,6.5S81.6,23.5,78,23.5z M84.5,46 c0-3.6-2.9-6.5-6.5-6.5H14c-3.6,0-6.5,2.9-6.5,6.5s2.9,6.5,6.5,6.5h64C81.6,52.5,84.5,49.6,84.5,46z M84.5,75c0-3.6-2.9-6.5-6.5-6.5 H14c-3.6,0-6.5,2.9-6.5,6.5s2.9,6.5,6.5,6.5h64C81.6,81.5,84.5,78.6,84.5,75z');

@@ -1,9 +1,13 @@
- 
-import React, {forwardRef, useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {forwardRef, useCallback, useMemo, useRef, useState} from 'react';
 import styles from './Table.module.css';
+import scroll from '../../styles/scroll.module.css';
+import unstyled from '../../styles/unstyledControl.module.css';
 import {cn} from '../../utils/cn';
 import {mergeStyles} from '../../utils/mergeStyles';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {toggleSet} from '../../utils/toggleSet';
+import {useControlledState, useControlledStateWithCallback} from '../../hooks/useControlledState';
+import {useLocale} from '../../locales/localeContext';
+import {Checkbox} from '../Checkbox/Checkbox';
 import {TableRow} from './TableRow';
 import type {TableSortDirection, TableViewProps} from './Table.types';
 
@@ -12,6 +16,11 @@ import type {TableSortDirection, TableViewProps} from './Table.types';
  */
 function getSortValue(row: object, key: string): unknown {
 	return (row as Record<string, unknown>)[key];
+}
+
+interface SortState {
+	key: string | null;
+	direction: TableSortDirection;
 }
 
 const TableViewInner = forwardRef(function TableView<T extends object>(
@@ -36,9 +45,23 @@ const TableViewInner = forwardRef(function TableView<T extends object>(
 	ref: React.ForwardedRef<HTMLTableElement>,
 ) {
 	const {t} = useLocale();
-	const [internalSortKey, setInternalSortKey] = useState<string | null>(null);
-	const [internalSortDirection, setInternalSortDirection] = useState<TableSortDirection>('asc');
-	const [internalExpanded, setInternalExpanded] = useState<Set<string | number>>(new Set());
+	const [sort, setSort] = useControlledState<SortState>(
+		onSortChange != null
+			? {
+				key: controlledSortKey ?? null,
+				direction: controlledSortDirection ?? 'asc',
+			}
+			: undefined,
+		{
+			key: null,
+			direction: 'asc',
+		},
+	);
+	const [expandedKeys, setExpandedKeys] = useControlledStateWithCallback(
+		controlledExpanded,
+		new Set<string | number>(),
+		onExpandedChange,
+	);
 	const [colWidths, setColWidths] = useState<Record<string, number>>({});
 	const resizeRef = useRef<{
 		key: string;
@@ -51,29 +74,20 @@ const TableViewInner = forwardRef(function TableView<T extends object>(
 	} | null>(null);
 	const resizeRafRef = useRef(0);
 
-	const isSortControlled = onSortChange != null;
-	const sortKey = isSortControlled ? (controlledSortKey ?? null) : internalSortKey;
-	const sortDirection = isSortControlled
-		? (controlledSortDirection ?? 'asc')
-		: internalSortDirection;
-
-	const isExpandControlled = controlledExpanded !== undefined;
-	const expandedKeys = isExpandControlled ? controlledExpanded! : internalExpanded;
+	const {key: sortKey, direction: sortDirection} = sort;
 	const canExpand = !!renderExpandedRow;
-
-	const setExpandedKeys = useCallback((next: Set<string | number>) => {
-		if (!isExpandControlled) setInternalExpanded(next);
-		onExpandedChange?.(next);
-	}, [isExpandControlled, onExpandedChange]);
+	const isSortControlled = onSortChange != null;
 
 	const handleSort = (key: string) => {
 		const nextDir: TableSortDirection = sortKey === key && sortDirection === 'asc' ? 'desc' : 'asc';
 		if (isSortControlled) {
-			onSortChange?.(key, nextDir);
+			onSortChange(key, nextDir);
 			return;
 		}
-		setInternalSortKey(key);
-		setInternalSortDirection(sortKey === key ? nextDir : 'asc');
+		setSort({
+			key,
+			direction: sortKey === key ? nextDir : 'asc',
+		});
 	};
 
 	const sortedData = useMemo(() => {
@@ -104,13 +118,6 @@ const TableViewInner = forwardRef(function TableView<T extends object>(
 	const isSomeSelected = Boolean(
 		selectedKeys && selectedKeys.size > 0 && !isAllSelected,
 	);
-	const selectAllRef = useRef<HTMLInputElement>(null);
-
-	useEffect(() => {
-		if (selectAllRef.current) {
-			selectAllRef.current.indeterminate = isSomeSelected;
-		}
-	}, [isSomeSelected]);
 
 	const handleSelectAll = () => {
 		if (!onSelectionChange) return;
@@ -123,27 +130,18 @@ const TableViewInner = forwardRef(function TableView<T extends object>(
 
 	const handleSelectRow = (key: string | number) => {
 		if (!onSelectionChange || !selectedKeys) return;
-		const newKeys = new Set(selectedKeys);
-		if (newKeys.has(key)) newKeys.delete(key);
-		else newKeys.add(key);
-		onSelectionChange(newKeys);
+		onSelectionChange(toggleSet(selectedKeys, key));
 	};
 
 	const toggleExpand = (key: string | number) => {
-		const next = new Set(expandedKeys);
-		if (next.has(key)) next.delete(key);
-		else next.add(key);
-		setExpandedKeys(next);
+		setExpandedKeys(toggleSet(expandedKeys, key));
 	};
 
 	const stickyLeftOffsets = useMemo(() => {
 		const offsets: Record<string, number> = {};
-		let left = onSelectionChange || canExpand ? (onSelectionChange && canExpand ? 80 : 40) : 0;
-		if (onSelectionChange && canExpand) {
-			// чекбокс 40 + раскрытие 40
-		} else if (onSelectionChange || canExpand) {
-			left = 40;
-		}
+		let left = 0;
+		if (canExpand) left += 40;
+		if (onSelectionChange) left += 40;
 		columns.forEach((col) => {
 			if (col.sticky === 'left') {
 				offsets[String(col.key)] = left;
@@ -159,6 +157,10 @@ const TableViewInner = forwardRef(function TableView<T extends object>(
 		columns,
 		onSelectionChange
 	]);
+	const controlSticky = columns.some((col) => col.sticky === 'left');
+	const selectStickyLeft = canExpand ? 40 : 0;
+	const stickyLeftEdgeKey = [...columns].reverse().find((col) => col.sticky === 'left');
+	const stickyLeftEdgeKeyId = stickyLeftEdgeKey ? String(stickyLeftEdgeKey.key) : undefined;
 
 	const flushPendingResize = useCallback(() => {
 		const pending = pendingResizeRef.current;
@@ -218,13 +220,13 @@ const TableViewInner = forwardRef(function TableView<T extends object>(
 		+ (canExpand ? 1 : 0);
 
 	return (
-		<div className={cn(styles.tableContainer, className)}>
+		<div className={cn(scroll.area, styles.frame, className)}>
 			<table
 				ref={ref}
 				className={cn(
 					styles.table,
-					stickyHeader ? styles.stickyHeader : '',
-					density === 'compact' ? styles.compact : '',
+					stickyHeader && styles.stickyHeader,
+					density === 'compact' && styles.compact,
 				)}
 				aria-label={ariaLabel}
 				{...rest}
@@ -234,16 +236,22 @@ const TableViewInner = forwardRef(function TableView<T extends object>(
 						{canExpand && (
 							<th
 								scope='col'
-								className={styles.controlCol}
+								className={cn(styles.controlCol, controlSticky && styles.stickyLeft)}
+								style={controlSticky ? {left: 0} : undefined}
 								aria-label={t('table.expandColumn')}
 							/>
 						)}
 						{onSelectionChange && (
-							<th scope='col' className={styles.controlCol}>
-								<input
-									ref={selectAllRef}
-									type='checkbox'
+							<th
+								scope='col'
+								className={cn(styles.controlCol, controlSticky && styles.stickyLeft)}
+								style={controlSticky ? {left: selectStickyLeft} : undefined}
+							>
+								<Checkbox
+									size='sm'
+									labelVisibility='hidden'
 									checked={isAllSelected || false}
+									indeterminate={isSomeSelected}
 									aria-label={t('table.selectAll')}
 									onChange={handleSelectAll}
 								/>
@@ -255,16 +263,16 @@ const TableViewInner = forwardRef(function TableView<T extends object>(
 							const width = colWidths[key]
 								?? (typeof col.width === 'number' ? col.width : col.width);
 							const stickyClass = col.sticky === 'left'
-								? styles.stickyLeft
+								? cn(styles.stickyLeft, key === stickyLeftEdgeKeyId && styles.stickyLeftEdge)
 								: col.sticky === 'right'
-									? styles.stickyRight
+									? cn(styles.stickyRight, styles.stickyRightEdge)
 									: '';
 
 							return (
 								<th
 									key={key}
 									scope='col'
-									className={cn(col.sortable ? styles.sortable : '', stickyClass)}
+									className={cn(col.sortable && styles.sortable, stickyClass)}
 									style={mergeStyles({
 										width: width ?? undefined,
 										minWidth: col.minWidth,
@@ -279,7 +287,7 @@ const TableViewInner = forwardRef(function TableView<T extends object>(
 									{col.sortable ? (
 										<button
 											type='button'
-											className={styles.sortButton}
+											className={cn(unstyled.control, styles.sortButton)}
 											onClick={() => handleSort(key)}
 										>
 											<span>
@@ -331,8 +339,10 @@ const TableViewInner = forwardRef(function TableView<T extends object>(
 								isExpanded={expandedKeys.has(rKey)}
 								isRowSelected={selectedKeys?.has(rKey) ?? false}
 								onSelectionChange={onSelectionChange}
-								selectedKeys={selectedKeys}
 								stickyLeftOffsets={stickyLeftOffsets}
+								controlSticky={controlSticky}
+								selectStickyLeft={selectStickyLeft}
+								stickyLeftEdgeKeyId={stickyLeftEdgeKeyId}
 								colWidths={colWidths}
 								colCount={colCount}
 								renderExpandedRow={renderExpandedRow}

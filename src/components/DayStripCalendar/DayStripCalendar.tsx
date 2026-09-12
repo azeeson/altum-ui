@@ -6,14 +6,7 @@ export type {
 	DayStripCalendarProps,
 } from './DayStripCalendar.types';
 
-import React, {
-	forwardRef,
-	useCallback,
-	useEffect,
-	useId,
-	useMemo,
-	useRef,
-} from 'react';
+import React, {forwardRef, useCallback, useEffect, useId, useMemo} from 'react';
 import {
 	addDays,
 	buildDayStrip,
@@ -24,13 +17,14 @@ import {
 	startOfWeek,
 	weekdayLabelFor,
 } from '../Calendar/Calendar.utils';
-import {IconChevronLeft} from '../../icons/icons/IconChevronLeft';
-import {IconChevronRight} from '../../icons/icons/IconChevronRight';
-import {isKey} from '../../utils/keyboard';
+import {PeriodHeader} from '../../base/PeriodHeader';
+import {handleArrowPairKeyDown, isKey} from '../../utils/keyboard';
+import unstyled from '../../styles/unstyledControl.module.css';
+import chrome from '../../styles/calendarChrome.module.css';
 import styles from './DayStripCalendar.module.css';
 import {cn} from '../../utils/cn';
 import {useControlledStateWithCallback} from '../../hooks/useControlledState';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useLocale} from '../../locales/localeContext';
 
 /**
  * Горизонтальная полоса дней для быстрого выбора даты в недельном или произвольном окне.
@@ -59,9 +53,9 @@ export const DayStripCalendar = forwardRef<HTMLDivElement, DayStripCalendarProps
 	const {messages} = useLocale();
 	const {months, weekdaysShort} = messages.calendar;
 	const labelId = useId();
-	const listRef = useRef<HTMLDivElement>(null);
 
 	const selected = value ? startOfDay(value) : undefined;
+	const selectedTime = selected?.getTime();
 	const anchor = selected ?? startOfDay(new Date());
 
 	const [viewDate, setViewDateRaw] = useControlledStateWithCallback(
@@ -75,20 +69,22 @@ export const DayStripCalendar = forwardRef<HTMLDivElement, DayStripCalendarProps
 	}, [setViewDateRaw]);
 
 	useEffect(() => {
-		if (!selected) return;
+		if (selectedTime === undefined) return;
+		const currentSelected = new Date(selectedTime);
 		const stripEnd = addDays(viewDate, daysCount - 1);
-		if (selected < viewDate || selected > stripEnd) {
+		if (currentSelected < viewDate || currentSelected > stripEnd) {
 			setViewDate(
 				daysCount === 7
-					? startOfWeek(selected, weekStartsOn)
-					: selected,
+					? startOfWeek(currentSelected, weekStartsOn)
+					: currentSelected,
 			);
 		}
+		// Навигация меняет только viewDate — не возвращать окно к value.
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- snap только при смене value / daysCount, не при сдвиге полосы
 	}, [
 		daysCount,
-		selected,
+		selectedTime,
 		setViewDate,
-		viewDate,
 		weekStartsOn
 	]);
 
@@ -97,45 +93,22 @@ export const DayStripCalendar = forwardRef<HTMLDivElement, DayStripCalendarProps
 		[daysCount, viewDate],
 	);
 
-	const shiftStrip = (direction: -1 | 1) => {
-		setViewDate(addDays(viewDate, direction * daysCount));
-	};
+	const viewShift = Math.max(1, Math.round(daysCount / 2));
 
 	const selectDate = (date: Date) => {
 		onChange(startOfDay(date));
 	};
 
-	const handleListKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+	const stepDay = (direction: -1 | 1) => {
 		const current = selected ?? days[0];
 		if (!current) return;
-
-		if (isKey(event, 'ArrowRight')) {
-			event.preventDefault();
-			const next = addDays(current, 1);
-			selectDate(next);
-			const stripEnd = addDays(viewDate, daysCount - 1);
-			if (next > stripEnd) setViewDate(addDays(viewDate, daysCount));
-			return;
-		}
-		if (isKey(event, 'ArrowLeft')) {
-			event.preventDefault();
-			const prev = addDays(current, -1);
-			selectDate(prev);
-			if (prev < viewDate) setViewDate(addDays(viewDate, -daysCount));
-			return;
-		}
-		if (isKey(event, 'Home')) {
-			event.preventDefault();
-			selectDate(days[0]!);
-			return;
-		}
-		if (isKey(event, 'End')) {
-			event.preventDefault();
-			selectDate(days[days.length - 1]!);
+		const next = addDays(current, direction);
+		selectDate(next);
+		const stripEnd = addDays(viewDate, daysCount - 1);
+		if (next < viewDate || next > stripEnd) {
+			setViewDate(addDays(viewDate, direction * viewShift));
 		}
 	};
-
-	const headerLabel = formatMonthYear(selected ?? viewDate, months);
 
 	return (
 		<div
@@ -146,46 +119,35 @@ export const DayStripCalendar = forwardRef<HTMLDivElement, DayStripCalendarProps
 			aria-labelledby={showHeader ? labelId : undefined}
 			{...rest}
 		>
-			{(showHeader || showNav) && (
-				<div className={styles.header}>
-					{showNav && (
-						<button
-							type='button'
-							className={styles.navBtn}
-							aria-label={messages.dayStrip.prev}
-							onClick={() => shiftStrip(-1)}
-						>
-							<IconChevronLeft size={16} />
-						</button>
-					)}
-					{showHeader ? (
-						<div id={labelId} className={styles.title}>
-							{headerLabel}
-						</div>
-					) : (
-						<span className={styles.titleSpacer} />
-					)}
-					{showNav && (
-						<button
-							type='button'
-							className={styles.navBtn}
-							aria-label={messages.dayStrip.next}
-							onClick={() => shiftStrip(1)}
-						>
-							<IconChevronRight size={16} />
-						</button>
-					)}
-				</div>
-			)}
+			<PeriodHeader
+				title={formatMonthYear(selected ?? viewDate, months)}
+				titleId={labelId}
+				showTitle={showHeader}
+				showNav={showNav}
+				onPrev={() => stepDay(-1)}
+				onNext={() => stepDay(1)}
+				prevLabel={messages.dayStrip.prev}
+				nextLabel={messages.dayStrip.next}
+			/>
 
 			<div
-				ref={listRef}
 				className={styles.strip}
 				role='listbox'
 				aria-label={messages.dayStrip.days}
 				aria-orientation='horizontal'
 				tabIndex={0}
-				onKeyDown={handleListKeyDown}
+				onKeyDown={(event) => {
+					if (handleArrowPairKeyDown(event, () => stepDay(-1), () => stepDay(1))) return;
+					if (isKey(event, 'Home')) {
+						event.preventDefault();
+						selectDate(days[0]!);
+						return;
+					}
+					if (isKey(event, 'End')) {
+						event.preventDefault();
+						selectDate(days[days.length - 1]!);
+					}
+				}}
 			>
 				{days.map((date) => {
 					const isSelected = selected ? isSameDay(date, selected) : false;
@@ -193,25 +155,6 @@ export const DayStripCalendar = forwardRef<HTMLDivElement, DayStripCalendarProps
 					const weekday = weekdayLabelFor(date, weekStartsOn, weekdaysShort);
 					const dayOfMonth = date.getDate();
 					const optionId = `${labelId}-day-${date.getFullYear()}-${date.getMonth()}-${dayOfMonth}`;
-
-					const content = renderDay
-						? renderDay({
-							date,
-							dayOfMonth,
-							weekdayLabel: weekday,
-							isSelected,
-							isToday: today,
-						})
-						: (
-							<>
-								<span className={styles.weekday}>
-									{weekday}
-								</span>
-								<span className={styles.dayNumber}>
-									{dayOfMonth}
-								</span>
-							</>
-						);
 
 					return (
 						<button
@@ -223,13 +166,33 @@ export const DayStripCalendar = forwardRef<HTMLDivElement, DayStripCalendarProps
 							aria-current={today ? 'date' : undefined}
 							aria-label={`${weekday}, ${dayOfMonth} ${formatMonthYear(date, months)}`}
 							className={cn(
+								unstyled.control,
+								chrome.cell,
 								styles.day,
+								isSelected ? chrome.selected : '',
 								isSelected ? styles.daySelected : '',
-								today && !isSelected ? styles.dayToday : '',
+								today ? chrome.today : '',
 							)}
 							onClick={() => selectDate(date)}
 						>
-							{content}
+							{renderDay
+								? renderDay({
+									date,
+									dayOfMonth,
+									weekdayLabel: weekday,
+									isSelected,
+									isToday: today,
+								})
+								: (
+									<>
+										<span className={styles.weekday}>
+											{weekday}
+										</span>
+										<span className={styles.dayNumber}>
+											{dayOfMonth}
+										</span>
+									</>
+								)}
 						</button>
 					);
 				})}

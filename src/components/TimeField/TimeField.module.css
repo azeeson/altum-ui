@@ -1,0 +1,4 @@
+.field {
+  --altum-time-field-width: 150px;
+  min-width: var(--altum-time-field-width);
+}

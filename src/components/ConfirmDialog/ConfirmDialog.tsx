@@ -6,12 +6,10 @@ export type {
 	ConfirmDialogProps,
 } from './ConfirmDialog.types';
 
-import React, {forwardRef, useId} from 'react';
+import {forwardRef, useId} from 'react';
 import {Button} from '../Button/Button';
 import {Modal} from '../Modal/Modal';
-import {Text} from '../Text/Text';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
-import styles from './ConfirmDialog.module.css';
+import {useLocale} from '../../locales/localeContext';
 
 /**
  * Модальное окно подтверждения критического или необратимого действия.
@@ -25,8 +23,7 @@ import styles from './ConfirmDialog.module.css';
  *   message="Данные нельзя будет восстановить."
  *   status="danger"
  *   onConfirm={handleDelete}
- *   onCancel={() => setOpen(false)}
- *   onClose={() => setOpen(false)}
+ *   onOpenChange={setOpen}
  * />
  */
 export const ConfirmDialog = forwardRef<HTMLElement, ConfirmDialogProps>(function ConfirmDialog(
@@ -39,8 +36,6 @@ export const ConfirmDialog = forwardRef<HTMLElement, ConfirmDialogProps>(functio
 		status = 'default',
 		secondaryAction,
 		onConfirm,
-		onCancel,
-		onClose,
 		onOpenChange,
 		loading = false,
 		className,
@@ -51,20 +46,17 @@ export const ConfirmDialog = forwardRef<HTMLElement, ConfirmDialogProps>(functio
 	const {t} = useLocale();
 	const confirmLabel = confirmLabelProp ?? t('confirmDialog.confirm');
 	const cancelLabel = cancelLabelProp ?? t('confirmDialog.cancel');
-	const confirmStatus = status === 'danger' ? 'danger' : 'default';
 	const messageId = useId();
-	const handleCancel = () => {
+	const handleDismiss = () => {
 		if (loading) return;
-		onCancel();
-		onClose?.();
-		onOpenChange?.(false);
+		onOpenChange(false);
 	};
 
 	return (
 		<Modal
 			ref={ref}
 			open={open}
-			onClose={handleCancel}
+			onOpenChange={onOpenChange}
 			aria-describedby={messageId}
 			className={className}
 			{...rest}
@@ -74,43 +66,37 @@ export const ConfirmDialog = forwardRef<HTMLElement, ConfirmDialogProps>(functio
 					{title}
 				</Modal.Title>
 			</Modal.Header>
-			<Modal.Body>
-				<Text size='md' id={messageId}>
-					{message}
-				</Text>
+			<Modal.Body id={messageId}>
+				{message}
 			</Modal.Body>
-			<Modal.Footer align='end'>
-				<div className={styles.actions}>
-					{secondaryAction && (
-						<Button
-							variant={secondaryAction.variant ?? 'secondary'}
-							size='md'
-							onClick={secondaryAction.onClick}
-							disabled={loading || secondaryAction.disabled}
-						>
-							{secondaryAction.label}
-						</Button>
-					)}
-					<div className={styles.actionsEnd}>
-						<Button
-							variant='secondary'
-							size='md'
-							onClick={handleCancel}
-							disabled={loading}
-						>
-							{cancelLabel}
-						</Button>
-						<Button
-							variant='primary'
-							status={confirmStatus}
-							size='md'
-							onClick={onConfirm}
-							loading={loading}
-						>
-							{confirmLabel}
-						</Button>
-					</div>
-				</div>
+			<Modal.Footer align={secondaryAction ? 'space-between' : 'end'}>
+				{secondaryAction && (
+					<Button
+						variant={secondaryAction.variant ?? 'secondary'}
+						size='md'
+						onClick={secondaryAction.onClick}
+						disabled={loading || secondaryAction.disabled}
+					>
+						{secondaryAction.label}
+					</Button>
+				)}
+				<Button
+					variant='secondary'
+					size='md'
+					onClick={handleDismiss}
+					disabled={loading}
+				>
+					{cancelLabel}
+				</Button>
+				<Button
+					variant='primary'
+					status={status === 'danger' ? 'danger' : 'default'}
+					size='md'
+					onClick={onConfirm}
+					loading={loading}
+				>
+					{confirmLabel}
+				</Button>
 			</Modal.Footer>
 		</Modal>
 	);

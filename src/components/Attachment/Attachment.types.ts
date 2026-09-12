@@ -1,7 +1,4 @@
-import type React from 'react';
-import type {
-	ComponentPropsWithoutRef,
-} from 'react';
+import type {ItemProps} from '../Item/Item.types';
 
 /**
  * Размер (`AttachmentSize`).
@@ -14,10 +11,9 @@ export type AttachmentSize = 'md' | 'sm' | 'xs';
 export type AttachmentStatus = 'idle' | 'uploading' | 'error' | 'done';
 
 /**
- * Свойства `Attachment`.
+ * Свойства `Attachment` — `Item` + статус загрузки.
  */
-export interface AttachmentProps extends ComponentPropsWithoutRef<'div'> {
-	children: React.ReactNode;
+export interface AttachmentProps extends Omit<ItemProps, 'size' | 'variant'> {
 	/** Размер карточки вложения. @default 'md' */
 	size?: AttachmentSize;
 	/**
@@ -25,46 +21,4 @@ export interface AttachmentProps extends ComponentPropsWithoutRef<'div'> {
 	 * @default 'idle'
 	 */
 	status?: AttachmentStatus;
-}
-
-/**
- * Свойства `Attachment.Media`.
- */
-export interface AttachmentMediaProps extends ComponentPropsWithoutRef<'div'> {
-	children: React.ReactNode;
-}
-
-/**
- * Свойства `Attachment.Content`.
- */
-export interface AttachmentContentProps extends ComponentPropsWithoutRef<'div'> {
-	children: React.ReactNode;
-}
-
-/**
- * Свойства `Attachment.Title`.
- */
-export interface AttachmentTitleProps extends ComponentPropsWithoutRef<'div'> {
-	children: React.ReactNode;
-}
-
-/**
- * Свойства `Attachment.Description`.
- */
-export interface AttachmentDescriptionProps extends ComponentPropsWithoutRef<'div'> {
-	children: React.ReactNode;
-}
-
-/**
- * Свойства `Attachment.Actions`.
- */
-export interface AttachmentActionsProps extends ComponentPropsWithoutRef<'div'> {
-	children: React.ReactNode;
-}
-
-/**
- * Свойства `Attachment.Action`.
- */
-export interface AttachmentActionProps extends ComponentPropsWithoutRef<'button'> {
-	children: React.ReactNode;
 }

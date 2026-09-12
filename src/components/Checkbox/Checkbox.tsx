@@ -9,16 +9,12 @@ export type {
 	CheckboxGroupProps,
 } from './Checkbox.types';
 
-import React, {useEffect, useId, useRef, forwardRef} from 'react';
-import {
-	ToggleControlBase,
-	toggleGroupClassName,
-	toggleLegendClassName,
-	toggleStackClassName,
-} from '../../base/ToggleControlBase';
-import {focusElement} from '../../utils/a11y';
-import {handleRovingFocusKeyDown} from '../../utils/keyboard';
-import {composeEventHandlers} from '../../utils/composeEvents';
+import {useEffect, forwardRef} from 'react';
+import {ToggleControlBase} from '../../base/ToggleControlBase';
+import {ToggleGroupBase} from '../../base/ToggleGroupBase';
+import box from '../../styles/toggleBox.module.css';
+import styles from './Checkbox.module.css';
+import {cn} from '../../utils/cn';
 import {composeRefs} from '../../utils/composeRefs';
 
 /**
@@ -34,37 +30,25 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
 	{
 		label,
 		labelVisibility = 'visible',
-		className = '',
-		id: providedId,
+		className,
 		disabled,
 		readOnly,
-		onChange,
-		onClick,
 		size = 'md',
 		labelSide = 'end',
 		indeterminate = false,
 		mode = 'default',
 		align: alignProp,
 		checked,
+		onChange,
+		onCheckedChange,
 		'aria-label': ariaLabel,
 		'aria-labelledby': ariaLabelledBy,
 		...props
 	},
 	ref,
 ) {
-	const generatedId = useId();
-	const id = providedId || generatedId;
-	const isReadOnly = !!readOnly && !disabled;
 	const isTask = mode === 'task';
-	const align = alignProp ?? (isTask ? 'start' : 'center');
-	const inputRef = useRef<HTMLInputElement>(null);
 	const hideLabel = labelVisibility === 'hidden';
-
-	useEffect(() => {
-		if (inputRef.current) {
-			inputRef.current.indeterminate = indeterminate;
-		}
-	}, [indeterminate]);
 
 	useEffect(() => {
 		if (
@@ -81,36 +65,35 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
 
 	return (
 		<ToggleControlBase
-			id={id}
-			controlType={isTask ? 'task' : 'checkbox'}
+			ref={composeRefs(ref, (node) => {
+				if (node) node.indeterminate = indeterminate;
+			})}
+			type='checkbox'
 			size={size}
-			align={align}
+			align={alignProp ?? (isTask ? 'start' : 'center')}
 			labelSide={labelSide}
-			readOnly={isReadOnly}
-			checked={!!checked}
-			className={className}
+			readOnly={readOnly}
+			disabled={disabled}
+			checked={checked}
+			className={cn(
+				box.root,
+				styles.root,
+				isTask ? styles.task : '',
+				isTask && checked ? styles.checked : '',
+				className,
+			)}
+			inputClassName={cn(box.input, styles.input)}
+			boxClassName={cn(box.box, styles.box)}
 			label={label}
 			labelHidden={hideLabel}
-			input={(
-				<input
-					ref={composeRefs(ref, inputRef)}
-					type='checkbox'
-					id={id}
-					disabled={disabled}
-					checked={checked}
-					{...props}
-					aria-label={ariaLabel}
-					aria-labelledby={ariaLabelledBy}
-					aria-readonly={isReadOnly || undefined}
-					aria-checked={indeterminate ? 'mixed' : checked}
-					onChange={composeEventHandlers(onChange, (event) => {
-						if (isReadOnly) event.preventDefault();
-					})}
-					onClick={composeEventHandlers(onClick, (event) => {
-						if (isReadOnly) event.preventDefault();
-					})}
-				/>
-			)}
+			{...props}
+			aria-label={ariaLabel}
+			aria-labelledby={ariaLabelledBy}
+			aria-checked={indeterminate ? 'mixed' : checked}
+			onChange={(event) => {
+				onChange?.(event);
+				onCheckedChange?.(event.target.checked);
+			}}
 		/>
 	);
 });
@@ -136,69 +119,40 @@ export const CheckboxGroup = forwardRef<HTMLFieldSetElement, CheckboxGroupProps>
 		value,
 		onChange,
 		orientation = 'vertical',
-		className,
-		style,
 		readOnly = false,
 		disabled = false,
 		size = 'md',
 		labelSide = 'end',
-		onKeyDown,
 		...rest
 	},
 	ref,
 ) {
-	const groupId = useId();
-
-	const handleCheckboxChange = (val: string, checked: boolean) => {
-		if (readOnly || disabled) return;
-		if (checked) onChange([...value, val]);
-		else onChange(value.filter((item) => item !== val));
-	};
-
-	const handleKeyDown = composeEventHandlers(onKeyDown, (event: React.KeyboardEvent<HTMLFieldSetElement>) => {
-		if (readOnly || disabled) return;
-		const inputs = Array.from(
-			event.currentTarget.querySelectorAll<HTMLInputElement>('input[type="checkbox"]'),
-		);
-		const currentIndex = inputs.indexOf(document.activeElement as HTMLInputElement);
-		handleRovingFocusKeyDown(event, {
-			currentIndex,
-			length: inputs.length,
-			orientation: orientation === 'horizontal' ? 'horizontal' : 'vertical',
-			onMove: (nextIndex) => {
-				focusElement(inputs[nextIndex]);
-			},
-		});
-	});
-
 	return (
-		<fieldset
+		<ToggleGroupBase
 			ref={ref}
-			className={toggleGroupClassName(className)}
-			style={style}
+			label={label}
+			orientation={orientation}
+			readOnly={readOnly}
+			disabled={disabled}
 			{...rest}
-			onKeyDown={handleKeyDown}
 		>
-			{label && (
-				<legend id={groupId} className={toggleLegendClassName()}>
-					{label}
-				</legend>
-			)}
-			<div className={toggleStackClassName(orientation)}>
-				{options.map((option) => (
-					<Checkbox
-						key={option.value}
-						label={option.label}
-						checked={value.includes(option.value)}
-						disabled={disabled}
-						readOnly={readOnly}
-						size={size}
-						labelSide={labelSide}
-						onChange={(event) => handleCheckboxChange(option.value, event.target.checked)}
-					/>
-				))}
-			</div>
-		</fieldset>
+			{options.map((option) => (
+				<Checkbox
+					key={option.value}
+					label={option.label}
+					checked={value.includes(option.value)}
+					disabled={disabled}
+					readOnly={readOnly}
+					size={size}
+					labelSide={labelSide}
+					onChange={(event) => {
+						if (readOnly || disabled) return;
+						if (event.target.checked) onChange([...value, option.value]);
+						else onChange(value.filter((item) => item !== option.value));
+					}}
+				/>
+			))}
+		</ToggleGroupBase>
 	);
 });
 

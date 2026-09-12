@@ -7,16 +7,15 @@ export type {
 	SelectionGroupPanelProps,
 } from './SelectionGroup.types';
 
-import React, {createContext, forwardRef, useCallback, useContext, useMemo} from 'react';
-import {focusElement} from '../../utils/a11y';
-import {handleRovingFocusKeyDown} from '../../utils/keyboard';
+import React, {createContext, forwardRef, useCallback, useMemo} from 'react';
 import {useControlledStateWithCallback} from '../../hooks/useControlledState';
+import {useRequiredContext} from '../../hooks/useRequiredContext';
+import {ROVING_ITEM_ATTR, useRovingList} from '../../hooks/useRovingList';
 import {cn} from '../../utils/cn';
 import {composeEventHandlers} from '../../utils/composeEvents';
-import styles from './SelectionGroup.module.css';
+import unstyled from '../../styles/unstyledControl.module.css';
 
-const ITEM_ATTR = 'data-selection-item';
-const VALUE_ATTR = 'data-selection-value';
+export const SELECTION_VALUE_ATTR = 'data-selection-value';
 
 interface SelectionGroupContextValue {
 	value: string;
@@ -30,15 +29,12 @@ interface SelectionGroupContextValue {
 
 const SelectionGroupContext = createContext<SelectionGroupContextValue | null>(null);
 
-function useSelectionGroupContext(component: string): SelectionGroupContextValue {
-	const context = useContext(SelectionGroupContext);
-	if (!context) {
-		throw new Error(`${component} должен использоваться внутри SelectionGroup.Root`);
-	}
-	return context;
+export function useSelectionGroupContext(component: string): SelectionGroupContextValue {
+	return useRequiredContext(
+		SelectionGroupContext,
+		`${component} должен использоваться внутри SelectionGroup.Root`,
+	);
 }
-
-export {useSelectionGroupContext};
 
 const SelectionGroupRoot = forwardRef<HTMLDivElement, SelectionGroupRootProps>(function SelectionGroupRoot(
 	{
@@ -51,6 +47,9 @@ const SelectionGroupRoot = forwardRef<HTMLDivElement, SelectionGroupRootProps>(f
 		readOnly = false,
 		activateOnFocus = true,
 		className,
+		style,
+		role,
+		onKeyDown,
 		...rest
 	},
 	ref,
@@ -87,14 +86,17 @@ const SelectionGroupRoot = forwardRef<HTMLDivElement, SelectionGroupRootProps>(f
 		value,
 	]);
 
-	const shouldWrap = Boolean(className) || ref != null || Object.keys(rest).length > 0;
+	const shouldWrap = className != null || style != null || role != null || onKeyDown != null || ref != null;
 
 	return (
 		<SelectionGroupContext.Provider value={contextValue}>
 			{shouldWrap ? (
 				<div
 					ref={ref}
-					className={cn(styles.root, className)}
+					className={className}
+					style={style}
+					role={role}
+					onKeyDown={onKeyDown}
 					{...rest}
 				>
 					{children}
@@ -110,59 +112,31 @@ const SelectionGroupList = React.forwardRef<HTMLDivElement, SelectionGroupListPr
 	function SelectionGroupList(
 		{
 			children,
-			className = '',
+			className,
 			onKeyDown,
 			...rest
 		},
 		forwardedRef,
 	) {
 		const {
-			value,
 			setValue,
 			orientation,
 			interactive,
 			activateOnFocus,
 		} = useSelectionGroupContext('SelectionGroup.List');
 
-		const getItems = (list: HTMLDivElement) =>
-			Array.from(list.querySelectorAll<HTMLElement>(`[${ITEM_ATTR}]`))
-				.filter((el) => !el.hasAttribute('disabled') && el.getAttribute('aria-disabled') !== 'true');
-
-		const handleKeyDown = composeEventHandlers(onKeyDown, (event: React.KeyboardEvent<HTMLDivElement>) => {
-			if (!interactive) return;
-
-			const list = event.currentTarget;
-			const items = getItems(list);
-			if (items.length === 0) return;
-
-			const currentIndex = items.findIndex(
-				(el) => el.getAttribute(VALUE_ATTR) === value,
-			);
-			const index = currentIndex >= 0 ? currentIndex : 0;
-
-			handleRovingFocusKeyDown(event, {
-				currentIndex: index,
-				length: items.length,
-				orientation,
-				onMove: (nextIndex) => {
-					const next = items[nextIndex];
-					const nextValue = next.getAttribute(VALUE_ATTR);
-					if (!nextValue) return;
-
-					if (activateOnFocus) {
-						setValue(nextValue);
-					}
-					focusElement(next);
-				},
-			});
+		const roving = useRovingList(orientation, (el) => {
+			if (!activateOnFocus) return;
+			const nextValue = el.getAttribute(SELECTION_VALUE_ATTR);
+			if (nextValue) setValue(nextValue);
 		});
 
 		return (
 			<div
 				ref={forwardedRef}
-				className={cn(styles.list, className)}
+				className={className}
 				{...rest}
-				onKeyDown={handleKeyDown}
+				onKeyDown={composeEventHandlers(onKeyDown, interactive ? roving : undefined)}
 			>
 				{children}
 			</div>
@@ -175,7 +149,7 @@ const SelectionGroupItem = React.forwardRef<HTMLButtonElement, SelectionGroupIte
 		{
 			value: itemValue,
 			children,
-			className = '',
+			className,
 			disabled: itemDisabled = false,
 			onClick,
 			...rest
@@ -197,9 +171,9 @@ const SelectionGroupItem = React.forwardRef<HTMLButtonElement, SelectionGroupIte
 			<button
 				ref={forwardedRef}
 				type='button'
-				className={cn(styles.item, className)}
-				data-selection-item=''
-				data-selection-value={itemValue}
+				className={cn(unstyled.control, className)}
+				{...{[ROVING_ITEM_ATTR]: ''}}
+				{...{[SELECTION_VALUE_ATTR]: itemValue}}
 				disabled={isDisabled || undefined}
 				aria-disabled={readOnly || undefined}
 				tabIndex={isSelected && !isDisabled && !readOnly ? 0 : -1}
@@ -225,7 +199,7 @@ const SelectionGroupPanel = React.forwardRef<HTMLDivElement, SelectionGroupPanel
 		{
 			value: panelValue,
 			children,
-			className = '',
+			className,
 			forceMount = false,
 			hidden,
 			...rest
@@ -242,7 +216,7 @@ const SelectionGroupPanel = React.forwardRef<HTMLDivElement, SelectionGroupPanel
 		return (
 			<div
 				ref={forwardedRef}
-				className={cn(styles.panel, className)}
+				className={className}
 				{...rest}
 				hidden={hidden ?? (forceMount ? !isActive : undefined)}
 			>

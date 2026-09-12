@@ -3,7 +3,11 @@ import type {Page} from '@playwright/test';
 export const STORYBOOK_PORT = 6007;
 export const STORYBOOK_BASE_URL = `http://127.0.0.1:${STORYBOOK_PORT}`;
 
-export async function visitStory(page: Page, storyId: string): Promise<void> {
+export async function visitStory(
+	page: Page,
+	storyId: string,
+	options?: {theme?: 'light' | 'dark'},
+): Promise<void> {
 	const pageErrors: string[] = [];
 	const onPageError = (error: Error) => {
 		pageErrors.push(error.message);
@@ -11,7 +15,8 @@ export async function visitStory(page: Page, storyId: string): Promise<void> {
 	page.on('pageerror', onPageError);
 
 	try {
-		await page.goto(`${STORYBOOK_BASE_URL}/iframe.html?id=${storyId}&viewMode=story`);
+		const globals = options?.theme ? `&globals=theme:${options.theme}` : '';
+		await page.goto(`${STORYBOOK_BASE_URL}/iframe.html?id=${storyId}&viewMode=story${globals}`);
 		await page.waitForSelector('#storybook-root', {state: 'attached'});
 		await page.waitForLoadState('networkidle');
 		await page.evaluate(() => document.fonts?.ready);

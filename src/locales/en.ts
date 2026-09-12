@@ -81,17 +81,17 @@ export const en: Messages = {
 
 	dayStrip: {
 		ariaLabel: 'Day navigation',
-		prev: 'Previous days',
-		next: 'Next days',
+		prev: 'Previous day',
+		next: 'Next day',
 		days: 'Days',
 	},
 
-	timePicker: {
+	timeField: {
 		hours: 'Hours',
 		minutes: 'Minutes',
 	},
 
-	dateRangePicker: {
+	dateRangeField: {
 		label: 'Period',
 		start: 'From',
 		end: 'To',
@@ -165,7 +165,7 @@ export const en: Messages = {
 		confirm: 'Apply',
 		cancel: 'Cancel',
 		choose: 'Choose an image',
-		hint: 'Drag the frame or scale from the corners',
+		hint: 'Drag the image or scale from the corners',
 		loadError: 'Failed to load image',
 		cropError: 'Failed to crop image',
 		exportError: 'Failed to export image',
@@ -227,7 +227,6 @@ export const en: Messages = {
 
 	rating: {
 		ariaLabel: 'Rating',
-		value: '{score} of {max}',
 	},
 
 	actionList: {
@@ -245,11 +244,6 @@ export const en: Messages = {
 		pull: 'Pull to refresh',
 		release: 'Release',
 		refreshing: 'Refreshing…',
-	},
-
-	timeline: {
-		hide: 'Hide',
-		more: 'Show more',
 	},
 
 	spinner: {
@@ -290,33 +284,22 @@ export const en: Messages = {
 		label: 'Skip to content',
 	},
 
-	overflowActions: {
+	overflow: {
 		title: 'Actions',
 		ariaLabel: 'Actions',
 		more: 'More actions',
-	},
-
-	overflowGroup: {
-		title: 'More',
-		ariaLabel: 'Group',
-		more: 'Show more',
+		groupTitle: 'More',
+		groupAriaLabel: 'Group',
+		groupMore: 'Show more',
 	},
 
 	buttonGroup: {
 		ariaLabel: 'Button group',
 	},
 
-	dropdownMenu: {
+	menu: {
 		mobileTitle: 'Menu',
 		ariaLabel: 'Menu',
-	},
-
-	contextMenu: {
-		ariaLabel: 'Context menu',
-	},
-
-	charts: {
-		donut: 'Donut chart',
-		bar: 'Bar chart',
+		contextAriaLabel: 'Context menu',
 	},
 };

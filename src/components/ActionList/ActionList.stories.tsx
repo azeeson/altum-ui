@@ -1,157 +1,302 @@
 import type {Meta} from '@storybook/react';
 import React, {useMemo, useState} from 'react';
 import {ActionList} from './ActionList';
-import type {ActionListGroup, ActionListRootProps} from './ActionList.types';
+import type {ActionListGroup, ActionListItem, ActionListProps} from './ActionList.types';
+import {Box} from '../Box/Box';
+import {Inline, Stack} from '../Layout/Layout';
+import {Kbd} from '../Kbd/Kbd';
+import {Text} from '../Text/Text';
+import {IconInbox} from '../../icons/icons/IconInbox';
+import {IconPlus} from '../../icons/icons/IconPlus';
+import {IconSearch} from '../../icons/icons/IconSearch';
+import {IconCalendar} from '../../icons/icons/IconCalendar';
 import {componentParameters, story, Story} from '../../storybook/meta';
+import {playClick, playType} from '../../storybook/play';
 
 const GROUPS: ActionListGroup[] = [
 	{
 		id: 'nav',
-		label: 'Навигация',
-		items: [
-			{
-				id: 'inbox',
-				label: 'Входящие',
-				description: 'Открыть список задач',
-				shortcut: 'G I',
-				onSelect: () => {},
-			},
-			{
-				id: 'today',
-				label: 'Сегодня',
-				shortcut: 'G T',
-				onSelect: () => {},
-			},
-		],
+		label: 'Навигация'
 	},
 	{
 		id: 'actions',
-		label: 'Действия',
-		items: [
-			{
-				id: 'new',
-				label: 'Новая задача',
-				keywords: ['create', 'add'],
-				shortcut: 'N',
-				onSelect: () => {},
-			},
-			{
-				id: 'search',
-				label: 'Поиск',
-				shortcut: '⌘K',
-				onSelect: () => {},
-			},
-			{
-				id: 'disabled',
-				label: 'Недоступно',
-				disabled: true,
-				onSelect: () => {},
-			},
-		],
+		label: 'Действия'
 	},
 ];
+
+const ITEMS: ActionListItem[] = [
+	{
+		id: 'inbox',
+		groupId: 'nav',
+		label: 'Входящие',
+		description: 'Открыть список задач',
+		icon: <IconInbox size={16} />,
+		shortcut: 'G I',
+	},
+	{
+		id: 'today',
+		groupId: 'nav',
+		label: 'Сегодня',
+		icon: <IconCalendar size={16} />,
+		shortcut: 'G T',
+	},
+	{
+		id: 'new',
+		groupId: 'actions',
+		label: 'Новая задача',
+		keywords: ['create', 'add'],
+		icon: <IconPlus size={16} />,
+		shortcut: 'N',
+	},
+	{
+		id: 'search',
+		groupId: 'actions',
+		label: 'Поиск',
+		icon: <IconSearch size={16} />,
+		shortcut: '⌘K',
+	},
+	{
+		id: 'disabled',
+		groupId: 'actions',
+		label: 'Недоступно',
+		disabled: true,
+	},
+];
+
+function ListFrame({
+	children,
+	footer,
+}: {
+	children: React.ReactNode;
+	footer?: React.ReactNode;
+}) {
+	return (
+		<Box
+			variant='outlined'
+			padding='none'
+			radius='md'
+			style={{
+				maxWidth: 420,
+				overflow: 'hidden'
+			}}
+		>
+			{children}
+			{footer}
+		</Box>
+	);
+}
 
 export default {
 	title: 'altum/Components/ActionList',
 	component: ActionList,
 	tags: ['autodocs'],
-	parameters: {
-		...componentParameters(
-			'Клавиатурный список действий на базе Listbox + SearchField.',
-		),
-		controls: {exclude: ['groups', 'onAction', 'onQueryChange']},
+	parameters: componentParameters(
+		'Клавиатурный список действий на базе Listbox: `items` / `groups`, опциональный фильтр.',
+	),
+	argTypes: {
+		filterable: {
+			control: 'boolean',
+			description: 'Поле фильтра над списком',
+		},
+		filterPlaceholder: {
+			control: 'text',
+			description: 'Placeholder / label поля фильтра',
+		},
+		emptyText: {
+			control: 'text',
+			description: 'Текст, если ничего не найдено',
+		},
+		onAction: {
+			action: 'action',
+			description: 'Выбор пункта',
+		},
+		onQueryChange: {
+			action: 'queryChange',
+		},
+		onHighlightChange: {
+			action: 'highlightChange',
+		},
 	},
 } satisfies Meta<typeof ActionList>;
 
-export const Playground: Story<ActionListRootProps> = {
-	render: function PlaygroundRender() {
+export const Playground: Story<ActionListProps> = {
+	args: {
+		filterable: true,
+		filterPlaceholder: 'Фильтр команд',
+		emptyText: 'Ничего не найдено',
+	},
+	render: function PlaygroundRender(args) {
 		const [last, setLast] = useState('—');
-		const groups = useMemo(() => GROUPS.map((group) => ({
-			...group,
-			items: group.items.map((item) => ({
-				...item,
-				onSelect: () => setLast(String(item.label)),
-			})),
+		const items = useMemo(() => ITEMS.map((item) => ({
+			...item,
+			onSelect: () => setLast(String(item.label)),
 		})), []);
 
 		return (
-			<div style={{
-				maxWidth: 420,
-				border: '1px solid var(--altum-color-dropdown-border)',
-				borderRadius: 'var(--altum-g-radius)',
-				overflow: 'hidden',
-			}}
-			>
-				<ActionList.Root onAction={(item) => setLast(String(item.label))}>
-					<ActionList.Search />
-					{groups.map((group) => (
-						<ActionList.Group key={group.id} id={group.id}>
-							<ActionList.GroupLabel>
-								{group.label}
-							</ActionList.GroupLabel>
-							{group.items.map((item) => <ActionList.Item key={item.id} {...item} />)}
-						</ActionList.Group>
-					))}
-				</ActionList.Root>
-				<div style={{
-					padding: 'var(--altum-g-space-2) var(--altum-g-space-3)',
-					borderTop: '1px solid var(--altum-color-dropdown-border)',
-					fontSize: 12,
-					color: 'var(--altum-color-muted)',
-				}}
+			<Stack gap='sm'>
+				<ListFrame
+					footer={(
+						<Box
+							variant='muted'
+							padding='sm'
+							radius='none'
+							border={false}
+						>
+							<Text size='xs' color='muted'>
+								Выбрано:
+								{' '}
+								{last}
+							</Text>
+						</Box>
+					)}
 				>
-					Выбрано:
-					{' '}
-					{last}
-				</div>
-			</div>
+					<ActionList
+						{...args}
+						items={items}
+						groups={GROUPS}
+						onAction={(item) => setLast(String(item.label))}
+					/>
+				</ListFrame>
+			</Stack>
 		);
 	},
-	parameters: story('SearchField-фильтр; Listbox groups; стрелки / Home / End / Enter.'),
+	parameters: story('Фильтр; Listbox groups; стрелки / Home / End / Enter. Controls: filterable, placeholder, emptyText.'),
 };
 
-export const WithStaticList: Story<ActionListRootProps> = {
+export const WithStaticList: Story<ActionListProps> = {
 	render: function WithoutFilterRender() {
 		const [last, setLast] = useState('—');
-		const groups = useMemo(() => GROUPS.map((group) => ({
-			...group,
-			items: group.items.map((item) => ({
-				...item,
-				onSelect: () => setLast(String(item.label)),
-			})),
+		const items = useMemo(() => ITEMS.map((item) => ({
+			...item,
+			onSelect: () => setLast(String(item.label)),
 		})), []);
 
 		return (
-			<div style={{
-				maxWidth: 420,
-				border: '1px solid var(--altum-color-dropdown-border)',
-				borderRadius: 'var(--altum-g-radius)',
-				overflow: 'hidden',
-			}}
+			<ListFrame
+				footer={(
+					<Box
+						variant='muted'
+						padding='sm'
+						radius='none'
+						border={false}
+					>
+						<Text size='xs' color='muted'>
+							Выбрано:
+							{' '}
+							{last}
+						</Text>
+					</Box>
+				)}
 			>
-				<ActionList.Root onAction={(item) => setLast(String(item.label))}>
-					{groups.map((group) => (
-						<ActionList.Group key={group.id} id={group.id}>
-							<ActionList.GroupLabel>
-								{group.label}
-							</ActionList.GroupLabel>
-							{group.items.map((item) => <ActionList.Item key={item.id} {...item} />)}
-						</ActionList.Group>
-					))}
-				</ActionList.Root>
-				<div style={{
-					padding: 'var(--altum-g-space-2) var(--altum-g-space-3)',
-					borderTop: '1px solid var(--altum-color-dropdown-border)',
-					fontSize: 12,
-					color: 'var(--altum-color-muted)',
-				}}
+				<ActionList
+					items={items}
+					groups={GROUPS}
+					onAction={(item) => setLast(String(item.label))}
+				/>
+			</ListFrame>
+		);
+	},
+	parameters: story('Без фильтра — только группы и disabled-пункт.'),
+};
+
+export const Empty: Story<ActionListProps> = {
+	render: () => (
+		<ListFrame>
+			<ActionList
+				items={[]}
+				filterable
+				emptyText='Команд пока нет'
+			/>
+		</ListFrame>
+	),
+	parameters: story('Пустой список + кастомный `emptyText`.'),
+};
+
+export const OverflowText: Story<ActionListProps> = {
+	render: () => (
+		<ListFrame>
+			<ActionList
+				items={[
+					{
+						id: 'long',
+						label: 'Экспортировать все архивные отчёты за последние 24 месяца с вложениями',
+						description: 'Файл может быть больше 500 МБ — загрузка начнётся в фоне и придёт письмом',
+						shortcut: '⌘⇧E',
+					},
+					{
+						id: 'short',
+						label: 'Копия',
+						shortcut: '⌘C',
+					},
+				]}
+			/>
+		</ListFrame>
+	),
+	parameters: story('Длинные label / description / shortcut в узкой панели.'),
+};
+
+export const Interaction: Story<ActionListProps> = {
+	render: function InteractionRender() {
+		const [last, setLast] = useState('—');
+		return (
+			<Stack gap='sm'>
+				<ListFrame>
+					<ActionList
+						items={ITEMS}
+						groups={GROUPS}
+						filterable
+						filterPlaceholder='Фильтр'
+						onAction={(item) => setLast(String(item.label))}
+					/>
+				</ListFrame>
+				<Text
+					size='xs'
+					color='muted'
+					data-testid='action-last'
 				>
 					Выбрано:
 					{' '}
 					{last}
-				</div>
-			</div>
+				</Text>
+			</Stack>
 		);
 	},
-	parameters: story('Без SearchField — только группы и disabled-пункт.'),
+	play: async ({canvasElement}) => {
+		await playType(canvasElement, 'поиск', 'input[type="search"]');
+		await playClick(canvasElement, '[role="option"]');
+	},
+	parameters: story('Play: ввод в фильтр и клик по найденному пункту.'),
+};
+
+export const UsageExample: Story<ActionListProps> = {
+	render: function UsageExampleRender() {
+		const [last, setLast] = useState('—');
+		return (
+			<Stack gap='md' style={{maxWidth: 420}}>
+				<Inline gap='sm' align='center'>
+					<Text size='sm' weight='medium'>
+						Командная палитра
+					</Text>
+					<Kbd>
+						⌘K
+					</Kbd>
+				</Inline>
+				<ListFrame>
+					<ActionList
+						items={ITEMS}
+						groups={GROUPS}
+						filterable
+						filterPlaceholder='Найти действие'
+						onAction={(item) => setLast(String(item.label))}
+					/>
+				</ListFrame>
+				<Text size='xs' color='muted'>
+					Последнее действие:
+					{' '}
+					{last}
+				</Text>
+			</Stack>
+		);
+	},
+	parameters: story('Список в оболочке панели — как внутри CommandPalette / Dropdown.'),
 };

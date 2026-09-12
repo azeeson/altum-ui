@@ -1,0 +1,77 @@
+/* Общие токены статусов. Навешивайте список: cn(status.success, status.surface). */
+
+.success {
+  --altum-status-border: var(--altum-color-status-success-border);
+  --altum-status-fg: var(--altum-color-status-success-fg);
+  --altum-status-bg: var(--altum-color-status-success-bg);
+  --altum-status-fill: var(--altum-color-status-success);
+  --altum-status-strong: var(--altum-color-status-success-strong);
+  --altum-status-border-hover: var(--altum-color-status-success-border-hover);
+  --altum-status-bg-hover: var(--altum-color-status-success-bg-hover);
+}
+
+.info {
+  --altum-status-border: var(--altum-color-status-info-border);
+  --altum-status-fg: var(--altum-color-status-info-fg);
+  --altum-status-bg: var(--altum-color-status-info-bg);
+  --altum-status-fill: var(--altum-color-status-info);
+  --altum-status-strong: var(--altum-color-status-info);
+  --altum-status-border-hover: var(--altum-color-status-info-border-hover);
+  --altum-status-bg-hover: var(--altum-color-status-info-bg-hover);
+}
+
+.warning {
+  --altum-status-border: var(--altum-color-status-warning-border);
+  --altum-status-fg: var(--altum-color-status-warning-fg);
+  --altum-status-bg: var(--altum-color-status-warning-bg);
+  --altum-status-fill: var(--altum-color-status-warning);
+  --altum-status-strong: var(--altum-color-status-warning-strong);
+  --altum-status-border-hover: var(--altum-color-status-warning-border-hover);
+  --altum-status-bg-hover: var(--altum-color-status-warning-bg-hover);
+}
+
+.error {
+  --altum-status-border: var(--altum-color-status-danger-border);
+  --altum-status-fg: var(--altum-color-status-danger-fg);
+  --altum-status-bg: var(--altum-color-status-danger-bg);
+  --altum-status-fill: var(--altum-color-status-error);
+  --altum-status-strong: var(--altum-color-danger-text-secondary);
+  --altum-status-border-hover: var(--altum-color-status-danger-border-hover);
+  --altum-status-bg-hover: var(--altum-color-status-danger-bg-hover);
+}
+
+/* Два класса — чтобы перекрыть Box `.root.outlined` / `.root.ghost`. */
+.success.surface,
+.info.surface,
+.warning.surface,
+.error.surface {
+  border-color: var(--altum-status-border);
+
+  color: var(--altum-status-fg);
+  background-color: var(--altum-status-bg);
+}
+
+.clickable.surface:hover:not(:disabled) {
+  border-color: var(--altum-status-border-hover);
+
+  background-color: var(--altum-status-bg-hover);
+}
+
+.active {
+  border-color: color-mix(in srgb, var(--altum-status-fill) 70%, transparent);
+
+  background-color: color-mix(in srgb, var(--altum-status-fill) 28%, transparent);
+}
+
+.fill {
+  color: var(--altum-color-brand-text);
+  background-color: var(--altum-status-fill);
+}
+
+.fg,
+.success .fg,
+.info .fg,
+.warning .fg,
+.error .fg {
+  color: var(--altum-status-strong);
+}

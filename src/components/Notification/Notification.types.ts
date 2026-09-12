@@ -1,9 +1,7 @@
 import type React from 'react';
-import type {
-	ComponentPropsWithoutRef,
-} from 'react';
+import type {ComponentPropsWithoutRef} from 'react';
 
-/** Действие в toast (`Notification.Actions`). */
+/** Действие в toast. */
 export interface NotificationAction {
 	label: string;
 	onClick: () => void;
@@ -61,9 +59,11 @@ export interface NotificationViewportProps extends Omit<ComponentPropsWithoutRef
 	position?: NotificationPosition;
 }
 
-/** Свойства корня одного toast. */
-export interface NotificationRootProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
-	children?: React.ReactNode;
+/** Свойства карточки toast. */
+export interface NotificationProps extends Omit<ComponentPropsWithoutRef<'div'>, 'title'> {
+	title: React.ReactNode;
+	description?: React.ReactNode;
+	actions?: NotificationAction[];
 	variant?: NotificationItem['variant'];
 	duration?: number;
 	progress?: boolean;
@@ -71,17 +71,8 @@ export interface NotificationRootProps extends Omit<ComponentPropsWithoutRef<'di
 	onClose?: () => void;
 }
 
-/** Свойства слота `Notification.Title`. */
-export type NotificationTitleProps = ComponentPropsWithoutRef<'div'>;
-
-/** Свойства слота `Notification.Description`. */
-export type NotificationDescriptionProps = ComponentPropsWithoutRef<'div'>;
-
-/** Свойства слота `Notification.Actions`. */
-export type NotificationActionsProps = ComponentPropsWithoutRef<'div'>;
-
-/** Свойства кнопки закрытия toast. */
-export type NotificationCloseProps = Omit<ComponentPropsWithoutRef<'button'>, 'type'>;
+/** @deprecated Используйте {@link NotificationProps}. */
+export type NotificationRootProps = NotificationProps;
 
 /** Вход `notify()`: `id` опционален, генерируется, если не передан. */
 export type NotifyInput = Omit<NotificationItem, 'id'> & {

@@ -18,20 +18,10 @@
 }
 
 .header {
-  box-sizing: border-box;
-
   flex-shrink: 0;
-
-  &.headerSticky {
-    position: sticky;
-    top: 0;
-    z-index: var(--altum-g-z-raised, 1);
-  }
 }
 
 .content {
-  box-sizing: border-box;
-
   /* Растягивается при коротком контенте; при длинном растёт вместе с ним (скролл у .root). */
   flex: 1 0 auto;
 
@@ -40,31 +30,21 @@
 
 .footer {
   display: flex;
-  box-sizing: border-box;
 
   flex-shrink: 0;
   align-items: center;
   gap: var(--altum-g-space-3);
+}
 
-  &.footerAlign_start {
-    justify-content: flex-start;
-  }
+.sticky {
+  position: sticky;
+  z-index: var(--altum-g-z-raised, 1);
+}
 
-  &.footerAlign_center {
-    justify-content: center;
-  }
+.header.sticky {
+  top: 0;
+}
 
-  &.footerAlign_end {
-    justify-content: flex-end;
-  }
-
-  &.footerAlign_space-between {
-    justify-content: space-between;
-  }
-
-  &.footerSticky {
-    position: sticky;
-    bottom: 0;
-    z-index: var(--altum-g-z-raised, 1);
-  }
+.footer.sticky {
+  bottom: 0;
 }

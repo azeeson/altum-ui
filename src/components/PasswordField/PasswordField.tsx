@@ -7,15 +7,25 @@ export type {
 	PasswordFieldProps,
 } from './PasswordField.types';
 
-import React, {forwardRef, useId, useState} from 'react';
+import {forwardRef, useId, useState} from 'react';
 import {TextField} from '../TextField/TextField';
-import {FieldBase} from '../../base/FieldBase';
+import {FieldBaseButton} from '../../base/FieldBase';
 import {IconPreview} from '../../icons/icons/IconPreview';
 import {IconPreviewOff} from '../../icons/icons/IconPreviewOff';
-import {FormMessage} from '../FormMessage/FormMessage';
+import {Text} from '../Text/Text';
+import fieldMessage from '../../styles/fieldMessage.module.css';
 import styles from './PasswordField.module.css';
+import {cn} from '../../utils/cn';
 import {composeEventHandlers} from '../../utils/composeEvents';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useControlledStateWithCallback} from '../../hooks/useControlledState';
+import {useLocale} from '../../locales/localeContext';
+
+const STRENGTH_NOW = {
+	weak: 1,
+	fair: 2,
+	good: 3,
+	strong: 4,
+} as const;
 
 /**
  * Оценивает сложность пароля по длине и разнообразию символов.
@@ -43,13 +53,7 @@ export function getPasswordStrength(password: string): PasswordStrength {
  *
  * @component
  * @example
- * <PasswordField
- *   label="Пароль"
- *   value={password}
- *   onChange={(e) => setPassword(e.target.value)}
- *   onClear={() => setPassword('')}
- *   showStrength
- * />
+ * <PasswordField label="Пароль" value={password} onChange={(e) => setPassword(e.target.value)} showStrength />
  */
 export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(function PasswordField(
 	{
@@ -63,7 +67,6 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(fu
 		value,
 		defaultValue,
 		onChange,
-		wrapperClassName = '',
 		'aria-describedby': ariaDescribedBy,
 		...props
 	},
@@ -71,17 +74,16 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(fu
 ) {
 	const {t} = useLocale();
 	const strengthId = useId();
-	const [uncontrolledVisible, setUncontrolledVisible] = useState(defaultVisible);
-	const [uncontrolledValue, setUncontrolledValue] = useState(
-		defaultValue !== undefined ? String(defaultValue) : '',
+	const [visible, setVisible] = useControlledStateWithCallback(
+		controlledVisible,
+		defaultVisible,
+		onVisibleChange,
 	);
-
-	const isVisibleControlled = controlledVisible !== undefined;
-	const visible = isVisibleControlled ? controlledVisible : uncontrolledVisible;
-
-	const isValueControlled = value !== undefined;
-	const currentValue = isValueControlled ? String(value ?? '') : uncontrolledValue;
-	const strength = getPasswordStrength(currentValue);
+	const [uncontrolled, setUncontrolled] = useState(
+		() => String(defaultValue ?? ''),
+	);
+	const password = value !== undefined ? String(value) : uncontrolled;
+	const strength = getPasswordStrength(password);
 	const labels = {
 		weak: t('password.strength.weak'),
 		fair: t('password.strength.fair'),
@@ -89,81 +91,53 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(fu
 		strong: t('password.strength.strong'),
 		...strengthLabels,
 	};
-
-	const setVisible = (next: boolean) => {
-		if (!isVisibleControlled) {
-			setUncontrolledVisible(next);
-		}
-		onVisibleChange?.(next);
-	};
-
 	const describedBy = [ariaDescribedBy, showStrength && strength !== 'empty' ? strengthId : undefined]
 		.filter(Boolean)
 		.join(' ') || undefined;
 
-	const toggleButton = (
-		<FieldBase.Button
-			type='button'
-			aria-label={visible ? hidePasswordLabel ?? t('password.hide') : showPasswordLabel ?? t('password.reveal')}
-			aria-pressed={visible}
-			onClick={(event) => {
-				event.preventDefault();
-				event.stopPropagation();
-				setVisible(!visible);
-			}}
-			icon={visible ? <IconPreviewOff size={16} /> : <IconPreview size={16} />}
-		/>
-	);
-
 	return (
-		<div className={styles.root}>
-			<TextField
-				ref={ref}
-				{...props}
-				type={visible ? 'text' : 'password'}
-				value={value}
-				defaultValue={defaultValue}
-				wrapperClassName={wrapperClassName}
-				autoComplete={props.autoComplete ?? 'current-password'}
-				postfix={toggleButton}
-				aria-describedby={describedBy}
-				onChange={composeEventHandlers(onChange, (event) => {
-					if (!isValueControlled) {
-						setUncontrolledValue(event.target.value);
-					}
-				})}
-			/>
-			{showStrength && strength !== 'empty' && (
+		<TextField
+			ref={ref}
+			{...props}
+			type={visible ? 'text' : 'password'}
+			value={value}
+			defaultValue={defaultValue}
+			autoComplete={props.autoComplete ?? 'current-password'}
+			aria-describedby={describedBy}
+			onChange={composeEventHandlers(onChange, (event) => {
+				if (value === undefined) setUncontrolled(event.target.value);
+			})}
+			postfix={(
+				<FieldBaseButton
+					aria-label={visible ? hidePasswordLabel ?? t('password.hide') : showPasswordLabel ?? t('password.reveal')}
+					aria-pressed={visible}
+					onClick={() => setVisible(!visible)}
+					icon={visible ? <IconPreviewOff size={16} /> : <IconPreview size={16} />}
+				/>
+			)}
+			footer={showStrength && strength !== 'empty' ? (
 				<div
 					id={strengthId}
-					className={styles.strength}
+					className={cn(fieldMessage.message, styles.strength)}
 					data-strength={strength}
 					role='meter'
 					aria-valuemin={1}
 					aria-valuemax={4}
-					aria-valuenow={
-						strength === 'weak' ? 1
-							: strength === 'fair' ? 2
-								: strength === 'good' ? 3
-									: 4
-					}
+					aria-valuenow={STRENGTH_NOW[strength]}
 					aria-label={labels[strength]}
 				>
-					<div className={styles.strengthTrack} aria-hidden>
-						<span className={styles.strengthBar} data-level='1' />
-						<span className={styles.strengthBar} data-level='2' />
-						<span className={styles.strengthBar} data-level='3' />
-						<span className={styles.strengthBar} data-level='4' />
-					</div>
-					<FormMessage
-						variant={strength === 'weak' ? 'error' : strength === 'strong' ? 'success' : 'hint'}
+					<div className={styles.strengthTrack} aria-hidden />
+					<Text
+						as='span'
+						size='xs'
+						color={strength === 'weak' ? 'error' : strength === 'strong' ? 'success' : 'muted'}
 						className={styles.strengthLabel}
 					>
 						{labels[strength]}
-					</FormMessage>
+					</Text>
 				</div>
-			)}
-		</div>
+			) : undefined}
+		/>
 	);
 });
 

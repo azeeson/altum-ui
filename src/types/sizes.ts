@@ -1,5 +1,5 @@
 /** Размер контрола по высоте и типографике. */
 export type ControlSize = 'sm' | 'md' | 'lg';
 
-/** Ширина оболочки поля. */
-export type FieldWidth = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
+/** Ширина оболочки поля: фиксированная средняя или на всю ширину родителя. */
+export type FieldWidth = 'md' | 'full';

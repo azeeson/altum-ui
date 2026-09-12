@@ -26,11 +26,10 @@ import {SuggestField} from '../SuggestField/SuggestField';
 import {Modal} from '../Modal/Modal';
 import {Sheet} from '../Sheet/Sheet';
 import {CommandPalette} from '../CommandPalette/CommandPalette';
-import {ActionList} from '../ActionList';
-import type {ActionListGroup} from '../ActionList/ActionList.types';
+import type {ActionListGroup, ActionListItem} from '../ActionList/ActionList.types';
 import {Tabs} from '../Tabs/Tabs';
 import {Avatar} from '../Avatar/Avatar';
-import {Badge, BadgeCounter} from '../Badge/Badge';
+import {Badge} from '../Badge/Badge';
 import {addDays, startOfDay, startOfWeek} from '../Calendar/Calendar.utils';
 import {IconTrash} from '../../icons/icons/IconTrash';
 import {IconCheckmark} from '../../icons/icons/IconCheckmark';
@@ -211,7 +210,7 @@ export const InboxVirtualSwipe: Story<Record<string, never>> = {
 							</p>
 						</div>
 						<Chip
-							mode='tag'
+							as='tag'
 							variant='tinted'
 							size='sm'
 						>
@@ -224,21 +223,21 @@ export const InboxVirtualSwipe: Story<Record<string, never>> = {
 					<ControlRow gap='sm'>
 						<Chip
 							variant={filter === 'all' ? 'tinted' : 'secondary'}
-							active={filter === 'all'}
+							as={filter === 'all' ? 'toggle' : 'chip'}
 							onClick={() => setFilter('all')}
 						>
 							Все
 						</Chip>
 						<Chip
 							variant={filter === 'unread' ? 'tinted' : 'secondary'}
-							active={filter === 'unread'}
+							as={filter === 'unread' ? 'toggle' : 'chip'}
 							onClick={() => setFilter('unread')}
 						>
 							Непрочитанные
 						</Chip>
 						<Chip
 							variant={filter === 'starred' ? 'tinted' : 'secondary'}
-							active={filter === 'starred'}
+							as={filter === 'starred' ? 'toggle' : 'chip'}
 							onClick={() => setFilter('starred')}
 						>
 							Избранные
@@ -400,7 +399,7 @@ export const CalendarPlanning: Story<Record<string, never>> = {
 						CalendarBoard + ControlRow фильтры + Sheet с деталями задачи. Клик по событию открывает панель.
 					</p>
 					<ControlRow gap='sm'>
-						<Chip variant='tinted' active>
+						<Chip variant='tinted' as='toggle'>
 							Моя команда
 						</Chip>
 						<Chip variant='secondary'>
@@ -461,7 +460,7 @@ export const CalendarPlanning: Story<Record<string, never>> = {
 
 				<Sheet
 					open={drawerOpen}
-					onClose={() => setDrawerOpen(false)}
+					onOpenChange={setDrawerOpen}
 					mode='sidebar'
 					direction='end'
 					backdrop
@@ -474,7 +473,7 @@ export const CalendarPlanning: Story<Record<string, never>> = {
 					<Sheet.Body>
 						{selected ? (
 							<Stack gap='md'>
-								<Chip mode='tag' variant='tinted'>
+								<Chip as='tag' variant='tinted'>
 									{selected.allDay ? 'Весь день' : 'По времени'}
 								</Chip>
 								<Text size='sm'>
@@ -545,122 +544,82 @@ export const SettingsStudio: Story<Record<string, never>> = {
 				</header>
 
 				<Stack gap='lg'>
-					<Fieldset variant='card'>
-						<Fieldset.Inner>
-							<Fieldset.Legend>
-								Внешний вид
-							</Fieldset.Legend>
-							<Fieldset.Description>
-								Тема и акцент интерфейса
-							</Fieldset.Description>
-							<Fieldset.Hint>
-								Токены ThemeProvider подхватят tinted-кнопки автоматически
-							</Fieldset.Hint>
-							<Fieldset.Content gap={density === 'compact' ? 'var(--altum-g-space-3)' : 'var(--altum-g-space-4)'}>
-								<FieldLabel
-									label='Тема'
-									layout='horizontal'
-									justify='between'
-									align='center'
-								>
-									<Select.Root
-										options={[
-											{
-												label: 'Системная',
-												value: 'system'
-											},
-											{
-												label: 'Светлая',
-												value: 'light'
-											},
-											{
-												label: 'Тёмная',
-												value: 'dark'
-											},
-										]}
-										value={theme}
-										onChange={(value) => { if (!Array.isArray(value)) setTheme(value); }}
-									>
-										<Select.Trigger label='Тема' />
-										<Select.Panel>
-											<Select.List />
-										</Select.Panel>
-									</Select.Root>
-								</FieldLabel>
-								<FieldLabel
-									label='Акцент'
-									layout='horizontal'
-									justify='between'
-								>
-									<SegmentedControl
-										aria-label='Акцент'
-										size='sm'
-										variant='secondary'
-										value={accent}
-										onChange={setAccent}
-										options={[
-											{
-												label: 'Сланец',
-												value: 'slate'
-											},
-											{
-												label: 'Синий',
-												value: 'blue'
-											},
-											{
-												label: 'Зелёный',
-												value: 'green'
-											},
-										]}
-									/>
-								</FieldLabel>
-								<FieldLabel
-									label='Превью анимаций'
-									layout='horizontal'
-									justify='between'
-									align='center'
-								>
-									<Switch checked={preview} onChange={setPreview} />
-								</FieldLabel>
-							</Fieldset.Content>
-						</Fieldset.Inner>
+					<Fieldset
+						variant='card'
+						legend='Внешний вид'
+						description='Тема и акцент интерфейса'
+						hint='Токены ThemeProvider подхватят tinted-кнопки автоматически'
+						gap={density === 'compact' ? 'var(--altum-g-space-3)' : 'var(--altum-g-space-4)'}
+					>
+						<FieldLabel
+							label='Тема'
+							layout='horizontal'
+							justify='between'
+							align='center'
+						>
+							<Select
+								options={[
+									{
+										label: 'Системная',
+										value: 'system'
+									},
+									{
+										label: 'Светлая',
+										value: 'light'
+									},
+									{
+										label: 'Тёмная',
+										value: 'dark'
+									},
+								]}
+								value={theme}
+								onChange={(value) => { if (!Array.isArray(value)) setTheme(value); }}
+								label='Тема'
+							/>
+						</FieldLabel>
+						<FieldLabel
+							label='Акцент'
+							layout='horizontal'
+							justify='between'
+						>
+							<SegmentedControl
+								aria-label='Акцент'
+								size='sm'
+								variant='secondary'
+								value={accent}
+								onChange={setAccent}
+								options={[
+									{
+										label: 'Сланец',
+										value: 'slate'
+									},
+									{
+										label: 'Синий',
+										value: 'blue'
+									},
+									{
+										label: 'Зелёный',
+										value: 'green'
+									},
+								]}
+							/>
+						</FieldLabel>
+						<FieldLabel
+							label='Превью анимаций'
+							layout='horizontal'
+							justify='between'
+							align='center'
+						>
+							<Switch checked={preview} onChange={setPreview} />
+						</FieldLabel>
 					</Fieldset>
 
-					<Fieldset variant='card'>
-						<Fieldset.Inner>
-							<Fieldset.Legend>
-								Уведомления
-							</Fieldset.Legend>
-							<Fieldset.Description>
-								Дайджест и каналы
-							</Fieldset.Description>
-							<Fieldset.Content gap={density === 'compact' ? 'var(--altum-g-space-3)' : 'var(--altum-g-space-4)'}>
-								<FieldLabel
-									label='Еженедельный дайджест'
-									layout='horizontal'
-									justify='between'
-									align='center'
-								>
-									<Switch checked={digest} onChange={setDigest} />
-								</FieldLabel>
-								<Inline gap='sm'>
-									<Chip variant='info' size='sm'>
-										Эл. почта
-									</Chip>
-									<Chip variant='success' size='sm'>
-										Пуш
-									</Chip>
-									<Chip
-										mode='tag'
-										variant='secondary'
-										size='sm'
-									>
-										Slack позже
-									</Chip>
-								</Inline>
-							</Fieldset.Content>
-						</Fieldset.Inner>
-						<Fieldset.Footer>
+					<Fieldset
+						variant='card'
+						legend='Уведомления'
+						description='Дайджест и каналы'
+						gap={density === 'compact' ? 'var(--altum-g-space-3)' : 'var(--altum-g-space-4)'}
+						footer={(
 							<ControlRow justify='end'>
 								<Button variant='secondary'>
 									Отмена
@@ -669,7 +628,31 @@ export const SettingsStudio: Story<Record<string, never>> = {
 									Сохранить
 								</Button>
 							</ControlRow>
-						</Fieldset.Footer>
+						)}
+					>
+						<FieldLabel
+							label='Еженедельный дайджест'
+							layout='horizontal'
+							justify='between'
+							align='center'
+						>
+							<Switch checked={digest} onChange={setDigest} />
+						</FieldLabel>
+						<Inline gap='sm'>
+							<Chip variant='info' size='sm'>
+								Эл. почта
+							</Chip>
+							<Chip variant='success' size='sm'>
+								Пуш
+							</Chip>
+							<Chip
+								as='tag'
+								variant='secondary'
+								size='sm'
+							>
+								Slack позже
+							</Chip>
+						</Inline>
 					</Fieldset>
 				</Stack>
 			</div>
@@ -699,7 +682,7 @@ export const FormComposerModal: Story<Record<string, never>> = {
 					Открыть форму
 				</Button>
 
-				<Modal open={open} onClose={() => setOpen(false)}>
+				<Modal open={open} onOpenChange={setOpen}>
 					<Modal.Header>
 						<Modal.Title>
 							Новая задача
@@ -736,11 +719,11 @@ export const FormComposerModal: Story<Record<string, never>> = {
 										width='full'
 									/>
 								</ControlRow.Item>
-								<BadgeCounter counter={assignee ? 1 : 0}>
+								<Badge label={assignee ? 1 : undefined}>
 									<Avatar name={assignee || '?'} size='md' />
-								</BadgeCounter>
+								</Badge>
 							</ControlRow>
-							<Select.Root
+							<Select
 								options={[
 									{
 										label: 'Москва',
@@ -757,14 +740,11 @@ export const FormComposerModal: Story<Record<string, never>> = {
 								]}
 								value={city}
 								onChange={(value) => { if (!Array.isArray(value)) setCity(value); }}
-							>
-								<Select.Trigger label='Город офиса' width='full' />
-								<Select.Panel>
-									<Select.Filter />
-									<Select.List />
-								</Select.Panel>
-							</Select.Root>
-							<Select.Root
+								label='Город офиса'
+								width='full'
+								filterable
+							/>
+							<Select
 								selectionMode='multiple'
 								options={[
 									{
@@ -786,14 +766,9 @@ export const FormComposerModal: Story<Record<string, never>> = {
 								]}
 								value={labels}
 								onChange={(value) => { if (Array.isArray(value)) setLabels(value); }}
-							>
-								<Select.Trigger label='Метки' width='full'>
-									<Select.Chips />
-								</Select.Trigger>
-								<Select.Panel>
-									<Select.List />
-								</Select.Panel>
-							</Select.Root>
+								label='Метки'
+								width='full'
+							/>
 						</Stack>
 					</Modal.Body>
 					<Modal.FormFooter
@@ -852,49 +827,50 @@ export const CommandWorkspace: Story<Record<string, never>> = {
 		const groups: ActionListGroup[] = useMemo(() => [
 			{
 				id: 'nav',
-				label: 'Навигация',
-				items: [
-					{
-						id: 'go-inbox',
-						label: 'Перейти во Входящие',
-						shortcut: 'G I',
-						onSelect: () => {
-							setTab('inbox');
-							setLastCommand('inbox');
-						},
-					},
-					{
-						id: 'go-tasks',
-						label: 'Перейти к задачам',
-						shortcut: 'G T',
-						onSelect: () => {
-							setTab('tasks');
-							setLastCommand('tasks');
-						},
-					},
-				],
+				label: 'Навигация'
 			},
 			{
 				id: 'actions',
-				label: 'Действия',
-				items: [
-					{
-						id: 'add',
-						label: 'Добавить задачу',
-						onSelect: () => {
-							setTodos((prev) => [
-								...prev,
-								{
-									id: String(Date.now()),
-									title: 'Новая из CommandPalette',
-									done: false,
-								},
-							]);
-							setTab('tasks');
-							setLastCommand('add-task');
+				label: 'Действия'
+			},
+		], []);
+		const items: ActionListItem[] = useMemo(() => [
+			{
+				id: 'go-inbox',
+				groupId: 'nav',
+				label: 'Перейти во Входящие',
+				shortcut: 'G I',
+				onSelect: () => {
+					setTab('inbox');
+					setLastCommand('inbox');
+				},
+			},
+			{
+				id: 'go-tasks',
+				groupId: 'nav',
+				label: 'Перейти к задачам',
+				shortcut: 'G T',
+				onSelect: () => {
+					setTab('tasks');
+					setLastCommand('tasks');
+				},
+			},
+			{
+				id: 'add',
+				groupId: 'actions',
+				label: 'Добавить задачу',
+				onSelect: () => {
+					setTodos((prev) => [
+						...prev,
+						{
+							id: String(Date.now()),
+							title: 'Новая из CommandPalette',
+							done: false,
 						},
-					},
-				],
+					]);
+					setTab('tasks');
+					setLastCommand('add-task');
+				},
 			},
 		], []);
 
@@ -923,7 +899,7 @@ export const CommandWorkspace: Story<Record<string, never>> = {
 						</Inline>
 					</Split>
 					<Chip
-						mode='tag'
+						as='tag'
 						variant='secondary'
 						size='sm'
 					>
@@ -982,7 +958,7 @@ export const CommandWorkspace: Story<Record<string, never>> = {
 									</span>
 									{todo.done && (
 										<Chip
-											mode='tag'
+											as='tag'
 											variant='success'
 											size='sm'
 										>
@@ -995,19 +971,13 @@ export const CommandWorkspace: Story<Record<string, never>> = {
 					</Tabs.Panel>
 				</Tabs>
 
-				<CommandPalette.Root open={paletteOpen} onClose={() => setPaletteOpen(false)}>
-					<CommandPalette.Input placeholder='Команда или переход…' />
-					<CommandPalette.List>
-						{groups.map((group) => (
-							<ActionList.Group key={group.id} id={group.id}>
-								<ActionList.GroupLabel>
-									{group.label}
-								</ActionList.GroupLabel>
-								{group.items.map((item) => <ActionList.Item key={item.id} {...item} />)}
-							</ActionList.Group>
-						))}
-					</CommandPalette.List>
-				</CommandPalette.Root>
+				<CommandPalette
+					open={paletteOpen}
+					onOpenChange={setPaletteOpen}
+					placeholder='Команда или переход…'
+					items={items}
+					groups={groups}
+				/>
 			</div>
 		);
 	},
@@ -1061,7 +1031,7 @@ export const FormHarmony: Story<Record<string, never>> = {
 							width='md'
 							size='md'
 						/>
-						<Select.Root
+						<Select
 							options={[
 								{
 									value: 'open',
@@ -1074,18 +1044,12 @@ export const FormHarmony: Story<Record<string, never>> = {
 							]}
 							value={status}
 							onChange={(value) => { if (!Array.isArray(value)) setStatus(value); }}
-						>
-							<Select.Trigger
-								label='Статус'
-								labelPlacement='none'
-								placeholder='Статус'
-								width='sm'
-								size='md'
-							/>
-							<Select.Panel>
-								<Select.List />
-							</Select.Panel>
-						</Select.Root>
+							label='Статус'
+							labelPlacement='none'
+							placeholder='Статус'
+							width='md'
+							size='md'
+						/>
 						<SegmentedControl
 							value={seg}
 							onChange={setSeg}
@@ -1141,7 +1105,7 @@ export const FormHarmony: Story<Record<string, never>> = {
 								width='md'
 								size='md'
 							/>
-							<Select.Root
+							<Select
 								options={[
 									{
 										value: 'editor',
@@ -1154,17 +1118,11 @@ export const FormHarmony: Story<Record<string, never>> = {
 								]}
 								value={role}
 								onChange={(value) => { if (!Array.isArray(value)) setRole(value); }}
-							>
-								<Select.Trigger
-									label='Роль'
-									labelPlacement='outside'
-									width='md'
-									size='md'
-								/>
-								<Select.Panel>
-									<Select.List />
-								</Select.Panel>
-							</Select.Root>
+								label='Роль'
+								labelPlacement='outside'
+								width='md'
+								size='md'
+							/>
 							<Button size='md'>
 								Сохранить
 							</Button>
@@ -1172,14 +1130,14 @@ export const FormHarmony: Story<Record<string, never>> = {
 						<Inline gap='md'>
 							<Chip
 								size='sm'
-								mode='tag'
+								as='tag'
 								variant='info'
 							>
 								sm тег
 							</Chip>
 							<Chip
 								size='sm'
-								mode='tag'
+								as='tag'
 								variant='success'
 								onRemove={() => undefined}
 							>
@@ -1187,7 +1145,7 @@ export const FormHarmony: Story<Record<string, never>> = {
 							</Chip>
 							<Chip
 								size='md'
-								active
+								as='toggle'
 								onClick={() => undefined}
 							>
 								md чип
@@ -1203,7 +1161,7 @@ export const FormHarmony: Story<Record<string, never>> = {
 					<Button onClick={() => setModalOpen(true)}>
 						Открыть Modal + Select
 					</Button>
-					<Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+					<Modal open={modalOpen} onOpenChange={setModalOpen}>
 						<Modal.Header>
 							<Modal.Title>
 								Новый участник
@@ -1219,7 +1177,7 @@ export const FormHarmony: Story<Record<string, never>> = {
 									helperText='Отображается в списке команды'
 									width='full'
 								/>
-								<Select.Root
+								<Select
 									options={[
 										{
 											value: 'editor',
@@ -1236,16 +1194,10 @@ export const FormHarmony: Story<Record<string, never>> = {
 									]}
 									value={role}
 									onChange={(value) => { if (!Array.isArray(value)) setRole(value); }}
-								>
-									<Select.Trigger
-										label='Роль'
-										labelPlacement='outside'
-										width='full'
-									/>
-									<Select.Panel>
-										<Select.List />
-									</Select.Panel>
-								</Select.Root>
+									label='Роль'
+									labelPlacement='outside'
+									width='full'
+								/>
 							</Stack>
 						</Modal.Body>
 						<Modal.FormFooter>

@@ -1,4 +1,8 @@
-.viewport {
+/* Виртуализированный список: вьюпорт / spacer / строка. */
+
+.root {
+  --altum-virtual-total: 0px;
+
   position: relative;
 
   box-sizing: border-box;
@@ -6,37 +10,35 @@
   overscroll-behavior: contain;
 
   width: 100%;
-}
 
-.external {
-  position: relative;
+  &.external {
+    overflow: visible;
+    overscroll-behavior: auto;
+  }
 
-  box-sizing: border-box;
-  overflow: visible;
+  & .spacer {
+    position: relative;
 
-  width: 100%;
-}
+    height: var(--altum-virtual-total);
 
-.spacer {
-  position: relative;
+    pointer-events: none;
+  }
 
-  box-sizing: border-box;
+  & .item {
+    --altum-virtual-top: 0px;
 
-  width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
 
-  pointer-events: none;
-}
+    width: 100%;
 
-.item {
-  position: absolute;
-  top: 0;
-  left: 0;
+    pointer-events: auto;
 
-  box-sizing: border-box;
+    transform: translateY(var(--altum-virtual-top));
+  }
 
-  width: 100%;
-
-  pointer-events: auto;
-
-  will-change: transform;
+  & .item > * {
+    position: relative;
+  }
 }

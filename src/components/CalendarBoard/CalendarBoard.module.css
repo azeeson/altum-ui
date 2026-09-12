@@ -50,28 +50,16 @@
     width: var(--altum-control-height-sm);
     height: var(--altum-control-height-sm);
 
-    margin: 0;
-    padding: 0;
-
     border: 1px solid var(--altum-color-border);
     border-radius: var(--altum-g-radius-sm);
 
     color: var(--altum-color-text-secondary);
     background: var(--altum-color-surface);
 
-    cursor: pointer;
-    appearance: none;
-
     transition: var(--altum-transition-smooth);
-
     &:hover:not(:disabled) {
       color: var(--altum-color-input-text);
       background: var(--altum-color-surface-hover);
-    }
-
-    &:focus-visible {
-      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
-      outline-offset: var(--altum-focus-ring-offset);
     }
   }
 
@@ -169,25 +157,8 @@
     align-items: center;
 
     width: fit-content;
-
-    margin: 0;
-    padding: 0;
-
-    border: none;
-    border-radius: var(--altum-g-radius-sm);
-
-    color: inherit;
-    background-color: transparent;
-
-    cursor: pointer;
-    appearance: none;
     &:hover .dayNumber {
       color: var(--altum-color-brand-tint-text);
-    }
-
-    &:focus-visible {
-      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
-      outline-offset: var(--altum-focus-ring-offset);
     }
   }
 
@@ -373,41 +344,17 @@
   & .yearMonthLabelBtn {
     align-self: flex-start;
 
-    margin: 0;
-    padding: 0;
-
-    border: none;
-    border-radius: var(--altum-g-radius-sm);
-
-    font-family: inherit;
     font-size: var(--altum-g-font-size-sm);
     font-weight: var(--altum-g-font-weight-semibold);
     line-height: var(--altum-g-line-height-sm);
 
     color: var(--altum-color-ink-default);
-    background-color: transparent;
-
-    cursor: pointer;
-    appearance: none;
-
-    transition: var(--altum-transition-smooth);
     &:hover {
       color: var(--altum-color-brand-tint-text);
     }
-
-    &:focus-visible {
-      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
-      outline-offset: var(--altum-focus-ring-offset);
-    }
   }
 
-  & .yearWeekdayRow {
-    display: grid;
-
-    gap: var(--altum-control-inset);
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-  }
-  & .yearWeek {
+  & .yearCols {
     display: grid;
 
     gap: var(--altum-control-inset);
@@ -429,15 +376,6 @@
     color: var(--altum-color-muted);
   }
 
-  & .yearDayWrap {
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    min-width: 0;
-  }
-
   & .yearDay {
     display: flex;
 
@@ -447,27 +385,9 @@
     width: 100%;
     min-height: calc(var(--altum-g-space-5) + var(--altum-control-inset));
 
-    margin: 0;
-    padding: 0;
-
-    border: none;
-    border-radius: var(--altum-g-radius-sm);
-
-    font-family: inherit;
     font-size: var(--altum-g-font-size-xs);
     line-height: 1.2;
     text-align: center;
-
-    color: var(--altum-color-input-text);
-    background: transparent;
-
-    cursor: pointer;
-    appearance: none;
-
-    transition: var(--altum-transition-smooth);
-    &:disabled {
-      cursor: default;
-    }
   }
 
   & .yearDayOutside {
@@ -490,24 +410,6 @@
     &:hover {
       color: var(--altum-color-brand-tint-text);
       background-color: var(--altum-color-brand-tint-hover);
-    }
-
-    &:focus-visible {
-      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
-      outline-offset: var(--altum-focus-ring-offset);
-    }
-  }
-
-  & .yearTooltipList {
-    max-width: 14rem;
-
-    margin: 0;
-    padding: 0 0 0 var(--altum-g-space-4);
-
-    text-align: left;
-    white-space: normal;
-    & li + li {
-      margin-top: var(--altum-calendar-list-gap, 2px);
     }
   }
 }

@@ -1,0 +1,77 @@
+.legend {
+  --altum-chart-swatch-size: 10px;
+
+  display: flex;
+
+  flex-wrap: wrap;
+  gap: var(--altum-g-space-3);
+
+  margin-top: var(--altum-g-space-2);
+
+  font-size: var(--altum-g-font-size-2xs);
+
+  color: var(--altum-color-text-secondary);
+}
+
+.stack {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: var(--altum-g-space-2);
+}
+
+.legendItem {
+  display: inline-flex;
+
+  align-items: center;
+  gap: var(--altum-g-space-1);
+
+  text-align: start;
+}
+
+.stack .legendItem {
+  display: grid;
+
+  gap: var(--altum-g-space-2);
+  grid-template-columns: var(--altum-chart-swatch-size) 1fr auto;
+
+  margin: calc(var(--altum-g-space-1) * -1);
+  padding: var(--altum-g-space-1);
+
+  border-radius: var(--altum-g-radius-sm, 4px);
+
+  cursor: pointer;
+
+  transition: background-color var(--altum-transition-smooth);
+}
+
+.stack .legendItem:hover,
+.legendItemActive {
+  background: var(--altum-color-surface-hover, color-mix(in srgb, var(--altum-color-border) 35%, transparent));
+}
+
+.legendItem:focus-visible {
+  outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+  outline-offset: var(--altum-focus-ring-offset);
+}
+
+.swatch {
+  width: var(--altum-chart-swatch-size);
+  height: var(--altum-chart-swatch-size);
+
+  border-radius: var(--altum-g-radius-sm, 4px);
+}
+
+.legendLabel {
+  min-width: 0;
+
+  text-align: start;
+
+  color: var(--altum-color-input-text);
+}
+
+.legendDetail {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  color: var(--altum-color-muted);
+}

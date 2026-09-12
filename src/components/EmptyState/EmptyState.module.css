@@ -1,66 +1,41 @@
 .emptyState {
+  --altum-es-pad: var(--altum-g-space-8) var(--altum-g-space-6);
+  --altum-es-icon: calc(var(--altum-g-font-size-4xl) * 1.5);
+  --altum-es-title: var(--altum-g-font-size-lg);
+  --altum-es-desc: var(--altum-g-font-size-base);
+  --altum-es-desc-w: 320px;
+  --altum-es-icon-mb: var(--altum-g-space-4);
+  --altum-es-title-mb: var(--altum-g-space-2);
+  --altum-es-desc-mb: var(--altum-g-space-5);
+
   display: flex;
-  box-sizing: border-box;
 
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  font-family: var(--altum-g-font-family-ui);
+  padding: var(--altum-es-pad);
+
   text-align: center;
 }
 
-.md {
-  padding: var(--altum-g-space-8) var(--altum-g-space-6);
-  & .icon {
-    font-size: calc(var(--altum-g-font-size-4xl) * 1.5);
-  }
-
-  & .title {
-    font-size: var(--altum-g-font-size-lg);
-  }
+.sm {
+  --altum-es-pad: var(--altum-g-space-4) var(--altum-g-space-3);
+  --altum-es-icon: calc(var(--altum-g-font-size-3xl) + var(--altum-g-space-1));
+  --altum-es-title: var(--altum-g-font-size-sm);
+  --altum-es-desc: var(--altum-g-font-size-2xs);
+  --altum-es-desc-w: 240px;
+  --altum-es-icon-mb: var(--altum-g-space-2);
+  --altum-es-title-mb: var(--altum-g-space-1);
+  --altum-es-desc-mb: var(--altum-g-space-3);
 }
 
 .lg {
-  padding: calc(var(--altum-g-space-8) + var(--altum-g-space-8)) var(--altum-g-space-8);
-  & .icon {
-    margin-bottom: var(--altum-g-space-5);
-
-    font-size: calc(var(--altum-g-font-size-4xl) * 1.75);
-  }
-
-  & .title {
-    font-size: var(--altum-g-font-size-xl);
-  }
-
-  & .description {
-    max-width: 400px;
-
-    font-size: var(--altum-g-font-size-base);
-  }
-}
-
-.sm {
-  padding: var(--altum-g-space-4) var(--altum-g-space-3);
-  & .icon {
-    margin-bottom: var(--altum-g-space-2);
-
-    font-size: calc(var(--altum-g-font-size-3xl) + var(--altum-g-space-1));
-  }
-
-  & .title {
-    margin-bottom: var(--altum-g-space-1);
-
-    font-size: var(--altum-g-font-size-sm);
-  }
-
-  & .description {
-    max-width: 240px;
-
-    margin-bottom: var(--altum-g-space-3);
-
-    font-size: var(--altum-g-font-size-2xs);
-  }
+  --altum-es-pad: calc(var(--altum-g-space-8) + var(--altum-g-space-8)) var(--altum-g-space-8);
+  --altum-es-icon: calc(var(--altum-g-font-size-4xl) * 1.75);
+  --altum-es-title: var(--altum-g-font-size-xl);
+  --altum-es-desc-w: 400px;
+  --altum-es-icon-mb: var(--altum-g-space-5);
 }
 
 .icon {
@@ -69,28 +44,30 @@
   justify-content: center;
   align-items: center;
 
-  margin-bottom: var(--altum-g-space-4);
+  margin-bottom: var(--altum-es-icon-mb);
 
+  font-size: var(--altum-es-icon);
   line-height: 0;
 
   color: var(--altum-color-empty-icon, var(--altum-color-text-secondary));
 }
 
 .title {
-  margin: 0 0 var(--altum-g-space-2);
+  margin: 0 0 var(--altum-es-title-mb);
 
+  font-size: var(--altum-es-title);
   font-weight: var(--altum-g-font-weight-semibold);
 
   color: var(--altum-color-ink-default);
 }
 
 .description {
-  max-width: 320px;
+  max-width: var(--altum-es-desc-w);
 
-  margin: 0 0 var(--altum-g-space-5);
+  margin: 0 0 var(--altum-es-desc-mb);
 
-  font-size: var(--altum-g-font-size-base);
-  line-height: 1.5;
+  font-size: var(--altum-es-desc);
+  line-height: var(--altum-g-line-height-base);
 
   color: var(--altum-color-text-secondary);
 }

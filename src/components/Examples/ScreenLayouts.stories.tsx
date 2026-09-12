@@ -13,7 +13,7 @@ import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
 import {Checkbox, CheckboxGroup} from '../Checkbox/Checkbox';
 import {Chip} from '../Chip/Chip';
 import {Card} from '../Card/Card';
-import {DateRangePicker} from '../DateRangePicker/DateRangePicker';
+import {DateRangeField} from '../DateRangeField/DateRangeField';
 import {DayStripCalendar} from '../DayStripCalendar/DayStripCalendar';
 import {DescriptionList} from '../DescriptionList/DescriptionList';
 import {DonutChart} from '../DonutChart/DonutChart';
@@ -223,7 +223,7 @@ function DemoFilterBar({
 									key={item.id}
 									size='sm'
 									variant={item.active ? 'tinted' : 'secondary'}
-									active={!!item.active}
+									as={item.active ? 'toggle' : 'chip'}
 									onClick={onFilterChange
 										? () => onFilterChange(item.id, !item.active)
 										: undefined}
@@ -288,10 +288,10 @@ export const AnalyticsDashboard: Story<Record<string, never>> = {
 				<DemoHeader
 					crumbs='Продукт / Аналитика'
 					title='Аналитика продукта'
-					description='Карточки KPI + SearchField/Chip + DateRangePicker + BarChart/Donut + Alert'
+					description='Карточки KPI + SearchField/Chip + DateRangeField + BarChart/Donut + Alert'
 					actions={(
 						<Inline gap='sm'>
-							<DateRangePicker
+							<DateRangeField
 								label='Период'
 								size='sm'
 								value={range}
@@ -304,21 +304,17 @@ export const AnalyticsDashboard: Story<Record<string, never>> = {
 					)}
 				/>
 
-				<Alert variant='warning' size='sm'>
-					<Alert.Icon />
-					<Alert.Body>
-						<Alert.Title>
-							Аномалия трафика
-						</Alert.Title>
-						<Alert.Content>
-							В сегменте Android конверсия упала на 18% относительно базовой линии недели.
-						</Alert.Content>
-						<Alert.Actions>
-							<Button size='sm' variant='ghost'>
-								Разбор
-							</Button>
-						</Alert.Actions>
-					</Alert.Body>
+				<Alert
+					variant='warning'
+					size='sm'
+					title='Аномалия трафика'
+					actions={(
+						<Button size='sm' variant='ghost'>
+							Разбор
+						</Button>
+					)}
+				>
+					В сегменте Android конверсия упала на 18% относительно базовой линии недели.
 				</Alert>
 
 				<DemoFilterBar
@@ -340,7 +336,7 @@ export const AnalyticsDashboard: Story<Record<string, never>> = {
 						})));
 					}}
 					end={(
-						<Select.Root
+						<Select
 							value='sessions'
 							options={[
 								{
@@ -353,16 +349,10 @@ export const AnalyticsDashboard: Story<Record<string, never>> = {
 								},
 							]}
 							onChange={() => undefined}
-						>
-							<Select.Trigger
-								label='Метрика'
-								size='sm'
-								width='sm'
-							/>
-							<Select.Panel>
-								<Select.List />
-							</Select.Panel>
-						</Select.Root>
+							label='Метрика'
+							size='sm'
+							width='md'
+						/>
 					)}
 				/>
 
@@ -540,16 +530,12 @@ label: 'Журнал аудита'
 },
 						]}
 					/>
-					<Alert variant='info' size='sm'>
-						<Alert.Icon />
-						<Alert.Body>
-							<Alert.Title>
-								Подсказка
-							</Alert.Title>
-							<Alert.Content>
-								CheckboxGroup отражает права выбранного профиля SegmentedControl.
-							</Alert.Content>
-						</Alert.Body>
+					<Alert
+						variant='info'
+						size='sm'
+						title='Подсказка'
+					>
+						CheckboxGroup отражает права выбранного профиля SegmentedControl.
 					</Alert>
 				</Stack>
 			</div>
@@ -558,15 +544,11 @@ label: 'Журнал аудита'
 		const securityContent = (
 			<div className={styles.panel}>
 				<Stack gap='md'>
-					<Fieldset variant='card'>
-						<Fieldset.Inner>
-							<Fieldset.Legend>
-								Доступ
-							</Fieldset.Legend>
-							<Fieldset.Description>
-								SSO и сессии
-							</Fieldset.Description>
-							<Fieldset.Content>
+					<Fieldset
+						variant='card'
+						legend='Доступ'
+						description='SSO и сессии'
+					>
 								<FieldLabel
 									label='Требовать 2FA'
 									layout='horizontal'
@@ -583,7 +565,7 @@ label: 'Журнал аудита'
 									layout='horizontal'
 									justify='between'
 								>
-									<Select.Root
+									<Select
 										value='8h'
 										options={[
 											{
@@ -600,12 +582,9 @@ label: 'Журнал аудита'
 											},
 										]}
 										onChange={() => undefined}
-									>
-										<Select.Trigger label='Таймаут' size='sm' />
-										<Select.Panel>
-											<Select.List />
-										</Select.Panel>
-									</Select.Root>
+										label='Таймаут'
+										size='sm'
+									/>
 								</FieldLabel>
 								<PasswordField
 									label='Мастер-ключ API'
@@ -613,29 +592,17 @@ label: 'Журнал аудита'
 									onChange={() => undefined}
 									width='full'
 								/>
-							</Fieldset.Content>
-						</Fieldset.Inner>
 					</Fieldset>
 					<Accordion>
-						<Accordion.Item value='ip'>
-							<Accordion.Trigger>
-								Разрешённые IP
-							</Accordion.Trigger>
-							<Accordion.Content>
-								<Text size='sm' color='muted'>
-									Разрешены офисные подсети 10.0.0.0/8.
-								</Text>
-							</Accordion.Content>
+						<Accordion.Item value='ip' title='Разрешённые IP'>
+							<Text size='sm' color='muted'>
+								Разрешены офисные подсети 10.0.0.0/8.
+							</Text>
 						</Accordion.Item>
-						<Accordion.Item value='devices'>
-							<Accordion.Trigger>
-								Доверенные устройства
-							</Accordion.Trigger>
-							<Accordion.Content>
-								<Text size='sm' color='muted'>
-									3 устройства · последнее сегодня.
-								</Text>
-							</Accordion.Content>
+						<Accordion.Item value='devices' title='Доверенные устройства'>
+							<Text size='sm' color='muted'>
+								3 устройства · последнее сегодня.
+							</Text>
 						</Accordion.Item>
 					</Accordion>
 				</Stack>
@@ -644,12 +611,7 @@ label: 'Журнал аудита'
 
 		const notificationsContent = (
 			<div className={styles.panel}>
-				<Fieldset variant='plain'>
-					<Fieldset.Inner>
-						<Fieldset.Legend>
-							Каналы
-						</Fieldset.Legend>
-						<Fieldset.Content>
+				<Fieldset variant='plain' legend='Каналы'>
 							<FieldLabel
 								label='Эл. почта'
 								layout='horizontal'
@@ -692,8 +654,6 @@ label: 'Журнал аудита'
 									aria-label='Дайджест'
 								/>
 							</FieldLabel>
-						</Fieldset.Content>
-					</Fieldset.Inner>
 				</Fieldset>
 			</div>
 		);
@@ -784,7 +744,7 @@ export const CheckoutFlow: Story<Record<string, never>> = {
 					<div className={styles.panel}>
 						{step === 0 && (
 							<Stack gap='md'>
-								<Select.Root
+								<Select
 									options={[
 										{
 											value: 'msk',
@@ -807,16 +767,10 @@ export const CheckoutFlow: Story<Record<string, never>> = {
 									onChange={(next) => {
 										if (!Array.isArray(next) && next != null) setRegion(String(next));
 									}}
-								>
-									<Select.Trigger
-										label='Регион / город'
-										width='full'
-										onClear={() => setRegion('')}
-									/>
-									<Select.Panel>
-										<Select.List />
-									</Select.Panel>
-								</Select.Root>
+									label='Регион / город'
+									width='full'
+									onClear={() => setRegion('')}
+								/>
 								<TextField
 									label='Улица и дом'
 									placeholder='ул. Примерная, 1'
@@ -904,16 +858,12 @@ export const CheckoutFlow: Story<Record<string, never>> = {
 
 						{step === 2 && (
 							<Stack gap='md'>
-								<Alert variant='success' size='sm'>
-									<Alert.Icon />
-									<Alert.Body>
-										<Alert.Title>
-											Почти готово
-										</Alert.Title>
-										<Alert.Content>
-											Проверьте сводку справа и подтвердите заказ.
-										</Alert.Content>
-									</Alert.Body>
+								<Alert
+									variant='success'
+									size='sm'
+									title='Почти готово'
+								>
+									Проверьте сводку справа и подтвердите заказ.
 								</Alert>
 								<Checkbox label='Согласен с офертой и политикой возврата' defaultChecked />
 								<Inline gap='sm'>
@@ -1054,7 +1004,7 @@ export const MobileHomeShell: Story<Record<string, never>> = {
 												<RelativeTime date={new Date(item.when)} />
 											</Stack>
 											<Chip
-												mode='tag'
+												as='tag'
 												size='sm'
 												variant='secondary'
 											>
@@ -1066,23 +1016,16 @@ export const MobileHomeShell: Story<Record<string, never>> = {
 							</>
 						)}
 						{tab === 'wallet' && (
-							<Fieldset variant='card'>
-								<Fieldset.Inner>
-									<Fieldset.Legend>
-										Карты
-									</Fieldset.Legend>
-									<Fieldset.Content>
-										<Inline gap='sm' align='center'>
-											<IconCard size={20} />
-											<Text size='sm'>
-												·· 4242
-											</Text>
-											<Badge size='sm' variant='success'>
-												Активна
-											</Badge>
-										</Inline>
-									</Fieldset.Content>
-								</Fieldset.Inner>
+							<Fieldset variant='card' legend='Карты'>
+								<Inline gap='sm' align='center'>
+									<IconCard size={20} />
+									<Text size='sm'>
+										·· 4242
+									</Text>
+									<Badge size='sm' variant='success'>
+										Активна
+									</Badge>
+								</Inline>
 							</Fieldset>
 						)}
 						{tab === 'profile' && (
@@ -1178,25 +1121,15 @@ export const ApiPlaygroundScreen: Story<Record<string, never>> = {
 							/>
 						</ScrollArea>
 						<Accordion>
-							<Accordion.Item value='auth'>
-								<Accordion.Trigger>
-									Авторизация
-								</Accordion.Trigger>
-								<Accordion.Content>
-									<Text size='sm'>
-										Bearer-токен из Настройки → ключи API.
-									</Text>
-								</Accordion.Content>
+							<Accordion.Item value='auth' title='Авторизация'>
+								<Text size='sm'>
+									Bearer-токен из Настройки → ключи API.
+								</Text>
 							</Accordion.Item>
-							<Accordion.Item value='errors'>
-								<Accordion.Trigger>
-									Ошибки
-								</Accordion.Trigger>
-								<Accordion.Content>
-									<Text size='sm'>
-										429 при превышении 100 rps на workspace.
-									</Text>
-								</Accordion.Content>
+							<Accordion.Item value='errors' title='Ошибки'>
+								<Text size='sm'>
+									429 при превышении 100 rps на workspace.
+								</Text>
 							</Accordion.Item>
 						</Accordion>
 					</div>
@@ -1290,8 +1223,10 @@ export const ProjectBoardScreen: Story<Record<string, never>> = {
 
 				<div className={styles.boardColumns}>
 					{columns.map((column) => (
-						<Card key={column.id} variant='outlined'>
-							<Card.Header>
+						<Card
+							key={column.id}
+							variant='outlined'
+							header={(
 								<Inline
 									align='center'
 									justify='between'
@@ -1301,42 +1236,41 @@ export const ProjectBoardScreen: Story<Record<string, never>> = {
 										{column.title}
 									</Title>
 									<Chip
-										mode='tag'
+										as='tag'
 										size='sm'
 										variant='tinted'
 									>
 										{column.items.length}
 									</Chip>
 								</Inline>
-							</Card.Header>
-							<Card.Body>
-								<Stack gap='sm'>
-									{column.items.map((item) => (
-										<div key={item.id} className={styles.kanbanCardBody}>
-											<Text size='sm'>
-												{item.title}
-											</Text>
-											<Inline gap='sm' align='center'>
-												<Avatar name={item.owner} size={22} />
-												<Chip
-													mode='tag'
-													size='sm'
-													variant='tinted'
-												>
-													{item.points}
-													{' '}
-													сп
-												</Chip>
-											</Inline>
-										</div>
-									))}
-								</Stack>
-							</Card.Body>
+							)}
+						>
+							<Stack gap='sm'>
+								{column.items.map((item) => (
+									<div key={item.id} className={styles.kanbanCardBody}>
+										<Text size='sm'>
+											{item.title}
+										</Text>
+										<Inline gap='sm' align='center'>
+											<Avatar name={item.owner} size={22} />
+											<Chip
+												as='tag'
+												size='sm'
+												variant='tinted'
+											>
+												{item.points}
+												{' '}
+												сп
+											</Chip>
+										</Inline>
+									</div>
+								))}
+							</Stack>
 						</Card>
 					))}
 				</div>
 
-				<Modal open={createOpen} onClose={() => setCreateOpen(false)}>
+				<Modal open={createOpen} onOpenChange={setCreateOpen}>
 					<Modal.Header>
 						<Modal.Title>
 							Новая карточка
@@ -1412,41 +1346,41 @@ export const OnboardingWizard: Story<Record<string, never>> = {
 					{step === 0 && (
 						<>
 							<Stack gap='sm'>
-								<Card variant='outlined'>
-									<Card.Header>
+								<Card
+									variant='outlined'
+									header={(
 										<Title level={4}>
 											Команды
 										</Title>
-									</Card.Header>
-									<Card.Body>
-										<Text size='sm'>
-											Собирайте команды и роли
-										</Text>
-									</Card.Body>
+									)}
+								>
+									<Text size='sm'>
+										Собирайте команды и роли
+									</Text>
 								</Card>
-								<Card variant='outlined'>
-									<Card.Header>
+								<Card
+									variant='outlined'
+									header={(
 										<Title level={4}>
 											Автоматизации
 										</Title>
-									</Card.Header>
-									<Card.Body>
-										<Text size='sm'>
-											Сценарии без кода
-										</Text>
-									</Card.Body>
+									)}
+								>
+									<Text size='sm'>
+										Сценарии без кода
+									</Text>
 								</Card>
-								<Card variant='outlined'>
-									<Card.Header>
+								<Card
+									variant='outlined'
+									header={(
 										<Title level={4}>
 											Аналитика
 										</Title>
-									</Card.Header>
-									<Card.Body>
-										<Text size='sm'>
-											Метрики с первого дня
-										</Text>
-									</Card.Body>
+									)}
+								>
+									<Text size='sm'>
+										Метрики с первого дня
+									</Text>
 								</Card>
 							</Stack>
 							<Button variant='primary' onClick={() => setStep(1)}>
@@ -1464,7 +1398,7 @@ export const OnboardingWizard: Story<Record<string, never>> = {
 									onChange={(e) => setName(e.target.value)}
 									width='full'
 								/>
-								<Select.Root
+								<Select
 									value='pm'
 									options={[
 										{
@@ -1481,12 +1415,8 @@ export const OnboardingWizard: Story<Record<string, never>> = {
 										},
 									]}
 									onChange={() => undefined}
-								>
-									<Select.Trigger label='Роль' />
-									<Select.Panel>
-										<Select.List />
-									</Select.Panel>
-								</Select.Root>
+									label='Роль'
+								/>
 								<Inline gap='sm'>
 									<Button variant='secondary' onClick={() => setStep(0)}>
 										Назад
@@ -1502,16 +1432,12 @@ export const OnboardingWizard: Story<Record<string, never>> = {
 					{step === 2 && (
 						<div className={styles.panel}>
 							<Stack gap='md'>
-								<Alert variant='info' size='sm'>
-									<Alert.Icon />
-									<Alert.Body>
-										<Alert.Title>
-											Код из SMS
-										</Alert.Title>
-										<Alert.Content>
-											Введите 6 цифр в PinInput.
-										</Alert.Content>
-									</Alert.Body>
+								<Alert
+									variant='info'
+									size='sm'
+									title='Код из SMS'
+								>
+									Введите 6 цифр в PinInput.
 								</Alert>
 								<PinInput
 									length={6}
@@ -1555,22 +1481,13 @@ export const ProductDetailScreen: Story<Record<string, never>> = {
 				<div className={styles.productHero}>
 					<div className={styles.heroMedia}>
 						<AspectRatio ratio={4 / 3}>
-							<ImageGallery images={[demoImage(4), demoImage(5), demoImage(6)]}>
-								<ImageGallery.Viewport>
-									<ImageGallery.Prev />
-									<ImageGallery.Image />
-									<ImageGallery.Next />
-								</ImageGallery.Viewport>
-								<ImageGallery.Thumbnails>
-									{[0, 1, 2].map((index) => <ImageGallery.Thumb key={index} index={index} />)}
-								</ImageGallery.Thumbnails>
-							</ImageGallery>
+							<ImageGallery images={[demoImage(4), demoImage(5), demoImage(6)]} />
 						</AspectRatio>
 					</div>
 					<Stack gap='md'>
 						<Inline gap='sm' align='center'>
 							<Chip
-								mode='tag'
+								as='tag'
 								size='sm'
 								variant='success'
 							>
@@ -1634,25 +1551,15 @@ export const ProductDetailScreen: Story<Record<string, never>> = {
 							</Tabs.Panel>
 							<Tabs.Panel value='specs'>
 								<Accordion>
-									<Accordion.Item value='p'>
-										<Accordion.Trigger>
-											Питание
-										</Accordion.Trigger>
-										<Accordion.Content>
-											<Text size='sm'>
-												USB-C 20W
-											</Text>
-										</Accordion.Content>
+									<Accordion.Item value='p' title='Питание'>
+										<Text size='sm'>
+											USB-C 20W
+										</Text>
 									</Accordion.Item>
-									<Accordion.Item value='s'>
-										<Accordion.Trigger>
-											Размеры
-										</Accordion.Trigger>
-										<Accordion.Content>
-											<Text size='sm'>
-												42 × 18 см
-											</Text>
-										</Accordion.Content>
+									<Accordion.Item value='s' title='Размеры'>
+										<Text size='sm'>
+											42 × 18 см
+										</Text>
 									</Accordion.Item>
 								</Accordion>
 							</Tabs.Panel>
@@ -1753,7 +1660,7 @@ export const RecruitingPipelineScreen: Story<Record<string, never>> = {
 										</Stack>
 									</Inline>
 									<Chip
-										mode='tag'
+										as='tag'
 										size='sm'
 										variant='secondary'
 									>
@@ -1792,7 +1699,7 @@ export const RecruitingPipelineScreen: Story<Record<string, never>> = {
 								]}
 							/>
 
-							<Select.Root
+							<Select
 								selectionMode='multiple'
 								value={skills}
 								onChange={(value) => { if (Array.isArray(value)) setSkills(value); }}
@@ -1814,14 +1721,8 @@ export const RecruitingPipelineScreen: Story<Record<string, never>> = {
 										value: 'ds'
 									},
 								]}
-							>
-								<Select.Trigger label='Навыки'>
-									<Select.Chips />
-								</Select.Trigger>
-								<Select.Panel>
-									<Select.List />
-								</Select.Panel>
-							</Select.Root>
+								label='Навыки'
+							/>
 
 							<Timeline
 								items={[

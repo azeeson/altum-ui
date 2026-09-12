@@ -24,7 +24,6 @@ export interface LinkProps extends ComponentPropsWithoutRef<'a'> {
 	/** Если не задан — размер наследуется от родителя (`font-size: inherit`). */
 	size?: LinkSize;
 	weight?: 'normal' | 'medium' | 'bold';
+	/** Текст или единственный элемент (slot на роутерный Link / `<a>`). */
 	children: React.ReactNode;
-	/** Рендерит единственный child-элемент с merged props вместо `<a>`. */
-	asChild?: boolean;
 }

@@ -1,4 +1,11 @@
 .media {
+  position: relative;
+
+  overflow: hidden;
+
+  width: 100%;
+  aspect-ratio: 16 / 9;
+
   background-color: var(--altum-color-option-hover);
 }
 
@@ -7,6 +14,9 @@
 }
 
 .el {
+  position: absolute;
+  inset: 0;
+
   display: block;
 
   width: 100%;

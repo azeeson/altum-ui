@@ -38,7 +38,7 @@ test.describe('Dropdown', () => {
 
 test.describe('Select', () => {
 	test('открывает listbox и выбирает опцию', async ({page}) => {
-		await visitStory(page, 'altum-components-select--playground');
+		await visitStory(page, 'altum-components-formfield-select--playground');
 
 		const trigger = page.getByRole('button', {name: /Город/i});
 		await trigger.click();
@@ -65,6 +65,28 @@ test.describe('Select', () => {
 });
 
 test.describe('CustomSelect', () => {
+	test('панель и триггер не уже самого длинного пункта', async ({page}) => {
+		await visitStory(page, 'altum-components-customselect--playground');
+
+		const trigger = page.getByRole('button', {name: /Москва|Выберите город/i});
+		await trigger.click();
+
+		const option = page.getByRole('option', {name: 'Санкт-Петербург'});
+		await expect(option).toBeVisible();
+
+		const truncated = await option.evaluate((el) => {
+			const label = el.querySelector('span') ?? el;
+			return label.scrollWidth > label.clientWidth + 1;
+		});
+		expect(truncated).toBe(false);
+
+		const triggerBox = await trigger.boundingBox();
+		expect(triggerBox).not.toBeNull();
+		if (triggerBox) {
+			expect(triggerBox.width).toBeGreaterThan(120);
+		}
+	});
+
 	test('оставляет панель открытой и переключает чипы', async ({page}) => {
 		await visitStory(page, 'altum-components-customselect--compound-multiple');
 

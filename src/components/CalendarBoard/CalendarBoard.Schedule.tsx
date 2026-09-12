@@ -22,15 +22,15 @@ import {
 	packTimedEventsInDay,
 	resolveAllDay,
 	segmentSpanInColumns,
-} from '../Calendar/calendar.schedule';
-import {CalendarBoardEventBar as CalendarEventBar} from './CalendarBoard.EventBar';
-import {CalendarBoardTimedEvent as CalendarTimedEvent} from './CalendarBoard.TimedEvent';
-import {IconChevronLeft} from '../../icons/icons/IconChevronLeft';
-import {IconChevronRight} from '../../icons/icons/IconChevronRight';
+} from './calendar.schedule';
+import {CalendarBoardEvent} from './CalendarBoard.Event';
+import {PeriodHeader} from '../../base/PeriodHeader';
+import unstyled from '../../styles/unstyledControl.module.css';
+import chrome from '../../styles/calendarChrome.module.css';
 import styles from './CalendarBoard.Schedule.module.css';
 import {cn} from '../../utils/cn';
 import {mergeStyles} from '../../utils/mergeStyles';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useLocale} from '../../locales/localeContext';
 import {
 	type CalendarScheduleProps,
 	SCHEDULE_LANE_HEIGHT,
@@ -193,42 +193,21 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 			style={rootStyle}
 			{...rest}
 		>
-			{(showHeader || showNav) && (
-				<div className={styles.header}>
-					{showNav && (
-						<button
-							type='button'
-							className={styles.navBtn}
-							aria-label={messages.calendarBoard.prevPeriod}
-							onClick={() => shift(-1)}
-						>
-							<IconChevronLeft size={16} />
-						</button>
-					)}
-					{showHeader ? (
-						<div id={labelId} className={styles.title}>
-							{headerLabel}
-						</div>
-					) : (
-						<span className={styles.titleSpacer} />
-					)}
-					{showNav && (
-						<button
-							type='button'
-							className={styles.navBtn}
-							aria-label={messages.calendarBoard.nextPeriod}
-							onClick={() => shift(1)}
-						>
-							<IconChevronRight size={16} />
-						</button>
-					)}
-				</div>
-			)}
+			<PeriodHeader
+				title={headerLabel}
+				titleId={labelId}
+				showTitle={showHeader}
+				showNav={showNav}
+				onPrev={() => shift(-1)}
+				onNext={() => shift(1)}
+				prevLabel={messages.calendarBoard.prevPeriod}
+				nextLabel={messages.calendarBoard.nextPeriod}
+			/>
 
-			<div className={styles.dayHeaderRow}>
+			<div className={styles.gutterRow}>
 				<div className={styles.gutterCorner} aria-hidden='true' />
 				<div
-					className={styles.dayHeaders}
+					className={styles.cols}
 					style={{gridTemplateColumns: `repeat(${daysCount}, minmax(0, 1fr))`}}
 				>
 					{columns.map((date) => {
@@ -241,9 +220,12 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 								key={date.toISOString()}
 								type='button'
 								className={cn(
+									unstyled.control,
+									chrome.cell,
 									styles.dayHeader,
+									isSelected ? chrome.selected : '',
 									isSelected ? styles.dayHeaderSelected : '',
-									today && !isSelected ? styles.dayHeaderToday : '',
+									today ? chrome.today : '',
 								)}
 								onClick={() => onSelectDate?.(startOfDay(date))}
 								aria-pressed={onSelectDate ? isSelected : undefined}
@@ -261,12 +243,12 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 				</div>
 			</div>
 
-			<div className={styles.allDayRow} aria-label={messages.calendarBoard.allDay}>
+			<div className={styles.gutterRow} aria-label={messages.calendarBoard.allDay}>
 				<div className={styles.gutterLabel}>
 					{messages.calendarBoard.allDayShort}
 				</div>
 				<div
-					className={styles.allDayTrack}
+					className={cn(styles.cols, styles.allDayTrack)}
 					style={{
 						gridTemplateColumns: `repeat(${daysCount}, minmax(0, 1fr))`,
 						minHeight: allDayHeight,
@@ -290,7 +272,7 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 								lane,
 							})
 							: (
-								<CalendarEventBar
+								<CalendarBoardEvent
 									title={item.title}
 									color={item.color}
 									continuesBefore={segment.continuesBefore}
@@ -317,7 +299,7 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 				</div>
 			</div>
 
-			<div className={styles.timeGrid} style={{height: gridHeight}}>
+			<div className={cn(styles.gutterRow, styles.timeGrid)} style={{height: gridHeight}}>
 				<div className={styles.gutter}>
 					{hours.map((hour) => (
 						<div
@@ -333,7 +315,7 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 				</div>
 
 				<div
-					className={styles.columns}
+					className={cn(styles.cols, styles.columns)}
 					style={{gridTemplateColumns: `repeat(${daysCount}, minmax(0, 1fr))`}}
 					role='grid'
 					aria-colcount={daysCount}
@@ -374,7 +356,8 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 												timeLabel,
 											})
 											: (
-												<CalendarTimedEvent
+												<CalendarBoardEvent
+													layout='timed'
 													title={item.title}
 													timeLabel={timeLabel}
 													color={item.color}

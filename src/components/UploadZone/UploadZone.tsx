@@ -5,10 +5,13 @@ export type {
 	UploadZoneProps,
 } from './UploadZone.types';
 
-import {forwardRef, useId, useRef, useState} from 'react';
+import {forwardRef, useRef, useState} from 'react';
 import styles from './UploadZone.module.css';
+import srOnly from '../../styles/srOnly.module.css';
 import {cn} from '../../utils/cn';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useFallbackId} from '../../hooks/useFallbackId';
+import {useFileDrop} from '../../hooks/useFileDrop';
+import {useLocale} from '../../locales/localeContext';
 
 /**
  * Зона загрузки файлов drag-and-drop с скрытым input и render-prop для кастомного триггера.
@@ -24,107 +27,71 @@ export const UploadZone = forwardRef<HTMLDivElement, UploadZoneProps>(function U
 		onChange,
 		multiple = true,
 		className,
-		style,
 		children,
 		readOnly = false,
 		disabled = false,
+		id,
 		...rest
 	},
 	ref,
 ) {
 	const {t} = useLocale();
-	const generatedId = useId();
-	const [dragOver, setDragOver] = useState(false);
-	const [selectedText, setSelectedText] = useState<string>('');
+	const inputId = useFallbackId(id ? `${id}-file` : undefined);
+	const [selectedText, setSelectedText] = useState('');
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	const dragCounter = useRef(0);
-	const isReadOnly = readOnly && !disabled;
-	const isInteractive = !disabled && !isReadOnly;
+	const isInteractive = !disabled && !readOnly;
+
+	const processFiles = (files: FileList) => {
+		if (!files.length) return;
+		setSelectedText(t('upload.selectedCount', {count: files.length}));
+		onChange?.(files);
+	};
+
+	const {over, ...drop} = useFileDrop(isInteractive ? processFiles : undefined);
 
 	const openFileDialog = () => {
 		if (!isInteractive) return;
 		fileInputRef.current?.click();
 	};
 
-	const handleDragEnter = (e: React.DragEvent) => {
-		if (!isInteractive) return;
-		e.preventDefault();
-		dragCounter.current += 1;
-		if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
-			setDragOver(true);
-		}
-	};
-
-	const handleDragLeave = (e: React.DragEvent) => {
-		if (!isInteractive) return;
-		e.preventDefault();
-		dragCounter.current -= 1;
-		if (dragCounter.current === 0) {
-			setDragOver(false);
-		}
-	};
-
-	const handleDragOver = (e: React.DragEvent) => {
-		if (!isInteractive) return;
-		e.preventDefault();
-	};
-
-	const processFiles = (files: FileList) => {
-		if (!isInteractive) return;
-		if (files.length) {
-			setSelectedText(t('upload.selectedCount', {count: files.length}));
-			onChange?.(files);
-		}
-	};
-
-	const handleDrop = (e: React.DragEvent) => {
-		if (!isInteractive) return;
-		e.preventDefault();
-		setDragOver(false);
-		dragCounter.current = 0;
-		processFiles(e.dataTransfer.files);
-	};
-
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files) {
-			processFiles(e.target.files);
-		}
-	};
-
-	const inputId = rest.id ? `${rest.id}-file` : generatedId;
 	const isCustom = children != null;
-	const rootClassName = cn(
-		styles.container,
-		isCustom ? styles.containerCustom : styles.containerDefault,
-		isReadOnly ? styles.readOnly : '',
-		disabled ? styles.disabled : '',
-		className,
-	);
-	const content = (
-		<>
+
+	return (
+		<div
+			ref={ref}
+			id={id}
+			className={cn(
+				styles.container,
+				isCustom ? styles.custom : styles.default,
+				readOnly && !disabled && styles.readOnly,
+				disabled && styles.disabled,
+				className,
+			)}
+			aria-readonly={readOnly && !disabled || undefined}
+			aria-disabled={disabled || undefined}
+			{...drop}
+			{...rest}
+		>
 			<input
 				id={inputId}
 				type='file'
 				multiple={multiple}
-				disabled={disabled || isReadOnly}
-				className={styles.hiddenInput}
+				disabled={!isInteractive}
+				className={srOnly.srOnly}
 				ref={fileInputRef}
-				onChange={handleInputChange}
+				onChange={(e) => {
+					if (e.target.files) processFiles(e.target.files);
+				}}
 			/>
 			{isCustom
 				? (typeof children === 'function' ? children(openFileDialog) : children)
 				: (
-					<label
-						htmlFor={inputId}
-						className={cn(styles.uploadLabel, isReadOnly && styles.uploadLabelReadOnly)}
-					>
+					<label htmlFor={inputId} className={styles.uploadLabel}>
 						<span className={styles.uploadIcon} aria-hidden>
 							↑
 						</span>
 						<span className={styles.uploadText}>
-							{selectedText ? (
-								selectedText
-							) : (
+							{selectedText || (
 								<>
 									{t('upload.dropHint')}
 									{' '}
@@ -136,35 +103,14 @@ export const UploadZone = forwardRef<HTMLDivElement, UploadZoneProps>(function U
 						</span>
 					</label>
 				)}
-			{dragOver && (
+			{over && (
 				<div className={styles.overlay}>
-					<div className={styles.overlayContent}>
-						<span className={styles.uploadIcon} aria-hidden>
-							↓
-						</span>
-						<span>
-							{t('upload.release')}
-						</span>
-					</div>
+					<span className={styles.uploadIcon} aria-hidden>
+						↓
+					</span>
+					{t('upload.release')}
 				</div>
 			)}
-		</>
-	);
-	const sharedProps = {
-		className: rootClassName,
-		style,
-		'aria-readonly': isReadOnly || undefined,
-		'aria-disabled': disabled || undefined,
-		onDragEnter: handleDragEnter,
-		onDragOver: handleDragOver,
-		onDragLeave: handleDragLeave,
-		onDrop: handleDrop,
-		...rest,
-	} as const;
-
-	return (
-		<div ref={ref} {...sharedProps}>
-			{content}
 		</div>
 	);
 });

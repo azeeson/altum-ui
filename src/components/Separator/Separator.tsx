@@ -1,18 +1,15 @@
 import type {
 	SeparatorProps,
-	SpacerProps,
 } from './Separator.types';
 export type {
 	SeparatorOrientation,
 	SeparatorSpace,
 	SeparatorProps,
-	SpacerProps,
 } from './Separator.types';
 
-import {forwardRef} from 'react';
+import {forwardRef, type CSSProperties} from 'react';
 import styles from './Separator.module.css';
 import {cn} from '../../utils/cn';
-import {mergeStyles} from '../../utils/mergeStyles';
 import {resolveSpacingCss} from '../../utils/spacing';
 
 /**
@@ -37,35 +34,21 @@ export const Separator = forwardRef<HTMLDivElement, SeparatorProps>(function Sep
 	},
 	ref,
 ) {
-	const hasLabel = children != null && children !== false && children !== '';
-	const startCss = start !== undefined ? resolveSpacingCss(start) : undefined;
-	const endCss = end !== undefined ? resolveSpacingCss(end) : undefined;
-
-	const marginStyle: React.CSSProperties = {};
-	if (orientation === 'horizontal') {
-		if (startCss !== undefined) marginStyle.marginBlockStart = startCss;
-		if (endCss !== undefined) marginStyle.marginBlockEnd = endCss;
-	} else {
-		if (startCss !== undefined) marginStyle.marginInlineStart = startCss;
-		if (endCss !== undefined) marginStyle.marginInlineEnd = endCss;
-	}
-
 	return (
 		<div
 			ref={ref}
-			className={cn(
-				styles.separator,
-				orientation === 'vertical' ? styles.vertical : styles.horizontal,
-				hasLabel ? styles.withLabel : styles.line,
-				className,
-			)}
+			className={cn(styles.separator, styles[orientation], className)}
 			{...rest}
-			style={mergeStyles(marginStyle, style)}
+			style={{
+				...(start !== undefined ? {'--altum-separator-start': resolveSpacingCss(start)} : null),
+				...(end !== undefined ? {'--altum-separator-end': resolveSpacingCss(end)} : null),
+				...style,
+			} as CSSProperties}
 			role={decorative ? 'none' : 'separator'}
 			aria-orientation={decorative ? undefined : orientation}
-			aria-hidden={decorative ? true : undefined}
+			aria-hidden={decorative || undefined}
 		>
-			{hasLabel ? (
+			{children != null && children !== false && children !== '' ? (
 				<span className={styles.label}>
 					{children}
 				</span>
@@ -75,37 +58,3 @@ export const Separator = forwardRef<HTMLDivElement, SeparatorProps>(function Sep
 });
 
 Separator.displayName = 'Separator';
-
-/**
- * Алиас: горизонтальный разделитель с отступами `md` (бывший `Spacer`).
- *
- * @component
- * @example
- * <Spacer>или</Spacer>
- */
-export const Spacer = forwardRef<HTMLDivElement, SpacerProps>(function Spacer(
-	{
-		children,
-		className,
-		start = 'md',
-		end = 'md',
-		decorative = true,
-		style,
-	},
-	ref,
-) {
-	return (
-		<Separator
-			ref={ref}
-			className={className}
-			start={start}
-			end={end}
-			decorative={decorative}
-			style={style}
-		>
-			{children}
-		</Separator>
-	);
-});
-
-Spacer.displayName = 'Spacer';

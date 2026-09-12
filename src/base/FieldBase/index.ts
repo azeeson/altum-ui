@@ -1,17 +1,18 @@
-export {FieldBase, fieldSurfaceClassName} from './FieldBase';
+export {
+	FieldBase,
+	FieldBaseButton,
+	FieldBaseIcon,
+	fieldSurfaceClassName,
+	fieldChromeClassName,
+	fieldOverlayClassName,
+	useFieldControlAttrs,
+} from './FieldBase';
 export type {
 	ControlSize,
 	FieldWidth,
 	FieldLabelPlacement,
-	FieldBaseRootProps,
-	FieldBaseLabelProps,
-	FieldBaseControlProps,
-	FieldBasePrefixProps,
-	FieldBasePostfixProps,
+	FieldBaseProps,
+	FieldBaseHostProps,
 	FieldBaseButtonProps,
 	FieldBaseIconProps,
-	FieldBaseClearProps,
-	FieldBaseErrorProps,
-	FieldBaseHelperProps,
-	FieldBaseProps,
 } from './FieldBase.types';

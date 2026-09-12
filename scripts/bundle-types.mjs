@@ -37,6 +37,9 @@ for (const {input, output} of entries) {
 			},
 			dts({
 				tsconfig: path.join(root, 'tsconfig.types.json'),
+				compilerOptions: {
+					removeComments: true,
+				},
 			}),
 		],
 	});

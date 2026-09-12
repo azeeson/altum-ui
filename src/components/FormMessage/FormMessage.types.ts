@@ -11,13 +11,8 @@ export type FormMessageVariant = 'error' | 'hint' | 'success';
 /**
  * Свойства `FormMessage`.
  */
-export interface FormMessageProps extends ComponentPropsWithoutRef<'p'> {
+export interface FormMessageProps extends Omit<ComponentPropsWithoutRef<'p'>, 'color'> {
 	/** @default 'hint' */
 	variant?: FormMessageVariant;
 	children: React.ReactNode;
 }
-
-/**
- * Свойства `FieldError` — алиас `FormMessage` с `variant="error"`.
- */
-export type FieldErrorProps = Omit<FormMessageProps, 'variant'>;

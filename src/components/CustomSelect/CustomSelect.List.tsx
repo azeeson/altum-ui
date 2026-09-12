@@ -1,7 +1,7 @@
 import React, {forwardRef, useCallback} from 'react';
 import {Listbox, type ListboxHandle} from '../Listbox/Listbox';
 import {composeRefs} from '../../utils/composeRefs';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useLocale} from '../../locales/localeContext';
 import {useCustomSelectFilterContext, useCustomSelectOpenContext, useCustomSelectSelectionContext} from './CustomSelect.context';
 import type {CustomSelectListProps} from './CustomSelect.types';
 

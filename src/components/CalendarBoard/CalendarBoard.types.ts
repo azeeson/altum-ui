@@ -1,5 +1,5 @@
 import type React from 'react';
-import type {CalendarScheduleEvent} from '../Calendar/calendar.schedule';
+import type {CalendarScheduleEvent} from '../Calendar/Calendar.types';
 
 export type {CalendarScheduleEvent};
 
@@ -91,12 +91,14 @@ export interface CalendarBoardTaskChipProps extends Omit<React.ComponentPropsWit
 	highlighted?: boolean;
 }
 
-export interface CalendarBoardEventBarProps extends Omit<
+export interface CalendarBoardEventProps extends Omit<
 	React.ComponentPropsWithoutRef<'div'>,
 	'children' | 'onClick' | 'title' | 'onMouseEnter' | 'onMouseLeave'
 > {
 	title: string;
 	color?: string;
+	layout?: 'bar' | 'timed';
+	timeLabel?: string;
 	continuesBefore?: boolean;
 	continuesAfter?: boolean;
 	highlighted?: boolean;
@@ -105,18 +107,8 @@ export interface CalendarBoardEventBarProps extends Omit<
 	onMouseLeave?: React.MouseEventHandler<HTMLElement>;
 }
 
-export interface CalendarBoardTimedEventProps extends Omit<
-	React.ComponentPropsWithoutRef<'div'>,
-	'children' | 'onClick' | 'title' | 'onMouseEnter' | 'onMouseLeave'
-> {
-	title: string;
-	timeLabel?: string;
-	color?: string;
-	highlighted?: boolean;
-	onClick?: () => void;
-	onMouseEnter?: React.MouseEventHandler<HTMLElement>;
-	onMouseLeave?: React.MouseEventHandler<HTMLElement>;
-}
+export type CalendarBoardEventBarProps = CalendarBoardEventProps;
+export type CalendarBoardTimedEventProps = CalendarBoardEventProps;
 
 export interface CalendarBoardMonthProps extends React.ComponentPropsWithoutRef<'div'> {
 	maxChipsPerDay?: number;

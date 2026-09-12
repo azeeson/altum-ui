@@ -15,7 +15,7 @@ export interface AccordionProps extends ComponentPropsWithoutRef<'div'> {
 	children: React.ReactNode;
 	/** Разрешить одновременное раскрытие нескольких секций. @default false */
 	multiple?: boolean;
-	/** @default 'bordered' */
+	/** @default 'flush' */
 	variant?: AccordionVariant;
 	defaultOpenIds?: string[];
 	openIds?: string[];
@@ -25,25 +25,13 @@ export interface AccordionProps extends ComponentPropsWithoutRef<'div'> {
 /**
  * Свойства `Accordion.Item`.
  */
-export interface AccordionItemProps extends ComponentPropsWithoutRef<'div'> {
+export interface AccordionItemProps extends Omit<ComponentPropsWithoutRef<'div'>, 'title'> {
 	/** Уникальный id секции (для `openIds` / `defaultOpenIds`). */
 	value: string;
+	/** Заголовок секции. Рендерит триггер; `children` — содержимое панели. */
+	title: React.ReactNode;
 	disabled?: boolean;
-	children: React.ReactNode;
-}
-
-/**
- * Свойства `Accordion.Trigger`.
- */
-export interface AccordionTriggerProps extends ComponentPropsWithoutRef<'button'> {
-	children: React.ReactNode;
-	/** Уровень заголовка. @default `'h3'` */
+	children?: React.ReactNode;
+	/** Уровень заголовка триггера. @default `'h3'` */
 	headingLevel?: 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-}
-
-/**
- * Свойства `Accordion.Content`.
- */
-export interface AccordionContentProps extends ComponentPropsWithoutRef<'div'> {
-	children: React.ReactNode;
 }

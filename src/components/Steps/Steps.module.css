@@ -1,4 +1,6 @@
 .steps {
+  --altum-step-marker: var(--altum-g-space-8);
+
   width: 100%;
 
   margin: var(--altum-g-space-4) 0;
@@ -6,239 +8,193 @@
 
   font-family: inherit;
   list-style: none;
+}
 
-  &.horizontal {
-    display: flex;
+.stepItem {
+  position: relative;
+  z-index: var(--altum-g-z-raised-above);
 
-    justify-content: space-between;
-    align-items: flex-start;
-    & .stepItem {
-      display: flex;
+  flex: 1;
+}
 
-      flex-direction: column;
-      align-items: center;
-    }
+.body {
+  display: flex;
 
-    & .stepItem::after {
-      position: absolute;
-      top: calc(var(--altum-g-space-8) / 2);
-      left: 50%;
-      z-index: var(--altum-g-z-below);
+  width: 100%;
+}
 
-      content: '';
+.circle {
+  position: relative;
+  z-index: 1;
 
-      width: 100%;
-      height: var(--altum-control-inset);
+  display: flex;
+  box-sizing: border-box;
 
-      background-color: var(--altum-color-border);
-    }
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
 
-    & .stepItem:last-child::after {
-      display: none;
-    }
+  width: var(--altum-step-marker);
+  height: var(--altum-step-marker);
 
-    & .status_complete::after {
-      background-color: var(--altum-color-brand);
-    }
+  border: var(--altum-control-inset) solid var(--altum-color-border);
+  border-radius: 50%;
 
-    & .labelBlock {
-      margin-top: var(--altum-g-space-2);
+  font-size: var(--altum-g-font-size-sm);
+  font-weight: var(--altum-g-font-weight-semibold);
+  line-height: 1;
 
-      text-align: center;
-    }
+  color: var(--altum-color-muted);
+  background-color: var(--altum-color-surface);
 
-    & .stepButton {
-      flex-direction: column;
-      align-items: center;
-    }
+  transition: var(--altum-transition-smooth);
+
+  &::after {
+    position: absolute;
+    z-index: var(--altum-g-z-below);
+
+    content: '';
+
+    background-color: var(--altum-color-border);
   }
+}
 
-  &.vertical {
-    display: flex;
+.stepItem:last-child .circle::after,
+.noConnectors .circle::after {
+  display: none;
+}
 
-    flex-direction: column;
-    gap: 0;
-    & .stepItem {
-      display: flex;
+.complete .circle {
+  border-color: var(--altum-color-brand);
 
-      align-items: flex-start;
-      gap: var(--altum-g-space-3);
+  color: var(--altum-color-brand-text);
+  background-color: var(--altum-color-brand);
 
-      padding-bottom: var(--altum-g-space-5);
-    }
-
-    & .stepItem:last-child {
-      padding-bottom: 0;
-    }
-
-    & .stepItem::before {
-      position: absolute;
-      top: var(--altum-g-space-8);
-      bottom: 0;
-      left: calc(var(--altum-g-space-8) / 2 - var(--altum-control-inset) / 2);
-
-      content: '';
-
-      width: var(--altum-control-inset);
-
-      background-color: var(--altum-color-border);
-    }
-
-    & .stepItem:last-child::before {
-      display: none;
-    }
-
-    & .status_complete::before {
-      background-color: var(--altum-color-brand);
-    }
-
-    & .stepButton {
-      flex-direction: row;
-      align-items: flex-start;
-      gap: var(--altum-g-space-3);
-    }
-  }
-
-  & .stepItem {
-    position: relative;
-    z-index: var(--altum-g-z-raised-above);
-
-    flex: 1;
-  }
-
-  & .circle {
-    z-index: 1;
-
-    display: flex;
-
-    flex-shrink: 0;
-    justify-content: center;
-    align-items: center;
-
-    width: var(--altum-g-space-8);
-    height: var(--altum-g-space-8);
-
-    border: var(--altum-control-inset) solid var(--altum-color-border);
-    border-radius: 50%;
-
-    font-size: var(--altum-g-font-size-sm);
-    font-weight: var(--altum-g-font-weight-semibold);
-    line-height: var(--altum-g-line-height-sm);
-
-    color: var(--altum-color-muted);
-    background-color: var(--altum-color-surface);
-
-    transition: var(--altum-transition-smooth);
-  }
-
-  & .status_current .circle {
-    border-color: var(--altum-color-brand);
-
-    color: var(--altum-color-brand);
-    box-shadow: 0 0 0 var(--altum-g-space-1) color-mix(in srgb, var(--altum-color-brand) 12%, transparent);
-  }
-
-  & .status_complete .circle {
-    border-color: var(--altum-color-brand);
-
-    color: var(--altum-color-brand-text);
+  &::after {
     background-color: var(--altum-color-brand);
   }
+}
 
-  & .status_error .circle {
-    border-color: var(--altum-color-status-error);
+.current .circle {
+  border-color: var(--altum-color-brand);
 
-    color: var(--altum-color-status-error);
-    background-color: var(--altum-color-surface);
-  }
+  color: var(--altum-color-brand);
+  box-shadow: 0 0 0 var(--altum-g-space-1) color-mix(in srgb, var(--altum-color-brand) 12%, transparent);
+}
 
-  & .labelBlock {
+.error .circle {
+  border-color: var(--altum-color-status-error);
+
+  color: var(--altum-color-status-error);
+  background-color: var(--altum-color-surface);
+}
+
+.stepLabel {
+  font-size: var(--altum-g-font-size-2xs);
+  font-weight: var(--altum-g-font-weight-medium);
+
+  color: var(--altum-color-text-secondary);
+}
+
+.current .stepLabel {
+  font-weight: var(--altum-g-font-weight-semibold);
+
+  color: var(--altum-color-input-text);
+}
+
+.stepDesc {
+  margin-top: var(--altum-control-inset);
+
+  font-size: var(--altum-g-font-size-2xs);
+  line-height: 1.35;
+
+  color: var(--altum-color-muted);
+}
+
+.horizontal {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: flex-start;
+
+  & .stepItem {
+    container-type: inline-size;
+
     min-width: 0;
   }
 
+  & .body {
+    flex-direction: column;
+    align-items: center;
+
+    text-align: center;
+  }
+
   & .stepLabel {
-    font-size: var(--altum-g-font-size-2xs);
-    font-weight: var(--altum-g-font-weight-medium);
-
-    color: var(--altum-color-text-secondary);
-  }
-
-  & .status_current .stepLabel {
-    font-weight: var(--altum-g-font-weight-semibold);
-
-    color: var(--altum-color-input-text);
-  }
-
-  & .stepDesc {
-    margin-top: var(--altum-control-inset);
-
-    font-size: var(--altum-g-font-size-2xs);
-    line-height: 1.35;
-
-    color: var(--altum-color-muted);
-  }
-
-  & .stepButton {
-    display: flex;
-
-    flex-direction: inherit;
-    align-items: inherit;
-    gap: inherit;
-
     width: 100%;
 
-    border: none;
-
-    font: inherit;
-    text-align: inherit;
-
-    color: inherit;
-    background-color: transparent;
-
-    cursor: pointer;
-    appearance: none;
-
-    transition: var(--altum-transition-smooth);
+    margin-top: var(--altum-g-space-2);
   }
 
-  & .clickable .stepButton:hover .circle {
-    border-color: var(--altum-color-input-border-focus);
+  & .circle::after {
+    top: 50%;
+    left: 50%;
+
+    width: 100cqi;
+    height: var(--altum-control-inset);
+
+    transform: translateY(-50%);
+  }
+}
+
+.vertical {
+  display: flex;
+
+  flex-direction: column;
+
+  & .stepItem {
+    padding-bottom: var(--altum-g-space-5);
+
+    &:last-child {
+      padding-bottom: 0;
+    }
   }
 
-  &.noConnectors.horizontal .stepItem::after,
-  &.noConnectors.vertical .stepItem::before {
-    display: none;
+  & .body {
+    display: grid;
+
+    align-items: start;
+    gap: var(--altum-g-space-3);
+    grid-template-columns: var(--altum-step-marker) 1fr;
   }
 
-  &.sm .circle {
-    width: var(--altum-g-space-6);
-    height: var(--altum-g-space-6);
+  & .circle {
+    grid-row: 1 / span 2;
 
+    &::after {
+      top: var(--altum-step-marker);
+      bottom: calc(var(--altum-g-space-5) * -1);
+      left: 50%;
+
+      width: var(--altum-control-inset);
+
+      transform: translateX(-50%);
+    }
+  }
+}
+
+button.body:hover:not(:disabled) .circle {
+  border-color: var(--altum-color-input-border-focus);
+}
+
+.sm {
+  --altum-step-marker: var(--altum-g-space-6);
+
+  & .circle {
     font-size: var(--altum-g-font-size-xs);
   }
+}
 
-  &.sm.horizontal .stepItem::after {
-    top: calc(var(--altum-g-space-6) / 2);
-  }
-
-  &.sm.vertical .stepItem::before {
-    top: var(--altum-g-space-6);
-    left: calc(var(--altum-g-space-6) / 2 - var(--altum-control-inset) / 2);
-  }
-
-  &.lg .circle {
-    width: calc(var(--altum-g-space-8) + var(--altum-g-space-2));
-    height: calc(var(--altum-g-space-8) + var(--altum-g-space-2));
-
-    font-size: var(--altum-g-font-size-sm);
-  }
-
-  &.lg.horizontal .stepItem::after {
-    top: calc((var(--altum-g-space-8) + var(--altum-g-space-2)) / 2);
-  }
-
-  &.lg.vertical .stepItem::before {
-    top: calc(var(--altum-g-space-8) + var(--altum-g-space-2));
-    left: calc((var(--altum-g-space-8) + var(--altum-g-space-2)) / 2 - var(--altum-control-inset) / 2);
-  }
+.lg {
+  --altum-step-marker: calc(var(--altum-g-space-8) + var(--altum-g-space-2));
 }

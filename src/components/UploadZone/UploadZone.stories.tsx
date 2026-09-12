@@ -4,9 +4,13 @@ import {UploadZone, UploadZoneProps} from './UploadZone';
 import {TextField} from '../TextField/TextField';
 import {Button} from '../Button/Button';
 import {Avatar} from '../Avatar/Avatar';
-import {IconPencil} from '../../icons/icons/IconPencil';
-import styles from './UploadZone.stories.module.css';
+import {Card} from '../Card/Card';
+import {FileList} from '../FileList/FileList';
+import {Inline, Stack} from '../Layout/Layout';
+import {Text} from '../Text/Text';
+import {Title} from '../Title/Title';
 import {componentParameters, story, Story} from '../../storybook/meta';
+import {playFocus} from '../../storybook/play';
 
 export default {
 	title: 'altum/Components/UploadZone',
@@ -16,21 +20,46 @@ export default {
 	argTypes: {
 		multiple: {
 			control: 'boolean',
-			description: 'Разрешить выбор нескольких файлов'
+			description: 'Разрешить выбор нескольких файлов',
+		},
+		disabled: {
+			control: 'boolean',
+			description: 'Заблокированное состояние',
+		},
+		readOnly: {
+			control: 'boolean',
+			description: 'Только чтение: зона не принимает файлы',
+		},
+		onChange: {
+			action: 'change',
+			description: 'Колбэк выбранных файлов',
 		},
 	},
 } satisfies Meta<typeof UploadZone>;
 
 export const Playground: Story<UploadZoneProps> = {
-	render: () => (
-		<UploadZone
-			onChange={(files) => {
-				// eslint-disable-next-line no-console -- демо-обработчик в Storybook
-				console.log('Файлы:', files);
-			}}
-		/>
-	),
+	args: {
+		multiple: true,
+		disabled: false,
+		readOnly: false,
+	},
 	parameters: story('Используйте панель Controls для настройки.'),
+};
+
+export const Disabled: Story<UploadZoneProps> = {
+	args: {
+		disabled: true,
+		multiple: true,
+	},
+	parameters: story('Заблокированная зона: клик и drag-and-drop недоступны.'),
+};
+
+export const ReadOnly: Story<UploadZoneProps> = {
+	args: {
+		readOnly: true,
+		multiple: true,
+	},
+	parameters: story('Только чтение: визуально зона есть, выбор файлов выключен.'),
 };
 
 export const CustomTrigger: Story<UploadZoneProps> = {
@@ -42,17 +71,25 @@ export const CustomTrigger: Story<UploadZoneProps> = {
 			}}
 		>
 			{(openFileDialog) => (
-				<form className='my-form' onSubmit={(e) => e.preventDefault()}>
-					<h3>
-						Оформление заказа
-					</h3>
-					<TextField type='text' label='Ваше имя' />
-					<Button type='button' onClick={openFileDialog}>
-						Загрузить акты (.pdf)
-					</Button>
-					<Button type='submit'>
-						Отправить
-					</Button>
+				<form onSubmit={(event) => event.preventDefault()}>
+					<Stack gap='md' style={{maxWidth: 400}}>
+						<Title level={3}>
+							Оформление заказа
+						</Title>
+						<TextField type='text' label='Ваше имя' />
+						<Inline gap='sm'>
+							<Button
+								type='button'
+								variant='secondary'
+								onClick={openFileDialog}
+							>
+								Загрузить акты (.pdf)
+							</Button>
+							<Button type='submit'>
+								Отправить
+							</Button>
+						</Inline>
+					</Stack>
 				</form>
 			)}
 		</UploadZone>
@@ -63,6 +100,7 @@ export const CustomTrigger: Story<UploadZoneProps> = {
 export const AvatarUpload: Story<UploadZoneProps> = {
 	render: function AvatarUploadRender() {
 		const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+		const [error, setError] = useState<string | null>(null);
 
 		useEffect(() => {
 			return () => {
@@ -75,80 +113,112 @@ export const AvatarUpload: Story<UploadZoneProps> = {
 			if (file && file.type.startsWith('image/')) {
 				if (avatarUrl) URL.revokeObjectURL(avatarUrl);
 				setAvatarUrl(URL.createObjectURL(file));
-			} else {
-				alert('Пожалуйста, выберите изображение (JPEG, PNG, WebP)');
+				setError(null);
+				return;
 			}
+			setError('Выберите изображение (JPEG, PNG, WebP)');
 		};
 
 		return (
-			<>
+			<Stack gap='sm'>
 				<UploadZone
 					onChange={handleFileChange}
 					multiple={false}
-					className={styles.avatarZone}
 				>
 					{(openFileDialog) => (
-						<div className={styles.avatarContainer} onClick={openFileDialog}>
-							{avatarUrl ? (
-								<img
-									src={avatarUrl}
-									alt='Аватар'
-									className={styles.avatarImage}
-								/>
-							) : (
-								<div className={styles.avatarPlaceholder}>
-									<svg
-										width='40'
-										height='40'
-										viewBox='0 0 24 24'
-										fill='none'
-										stroke='currentColor'
-										strokeWidth='1.5'
-									>
-										<path
-											strokeLinecap='round'
-											strokeLinejoin='round'
-											d='M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z'
-										/>
-									</svg>
-								</div>
-							)}
-							<div className={styles.editBadge} title='Изменить фото'>
-								<svg
-									width='14'
-									height='14'
-									viewBox='0 0 24 24'
-									fill='none'
-									stroke='currentColor'
-									strokeWidth='2'
-								>
-									<path
-										strokeLinecap='round'
-										strokeLinejoin='round'
-										d='M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z'
-									/>
-									<path
-										strokeLinecap='round'
-										strokeLinejoin='round'
-										d='M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z'
-									/>
-								</svg>
-							</div>
-						</div>
-					)}
-				</UploadZone>
-				<UploadZone onChange={handleFileChange} multiple={false}>
-					{(openFileDialog) => (
-						<button className={styles.uploadAvatarButton} onClick={openFileDialog}>
+						<Inline gap='md' align='center'>
 							<Avatar src={avatarUrl || undefined} size={64} />
-							<button className={styles.cameraButton}>
-								<IconPencil className={styles.cameraIcon} />
-							</button>
-						</button>
+							<Button
+								type='button'
+								variant='secondary'
+								size='sm'
+								onClick={openFileDialog}
+							>
+								Загрузить фото
+							</Button>
+						</Inline>
 					)}
 				</UploadZone>
-			</>
+				{error ? (
+					<Text size='sm' color='error'>
+						{error}
+					</Text>
+				) : null}
+			</Stack>
 		);
 	},
-	parameters: story('Загрузка аватара с превью и кастомным триггером.'),
+	parameters: story('Загрузка аватара с превью через кастомный триггер.'),
+};
+
+export const Interaction: Story<UploadZoneProps> = {
+	render: () => (
+		<UploadZone />
+	),
+	play: async ({canvasElement}) => {
+		await playFocus(canvasElement, 'input[type="file"]');
+	},
+	parameters: story('Play ставит фокус на скрытый file input.'),
+};
+
+export const UsageExample: Story<UploadZoneProps> = {
+	render: function UsageExampleRender() {
+		const [items, setItems] = useState<Array<{
+			id: string;
+			name: string;
+			size: number;
+			status: 'idle';
+		}>>([]);
+
+		return (
+			<Card
+				style={{maxWidth: 480}}
+				header={(
+					<Text weight='bold'>
+						Вложения заявки
+					</Text>
+				)}
+			>
+				<Stack gap='md'>
+					<UploadZone
+						multiple
+						onChange={(files) => {
+							const next = Array.from(files).map((file, index) => ({
+								id: `${file.name}-${index}-${file.size}`,
+								name: file.name,
+								size: file.size,
+								status: 'idle' as const,
+							}));
+							setItems((prev) => [...next, ...prev]);
+						}}
+					/>
+					{items.length > 0 ? (
+						<FileList.Root>
+							{items.map((item) => (
+								<FileList.Item
+									key={item.id}
+									{...item}
+									onRemove={(id) => {
+										setItems((prev) => prev.filter((row) => row.id !== id));
+									}}
+								/>
+							))}
+						</FileList.Root>
+					) : (
+						<Text size='sm' color='muted'>
+							Файлы появятся в списке после выбора.
+						</Text>
+					)}
+					<Button
+						variant='secondary'
+						size='sm'
+						disabled={items.length === 0}
+						onClick={() => setItems([])}
+					>
+						Очистить список
+					</Button>
+				</Stack>
+			</Card>
+		);
+	},
+	parameters: story('UploadZone и FileList внутри карточки заявки.'),
 };

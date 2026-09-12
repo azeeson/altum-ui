@@ -1,23 +1,4 @@
 .link {
-  font-family: var(--altum-g-font-family-ui);
-  font-size: inherit;
-  font-weight: inherit;
-  text-decoration: none;
-
-  cursor: pointer;
-
-  transition: color 0.2s ease-in-out, text-decoration-color 0.2s ease-in-out;
-
-  &:hover:not(:disabled) {
-    text-decoration: underline;
-  }
-
-  &:focus-visible {
-    border-radius: var(--altum-g-radius-sm);
-    outline: var(--altum-focus-ring-width) solid var(--altum-color-link-focus-ring);
-    outline-offset: var(--altum-focus-ring-offset);
-  }
-
   &.primary {
     color: var(--altum-color-link-color);
 
@@ -48,42 +29,5 @@
     &:hover:not(:disabled) {
       color: var(--altum-color-link-danger-hover);
     }
-  }
-
-  &.xs {
-    font-size: var(--altum-g-font-size-xs);
-    line-height: 1.35;
-  }
-
-  &.sm {
-    font-size: var(--altum-g-font-size-sm);
-    line-height: 1.35;
-  }
-
-  &.md {
-    font-size: var(--altum-g-font-size-base);
-    line-height: 1.45;
-  }
-
-  &.lg {
-    font-size: var(--altum-g-font-size-lg);
-    line-height: 1.45;
-  }
-
-  &.xl {
-    font-size: var(--altum-g-font-size-xl);
-    line-height: 1.4;
-  }
-
-  &.normal {
-    font-weight: var(--altum-g-font-weight-normal);
-  }
-
-  &.medium {
-    font-weight: var(--altum-g-font-weight-medium);
-  }
-
-  &.bold {
-    font-weight: var(--altum-g-font-weight-bold);
   }
 }

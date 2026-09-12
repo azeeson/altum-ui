@@ -6,7 +6,7 @@ export type {ListboxOption, ListboxGroup};
 export type ListboxNavigation = 'roving' | 'highlight';
 
 export interface ListboxProps extends Omit<
-	ComponentPropsWithoutRef<'ul'>,
+	ComponentPropsWithoutRef<'div'>,
 	'onSelect' | 'onChange' | 'value' | 'defaultValue' | 'children'
 > {
 	/** Плоский список опций (связь с группами через `groupId`) */

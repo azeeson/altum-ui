@@ -13,32 +13,6 @@ export type LayoutJustify =
 	| 'around'
 	| 'evenly';
 
-export const LAYOUT_GAP_CLASS: Record<LayoutGap, string> = {
-	none: 'gapNone',
-	xs: 'gapXs',
-	sm: 'gapSm',
-	md: 'gapMd',
-	lg: 'gapLg',
-	xl: 'gapXl',
-};
-
-export const LAYOUT_ALIGN_CLASS: Record<LayoutAlign, string> = {
-	start: 'alignStart',
-	center: 'alignCenter',
-	end: 'alignEnd',
-	baseline: 'alignBaseline',
-	stretch: 'alignStretch',
-};
-
-export const LAYOUT_JUSTIFY_CLASS: Record<LayoutJustify, string> = {
-	start: 'justifyStart',
-	center: 'justifyCenter',
-	end: 'justifyEnd',
-	between: 'justifyBetween',
-	around: 'justifyAround',
-	evenly: 'justifyEvenly',
-};
-
 export interface LayoutRootProps extends ComponentPropsWithoutRef<'div'> {
 	children?: ReactNode;
 	as?: ElementType;

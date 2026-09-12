@@ -33,7 +33,7 @@ import {
 | Слева заголовок, справа действия | **Split** |
 | Поля + Chip + Button в одной строке фильтров | **ControlRow** |
 | Одному ребёнку — `flex: 1` или «не сжимать» | **LayoutItem** (`ControlRow.Item` / `Layout.Item`) |
-| Колонки сетки | **Grid** / `Layout.Grid` |
+| Колонки сетки | **Grid** |
 | Оболочка input (label / prefix / clear) | **FieldBase** |
 
 ---
@@ -102,7 +102,7 @@ import {
 
 ### Namespace
 
-На `Layout` также висят алиасы: `Layout.Stack`, `.Inline`, `.Split`, `.ControlRow`, `.Item`, `.Grid`, `.GridItem`.
+На `Layout` также висят алиасы: `Layout.Inline`, `.Split`, `.ControlRow`, `.Item`.
 
 В приложении предпочтительны **именованные импорты**; `Layout.*` удобен, когда вы уже внутри панели.
 
@@ -262,7 +262,7 @@ Flex-ячейка внутри Stack / Inline / Split / ControlRow.
       <SearchField label="Поиск" width="full" />
     </ControlRow.Item>
     <Inline gap="sm">
-      <Chip active>Все</Chip>
+      <Chip mode="toggle">Все</Chip>
       <Chip>Активные</Chip>
     </Inline>
   </ControlRow>

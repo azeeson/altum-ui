@@ -45,8 +45,22 @@ export default {
 	tags: ['autodocs'],
 	parameters: componentParameters(
 		'Каркас панели: скролл на `Layout`, Header / Footer опционально `sticky`. '
-		+ 'Namespace Layout.Stack / Inline / Split / ControlRow / Item / Grid — алиасы к отдельным примитивам.',
+		+ 'Слоты Header / Content / Footer; примитивы Stack / Inline / Split / Grid — отдельные экспорты.',
 	),
+	argTypes: {
+		as: {
+			control: {
+				type: 'select',
+				options: [
+					'div',
+					'section',
+					'article',
+					'main'
+				],
+			},
+			description: 'HTML-тег корня панели',
+		},
+	},
 } satisfies Meta<typeof Layout>;
 
 export const StickyChrome: Story<LayoutRootProps> = {
@@ -119,11 +133,77 @@ export const Playground: Story<LayoutRootProps> = {
 	parameters: story('По умолчанию — sticky chrome (см. также Flow scroll).'),
 };
 
+export const FooterAlign: Story<LayoutRootProps> = {
+	render: () => (
+		<Stack gap='md'>
+			{([
+				'start',
+				'center',
+				'end',
+				'space-between'
+			] as const).map((align) => (
+				<div
+					key={align}
+					style={{
+						...panelShellStyle,
+						height: 160
+					}}
+				>
+					<Layout>
+						<Layout.Header style={headerStyle}>
+							<Text size='sm'>
+								align=
+								{align}
+							</Text>
+						</Layout.Header>
+						<Layout.Content style={{padding: 'var(--altum-g-space-3)'}}>
+							<Text size='sm'>
+								Контент
+							</Text>
+						</Layout.Content>
+						<Layout.Footer
+							align={align}
+							style={footerStyle}
+						>
+							<Button size='sm' variant='secondary'>
+								Отмена
+							</Button>
+							<Button size='sm' variant='primary'>
+								OK
+							</Button>
+						</Layout.Footer>
+					</Layout>
+				</div>
+			))}
+		</Stack>
+	),
+	parameters: story('Выравнивание действий в `Layout.Footer`.'),
+};
+
+export const Empty: Story<LayoutRootProps> = {
+	render: () => (
+		<div style={{
+			...panelShellStyle,
+			height: 140
+		}}
+		>
+			<Layout>
+				<Layout.Content style={{padding: 'var(--altum-g-space-3)'}}>
+					<Text size='sm' color='muted'>
+						Только Content, без Header / Footer.
+					</Text>
+				</Layout.Content>
+			</Layout>
+		</div>
+	),
+	parameters: story('Минимальная панель без chrome.'),
+};
+
 export const CompoundLayout: Story<LayoutRootProps> = {
 	render: () => (
-		<Layout.Stack gap='md'>
+		<Stack gap='md'>
 			<Text size='sm' color='muted'>
-				Те же примитивы через `Layout.*` (удобно рядом с панелью).
+				Примитивы `Stack` / `Layout.Inline` рядом с панелью.
 			</Text>
 			<Layout.Inline gap='sm'>
 				<Button variant='primary' size='sm'>
@@ -144,7 +224,12 @@ export const CompoundLayout: Story<LayoutRootProps> = {
 					Сохранить
 				</Button>
 			</Layout.ControlRow>
-		</Layout.Stack>
+		</Stack>
 	),
-	parameters: story('Алиасы Layout.Stack / Inline / ControlRow / Item.'),
+	parameters: story('`Stack` отдельно; `Layout.Inline` / `ControlRow` / `Item` — слоты панели.'),
+};
+
+export const UsageExample: Story<LayoutRootProps> = {
+	render: StickyChrome.render,
+	parameters: story('Панель настроек со sticky chrome и кнопками в футере.'),
 };

@@ -3,25 +3,46 @@ import React, {useState} from 'react';
 import {NumberField, NumberFieldProps} from './NumberField';
 import {TextField} from '../TextField/TextField';
 import {FieldLabel} from '../FieldLabel/FieldLabel';
-import {componentParameters, story, Story} from '../../storybook/meta';
+import {Button} from '../Button/Button';
+import {Fieldset} from '../Fieldset/Fieldset';
+import {Stack, Inline} from '../Layout/Layout';
+import {
+	componentParameters,
+	fieldArgTypes,
+	STORY_OVERFLOW_LABEL,
+	story,
+	Story,
+} from '../../storybook/meta';
+import {playClick, playFocus} from '../../storybook/play';
 
 export default {
-	title: 'altum/Components/NumberField',
+	title: 'altum/Components/FormField/NumberField',
 	component: NumberField,
 	tags: ['autodocs'],
-	parameters: componentParameters('Числовое поле с кнопками ± на ButtonGroup и ограничениями min/max.'),
+	parameters: componentParameters('Числовое поле с кнопками ± и ограничениями min/max.'),
+	args: {
+		label: 'Количество',
+		min: 0,
+		max: 100,
+		size: 'md',
+	},
 	argTypes: {
-		label: {
-			control: 'text',
-			description: 'Метка поля'
-		},
+		...fieldArgTypes,
 		min: {
 			control: 'number',
-			description: 'Минимальное значение'
+			description: 'Минимальное значение',
 		},
 		max: {
 			control: 'number',
-			description: 'Максимальное значение'
+			description: 'Максимальное значение',
+		},
+		step: {
+			control: 'number',
+			description: 'Шаг степпера',
+		},
+		value: {
+			control: 'number',
+			description: 'Числовое значение (`undefined` — пустое поле)',
 		},
 	},
 } satisfies Meta<typeof NumberField>;
@@ -33,7 +54,10 @@ export const Playground: Story<NumberFieldProps> = {
 			<NumberField
 				{...args}
 				value={val}
-				onChange={setVal}
+				onChange={(next) => {
+					args.onChange?.(next);
+					setVal(next);
+				}}
 				id='story-num'
 			/>
 		);
@@ -44,6 +68,29 @@ export const Playground: Story<NumberFieldProps> = {
 		max: 100,
 	},
 	parameters: story('Используйте панель Controls для настройки.'),
+};
+
+export const Sizes: Story<NumberFieldProps> = {
+	render: function SizesRender() {
+		const [val, setVal] = useState<number | undefined>(8);
+		return (
+			<Stack gap='md' style={{maxWidth: 280}}>
+				{(['sm', 'md', 'lg'] as const).map((size) => (
+					<NumberField
+						key={size}
+						label={`Количество (${size})`}
+						size={size}
+						value={val}
+						onChange={setVal}
+						min={0}
+						max={100}
+						width='full'
+					/>
+				))}
+			</Stack>
+		);
+	},
+	parameters: story('Размеры `sm`–`lg`.'),
 };
 
 export const WithClear: Story<NumberFieldProps> = {
@@ -85,6 +132,62 @@ export const Disabled: Story<NumberFieldProps> = {
 	parameters: story('Заблокированное поле — ± недоступны.'),
 };
 
+export const Error: Story<NumberFieldProps> = {
+	render: () => (
+		<div style={{maxWidth: 280}}>
+			<NumberField
+				label='Количество'
+				value={0}
+				onChange={() => {}}
+				min={1}
+				max={100}
+				error='Минимум 1'
+				width='full'
+			/>
+		</div>
+	),
+	parameters: story('Ошибка вне допустимого диапазона.'),
+};
+
+export const Empty: Story<NumberFieldProps> = {
+	render: function EmptyRender() {
+		const [val, setVal] = useState<number | undefined>(undefined);
+		return (
+			<div style={{maxWidth: 280}}>
+				<NumberField
+					label='Количество'
+					value={val}
+					onChange={setVal}
+					min={0}
+					max={100}
+					helperText='Не задано — пустое поле'
+					width='full'
+				/>
+			</div>
+		);
+	},
+	parameters: story('Пустое значение (`undefined`).'),
+};
+
+export const OverflowText: Story<NumberFieldProps> = {
+	render: function OverflowRender() {
+		const [val, setVal] = useState<number | undefined>(42);
+		return (
+			<div style={{maxWidth: 240}}>
+				<NumberField
+					label={STORY_OVERFLOW_LABEL}
+					value={val}
+					onChange={setVal}
+					min={0}
+					max={100}
+					width='full'
+				/>
+			</div>
+		);
+	},
+	parameters: story('Длинный floating label рядом со степперами.'),
+};
+
 /** Степперы / нативные стрелки никогда не должны уходить ниже min. */
 export const BoundedMin: Story<NumberFieldProps> = {
 	render: function BoundedMinRender() {
@@ -114,13 +217,7 @@ export const SettingsRow: Story<NumberFieldProps> = {
 		const [cols, setCols] = useState<number | undefined>(3);
 		const [rows, setRows] = useState<number | undefined>(2);
 		return (
-			<div style={{
-				maxWidth: 360,
-				display: 'flex',
-				flexDirection: 'column',
-				gap: 'var(--altum-g-space-4)',
-			}}
-			>
+			<Stack gap='md' style={{maxWidth: 360}}>
 				<TextField
 					label='Название'
 					value={name}
@@ -165,11 +262,89 @@ export const SettingsRow: Story<NumberFieldProps> = {
 						id='story-nf-rows'
 					/>
 				</FieldLabel>
-			</div>
+			</Stack>
 		);
 	},
 	parameters: story(
-		'TextField top-label + NumberField sm с `labelPlacement="none"` и FieldLabel horizontal; denser spin inset.',
+		'TextField top-label + NumberField sm с `labelPlacement="none"` и FieldLabel horizontal.',
 	),
 };
 
+export const Focused: Story<NumberFieldProps> = {
+	render: function FocusedRender() {
+		const [val, setVal] = useState<number | undefined>(10);
+		return (
+			<div style={{maxWidth: 280}}>
+				<NumberField
+					label='Количество'
+					value={val}
+					onChange={setVal}
+					min={0}
+					max={100}
+					width='full'
+				/>
+			</div>
+		);
+	},
+	play: async ({canvasElement}) => {
+		await playFocus(canvasElement, 'input');
+	},
+	parameters: story('Программный фокус — chrome `:focus-within`.'),
+};
+
+export const Interaction: Story<NumberFieldProps> = {
+	render: function InteractionRender() {
+		const [val, setVal] = useState<number | undefined>(10);
+		return (
+			<div style={{maxWidth: 280}}>
+				<NumberField
+					label='Количество'
+					value={val}
+					onChange={setVal}
+					min={0}
+					max={100}
+					width='full'
+				/>
+			</div>
+		);
+	},
+	play: async ({canvasElement}) => {
+		await playClick(canvasElement, 'button[aria-label="Увеличить"]');
+	},
+	parameters: story('Play: клик «Увеличить» — 10 → 11.'),
+};
+
+export const UsageExample: Story<NumberFieldProps> = {
+	render: function UsageExampleRender() {
+		const [qty, setQty] = useState<number | undefined>(2);
+		return (
+			<div style={{maxWidth: 400}}>
+				<Fieldset
+					legend='Позиция заказа'
+					footer={(
+						<Inline gap='sm' justify='end'>
+							<Button variant='primary'>
+								В корзину
+							</Button>
+						</Inline>
+					)}
+				>
+					<TextField
+						label='Артикул'
+						defaultValue='ALT-204'
+						width='full'
+					/>
+					<NumberField
+						label='Количество'
+						value={qty}
+						onChange={setQty}
+						min={1}
+						max={99}
+						width='full'
+					/>
+				</Fieldset>
+			</div>
+		);
+	},
+	parameters: story('Количество в карточке товара рядом с артикулом.'),
+};

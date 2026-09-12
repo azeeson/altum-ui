@@ -43,8 +43,3 @@ export interface BadgeProps extends ComponentPropsWithoutRef<'div'> {
 	 */
 	max?: number | false;
 }
-
-export interface BadgeCounterProps extends Omit<BadgeProps, 'label' | 'dot'> {
-	counter: number;
-	children?: React.ReactNode;
-}

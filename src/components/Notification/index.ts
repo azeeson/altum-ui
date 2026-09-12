@@ -4,11 +4,8 @@ export type {
 	NotificationItem,
 	NotificationPosition,
 	NotificationViewportProps,
+	NotificationProps,
 	NotificationRootProps,
-	NotificationTitleProps,
-	NotificationDescriptionProps,
-	NotificationActionsProps,
-	NotificationCloseProps,
 } from './Notification.types';
 export {NotificationProvider, notify, dismiss, dismissAll, useNotify} from './toast';
 export type {NotificationProviderProps, NotifyInput} from './Notification.types';

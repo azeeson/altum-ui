@@ -1,29 +1,3 @@
-import React from 'react';
+import {createIcon} from '../createIcon';
 
-interface IconProps extends React.SVGProps<SVGSVGElement> {
-	/** Размер в px (или любой css‑единица) */
-	size?: number | string;
-	/** Цвет заливки */
-	color?: string;
-}
-
-export const IconArrowDown: React.FC<IconProps> = ({
-	size = 24,
-	color = 'currentColor',
-	...props
-}) => (
-	<svg
-		width={size}
-		height={size}
-		fill={color}
-		viewBox='0 0 92 92'
-		{...props}
-	>
-		<path
-			id='XMLID_890_'
-			d='M79.7,49.6C79.1,48.2,77.6,47,76,47H63V10c0-2.2-2.3-4-4.5-4h-25C31.3,6,29,7.8,29,10v37H16
-	c-1.6,0-3.1,1.2-3.7,2.6c-0.6,1.5-0.3,3.3,0.8,4.4l30,30.7c0.8,0.8,1.8,1.2,2.9,1.2c1.1,0,2.1-0.4,2.9-1.2l30-30.7
-	C80,52.9,80.3,51.1,79.7,49.6z M46,75.9L25.5,55h8c2.2,0,3.5-1.4,3.5-3.6V14h18v37.4c0,2.2,1.3,3.6,3.5,3.6h8L46,75.9z'
-		/>
-	</svg>
-);
+export const IconArrowDown = createIcon('M79.7,49.6C79.1,48.2,77.6,47,76,47H63V10c0-2.2-2.3-4-4.5-4h-25C31.3,6,29,7.8,29,10v37H16 c-1.6,0-3.1,1.2-3.7,2.6c-0.6,1.5-0.3,3.3,0.8,4.4l30,30.7c0.8,0.8,1.8,1.2,2.9,1.2c1.1,0,2.1-0.4,2.9-1.2l30-30.7 C80,52.9,80.3,51.1,79.7,49.6z M46,75.9L25.5,55h8c2.2,0,3.5-1.4,3.5-3.6V14h18v37.4c0,2.2,1.3,3.6,3.5,3.6h8L46,75.9z');

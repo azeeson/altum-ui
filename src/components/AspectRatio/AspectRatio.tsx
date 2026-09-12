@@ -8,7 +8,6 @@ export type {
 import {forwardRef} from 'react';
 import styles from './AspectRatio.module.css';
 import {cn} from '../../utils/cn';
-import {mergeStyles} from '../../utils/mergeStyles';
 
 /**
  * Обёртка с фиксированным `aspect-ratio` (превью 16:9 / 1:1 без магии в CSS).
@@ -29,21 +28,17 @@ export const AspectRatio = forwardRef<HTMLDivElement, AspectRatioProps>(function
 	},
 	ref,
 ) {
-	const ratioValue = typeof ratio === 'number' ? String(ratio) : ratio;
-
 	return (
 		<div
 			ref={ref}
 			className={cn(styles.root, className)}
-			style={mergeStyles(
-				{['--altum-aspect-ratio' as string]: ratioValue},
-				style,
-			)}
+			style={{
+				aspectRatio: ratio,
+				...style
+			}}
 			{...rest}
 		>
-			<div className={styles.content}>
-				{children}
-			</div>
+			{children}
 		</div>
 	);
 });

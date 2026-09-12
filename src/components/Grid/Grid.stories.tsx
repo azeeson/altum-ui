@@ -7,7 +7,6 @@ import {
 	type GridProps,
 } from './Grid';
 import {Card} from '../Card/Card';
-import {Layout} from '../Layout/Layout';
 import {Stack} from '../Layout/Layout';
 import {Text} from '../Text/Text';
 import {Title} from '../Title/Title';
@@ -61,14 +60,42 @@ export default {
 	),
 	argTypes: {
 		columns: {
+			control: 'number',
 			description: 'Число колонок, шаблон или объект по breakpoints',
 		},
 		gap: {
+			control: {
+				type: 'select',
+				options: [
+					'none',
+					'xs',
+					'sm',
+					'md',
+					'lg',
+					'xl'
+				],
+			},
 			description: 'Отступ: px, CSS или токен xs…xl',
 		},
 		mode: {
 			control: 'select',
 			options: ['fixed', 'autoFit', 'autoFill'],
+			description: 'fixed — число колонок; autoFit / autoFill — по minColumnWidth',
+		},
+		minColumnWidth: {
+			control: 'number',
+			description: 'Минимальная ширина колонки для autoFit / autoFill',
+		},
+		as: {
+			control: {
+				type: 'select',
+				options: [
+					'div',
+					'section',
+					'ul',
+					'ol'
+				],
+			},
 		},
 	},
 } satisfies Meta<typeof Grid>;
@@ -448,27 +475,75 @@ export const LayoutNamespace: Story<GridProps> = {
 	render: () => (
 		<div className={styles.sectionBlock}>
 			<Text weight='bold'>
-				Layout.Grid + Layout.GridItem
+				Grid + GridItem
 			</Text>
-			<Layout.Grid
+			<Grid
 				columns={{
 					xs: 1,
 					md: 2
 				}}
 				gap='md'
 			>
-				<Layout.GridItem>
+				<GridItem>
 					<div className={styles.cell}>
-						Через namespace
+						Отдельный экспорт
 					</div>
-				</Layout.GridItem>
-				<Layout.GridItem>
+				</GridItem>
+				<GridItem>
 					<div className={styles.cell}>
-						Layout.GridItem
+						GridItem
 					</div>
-				</Layout.GridItem>
-			</Layout.Grid>
+				</GridItem>
+			</Grid>
 		</div>
 	),
-	parameters: story('Grid доступен как Layout.Grid и Layout.GridItem.'),
+	parameters: story('Grid и GridItem — отдельные экспорты, не namespace Layout.'),
 };
+
+export const Empty: Story<GridProps> = {
+	render: () => (
+		<Grid columns={3} gap='md'>
+			<div className={styles.cellMuted}>
+				Пустая сетка с одним слотом
+			</div>
+		</Grid>
+	),
+	parameters: story('Одна ячейка — крайний случай разреженной сетки.'),
+};
+
+export const UsageExample: Story<GridProps> = {
+	render: () => (
+		<div className={styles.sectionBlock}>
+			<Text weight='bold'>
+				Карточки в сетке
+			</Text>
+			<Grid
+				columns={{
+					xs: 1,
+					md: 3
+				}}
+				gap='md'
+			>
+				<DemoKpiCard
+					label='Выручка'
+					value='₽1.2M'
+					delta='+8.4%'
+				/>
+				<DemoKpiCard
+					label='Заказы'
+					value='384'
+					delta='−2.1%'
+					deltaColor='error'
+				/>
+				<DemoKpiCard
+					label='Конверсия'
+					value='3.8%'
+					delta='0%'
+					deltaColor='muted'
+				/>
+			</Grid>
+		</div>
+	),
+	parameters: story('KPI Card внутри адаптивной Grid — типичный дашборд.'),
+};
+

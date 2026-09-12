@@ -34,15 +34,12 @@ type ButtonBaseOwnProps = {
 	active?: boolean;
 	/**
 	 * На `<button>` — HTML `disabled`. На `as="a"` — `aria-disabled`, `tabIndex={-1}`
-	 * и `preventDefault` на click (у якоря нет `disabled`).
+	 * и `pointer-events: none` (у якоря нет `disabled`).
 	 */
 	disabled?: boolean;
 	/** Только для `as="button"`. @default `'button'` */
 	type?: 'button' | 'submit' | 'reset';
 	children?: React.ReactNode;
-	contentClassName?: string;
-	/** Рендерит единственный child-элемент с merged props вместо `<button>`. */
-	asChild?: boolean;
 };
 
 /**

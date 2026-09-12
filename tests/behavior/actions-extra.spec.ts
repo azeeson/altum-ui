@@ -19,18 +19,16 @@ test.describe('ButtonGroup', () => {
 	});
 });
 
-test.describe('OverflowActions', () => {
+test.describe('Overflow', () => {
 	test('открывает overflow-меню и выполняет скрытое действие', async ({page}) => {
-		await visitStory(page, 'altum-components-overflowactions--visible-two');
+		await visitStory(page, 'altum-components-overflow--visible-two');
 		await page.getByRole('button', {name: /Ещё|More/i}).click();
 		await page.getByRole('option', {name: 'Поделиться'}).click();
 		await expect(page.getByText(/Последнее действие:\s*Поделиться/)).toBeVisible();
 	});
-});
 
-test.describe('OverflowGroup', () => {
 	test('открывает overflow-меню для скрытых элементов', async ({page}) => {
-		await visitStory(page, 'altum-components-overflowgroup--playground');
+		await visitStory(page, 'altum-components-overflow--group-playground');
 		const more = page.getByRole('button', {name: /Показать ещё|Show more/i});
 		await expect(more).toBeVisible();
 		await more.click();

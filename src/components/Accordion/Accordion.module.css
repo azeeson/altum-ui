@@ -3,29 +3,26 @@
 
   flex-direction: column;
 
-  font-family: inherit;
-
   &.bordered {
     gap: var(--altum-g-space-2);
-  }
 
-  &.flush {
-    gap: 0;
+    & .item {
+      border: 1px solid var(--altum-color-border);
+      border-radius: var(--altum-g-radius);
 
-    & .accordionItem {
-      border-bottom: 1px solid var(--altum-color-panel-border);
-
-      &:last-child {
-        border-bottom: none;
-      }
-    }
-
-    & .accordionContent {
-      background: transparent;
+      background-color: var(--altum-color-surface);
     }
   }
 
-  & .accordionItem {
+  &.flush .item {
+    border-bottom: 1px solid var(--altum-color-panel-border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  & .item {
     overflow: hidden;
 
     min-width: 0;
@@ -35,11 +32,11 @@
     }
   }
 
-  & .accordionHeading {
+  & .heading {
     margin: 0;
   }
 
-  & .accordionTrigger {
+  & .trigger {
     display: flex;
 
     justify-content: space-between;
@@ -49,25 +46,15 @@
 
     padding: var(--altum-g-space-3) var(--altum-g-space-4);
 
-    border: none;
-
     font-size: var(--altum-g-font-size-base);
     font-weight: var(--altum-g-font-weight-semibold);
     text-align: left;
 
     color: var(--altum-color-ink-default);
-    background-color: transparent;
-
-    cursor: pointer;
 
     transition: var(--altum-transition-smooth);
 
-    &:disabled {
-      cursor: not-allowed;
-    }
-
     &:focus-visible {
-      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
       outline-offset: -2px;
     }
 
@@ -75,40 +62,37 @@
       background-color: var(--altum-color-option-hover);
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      transition: none;
+    &[aria-expanded='true'] .icon {
+      transform: rotate(180deg);
     }
   }
 
-  & .accordionIcon {
+  & .icon {
     flex-shrink: 0;
 
     width: 1em;
     height: 1em;
 
+    margin-inline-start: auto;
+
     color: var(--altum-field-label);
 
     transition: var(--altum-transition-smooth);
-
-    &.open {
-      transform: rotate(180deg);
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      transition: none;
-    }
   }
 
-  & .accordionContent {
-    background-color: transparent;
-  }
-
-  & .contentInner {
+  & .panelInner {
     padding: var(--altum-g-space-3) var(--altum-g-space-4);
 
     font-size: var(--altum-g-font-size-sm);
-    line-height: 1.5;
+    line-height: var(--altum-g-line-height-base);
 
     color: var(--altum-color-text-secondary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    & .trigger,
+    & .icon {
+      transition: none;
+    }
   }
 }

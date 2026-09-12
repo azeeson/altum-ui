@@ -11,7 +11,7 @@ import {
 	type NotificationItem,
 	type NotificationAction,
 	type NotificationPosition,
-	NotificationItemRenderer,
+	NotificationContainer,
 } from './Notification';
 import type {NotifyInput, NotificationProviderProps} from './Notification.types';
 
@@ -94,41 +94,58 @@ function getActiveStore(): ToastStore | null {
 const NO_PROVIDER_ERROR =
 	'notify() требует NotificationProvider в дереве компонентов. Оберните приложение в <NotificationProvider>.';
 
-function createNotifyFromStore(store: ToastStore): typeof notify {
-	const contextNotify = ((input: NotifyInput | string) => store.notify(input)) as typeof notify;
+type NotifyShortcut = (
+	title: string,
+	description?: string,
+	rest?: Omit<NotifyInput, 'title' | 'description' | 'type'>,
+) => string;
 
-	contextNotify.info = (title, description, rest) => contextNotify({
+export interface NotifyFn {
+	(input: NotifyInput | string): string;
+	info: NotifyShortcut;
+	success: NotifyShortcut;
+	warning: NotifyShortcut;
+	error: NotifyShortcut;
+	dismiss: (id: string) => void;
+	dismissAll: () => void;
+}
+
+function attachNotifyApi(
+	notifyFn: (input: NotifyInput | string) => string,
+	store: Pick<ToastStore, 'dismiss' | 'dismissAll'>,
+): NotifyFn {
+	const api = notifyFn as NotifyFn;
+	api.info = (title, description, rest) => notifyFn({
 		...rest,
 		title,
 		description,
 		variant: 'info',
 	});
-
-	contextNotify.success = (title, description, rest) => contextNotify({
+	api.success = (title, description, rest) => notifyFn({
 		...rest,
 		title,
 		description,
 		variant: 'success',
 	});
-
-	contextNotify.warning = (title, description, rest) => contextNotify({
+	api.warning = (title, description, rest) => notifyFn({
 		...rest,
 		title,
 		description,
 		variant: 'warning',
 	});
-
-	contextNotify.error = (title, description, rest) => contextNotify({
+	api.error = (title, description, rest) => notifyFn({
 		...rest,
 		title,
 		description,
 		variant: 'error',
 	});
+	api.dismiss = (id) => store.dismiss(id);
+	api.dismissAll = () => store.dismissAll();
+	return api;
+}
 
-	contextNotify.dismiss = (id) => store.dismiss(id);
-	contextNotify.dismissAll = () => store.dismissAll();
-
-	return contextNotify;
+function createNotifyFromStore(store: ToastStore): NotifyFn {
+	return attachNotifyApi((input) => store.notify(input), store);
 }
 
 function requireActiveStore(): ToastStore {
@@ -168,47 +185,16 @@ export function dismissAll(): void {
  * notify.success('Готово');
  * notify.error('Ошибка', 'Не удалось сохранить');
  */
-export function notify(input: NotifyInput | string): string {
-	return requireActiveStore().notify(input);
-}
-
-notify.info = (title: string, description?: string, rest?: Omit<NotifyInput, 'title' | 'description' | 'type'>) =>
-	notify({
-		...rest,
-		title,
-		description,
-		variant: 'info',
-	});
-
-notify.success = (title: string, description?: string, rest?: Omit<NotifyInput, 'title' | 'description' | 'type'>) =>
-	notify({
-		...rest,
-		title,
-		description,
-		variant: 'success',
-	});
-
-notify.warning = (title: string, description?: string, rest?: Omit<NotifyInput, 'title' | 'description' | 'type'>) =>
-	notify({
-		...rest,
-		title,
-		description,
-		variant: 'warning',
-	});
-
-notify.error = (title: string, description?: string, rest?: Omit<NotifyInput, 'title' | 'description' | 'type'>) =>
-	notify({
-		...rest,
-		title,
-		description,
-		variant: 'error',
-	});
-
-notify.dismiss = dismiss;
-notify.dismissAll = dismissAll;
+export const notify: NotifyFn = attachNotifyApi(
+	(input) => requireActiveStore().notify(input),
+	{
+		dismiss,
+		dismissAll
+	},
+);
 
 interface ToastContextValue {
-	notify: typeof notify;
+	notify: NotifyFn;
 	dismiss: typeof dismiss;
 	dismissAll: typeof dismissAll;
 }
@@ -261,19 +247,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 	return (
 		<ToastContext.Provider value={value}>
 			{children}
-			<Notification.Viewport
+			<NotificationContainer
+				notifications={visible}
+				onClose={handleClose}
 				stacked={stacked}
 				stackDepth={stackDepth}
 				position={position}
-			>
-				{visible.slice().reverse().map((item) => (
-					<NotificationItemRenderer
-						key={item.id}
-						item={item}
-						onClose={handleClose}
-					/>
-				))}
-			</Notification.Viewport>
+			/>
 		</ToastContext.Provider>
 	);
 };

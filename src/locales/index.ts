@@ -5,8 +5,8 @@ export type {
 	LocaleCode,
 	TranslationParams,
 } from './types';
+export {builtInMessages} from './messages';
 export {
-	builtInMessages,
 	deepMergeMessages,
 	translate,
 } from './translate';

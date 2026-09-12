@@ -9,17 +9,13 @@ export type {
 
 import React, {
 	forwardRef,
-	useCallback,
 	useEffect,
 	useId,
-	useMemo,
 	useRef,
 	useState,
 } from 'react';
-import {Box} from '../Box/Box';
 import {Button} from '../Button/Button';
 import {DialogBase} from '../../base/DialogBase';
-import {Layout} from '../Layout/Layout';
 import {Overlay, type OverlayContentProps} from '../Overlay/Overlay';
 import {cn} from '../../utils/cn';
 import {composeEventHandlers} from '../../utils/composeEvents';
@@ -32,31 +28,34 @@ import {
 	loadImageFromSrc,
 } from './ImageCrop.utils';
 import styles from './ImageCrop.module.css';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
+import {useLocale} from '../../locales/localeContext';
 
 type DragMode =
 	| {
 		type: 'pan';
 		startX: number;
 		startY: number;
-		originOffsetX: number;
-		originOffsetY: number
+		ox: number;
+		oy: number;
 	}
 	| {
 		type: 'scale';
-		startX: number;
-		startY: number;
 		originZoom: number;
-		originOffsetX: number;
-		originOffsetY: number;
-		/** Вектор от центра к ручке в начале жеста (экранные px) */
-		startVecX: number;
-		startVecY: number;
+		ox: number;
+		oy: number;
+		vx: number;
+		vy: number;
 	};
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.1;
+const HANDLES = [
+	'nw',
+	'ne',
+	'se',
+	'sw'
+] as const;
 
 /**
  * Модальное окно обрезки изображения с pan/zoom и экспортом в файл.
@@ -69,13 +68,12 @@ const ZOOM_STEP = 0.1;
  *   file={selectedFile}
  *   shape="circle"
  *   onCrop={handleCrop}
- *   onClose={() => setOpen(false)}
+ *   onOpenChange={setOpen}
  * />
  */
 export const ImageCrop = forwardRef<HTMLElement, ImageCropProps>(function ImageCrop(
 	{
 		open,
-		onClose,
 		onOpenChange,
 		file = null,
 		src = null,
@@ -93,24 +91,12 @@ export const ImageCrop = forwardRef<HTMLElement, ImageCropProps>(function ImageC
 	},
 	ref,
 ) {
-	const isOpen = open;
-	const handleClose = () => {
-		onClose();
-		onOpenChange?.(false);
-	};
 	const {t} = useLocale();
 	const titleId = useId();
-	const resolvedTitle = title ?? t('imageCrop.title');
-	const resolvedConfirmLabel = confirmLabel ?? t('imageCrop.confirm');
-	const resolvedCancelLabel = cancelLabel ?? t('imageCrop.cancel');
 	const stageRef = useRef<HTMLDivElement>(null);
 	const imageElRef = useRef<HTMLImageElement | null>(null);
 	const dragRef = useRef<DragMode | null>(null);
 
-	const [stageSize, setStageSize] = useState({
-		width: 400,
-		height: 400
-	});
 	const [objectUrl, setObjectUrl] = useState<string | null>(null);
 	const [natural, setNatural] = useState<ImageNaturalSize | null>(null);
 	const [offsetX, setOffsetX] = useState(0);
@@ -120,42 +106,29 @@ export const ImageCrop = forwardRef<HTMLElement, ImageCropProps>(function ImageC
 	const [error, setError] = useState<string | null>(null);
 
 	const imageSrc = objectUrl ?? src ?? null;
+	const baseScale = natural ? getMinCoverScale(natural, cropSize) : 1;
+	const display = natural ? getDisplaySize(natural, baseScale, zoom) : {
+		width: 0,
+		height: 0
+	};
+
+	const close = () => onOpenChange(false);
 
 	useEffect(() => {
-		if (!isOpen || !stageRef.current) return;
-
-		const element = stageRef.current;
-		const update = () => {
-			const rect = element.getBoundingClientRect();
-			setStageSize({
-				width: rect.width,
-				height: rect.height
-			});
-		};
-		update();
-
-		const observer = new ResizeObserver(update);
-		observer.observe(element);
-		return () => observer.disconnect();
-	}, [isOpen, imageSrc]);
-
-	useEffect(() => {
-		if (!isOpen || !file) {
+		if (!open || !file) {
 			setObjectUrl((prev) => {
 				if (prev) URL.revokeObjectURL(prev);
 				return null;
 			});
 			return;
 		}
-
 		const url = URL.createObjectURL(file);
-		 
 		setObjectUrl(url);
 		return () => URL.revokeObjectURL(url);
-	}, [file, isOpen]);
+	}, [file, open]);
 
 	useEffect(() => {
-		if (!isOpen || !imageSrc) {
+		if (!open || !imageSrc) {
 			setNatural(null);
 			setZoom(1);
 			setOffsetX(0);
@@ -166,16 +139,14 @@ export const ImageCrop = forwardRef<HTMLElement, ImageCropProps>(function ImageC
 		}
 
 		let cancelled = false;
-		 
 		setError(null);
-
 		loadImageFromSrc(imageSrc, {errorMessage: t('imageCrop.loadError')})
 			.then((image) => {
 				if (cancelled) return;
 				imageElRef.current = image;
 				setNatural({
 					width: image.naturalWidth,
-					height: image.naturalHeight
+					height: image.naturalHeight,
 				});
 				setZoom(1);
 				setOffsetX(0);
@@ -190,56 +161,33 @@ export const ImageCrop = forwardRef<HTMLElement, ImageCropProps>(function ImageC
 		return () => {
 			cancelled = true;
 		};
-	}, [imageSrc, isOpen, t]);
+	}, [imageSrc, open, t]);
 
-	const baseScale = useMemo(() => {
-		if (!natural) return 1;
-		return getMinCoverScale(natural, cropSize);
-	}, [cropSize, natural]);
+	const applyZoom = (nextZoom: number, x: number, y: number) => {
+		const z = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, nextZoom));
+		if (!natural) {
+			setZoom(z);
+			return;
+		}
+		const size = getDisplaySize(natural, baseScale, z);
+		const clamped = clampOffset(x, y, size.width, size.height, cropSize);
+		setZoom(z);
+		setOffsetX(clamped.offsetX);
+		setOffsetY(clamped.offsetY);
+	};
 
-	const display = useMemo(() => {
-		if (!natural) return {
-			width: 0,
-			height: 0
-		};
-		return getDisplaySize(natural, baseScale, zoom);
-	}, [baseScale, natural, zoom]);
-
-	const dragContextRef = useRef({
-		natural,
-		baseScale,
-		cropSize,
-	});
-	const zoomRef = useRef(zoom);
-
-	useEffect(() => {
-		dragContextRef.current = {
-			natural,
-			baseScale,
-			cropSize,
-		};
-		zoomRef.current = zoom;
-	});
-
-	const endDrag = useCallback(() => {
-		dragRef.current = null;
-	}, []);
-
-	const onPointerMove = useCallback((event: PointerEvent) => {
+	const onPointerMove = (event: React.PointerEvent) => {
 		const drag = dragRef.current;
-		const ctx = dragContextRef.current;
-		if (!drag || !ctx.natural) return;
+		if (!drag || !natural) return;
 
 		if (drag.type === 'pan') {
-			const dx = event.clientX - drag.startX;
-			const dy = event.clientY - drag.startY;
-			const displaySize = getDisplaySize(ctx.natural, ctx.baseScale, zoomRef.current);
+			const size = getDisplaySize(natural, baseScale, zoom);
 			const clamped = clampOffset(
-				drag.originOffsetX + dx,
-				drag.originOffsetY + dy,
-				displaySize.width,
-				displaySize.height,
-				ctx.cropSize,
+				drag.ox + event.clientX - drag.startX,
+				drag.oy + event.clientY - drag.startY,
+				size.width,
+				size.height,
+				cropSize,
 			);
 			setOffsetX(clamped.offsetX);
 			setOffsetY(clamped.offsetY);
@@ -248,94 +196,65 @@ export const ImageCrop = forwardRef<HTMLElement, ImageCropProps>(function ImageC
 
 		const stage = stageRef.current?.getBoundingClientRect();
 		if (!stage) return;
+		const vecX = event.clientX - (stage.left + stage.width / 2 + drag.ox);
+		const vecY = event.clientY - (stage.top + stage.height / 2 + drag.oy);
+		const ratio = Math.hypot(vecX, vecY) / (Math.hypot(drag.vx, drag.vy) || 1);
+		applyZoom(drag.originZoom * ratio, drag.ox, drag.oy);
+	};
 
-		const centerX = stage.left + stage.width / 2 + drag.originOffsetX;
-		const centerY = stage.top + stage.height / 2 + drag.originOffsetY;
-		const vecX = event.clientX - centerX;
-		const vecY = event.clientY - centerY;
-		const startLen = Math.hypot(drag.startVecX, drag.startVecY) || 1;
-		const nextLen = Math.hypot(vecX, vecY);
-		const ratio = nextLen / startLen;
-		const nextZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, drag.originZoom * ratio));
-		const displaySize = getDisplaySize(ctx.natural, ctx.baseScale, nextZoom);
-		const clamped = clampOffset(
-			drag.originOffsetX,
-			drag.originOffsetY,
-			displaySize.width,
-			displaySize.height,
-			ctx.cropSize,
-		);
+	const onPointerUp = () => {
+		dragRef.current = null;
+	};
 
-		setZoom(nextZoom);
-		setOffsetX(clamped.offsetX);
-		setOffsetY(clamped.offsetY);
-		zoomRef.current = nextZoom;
-	}, []);
-
-	const onPointerUp = useCallback(() => {
-		endDrag();
-		window.removeEventListener('pointermove', onPointerMove);
-		window.removeEventListener('pointerup', onPointerUp);
-		window.removeEventListener('pointercancel', onPointerUp);
-	}, [endDrag, onPointerMove]);
-
-	const beginDrag = useCallback((mode: DragMode) => {
-		dragRef.current = mode;
-		window.addEventListener('pointermove', onPointerMove);
-		window.addEventListener('pointerup', onPointerUp);
-		window.addEventListener('pointercancel', onPointerUp);
-	}, [onPointerMove, onPointerUp]);
-
-	useEffect(() => () => {
-		window.removeEventListener('pointermove', onPointerMove);
-		window.removeEventListener('pointerup', onPointerUp);
-		window.removeEventListener('pointercancel', onPointerUp);
-	}, [onPointerMove, onPointerUp]);
-
-	const handlePanStart = (event: React.PointerEvent) => {
+	const capture = (event: React.PointerEvent, mode: DragMode) => {
 		if (event.button !== 0 || !natural) return;
 		event.preventDefault();
 		(event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
-		beginDrag({
+		dragRef.current = mode;
+	};
+
+	const handlePanStart = (event: React.PointerEvent) => {
+		capture(event, {
 			type: 'pan',
 			startX: event.clientX,
 			startY: event.clientY,
-			originOffsetX: offsetX,
-			originOffsetY: offsetY,
+			ox: offsetX,
+			oy: offsetY,
 		});
 	};
 
 	const handleScaleStart = (event: React.PointerEvent) => {
-		if (event.button !== 0 || !natural) return;
-		event.preventDefault();
 		event.stopPropagation();
-		(event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
-
 		const stage = stageRef.current?.getBoundingClientRect();
 		if (!stage) return;
-
-		const centerX = stage.left + stage.width / 2 + offsetX;
-		const centerY = stage.top + stage.height / 2 + offsetY;
-
-		beginDrag({
+		const cx = stage.left + stage.width / 2 + offsetX;
+		const cy = stage.top + stage.height / 2 + offsetY;
+		capture(event, {
 			type: 'scale',
-			startX: event.clientX,
-			startY: event.clientY,
 			originZoom: zoom,
-			originOffsetX: offsetX,
-			originOffsetY: offsetY,
-			// Вектор от центра изображения до фактического указателя — ratio стартует с 1
-			startVecX: event.clientX - centerX,
-			startVecY: event.clientY - centerY,
+			ox: offsetX,
+			oy: offsetY,
+			vx: event.clientX - cx,
+			vy: event.clientY - cy,
 		});
+	};
+
+	const handleScaleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+		let next = zoom;
+		if (event.key === 'ArrowUp' || event.key === 'ArrowRight') next = zoom + ZOOM_STEP;
+		else if (event.key === 'ArrowDown' || event.key === 'ArrowLeft') next = zoom - ZOOM_STEP;
+		else if (event.key === 'Home') next = MIN_ZOOM;
+		else if (event.key === 'End') next = MAX_ZOOM;
+		else return;
+		event.preventDefault();
+		applyZoom(next, offsetX, offsetY);
 	};
 
 	const handleConfirm = async () => {
 		if (!natural || !imageElRef.current || !onCrop) {
-			handleClose();
+			close();
 			return;
 		}
-
 		setBusy(true);
 		try {
 			const result = await exportCroppedImage({
@@ -355,7 +274,7 @@ export const ImageCrop = forwardRef<HTMLElement, ImageCropProps>(function ImageC
 				})(),
 			});
 			onCrop(result);
-			handleClose();
+			close();
 		} catch (err: unknown) {
 			setError(err instanceof Error ? err.message : t('imageCrop.cropError'));
 		} finally {
@@ -363,91 +282,24 @@ export const ImageCrop = forwardRef<HTMLElement, ImageCropProps>(function ImageC
 		}
 	};
 
-	const handleScaleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-		let next = zoom;
-		if (event.key === 'ArrowUp' || event.key === 'ArrowRight') next = zoom + ZOOM_STEP;
-		else if (event.key === 'ArrowDown' || event.key === 'ArrowLeft') next = zoom - ZOOM_STEP;
-		else if (event.key === 'Home') next = MIN_ZOOM;
-		else if (event.key === 'End') next = MAX_ZOOM;
-		else return;
-		event.preventDefault();
-		const nextZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, next));
-		if (!natural) {
-			setZoom(nextZoom);
-			zoomRef.current = nextZoom;
-			return;
-		}
-		const displaySize = getDisplaySize(natural, baseScale, nextZoom);
-		const clamped = clampOffset(
-			offsetX,
-			offsetY,
-			displaySize.width,
-			displaySize.height,
-			cropSize,
-		);
-		setZoom(nextZoom);
-		setOffsetX(clamped.offsetX);
-		setOffsetY(clamped.offsetY);
-		zoomRef.current = nextZoom;
-	};
-
-	const halfW = display.width / 2;
-	const halfH = display.height / 2;
-	const stageHalfW = Math.max(24, stageSize.width / 2 - 10);
-	const stageHalfH = Math.max(24, stageSize.height / 2 - 10);
-
-	const corners = (
-		[
-			{
-				key: 'nw',
-				x: offsetX - halfW,
-				y: offsetY - halfH,
-				cursor: 'nwse-resize'
-			},
-			{
-				key: 'ne',
-				x: offsetX + halfW,
-				y: offsetY - halfH,
-				cursor: 'nesw-resize'
-			},
-			{
-				key: 'se',
-				x: offsetX + halfW,
-				y: offsetY + halfH,
-				cursor: 'nwse-resize'
-			},
-			{
-				key: 'sw',
-				x: offsetX - halfW,
-				y: offsetY + halfH,
-				cursor: 'nesw-resize'
-			},
-		] as const
-	).map((corner) => ({
-		...corner,
-		viewX: Math.min(stageHalfW, Math.max(-stageHalfW, corner.x)),
-		viewY: Math.min(stageHalfH, Math.max(-stageHalfH, corner.y)),
-	}));
+	const ready = Boolean(imageSrc && natural);
+	const imageTransform =
+		`translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
 
 	return (
 		<Overlay
 			ref={ref}
 			variant='modal'
 			purpose='lightbox'
-			open={isOpen}
-			onClose={handleClose}
-			backdropVariant='strong'
-			backdropBlur='md'
+			open={open}
+			onOpenChange={onOpenChange}
 			aria-labelledby={titleId}
-			asChild={false}
 		>
 			{(slotProps: OverlayContentProps, contentRef) => (
-				<Box
-					as='div'
-					variant='floating'
-					padding='none'
-					ref={contentRef}
+				<div
+					{...slotProps}
 					{...rest}
+					ref={contentRef}
 					role={slotProps.role}
 					aria-modal={slotProps['aria-modal']}
 					aria-labelledby={slotProps['aria-labelledby']}
@@ -458,121 +310,115 @@ export const ImageCrop = forwardRef<HTMLElement, ImageCropProps>(function ImageC
 					}}
 					onClick={composeEventHandlers(onClick, slotProps.onClick)}
 				>
-					<DialogBase.Provider onClose={handleClose} titleId={titleId}>
-						<Layout>
-							<DialogBase.Header>
-								<DialogBase.Title as='h2'>
-									{resolvedTitle}
-								</DialogBase.Title>
-								<p className={styles.hint}>
-									{t('imageCrop.hint')}
-								</p>
-							</DialogBase.Header>
-							<DialogBase.Body>
-								<div
-									ref={stageRef}
-									className={styles.stage}
-									style={{
-										['--altum-image-crop-size' as string]: `${cropSize}px`,
-									}}
-								>
-									{error && (
-										<div className={styles.error} role='alert'>
-											{error}
+					<DialogBase.Provider onClose={close} titleId={titleId}>
+						<DialogBase.Header>
+							<DialogBase.Title as='h2'>
+								{title ?? t('imageCrop.title')}
+							</DialogBase.Title>
+							<p className={styles.hint}>
+								{t('imageCrop.hint')}
+							</p>
+						</DialogBase.Header>
+						<DialogBase.Body>
+							<div
+								ref={stageRef}
+								className={styles.stage}
+								style={{
+									['--altum-image-crop-size' as string]: `${cropSize}px`,
+								}}
+								onPointerMove={onPointerMove}
+								onPointerUp={onPointerUp}
+								onPointerCancel={onPointerUp}
+							>
+								{error && (
+									<div className={cn(styles.status, styles.error)} role='alert'>
+										{error}
+									</div>
+								)}
+
+								<div className={styles.viewport}>
+									{ready && (
+										<div
+											className={styles.imageLayer}
+											style={{
+												width: display.width,
+												height: display.height,
+												transform: imageTransform,
+											}}
+											onPointerDown={handlePanStart}
+										>
+											<img
+												src={imageSrc!}
+												alt=''
+												draggable={false}
+												className={styles.image}
+											/>
 										</div>
 									)}
 
-									<Box
-										variant='overlay'
-										padding='none'
-										className={styles.viewport}
-									>
-										{imageSrc && natural && (
-											<>
-												<div
-													className={styles.imageLayer}
-													style={{
-														width: display.width,
-														height: display.height,
-														transform:
-															`translate(calc(-50% + ${offsetX}px), `
-															+ `calc(-50% + ${offsetY}px))`,
-													}}
-													onPointerDown={handlePanStart}
-												>
-													<img
-														src={imageSrc}
-														alt=''
-														draggable={false}
-														className={styles.image}
-													/>
-												</div>
+									{ready && (
+										<div
+											className={styles.cropFrame}
+											data-shape={shape}
+										/>
+									)}
 
-												<div
-													className={cn(
-														styles.cropFrame,
-														shape === 'circle' ? styles.cropCircle : styles.cropSquare,
-													)}
-													aria-hidden
-												/>
-											</>
-										)}
-
-										{!imageSrc && !error && (
-											<div className={styles.placeholder}>
-												{t('imageCrop.choose')}
-											</div>
-										)}
-									</Box>
-
-									{imageSrc && natural && (
-										<div className={styles.handlesLayer}>
-											{corners.map((corner) => (
-												<div
-													key={corner.key}
-													role='slider'
-													tabIndex={0}
-													className={styles.handle}
-													style={{
-														transform:
-															'translate(-50%, -50%) '
-															+ `translate(${corner.viewX}px, ${corner.viewY}px)`,
-														cursor: corner.cursor,
-													}}
-													aria-label={t('imageCrop.scaleHandle', {corner: corner.key})}
-													aria-valuemin={MIN_ZOOM}
-													aria-valuemax={MAX_ZOOM}
-													aria-valuenow={Number(zoom.toFixed(2))}
-													onPointerDown={handleScaleStart}
-													onKeyDown={handleScaleKeyDown}
-												/>
-											))}
+									{!imageSrc && !error && (
+										<div className={styles.status}>
+											{t('imageCrop.choose')}
 										</div>
 									)}
 								</div>
-							</DialogBase.Body>
-							<DialogBase.Footer className={styles.footer}>
-								<Button
-									variant='secondary'
-									size='sm'
-									onClick={handleClose}
-									disabled={busy}
-								>
-									{resolvedCancelLabel}
-								</Button>
-								<Button
-									variant='primary'
-									size='sm'
-									onClick={handleConfirm}
-									disabled={busy || !natural}
-									loading={busy}
-								>
-									{resolvedConfirmLabel}
-								</Button>
-							</DialogBase.Footer>
-						</Layout>
+
+								{ready && (
+									<div
+										className={styles.handleLayer}
+										style={{
+											width: display.width,
+											height: display.height,
+											transform: imageTransform,
+										}}
+									>
+										{HANDLES.map((corner) => (
+											<div
+												key={corner}
+												role='slider'
+												tabIndex={0}
+												data-corner={corner}
+												className={styles.handle}
+												aria-label={t('imageCrop.scaleHandle', {corner})}
+												aria-valuemin={MIN_ZOOM}
+												aria-valuemax={MAX_ZOOM}
+												aria-valuenow={Number(zoom.toFixed(2))}
+												onPointerDown={handleScaleStart}
+												onKeyDown={handleScaleKeyDown}
+											/>
+										))}
+									</div>
+								)}
+							</div>
+						</DialogBase.Body>
+						<DialogBase.Footer>
+							<Button
+								variant='secondary'
+								size='sm'
+								onClick={close}
+								disabled={busy}
+							>
+								{cancelLabel ?? t('imageCrop.cancel')}
+							</Button>
+							<Button
+								variant='primary'
+								size='sm'
+								onClick={handleConfirm}
+								disabled={busy || !natural}
+								loading={busy}
+							>
+								{confirmLabel ?? t('imageCrop.confirm')}
+							</Button>
+						</DialogBase.Footer>
 					</DialogBase.Provider>
-				</Box>
+				</div>
 			)}
 		</Overlay>
 	);

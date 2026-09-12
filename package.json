@@ -1,6 +1,6 @@
 {
 	"name": "altum",
-	"version": "0.0.1",
+	"version": "0.0.4",
 	"description": "Библиотека React + TypeScript UI-компонентов: CSS Modules, токены ThemeProvider, адаптация overlay/sheet.",
 	"license": "MIT",
 	"author": "Alexander <azeeson@gmail.com>",
@@ -71,10 +71,10 @@
 		"scaffold": "node scripts/scaffold-component.mjs"
 	},
 	"browserslist": [
-		"> 0.5%",
-		"last 2 versions",
-		"not dead",
-		"not op_mini all"
+		"chrome >= 100",
+		"firefox >= 100",
+		"safari >= 16",
+		"not dead"
 	],
 	"publishConfig": {
 		"access": "public"

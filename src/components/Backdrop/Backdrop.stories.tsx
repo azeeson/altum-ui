@@ -1,7 +1,11 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {Backdrop, BackdropProps} from './Backdrop';
+import {Box} from '../Box/Box';
 import {Button} from '../Button/Button';
+import {Card} from '../Card/Card';
+import {Stack, Inline} from '../Layout/Layout';
+import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
@@ -31,6 +35,14 @@ export default {
 			},
 			description: 'fixed — на весь viewport; absolute — внутри родителя',
 		},
+		zIndex: {
+			control: 'number',
+			description: 'z-index слоя',
+		},
+		onClick: {
+			action: 'onClick',
+			description: 'Клик по затемнению (закрытие)',
+		},
 	},
 } satisfies Meta<typeof Backdrop>;
 
@@ -45,7 +57,10 @@ export const Playground: Story<BackdropProps> = {
 				</Button>
 				{open && (
 					<>
-						<Backdrop {...args} onClick={() => setOpen(false)} />
+						<Backdrop
+							{...args}
+							onClick={() => setOpen(false)}
+						/>
 						<div
 							style={{
 								position: 'fixed',
@@ -57,17 +72,16 @@ export const Playground: Story<BackdropProps> = {
 								pointerEvents: 'none',
 							}}
 						>
-							<div
-								style={{
-									pointerEvents: 'auto',
-									padding: 24,
-									background: 'var(--altum-color-dropdown-bg)',
-									borderRadius: 8,
-									border: '1px solid var(--altum-color-dropdown-border)',
-								}}
+							<Box
+								variant='floating'
+								padding='md'
+								radius='md'
+								style={{pointerEvents: 'auto'}}
 							>
-								Клик по затемнению закрывает
-							</div>
+								<Text size='sm'>
+									Клик по затемнению закрывает
+								</Text>
+							</Box>
 						</div>
 					</>
 				)}
@@ -79,17 +93,12 @@ export const Playground: Story<BackdropProps> = {
 		blur: 'sm',
 		position: 'fixed',
 	},
-	parameters: story('Клик по backdrop закрывает демо.'),
+	parameters: story('Клик по backdrop закрывает демо. Controls: variant / blur / position.'),
 };
 
 export const Variants: Story<BackdropProps> = {
 	render: () => (
-		<div style={{
-			display: 'flex',
-			gap: 16,
-			flexWrap: 'wrap'
-		}}
-		>
+		<Inline gap='md' wrap>
 			<div style={{
 				position: 'relative',
 				width: 200,
@@ -124,7 +133,130 @@ export const Variants: Story<BackdropProps> = {
 					blur='md'
 				/>
 			</div>
-		</div>
+		</Inline>
 	),
 	parameters: story('default и strong внутри контейнера (absolute).'),
+};
+
+export const BlurLevels: Story<BackdropProps> = {
+	render: () => (
+		<Inline gap='md' wrap>
+			{(['none', 'sm', 'md'] as const).map((blur) => (
+				<div
+					key={blur}
+					style={{
+						position: 'relative',
+						width: 180,
+						height: 110,
+						borderRadius: 8,
+						overflow: 'hidden',
+						background: 'linear-gradient(135deg, var(--altum-color-brand), var(--altum-color-status-info))',
+					}}
+				>
+					<Text
+						size='sm'
+						style={{
+							padding: 12,
+							color: 'var(--altum-color-text-on-brand)'
+						}}
+					>
+						blur=
+						{blur}
+					</Text>
+					<Backdrop
+						position='absolute'
+						blur={blur}
+					/>
+				</div>
+			))}
+		</Inline>
+	),
+	parameters: story('Уровни размытия: none / sm / md.'),
+};
+
+export const Interaction: Story<BackdropProps> = {
+	render: Playground.render,
+	args: {
+		variant: 'default',
+		blur: 'sm',
+		position: 'fixed',
+	},
+	play: async ({canvasElement}) => {
+		const button = canvasElement.querySelector('button');
+		if (!(button instanceof HTMLButtonElement)) {
+			throw new Error('Не найдена кнопка открытия Backdrop');
+		}
+		button.click();
+	},
+	parameters: story('Play: открывает backdrop поверх страницы.'),
+};
+
+export const UsageExample: Story<BackdropProps> = {
+	render: function UsageExampleRender() {
+		const [open, setOpen] = useState(false);
+		return (
+			<Stack gap='md' style={{maxWidth: 360}}>
+				<Card
+					variant='outlined'
+					header={(
+						<Text weight='bold'>
+							Документ
+						</Text>
+					)}
+				>
+					<Text size='sm'>
+						Черновик отчёта. Backdrop имитирует блокировку экрана на время сохранения.
+					</Text>
+				</Card>
+				<Button
+					variant='primary'
+					size='sm'
+					onClick={() => setOpen(true)}
+				>
+					Сохранить
+				</Button>
+				{open && (
+					<>
+						<Backdrop
+							variant='strong'
+							blur='sm'
+							onClick={() => setOpen(false)}
+						/>
+						<div
+							style={{
+								position: 'fixed',
+								inset: 0,
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								zIndex: 1101,
+								pointerEvents: 'none',
+							}}
+						>
+							<Card
+								variant='elevated'
+								style={{
+									pointerEvents: 'auto',
+									maxWidth: 280
+								}}
+							>
+								<Text size='sm'>
+									Сохранение…
+								</Text>
+								<Button
+									size='sm'
+									variant='secondary'
+									onClick={() => setOpen(false)}
+									style={{marginTop: 'var(--altum-g-space-3)'}}
+								>
+									Отмена
+								</Button>
+							</Card>
+						</div>
+					</>
+				)}
+			</Stack>
+		);
+	},
+	parameters: story('Backdrop + Card как упрощённый overlay сохранения.'),
 };

@@ -1,5 +1,4 @@
 import type {
-	AdaptiveValue,
 	GridProps,
 	GridItemProps,
 } from './Grid.types';
@@ -11,51 +10,20 @@ export type {
 	GridItemProps,
 } from './Grid.types';
 
-import {forwardRef, type CSSProperties, type ElementType} from 'react';
+import {forwardRef, type CSSProperties} from 'react';
+import {As} from '../../base/As';
 import styles from './Grid.module.css';
 import {cn} from '../../utils/cn';
 import {mergeStyles} from '../../utils/mergeStyles';
 import {
-	applyAdaptiveVars,
-	isAdaptiveValue,
 	resolveAutoColumnsTemplate,
 	resolveColumnsTemplate,
 	resolveGapCss,
-	resolveGridColumnValue,
 	resolveGridRowValue,
+	setGridItemColumnVars,
+	setResponsive,
 } from './Grid.utils';
 export {GRID_BREAKPOINTS} from './Grid.utils';
-
-function applyColumnsVars(
-	target: Record<string, string | number | undefined>,
-	columns: number | string | AdaptiveValue<number | string>,
-): void {
-	if (isAdaptiveValue<number | string>(columns)) {
-		applyAdaptiveVars(target, columns, '--altum-grid-cols', resolveColumnsTemplate);
-		return;
-	}
-	target['--altum-grid-cols-xs'] = resolveColumnsTemplate(columns);
-}
-
-function applyAutoColumnsVars(
-	target: Record<string, string | number | undefined>,
-	mode: 'autoFit' | 'autoFill',
-	minColumnWidth: number | string,
-): void {
-	const template = resolveAutoColumnsTemplate(mode, minColumnWidth);
-	target['--altum-grid-cols-xs'] = template;
-}
-
-function applyGapVars(
-	target: Record<string, string | number | undefined>,
-	gap: number | string | AdaptiveValue<number | string>,
-): void {
-	if (isAdaptiveValue<number | string>(gap)) {
-		applyAdaptiveVars(target, gap, '--altum-grid-gap', resolveGapCss);
-		return;
-	}
-	target['--altum-grid-gap-xs'] = resolveGapCss(gap);
-}
 
 /**
  * CSS Grid-контейнер с адаптивными колонками и отступами через breakpoints.
@@ -72,97 +40,40 @@ export const Grid = forwardRef<HTMLElement, GridProps>(function Grid(
 		gap = 'md',
 		mode = 'fixed',
 		minColumnWidth = 240,
-		children,
 		className,
 		style,
-		as: Component = 'div',
+		as = 'div',
 		...rest
 	},
 	ref,
 ) {
-	const customStyles: Record<string, string | number | undefined> = {};
+	const vars: Record<string, string | number | undefined> = {};
+	const colsFallback = 'repeat(1, minmax(0, 1fr))';
 
 	if (mode === 'autoFit' || mode === 'autoFill') {
-		applyAutoColumnsVars(customStyles, mode, minColumnWidth);
+		setResponsive(
+			vars,
+			'--altum-grid-cols',
+			resolveAutoColumnsTemplate(mode, minColumnWidth),
+			(value) => value,
+			colsFallback,
+		);
 	} else {
-		applyColumnsVars(customStyles, columns);
+		setResponsive<number | string>(vars, '--altum-grid-cols', columns, resolveColumnsTemplate, colsFallback);
 	}
 
-	applyGapVars(customStyles, gap);
-
-	const Element = Component as ElementType;
+	setResponsive<number | string>(vars, '--altum-grid-gap', gap, resolveGapCss, 'var(--altum-g-space-3)');
 
 	return (
-		<Element
-			ref={ref as never}
+		<As
+			ref={ref}
+			as={as}
 			className={cn(styles.grid, className)}
-			style={mergeStyles(customStyles as CSSProperties, style)}
+			style={mergeStyles(vars as CSSProperties, style)}
 			{...rest}
-		>
-			{children}
-		</Element>
+		/>
 	);
 });
-
-function applyGridItemColumnVars(
-	target: Record<string, string | number | undefined>,
-	span?: number | AdaptiveValue<number>,
-	colStart?: number | AdaptiveValue<number>,
-	colEnd?: number | AdaptiveValue<number>,
-): void {
-	const applyAt = (
-		prefix: string,
-		s?: number,
-		start?: number,
-		end?: number,
-	) => {
-		const value = resolveGridColumnValue(s, start, end);
-		if (value !== undefined) {
-			target[prefix] = value;
-		}
-	};
-
-	if (
-		isAdaptiveValue(span)
-		|| isAdaptiveValue(colStart)
-		|| isAdaptiveValue(colEnd)
-	) {
-		for (const key of [
-			'xs',
-			'sm',
-			'md',
-			'lg',
-			'xl'
-		] as const) {
-			const s = isAdaptiveValue(span) ? span[key] : span;
-			const start = isAdaptiveValue(colStart) ? colStart[key] : colStart;
-			const end = isAdaptiveValue(colEnd) ? colEnd[key] : colEnd;
-			if (s !== undefined || start !== undefined || end !== undefined) {
-				applyAt(`--altum-grid-item-col-${key}`, s, start, end);
-			}
-		}
-		return;
-	}
-
-	applyAt('--altum-grid-item-col-xs', span, colStart, colEnd);
-}
-
-function applyGridItemRowVars(
-	target: Record<string, string | number | undefined>,
-	rowSpan?: number | AdaptiveValue<number>,
-): void {
-	if (rowSpan === undefined) return;
-
-	if (isAdaptiveValue(rowSpan)) {
-		applyAdaptiveVars(target, rowSpan, '--altum-grid-item-row', resolveGridRowValue);
-		return;
-	}
-
-	const value = resolveGridRowValue(rowSpan);
-	if (value !== undefined) {
-		target['--altum-grid-item-row-xs'] = value;
-	}
-}
 
 /**
  * Ячейка CSS Grid с адаптивным span и позиционированием по колонкам/строкам.
@@ -180,30 +91,28 @@ export const GridItem = forwardRef<HTMLElement, GridItemProps>(function GridItem
 		colStart,
 		colEnd,
 		rowSpan,
-		children,
 		className,
 		style,
-		as: Component = 'div',
+		as = 'div',
 		...rest
 	},
 	ref,
 ) {
-	const customStyles: Record<string, string | number | undefined> = {};
+	const vars: Record<string, string | number | undefined> = {};
 
-	applyGridItemColumnVars(customStyles, span, colStart, colEnd);
-	applyGridItemRowVars(customStyles, rowSpan);
-
-	const Element = Component as ElementType;
+	setGridItemColumnVars(vars, span, colStart, colEnd);
+	if (rowSpan !== undefined) {
+		setResponsive<number>(vars, '--altum-grid-item-row', rowSpan, resolveGridRowValue, 'auto');
+	}
 
 	return (
-		<Element
-			ref={ref as never}
+		<As
+			ref={ref}
+			as={as}
 			className={cn(styles.gridItem, className)}
-			style={mergeStyles(customStyles as CSSProperties, style)}
+			style={mergeStyles(vars as CSSProperties, style)}
 			{...rest}
-		>
-			{children}
-		</Element>
+		/>
 	);
 });
 

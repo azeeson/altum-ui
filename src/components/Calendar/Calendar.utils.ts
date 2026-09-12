@@ -38,11 +38,12 @@ export function isSameDay(a: Date, b: Date): boolean {
 
 /** Сравнение календарных дней: −1 / 0 / 1. */
 export function compareDay(a: Date, b: Date): number {
-	const aTime = startOfDay(a).getTime();
-	const bTime = startOfDay(b).getTime();
-	if (aTime < bTime) return -1;
-	if (aTime > bTime) return 1;
-	return 0;
+	const year = a.getFullYear() - b.getFullYear();
+	if (year) return year < 0 ? -1 : 1;
+	const month = a.getMonth() - b.getMonth();
+	if (month) return month < 0 ? -1 : 1;
+	const day = a.getDate() - b.getDate();
+	return day < 0 ? -1 : day > 0 ? 1 : 0;
 }
 
 /** Дата строго между start и end (не включая концы). */
@@ -120,24 +121,36 @@ export function formatMonthYear(
 }
 
 /**
+ * Подписи дней недели в порядке колонок календаря.
+ *
+ * @param weekdays - Краткие подписи пн–вс (`messages.calendar.weekdaysShort`).
+ * @param weekStartsOn - `1` — понедельник первый, `0` — воскресенье.
+ */
+export function weekdayLabels(
+	weekdays: readonly string[],
+	weekStartsOn: 0 | 1 = 1,
+): string[] {
+	return weekStartsOn === 1
+		? [...weekdays]
+		: [weekdays[6] ?? '', ...weekdays.slice(0, 6)];
+}
+
+/**
  * Краткая подпись дня недели с учётом первого дня недели.
  *
  * @param date - Календарная дата.
  * @param weekStartsOn - `1` — понедельник первый, `0` — воскресенье первым.
  * @param weekdays - Краткие подписи от понедельника до воскресенья
  *   (`useLocale().messages.calendar.weekdaysShort`).
- * @returns Локализованная краткая подпись дня недели.
  */
 export function weekdayLabelFor(
 	date: Date,
 	weekStartsOn: 0 | 1 = 1,
 	weekdays: readonly string[],
 ): string {
-	const day = date.getDay();
-	const mondayIndex = day === 0 ? 6 : day - 1;
-	if (weekStartsOn === 1) {
-		return weekdays[mondayIndex] ?? '';
-	}
-	const sundayFirst = [weekdays[6] ?? '', ...weekdays.slice(0, 6)];
-	return sundayFirst[day] ?? '';
+	const labels = weekdayLabels(weekdays, weekStartsOn);
+	const index = weekStartsOn === 1
+		? (date.getDay() === 0 ? 6 : date.getDay() - 1)
+		: date.getDay();
+	return labels[index] ?? '';
 }

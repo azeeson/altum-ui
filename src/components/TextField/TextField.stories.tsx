@@ -1,62 +1,39 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {TextField, TextFieldProps} from './TextField';
-import {FieldBase} from '../../base/FieldBase';
+import {FieldBaseButton, FieldBaseIcon} from '../../base/FieldBase';
 import {IconUser} from '../../icons/icons/IconUser';
 import {IconCamera} from '../../icons/icons/IconCamera';
 import {IconPencil} from '../../icons/icons/IconPencil';
 import {IconClock} from '../../icons/icons/IconClock';
 import {Button} from '../Button/Button';
 import {Dropdown} from '../Dropdown/Dropdown';
-import {componentParameters, story, Story} from '../../storybook/meta';
+import {Fieldset} from '../Fieldset/Fieldset';
+import {Stack, Inline} from '../Layout/Layout';
+import {
+	componentParameters,
+	fieldArgTypes,
+	STORY_OVERFLOW_LABEL,
+	STORY_OVERFLOW_VALUE,
+	story,
+	Story,
+} from '../../storybook/meta';
+import {playFocus, playType} from '../../storybook/play';
 
 export default {
-	title: 'altum/Components/TextField',
+	title: 'altum/Components/FormField/TextField',
 	component: TextField,
 	tags: ['autodocs'],
-	parameters: componentParameters('Однострочное текстовое поле с меткой, иконками, очисткой, ошибками и размерами.'),
-	argTypes: {
-		label: {
-			control: 'text',
-			description: 'Метка поля'
-		},
-		size: {
-			control: {
-				type: 'select',
-				options: ['sm', 'md', 'lg']
-			},
-			description: 'Размер поля',
-		},
-		disabled: {
-			control: 'boolean',
-			description: 'Заблокированное состояние'
-		},
-		width: {
-			control: {
-				type: 'select',
-				options: [
-					'xxs',
-					'sm',
-					'md',
-					'lg',
-					'xl',
-					'full'
-				]
-			},
-			description: 'Ширина оболочки'
-		},
-		labelPlacement: {
-			control: {
-				type: 'select',
-				options: ['inline', 'outside', 'none'],
-			},
-			description: 'Расположение лейбла: inline (floating), outside (над полем), none (без лейбла)',
-		},
-		error: {
-			control: 'text',
-			description: 'Текст ошибки валидации'
-		},
+	parameters: componentParameters(
+		'Однострочное текстовое поле с меткой, иконками, очисткой, ошибками и размерами.',
+	),
+	args: {
+		label: 'Электронная почта',
+		size: 'md',
+		width: 'md',
+		labelPlacement: 'inline',
 	},
+	argTypes: fieldArgTypes,
 } satisfies Meta<typeof TextField>;
 
 export const Playground: Story<TextFieldProps> = {
@@ -66,7 +43,10 @@ export const Playground: Story<TextFieldProps> = {
 			<TextField
 				{...args}
 				value={val}
-				onChange={(e) => setVal(e.target.value)}
+				onChange={(e) => {
+					args.onChange?.(e);
+					setVal(e.target.value);
+				}}
 				onClear={args.onClear ? () => setVal('') : undefined}
 				id='story-text-playground'
 			/>
@@ -80,16 +60,134 @@ export const Playground: Story<TextFieldProps> = {
 	parameters: story('Используйте панель Controls для настройки. С `onClear` появляется кнопка очистки.'),
 };
 
+export const Sizes: Story<TextFieldProps> = {
+	render: function SizesRender() {
+		const [val, setVal] = useState('');
+		return (
+			<Stack gap='md' style={{maxWidth: 360}}>
+				{(['sm', 'md', 'lg'] as const).map((size) => (
+					<Inline
+						key={size}
+						gap='sm'
+						align='center'
+					>
+						<TextField
+							label={`Размер ${size}`}
+							size={size}
+							value={val}
+							onChange={(e) => setVal(e.target.value)}
+							width='full'
+						/>
+						<Button size={size}>
+							OK
+						</Button>
+					</Inline>
+				))}
+			</Stack>
+		);
+	},
+	parameters: story('`ControlSize` `sm`–`lg` рядом с Button того же размера.'),
+};
+
+export const LabelPlacement: Story<TextFieldProps> = {
+	render: function LabelPlacementRender() {
+		const [val, setVal] = useState('');
+		return (
+			<Stack gap='md'>
+				{(['inline', 'outside', 'none'] as const).map((placement) => (
+					<Inline
+						key={placement}
+						gap='sm'
+						align={placement === 'outside' ? 'end' : 'center'}
+					>
+						<TextField
+							label='Поиск'
+							labelPlacement={placement}
+							size='md'
+							value={val}
+							onChange={(e) => setVal(e.target.value)}
+							placeholder='Введите запрос'
+							width='md'
+						/>
+						<Button size='md'>
+							Найти
+						</Button>
+					</Inline>
+				))}
+			</Stack>
+		);
+	},
+	parameters: story('`labelPlacement`: inline (floating) / outside / none. Высота chrome одинакова.'),
+};
+
+export const Disabled: Story<TextFieldProps> = {
+	render: () => (
+		<Stack gap='md' style={{maxWidth: 360}}>
+			<TextField
+				label='Заблокированный инпут'
+				disabled
+				value='Защищённые данные'
+				width='full'
+			/>
+			<TextField
+				label='Только чтение'
+				readOnly
+				value='Нельзя изменить'
+				width='full'
+			/>
+		</Stack>
+	),
+	parameters: story('`disabled` и `readOnly`.'),
+};
+
+export const Error: Story<TextFieldProps> = {
+	args: {
+		label: 'Электронная почта',
+		error: 'Поле заполнено некорректно. Пожалуйста, укажите верный формат.',
+		value: 'неверный_текст',
+		width: 'full',
+		id: 'story-text-error',
+	},
+	parameters: story('Ошибка валидации: рамка и текст `error`.'),
+};
+
+export const Empty: Story<TextFieldProps> = {
+	args: {
+		label: 'Электронная почта',
+		helperText: 'Мы не передаём адрес третьим лицам',
+		width: 'full',
+	},
+	parameters: story('Пустое поле с `helperText`.'),
+};
+
+export const OverflowText: Story<TextFieldProps> = {
+	render: function OverflowRender() {
+		const [val, setVal] = useState(STORY_OVERFLOW_VALUE);
+		return (
+			<Stack gap='md' style={{maxWidth: 320}}>
+				<TextField
+					label={STORY_OVERFLOW_LABEL}
+					value={val}
+					onChange={(e) => setVal(e.target.value)}
+					helperText='Длинные подписи лучше выносить в outside / helperText'
+					prefix={(
+						<FieldBaseIcon>
+							<IconUser />
+						</FieldBaseIcon>
+					)}
+					width='full'
+				/>
+			</Stack>
+		);
+	},
+	parameters: story('Длинный floating label + длинное значение + prefix.'),
+};
+
 export const AllVariants: Story<TextFieldProps> = {
 	render: function AllVariantsRender() {
 		const [val, setVal] = useState('');
 		return (
-			<div style={{
-				display: 'flex',
-				flexDirection: 'column',
-				gap: '20px'
-			}}
-			>
+			<Stack gap='lg' style={{maxWidth: 420}}>
 				<TextField
 					label='Электронная почта'
 					value={val}
@@ -106,133 +204,48 @@ export const AllVariants: Story<TextFieldProps> = {
 				<TextField
 					label='Инпут с иконкой вначале'
 					prefix={(
-						<FieldBase.Icon>
+						<FieldBaseIcon>
 							<IconUser />
-						</FieldBase.Icon>
+						</FieldBaseIcon>
 					)}
 				/>
 				<TextField
 					label='Инпут с иконкой вконце'
 					postfix={(
-						<FieldBase.Icon>
+						<FieldBaseIcon>
 							<IconCamera />
-						</FieldBase.Icon>
+						</FieldBaseIcon>
 					)}
 				/>
 				<TextField
 					label='Инпут с кнопкой вначале'
 					prefix={(
-						<Dropdown>
-							<Dropdown.Trigger asChild>
-								<FieldBase.Button aria-label='Редактировать' icon={<IconPencil />} />
-							</Dropdown.Trigger>
-							<Dropdown.Content>
-								<div style={{padding: '16px'}}>
-									Пример длинного текста в поле: содержимое не обрезается.
-								</div>
-							</Dropdown.Content>
+						<Dropdown
+							renderTrigger={(props, ref) => (
+								<FieldBaseButton
+									aria-label='Редактировать'
+									icon={<IconPencil />}
+									{...props}
+									ref={ref}
+								/>
+							)}
+						>
+							<div style={{padding: '16px'}}>
+								Пример длинного текста в поле: содержимое не обрезается.
+							</div>
 						</Dropdown>
 					)}
 				/>
 				<TextField
 					label='Инпут с кнопкой вконце'
 					postfix={(
-						<FieldBase.Button aria-label='Время' icon={<IconClock />} />
+						<FieldBaseButton aria-label='Время' icon={<IconClock />} />
 					)}
 				/>
-				<TextField
-					label='Заблокированный инпут'
-					disabled
-					value='Защищённые данные'
-					id='story-text-disabled'
-				/>
-				<TextField
-					label='Инпут с ошибкой'
-					error='Поле заполнено некорректно. Пожалуйста, укажите верный формат.'
-					value='неверный_текст'
-					id='story-text-error'
-				/>
-			</div>
+			</Stack>
 		);
 	},
-	parameters: story('Все варианты: иконки, кнопки, ошибки и состояния.'),
-};
-
-export const LabelPlacement: Story<TextFieldProps> = {
-	render: function LabelPlacementRender() {
-		const [val, setVal] = useState('');
-		return (
-			<div style={{
-				display: 'flex',
-				flexDirection: 'column',
-				gap: 16
-			}}
-			>
-				{(['inline', 'outside', 'none'] as const).map((placement) => (
-					<div
-						key={placement}
-						style={{
-							display: 'flex',
-							gap: 8,
-							alignItems: placement === 'outside' ? 'flex-end' : 'center',
-						}}
-					>
-						<TextField
-							label='Поиск'
-							labelPlacement={placement}
-							size='md'
-							value={val}
-							onChange={(e) => setVal(e.target.value)}
-							placeholder='Введите запрос'
-							width='md'
-						/>
-						<Button size='md'>
-							Найти
-						</Button>
-					</div>
-				))}
-			</div>
-		);
-	},
-	parameters: story('`labelPlacement`: inline (floating, placeholder скрыт) / outside (лейбл сверху) / none (без лейбла). Высота chrome одинакова.'),
-};
-
-export const Sizes: Story<TextFieldProps> = {
-	render: function SizesRender() {
-		const [val, setVal] = useState('');
-		return (
-			<div style={{
-				display: 'flex',
-				flexDirection: 'column',
-				gap: 16,
-				maxWidth: 360,
-			}}
-			>
-				{(['sm', 'md', 'lg'] as const).map((size) => (
-					<div
-						key={size}
-						style={{
-							display: 'flex',
-							gap: 8,
-							alignItems: 'center',
-						}}
-					>
-						<TextField
-							label={`Размер ${size}`}
-							size={size}
-							value={val}
-							onChange={(e) => setVal(e.target.value)}
-							width='full'
-						/>
-						<Button size={size}>
-							OK
-						</Button>
-					</div>
-				))}
-			</div>
-		);
-	},
-	parameters: story('`ControlSize` `sm`–`lg` рядом с Button того же размера.'),
+	parameters: story('Иконки, кнопки и ширина `full`.'),
 };
 
 export const WithClear: Story<TextFieldProps> = {
@@ -261,7 +274,7 @@ export const LongFloatingLabelWithPrefix: Story<TextFieldProps> = {
 		return (
 			<div style={{maxWidth: 320}}>
 				<TextField
-					label='Очень длинная подпись поля с единицами измерения и уточнениями'
+					label={STORY_OVERFLOW_LABEL}
 					value={val}
 					onChange={(e) => setVal(e.target.value)}
 					helperText='Длинные подписи лучше выносить в outside / helperText'
@@ -275,7 +288,84 @@ export const LongFloatingLabelWithPrefix: Story<TextFieldProps> = {
 			</div>
 		);
 	},
-	parameters: story(
-		'Floating label ellipsis + prefix gap; value остаётся читаемым.',
+	parameters: story('Floating label ellipsis + prefix gap; value остаётся читаемым.'),
+};
+
+export const Focused: Story<TextFieldProps> = {
+	render: () => (
+		<div style={{maxWidth: 360}}>
+			<TextField
+				label='Электронная почта'
+				defaultValue='user@example.com'
+				width='full'
+			/>
+		</div>
 	),
+	play: async ({canvasElement}) => {
+		await playFocus(canvasElement);
+	},
+	parameters: story('Программный фокус — chrome `:focus-within`.'),
+};
+
+export const Interaction: Story<TextFieldProps> = {
+	render: function InteractionRender() {
+		const [val, setVal] = useState('');
+		return (
+			<div style={{maxWidth: 360}}>
+				<TextField
+					label='Электронная почта'
+					value={val}
+					onChange={(e) => setVal(e.target.value)}
+					onClear={() => setVal('')}
+					width='full'
+				/>
+			</div>
+		);
+	},
+	play: async ({canvasElement}) => {
+		await playType(canvasElement, 'hello@altum.ui');
+	},
+	parameters: story('Play: ввод адреса — значение и кнопка очистки.'),
+};
+
+export const UsageExample: Story<TextFieldProps> = {
+	render: function UsageExampleRender() {
+		const [name, setName] = useState('Алексей');
+		const [email, setEmail] = useState('');
+		return (
+			<div style={{maxWidth: 420}}>
+				<Fieldset
+					legend='Профиль'
+					description='Имя и рабочая почта для уведомлений.'
+					footer={(
+						<Inline gap='sm' justify='end'>
+							<Button variant='secondary'>
+								Отмена
+							</Button>
+							<Button variant='primary'>
+								Сохранить
+							</Button>
+						</Inline>
+					)}
+				>
+					<TextField
+						label='Имя'
+						value={name}
+						onChange={(e) => setName(e.target.value)}
+						width='full'
+					/>
+					<TextField
+						label='Эл. почта'
+						type='email'
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+						onClear={() => setEmail('')}
+						helperText='На этот адрес придёт письмо подтверждения'
+						width='full'
+					/>
+				</Fieldset>
+			</div>
+		);
+	},
+	parameters: story('Поля внутри Fieldset с кнопками в футере.'),
 };

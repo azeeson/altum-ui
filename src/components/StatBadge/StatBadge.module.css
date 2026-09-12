@@ -1,4 +1,7 @@
 .statBadge {
+  --altum-stat-value-size: var(--altum-g-font-size-xl);
+  --altum-stat-label-size: var(--altum-g-font-size-xs);
+
   display: inline-flex;
 
   flex-direction: column;
@@ -17,15 +20,15 @@
 }
 
 .value {
-  font-size: var(--altum-g-font-size-xl);
+  font-size: var(--altum-stat-value-size);
   font-weight: var(--altum-g-font-weight-bold);
   line-height: 1.2;
 
-  color: var(--altum-color-input-text);
+  color: var(--altum-status-strong, var(--altum-color-input-text));
 }
 
 .label {
-  font-size: var(--altum-g-font-size-xs);
+  font-size: var(--altum-stat-label-size);
   font-weight: var(--altum-g-font-weight-medium);
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -33,45 +36,21 @@
   color: var(--altum-color-text-secondary);
 }
 
-.default .value {
-  color: var(--altum-color-input-text);
-}
-
-.success .value {
-  color: var(--altum-color-status-success-strong);
-}
-
-.warning .value {
-  color: var(--altum-color-status-warning-strong);
-}
-
-.error .value {
-  color: var(--altum-color-danger-text-secondary);
-}
-
 .sm {
+  --altum-stat-value-size: var(--altum-g-font-size-3xs);
+  --altum-stat-label-size: var(--altum-g-font-size-3xs);
+
   flex-direction: row;
-  align-items: center;
-  gap: var(--altum-g-space-1);
 
   min-width: 0;
   height: var(--altum-g-space-4);
-  max-height: var(--altum-g-space-4);
 
   padding: 0 var(--altum-g-space-2);
 
   border-radius: var(--altum-g-radius-sm);
-  & .value {
-    font-size: var(--altum-g-font-size-3xs);
-    font-weight: var(--altum-g-font-weight-bold);
-    line-height: var(--altum-g-space-4);
-  }
 
   & .label {
-    font-size: var(--altum-g-font-size-3xs);
     font-weight: var(--altum-g-font-weight-semibold);
-    line-height: var(--altum-g-space-4);
-    letter-spacing: 0.03em;
     white-space: nowrap;
   }
 }

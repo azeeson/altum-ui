@@ -1,7 +1,5 @@
-import type React from 'react';
-import type {
-	ComponentPropsWithoutRef,
-} from 'react';
+import type {ReactNode} from 'react';
+import type {ComponentPropsWithoutRef} from 'react';
 import {type BoxAs, type BoxVariant} from '../Box/Box';
 
 /**
@@ -22,8 +20,7 @@ export type ItemVariant = BoxVariant;
 /**
  * Свойства `Item`.
  */
-export interface ItemProps extends ComponentPropsWithoutRef<'div'> {
-	children: React.ReactNode;
+export interface ItemProps extends Omit<ComponentPropsWithoutRef<'div'>, 'title'> {
 	/** Плотность строки. @default 'md' */
 	size?: ItemSize;
 	/**
@@ -34,7 +31,7 @@ export interface ItemProps extends ComponentPropsWithoutRef<'div'> {
 	/**
 	 * Интерактивная строка (hover / курсор).
 	 * При `onClick` без `as` и без `role` корень рендерится как `<button type="button">`.
-	 * Не вкладывайте кнопки в `Item.Actions` в этом режиме.
+	 * Не вкладывайте кнопки в `actions` в этом режиме.
 	 */
 	interactive?: boolean;
 	/**
@@ -42,41 +39,14 @@ export interface ItemProps extends ComponentPropsWithoutRef<'div'> {
 	 * @default `onClick` + `interactive` → `'button'`, иначе `'div'`
 	 */
 	as?: BoxAs;
-}
-
-/**
- * Свойства `Item.Media`.
- */
-export interface ItemMediaProps extends ComponentPropsWithoutRef<'div'> {
-	children: React.ReactNode;
-	/** Внешний вид media-слота. @default 'icon' */
-	variant?: ItemMediaVariant;
-}
-
-/**
- * Свойства `Item.Content`.
- */
-export interface ItemContentProps extends ComponentPropsWithoutRef<'div'> {
-	children: React.ReactNode;
-}
-
-/**
- * Свойства `Item.Title`.
- */
-export interface ItemTitleProps extends ComponentPropsWithoutRef<'div'> {
-	children: React.ReactNode;
-}
-
-/**
- * Свойства `Item.Description`.
- */
-export interface ItemDescriptionProps extends ComponentPropsWithoutRef<'div'> {
-	children: React.ReactNode;
-}
-
-/**
- * Свойства `Item.Actions`.
- */
-export interface ItemActionsProps extends ComponentPropsWithoutRef<'div'> {
-	children: React.ReactNode;
+	media?: ReactNode;
+	/** Внешний вид media. @default 'icon' */
+	mediaVariant?: ItemMediaVariant;
+	mediaClassName?: string;
+	title?: ReactNode;
+	titleClassName?: string;
+	description?: ReactNode;
+	descriptionClassName?: string;
+	actions?: ReactNode;
+	actionsClassName?: string;
 }

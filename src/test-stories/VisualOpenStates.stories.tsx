@@ -25,16 +25,13 @@ type Story = StoryObj;
 
 const noop = () => undefined;
 
-const LIGHTBOX_IMAGES = [
-	demoGalleryItem(1, 'Слайд 1'),
-	demoGalleryItem(2, 'Слайд 2'),
-];
+const LIGHTBOX_IMAGES = [demoGalleryItem(1, 'Слайд 1'), demoGalleryItem(2, 'Слайд 2')];
 
 export const ModalOpen: Story = {
 	render: () => (
 		<Modal
 			open
-			onClose={noop}
+			onOpenChange={noop}
 		>
 			<Modal.Header>
 				<Modal.Title>
@@ -69,7 +66,7 @@ export const ConfirmDialogDestructiveOpen: Story = {
 			cancelLabel='Отмена'
 			status='danger'
 			onConfirm={noop}
-			onCancel={noop}
+			onOpenChange={noop}
 		/>
 	),
 };
@@ -84,7 +81,7 @@ export const ConfirmDialogDefaultOpen: Story = {
 			cancelLabel='Остаться'
 			status='default'
 			onConfirm={noop}
-			onCancel={noop}
+			onOpenChange={noop}
 		/>
 	),
 };
@@ -93,7 +90,7 @@ export const SheetSidebarOpen: Story = {
 	render: () => (
 		<Sheet
 			open
-			onClose={noop}
+			onOpenChange={noop}
 			mode='sidebar'
 			direction='end'
 			width={320}
@@ -132,7 +129,7 @@ export const ImageLightboxOpen: Story = {
 	render: () => (
 		<ImageLightbox
 			open
-			onClose={noop}
+			onOpenChange={noop}
 			images={LIGHTBOX_IMAGES}
 			index={0}
 			onIndexChange={noop}
@@ -144,22 +141,24 @@ export const DropdownOpen: Story = {
 	render: () => (
 		<Dropdown
 			open
-			onClose={noop}
+			onOpenChange={noop}
 			widthMode='content'
 			mobileTitle='Меню'
-		>
-			<Dropdown.Trigger asChild>
-				<Button variant='primary'>
+			renderTrigger={(props, ref) => (
+				<Button
+					variant='primary'
+					{...props}
+					ref={ref}
+				>
 					Открыто ▼
 				</Button>
-			</Dropdown.Trigger>
-			<Dropdown.Content>
-				<div style={{padding: 12}}>
-					<Text size='sm'>
-						Содержимое выпадающей панели
-					</Text>
-				</div>
-			</Dropdown.Content>
+			)}
+		>
+			<div style={{padding: 12}}>
+				<Text size='sm'>
+					Содержимое выпадающей панели
+				</Text>
+			</div>
 		</Dropdown>
 	),
 };
@@ -176,7 +175,6 @@ export const TooltipVisible: Story = {
 				content='Полезная подсказка сверху'
 				position='top'
 				open
-				asChild
 			>
 				<Button variant='secondary'>
 					Наведи на меня
@@ -190,7 +188,7 @@ export const SheetOpen: Story = {
 	render: () => (
 		<Sheet
 			open
-			onClose={noop}
+			onOpenChange={noop}
 			mode='sheet'
 			backdrop={false}
 		>

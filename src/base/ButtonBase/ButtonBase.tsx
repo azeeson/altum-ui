@@ -12,11 +12,10 @@ export type {
 } from './ButtonBase.types';
 
 import {createElement, forwardRef} from 'react';
-import type {MouseEvent, MouseEventHandler, ReactElement, Ref} from 'react';
+import type {ReactElement, Ref} from 'react';
 import styles from './ButtonBase.module.css';
+import textLink from '../../styles/textLink.module.css';
 import {cn} from '../../utils/cn';
-import {composeEventHandlers} from '../../utils/composeEvents';
-import {Slot} from '../../utils/slot';
 
 type ButtonBaseComponent = (<T extends ButtonBaseAs = 'button'>(
 	props: ButtonBaseProps<T> & {ref?: Ref<ButtonBaseRef<T>>},
@@ -26,8 +25,7 @@ type ButtonBaseComponent = (<T extends ButtonBaseAs = 'button'>(
 
 /**
  * Базовый layout кнопки: размеры, `variant` × `status`, опциональный toggle (`active`).
- * На нём строятся `Button`, `ButtonIcon` и `ButtonGroup.Item`.
- * Secondary / tinted / ghost читают `--altum-color-button-*` element-токены (Box может их переопределить).
+ * На нём строятся `Button` и `ButtonIcon`.
  *
  * @component
  * @example
@@ -42,75 +40,42 @@ export const ButtonBase = forwardRef(function ButtonBase<T extends ButtonBaseAs 
 		size = 'md',
 		active,
 		className,
-		contentClassName,
 		children,
 		type = 'button',
 		disabled,
-		style,
-		asChild = false,
 		as,
-		onClick,
 		...props
 	}: ButtonBaseProps<T>,
 	ref: Ref<ButtonBaseRef<T>>,
 ) {
-	const Component = (as ?? 'button') as T;
-	const isAnchor = Component === 'a';
+	const isAnchor = as === 'a';
 	const isToggle = active !== undefined;
+
 	const classNames = cn(
 		styles.btn,
 		styles[variant],
 		styles[size],
+		variant === 'link' ? textLink.link : '',
 		status === 'danger' ? styles.statusDanger : '',
 		isToggle ? styles.isToggle : '',
 		isToggle && active ? styles.isActive : '',
 		className,
 	);
 
-	const sharedProps = {
-		className: classNames,
-		style,
-		...(isAnchor ? {} : {disabled}),
-		'data-variant': variant,
-		'data-status': status,
-		'data-size': size,
-		'data-active': isToggle ? String(active) : undefined,
-		...props,
-		onClick: isAnchor && disabled
-			? composeEventHandlers(
-				onClick as MouseEventHandler<HTMLAnchorElement> | undefined,
-				(event: MouseEvent<HTMLAnchorElement>) => {
-					event.preventDefault();
-				},
-			)
-			: onClick,
-		...(isAnchor && disabled
-			? {
-				'aria-disabled': true as const,
-				tabIndex: -1,
-			}
-			: {}),
-		'aria-pressed': isToggle ? active : undefined,
-	};
-
-	if (asChild) {
-		return (
-			<Slot
-				ref={ref}
-				type={type}
-				{...sharedProps}
-			>
-				{children}
-			</Slot>
-		);
-	}
-
 	if (isAnchor) {
 		return createElement(
 			'a',
 			{
 				ref,
-				...sharedProps,
+				className: classNames,
+				...(disabled
+					? {
+						'aria-disabled': true as const,
+						tabIndex: -1,
+					}
+					: {}),
+				...props,
+				'aria-pressed': isToggle ? active : undefined,
 			},
 			children,
 		);
@@ -120,16 +85,13 @@ export const ButtonBase = forwardRef(function ButtonBase<T extends ButtonBaseAs 
 		'button',
 		{
 			ref,
+			className: classNames,
 			type,
-			...sharedProps,
+			disabled,
+			...props,
+			'aria-pressed': isToggle ? active : undefined,
 		},
-		createElement(
-			'span',
-			{
-				className: cn(styles.btnContent, contentClassName),
-			},
-			children,
-		),
+		children,
 	);
 }) as ButtonBaseComponent;
 

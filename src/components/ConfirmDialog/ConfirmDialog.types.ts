@@ -27,8 +27,6 @@ export interface ConfirmDialogProps extends Omit<ComponentPropsWithoutRef<'div'>
 	status?: 'default' | 'danger';
 	secondaryAction?: ConfirmDialogSecondaryAction;
 	onConfirm: () => void;
-	onCancel: () => void;
-	onClose?: () => void;
-	onOpenChange?: (open: boolean) => void;
+	onOpenChange: (open: boolean) => void;
 	loading?: boolean;
 }

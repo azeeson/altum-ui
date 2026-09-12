@@ -74,7 +74,7 @@ const config = {
 		// CSS Modules → инжект <style> при загрузке JS-модуля (без style-inject).
 		postcss({
 			modules: {
-				generateScopedName: '[folder]_[hash:base64:5]',
+				generateScopedName: '[hash:base64:5]',
 			},
 			autoModules: (id) => id.endsWith('.module.css'),
 			extract: false,
@@ -85,9 +85,14 @@ const config = {
 				postcssNesting(),
 				autoprefixer(),
 			],
-			inject: (cssVariableName) => (
-				`(function(c){if(typeof document==='undefined')return;var e=document.createElement('style');e.textContent=c;document.head.appendChild(e);})(${cssVariableName});`
-			),
+			inject: (cssVariableName, id) => {
+				const fromDir = path.dirname(id);
+				const injectFile = path.join(root, 'src/utils/injectCss.ts');
+				let rel = path.relative(fromDir, injectFile).replace(/\\/g, '/');
+				if (!rel.startsWith('.')) rel = `./${rel}`;
+				rel = rel.replace(/\.ts$/, '.js');
+				return `import {injectCss} from '${rel}';injectCss(${cssVariableName});`;
+			},
 		}),
 	],
 	output: {
@@ -108,6 +113,7 @@ const config = {
 				|| name.startsWith('components/')
 				|| name.startsWith('base/')
 				|| name.startsWith('hooks/')
+				|| name.startsWith('styles/')
 			) {
 				return '\'use client\';';
 			}

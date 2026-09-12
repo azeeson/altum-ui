@@ -3,10 +3,16 @@ import React from 'react';
 import {Tooltip} from './Tooltip';
 import {Button} from '../Button/Button';
 import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
+import {Card} from '../Card/Card';
+import {Inline, Stack} from '../Layout/Layout';
+import {Text} from '../Text/Text';
+import {TextField} from '../TextField/TextField';
 import {IconHome} from '../../icons/icons/IconHome';
 import {IconSearch} from '../../icons/icons/IconSearch';
 import {IconGear} from '../../icons/icons/IconGear';
+import {IconHelp} from '../../icons/icons/IconHelp';
 import {componentParameters, story} from '../../storybook/meta';
+import {playFocus} from '../../storybook/play';
 
 export default {
 	title: 'altum/Components/Tooltip',
@@ -18,7 +24,7 @@ export default {
 			control: 'text',
 			description: 'Текст подсказки'
 		},
-		position: {
+		side: {
 			control: {
 				type: 'select',
 				options: [
@@ -28,7 +34,30 @@ export default {
 					'right'
 				]
 			},
-			description: 'Позиция подсказки',
+			description: 'Сторона подсказки',
+		},
+		arrow: {
+			control: 'boolean',
+			description: 'Треугольник к триггеру',
+		},
+		disabled: {
+			control: 'boolean',
+			description: 'Не показывать подсказку',
+		},
+		wrap: {
+			control: 'boolean',
+			description: 'Обернуть триггер в span (для disabled-кнопок)',
+		},
+		openDelay: {
+			control: 'number',
+			description: 'Задержка открытия, мс',
+		},
+		closeDelay: {
+			control: 'number',
+			description: 'Задержка закрытия, мс',
+		},
+		onOpenChange: {
+			action: 'openChange',
 		},
 	},
 } satisfies Meta<typeof Tooltip>;
@@ -45,8 +74,11 @@ export const Playground: TooltipStory = {
 		>
 			<Tooltip
 				content={args.content}
-				position={args.position}
-				asChild
+				side={args.side}
+				arrow={args.arrow}
+				disabled={args.disabled}
+				openDelay={args.openDelay}
+				closeDelay={args.closeDelay}
 			>
 				<Button variant='secondary'>
 					Наведи на меня
@@ -56,7 +88,11 @@ export const Playground: TooltipStory = {
 	),
 	args: {
 		content: 'Полезная подсказка сверху',
-		position: 'top',
+		side: 'top',
+		arrow: true,
+		disabled: false,
+		openDelay: 200,
+		closeDelay: 100,
 	},
 	parameters: story('Используйте панель Controls для настройки.'),
 };
@@ -72,8 +108,7 @@ export const Variants: TooltipStory = {
 		>
 			<Tooltip
 				content='Подсказка сверху'
-				position='top'
-				asChild
+				side='top'
 			>
 				<Button variant='secondary' size='sm'>
 					Верх
@@ -81,8 +116,7 @@ export const Variants: TooltipStory = {
 			</Tooltip>
 			<Tooltip
 				content='Подсказка справа'
-				position='right'
-				asChild
+				side='right'
 			>
 				<Button variant='secondary' size='sm'>
 					Право
@@ -90,8 +124,7 @@ export const Variants: TooltipStory = {
 			</Tooltip>
 			<Tooltip
 				content='Подсказка снизу'
-				position='bottom'
-				asChild
+				side='bottom'
 			>
 				<Button variant='secondary' size='sm'>
 					Низ
@@ -99,8 +132,7 @@ export const Variants: TooltipStory = {
 			</Tooltip>
 			<Tooltip
 				content='Подсказка слева'
-				position='left'
-				asChild
+				side='left'
 			>
 				<Button variant='secondary' size='sm'>
 					Лево
@@ -109,6 +141,96 @@ export const Variants: TooltipStory = {
 		</div>
 	),
 	parameters: story('Подсказки во всех четырёх позициях.'),
+};
+
+export const Open: TooltipStory = {
+	render: () => (
+		<div style={{
+			display: 'flex',
+			justifyContent: 'center',
+			padding: '48px'
+		}}
+		>
+			<Tooltip
+				content='Подсказка открыта по умолчанию'
+				side='top'
+				defaultOpen
+				openDelay={0}
+			>
+				<Button variant='secondary'>
+					Якорь
+				</Button>
+			</Tooltip>
+		</div>
+	),
+	parameters: story('`defaultOpen` — видимая подсказка для визуальной регрессии.'),
+};
+
+export const Disabled: TooltipStory = {
+	render: () => (
+		<div style={{
+			display: 'flex',
+			justifyContent: 'center',
+			padding: '40px'
+		}}
+		>
+			<Tooltip
+				content='Не должно появиться'
+				disabled
+			>
+				<Button variant='secondary'>
+					Без подсказки
+				</Button>
+			</Tooltip>
+		</div>
+	),
+	parameters: story('`disabled` подавляет показ.'),
+};
+
+export const DisabledTrigger: TooltipStory = {
+	render: () => (
+		<div style={{
+			display: 'flex',
+			justifyContent: 'center',
+			padding: '48px'
+		}}
+		>
+			<Tooltip
+				content='Действие недоступно'
+				wrap
+				defaultOpen
+				openDelay={0}
+			>
+				<Button disabled>
+					Удалить
+				</Button>
+			</Tooltip>
+		</div>
+	),
+	parameters: story('`wrap` — подсказка на disabled-кнопке без pointer-events.'),
+};
+
+export const OverflowText: TooltipStory = {
+	render: () => (
+		<div style={{
+			display: 'flex',
+			justifyContent: 'center',
+			padding: '64px'
+		}}
+		>
+			<Tooltip
+				content='Полный текст подсказки должен переноситься целиком: это длинное пояснение к полю, которое не умещается в одну строку.'
+				side='top'
+				defaultOpen
+				openDelay={0}
+			>
+				<Button variant='secondary' size='sm'>
+					Длинный текст
+				</Button>
+			</Tooltip>
+		</div>
+	),
+	parameters: story('Длинный content с переносом строк.'),
 };
 
 /** Tooltip в портале; не должен обрезаться внутри предков с overflow:auto. */
@@ -134,8 +256,7 @@ export const InsideOverflowCard: TooltipStory = {
 			</p>
 			<Tooltip
 				content='Полный текст подсказки должен быть виден целиком, без обрезки середины слова.'
-				position='top'
-				asChild
+				side='top'
 			>
 				<Button variant='secondary' size='sm'>
 					Наведи на меня
@@ -165,9 +286,8 @@ export const IconStackMutex: TooltipStory = {
 				<Tooltip
 					key={label}
 					content={label}
-					position='right'
+					side='right'
 					openDelay={200}
-					asChild
 				>
 					<ButtonIcon
 						variant='ghost'
@@ -184,3 +304,64 @@ export const IconStackMutex: TooltipStory = {
 	),
 };
 
+export const Interaction: TooltipStory = {
+	render: () => (
+		<div style={{
+			display: 'flex',
+			justifyContent: 'center',
+			padding: '48px'
+		}}
+		>
+			<Tooltip
+				content='Открыто по фокусу'
+				side='top'
+				openDelay={0}
+			>
+				<Button variant='secondary'>
+					Сфокусируй меня
+				</Button>
+			</Tooltip>
+		</div>
+	),
+	play: async ({canvasElement}) => {
+		await playFocus(canvasElement, 'button');
+	},
+	parameters: story('Play: фокус на триггере открывает подсказку (`focusin`).'),
+};
+
+export const UsageExample: TooltipStory = {
+	render: () => (
+		<div style={{
+			maxWidth: 400,
+			paddingTop: 48
+		}}
+		>
+			<Card>
+				<Stack gap='md'>
+					<Inline gap='sm' align='center'>
+						<Text size='sm' weight='medium'>
+							API-ключ
+						</Text>
+						<Tooltip
+							content='Ключ даёт доступ только к чтению метрик. Не публикуйте его в репозитории.'
+							side='top'
+						>
+							<ButtonIcon
+								variant='ghost'
+								size='sm'
+								icon={<IconHelp size={16} />}
+								aria-label='Подсказка про API-ключ'
+							/>
+						</Tooltip>
+					</Inline>
+					<TextField
+						label='Ключ'
+						defaultValue='altum_live_••••'
+						width='full'
+					/>
+				</Stack>
+			</Card>
+		</div>
+	),
+	parameters: story('Подсказка у лейбла поля в карточке настроек.'),
+};

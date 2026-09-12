@@ -2,7 +2,7 @@ import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
 } from 'react';
-import {type BoxAs, type BoxVariant} from '../Box/Box';
+import {type BoxAs, type BoxRadius, type BoxVariant} from '../Box/Box';
 
 /**
  * Вариант оформления карточки (subset `BoxVariant`).
@@ -14,9 +14,14 @@ export type CardVariant = Extract<BoxVariant, 'outlined' | 'elevated' | 'ghost'>
  */
 export interface CardProps extends ComponentPropsWithoutRef<'div'> {
 	children?: React.ReactNode;
+	header?: React.ReactNode;
+	media?: React.ReactNode;
+	actions?: React.ReactNode;
 	hoverable?: boolean;
 	/** @default 'outlined' */
 	variant?: CardVariant;
+	/** @default 'lg' */
+	radius?: BoxRadius;
 	/** Спиннер поверх карточки */
 	loading?: boolean;
 	/**
@@ -24,11 +29,4 @@ export interface CardProps extends ComponentPropsWithoutRef<'div'> {
 	 * @default `onClick` без `as` и без `role` → `'button'`, иначе `'div'`
 	 */
 	as?: BoxAs;
-}
-
-/**
- * Свойства секции карточки.
- */
-export interface CardSectionProps extends ComponentPropsWithoutRef<'div'> {
-	children?: React.ReactNode;
 }

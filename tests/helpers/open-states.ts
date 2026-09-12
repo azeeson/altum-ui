@@ -32,7 +32,7 @@ export const STATIC_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		snapshot: 'open-image-lightbox.png',
 	},
 	{
-		storyId: 'altum-test-visualopenstates--color-dropdown-open',
+		storyId: 'altum-test-visualopenstates--dropdown-open',
 		snapshot: 'open-dropdown.png',
 	},
 	{
@@ -56,7 +56,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-components-select--playground',
+		storyId: 'altum-components-formfield-select--playground',
 		snapshot: 'open-select-playground.png',
 		prepare: async (page) => {
 			await page.getByRole('button', {name: /Город/i}).click();
@@ -89,27 +89,27 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-components-datepicker--playground',
-		snapshot: 'open-datepicker-playground.png',
+		storyId: 'altum-components-formfield-datefield--playground',
+		snapshot: 'open-datefield-playground.png',
 		prepare: async (page) => {
-			await page.getByRole('button', {name: /\d{2}\.\d{2}\.\d{4}/}).click();
+			await page.getByRole('textbox', {name: /Укажите дату|дата|date/i}).click();
 			await page.getByRole('grid').waitFor({state: 'visible'});
 		},
 	},
 	{
-		storyId: 'altum-components-timepicker--field-variant',
-		snapshot: 'open-timepicker-field.png',
+		storyId: 'altum-components-formfield-timefield--playground',
+		snapshot: 'open-timefield-field.png',
 		prepare: async (page) => {
-			await page.getByRole('button', {name: /\d{1,2}:\d{2}/}).or(page.getByRole('combobox')).first().click();
+			await page.getByRole('textbox').first().click();
 			await page.getByRole('listbox', {name: /Часы|Hours/i}).waitFor({state: 'visible'});
 			await page.getByRole('listbox', {name: /Минуты|Minutes/i}).waitFor({state: 'visible'});
 		},
 	},
 	{
-		storyId: 'altum-components-timepicker--field-custom-minute',
-		snapshot: 'open-timepicker-custom-minute.png',
+		storyId: 'altum-components-formfield-timefield--custom-minute',
+		snapshot: 'open-timefield-custom-minute.png',
 		prepare: async (page) => {
-			await page.getByRole('button', {name: /\d{1,2}:\d{2}/}).or(page.getByRole('combobox')).first().click();
+			await page.getByRole('textbox').first().click();
 			await page.getByRole('listbox', {name: /Часы|Hours/i}).waitFor({state: 'visible'});
 			await page.getByRole('option', {
 				name: '14',

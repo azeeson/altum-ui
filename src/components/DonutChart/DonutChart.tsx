@@ -1,34 +1,26 @@
-import type {
-	DonutSegment,
-	DonutChartProps,
-} from './DonutChart.types';
+import type {DonutChartProps} from './DonutChart.types';
 export type {
 	DonutSegment,
 	DonutChartProps,
 } from './DonutChart.types';
 
-import React, {forwardRef, useMemo, useState} from 'react';
+import {forwardRef, useState} from 'react';
 import styles from './DonutChart.module.css';
+import series from '../../styles/chartSeries.module.css';
 import {cn} from '../../utils/cn';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
-import {chartSeriesColor, ChartBase, ChartLegend} from '../../base/ChartBase';
+import {ChartBase, ChartLegend, chartSeriesColor} from '../../base/ChartBase';
 
-/** Насколько радиус/толщина растут у активного сегмента */
-const HOVER_GROW = 6;
+const TAU = Math.PI / 180;
 
-function polar(cx: number, cy: number, r: number, angle: number) {
-	const rad = ((angle - 90) * Math.PI) / 180;
-	return {
-		x: cx + r * Math.cos(rad),
-		y: cy + r * Math.sin(rad),
-	};
+function xy(cx: number, cy: number, r: number, angle: number) {
+	const rad = (angle - 90) * TAU;
+	return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)] as const;
 }
 
 function arcPath(cx: number, cy: number, r: number, startAngle: number, endAngle: number) {
-	const start = polar(cx, cy, r, endAngle);
-	const end = polar(cx, cy, r, startAngle);
-	const large = endAngle - startAngle > 180 ? 1 : 0;
-	return `M ${start.x} ${start.y} A ${r} ${r} 0 ${large} 0 ${end.x} ${end.y}`;
+	const [sx, sy] = xy(cx, cy, r, endAngle);
+	const [ex, ey] = xy(cx, cy, r, startAngle);
+	return `M${sx} ${sy}A${r} ${r} 0 ${endAngle - startAngle > 180 ? 1 : 0} 0 ${ex} ${ey}`;
 }
 
 /**
@@ -61,72 +53,37 @@ export const DonutChart = forwardRef<HTMLDivElement, DonutChartProps>(function D
 	},
 	ref,
 ) {
-	const {t} = useLocale();
 	const [hoveredKey, setHoveredKey] = useState<string | null>(null);
-
-	const total = useMemo(
-		() => segments.reduce((sum, segment) => sum + Math.max(0, segment.value), 0),
-		[segments],
-	);
-
-	/**
-	 * Запас на полный рост при наведении: radius +½ grow и stroke +grow сдвигают внешний
-	 * край на HOVER_GROW целиком — половинный запас всё ещё обрезал активный сегмент.
-	 */
-	const radius = (size - thickness) / 2 - (hoverExpand ? HOVER_GROW : 0);
+	const total = segments.reduce((sum, segment) => sum + Math.max(0, segment.value), 0);
+	const radius = (size - thickness) / 2;
 	const cx = size / 2;
 	const cy = size / 2;
 
-	const arcs = segments.reduce<{
-		list: Array<DonutSegment & {
-			key: string;
-			start: number;
-			end: number;
-			color: string;
-			value: number;
-			percent: number;
-		}>;
-		angle: number;
-	}>((state, segment, index) => {
+	let angle = 0;
+	const arcs = segments.map((segment, index) => {
 		const value = Math.max(0, segment.value);
 		const sweep = total > 0 ? (value / total) * 360 : 0;
-		const start = state.angle;
-		const end = start + sweep;
-		const key = segment.id ?? `${segment.label}-${index}`;
+		const start = angle;
+		angle += sweep;
 		return {
-			angle: end,
-			list: [
-				...state.list,
-				{
-					...segment,
-					key,
-					start,
-					end: sweep >= 359.9 ? start + 359.9 : end,
-					color: chartSeriesColor(index, segment.color),
-					value,
-					percent: total > 0 ? Math.round((value / total) * 100) : 0,
-				},
-			],
+			key: segment.id ?? `${segment.label}-${index}`,
+			label: segment.label,
+			value,
+			start,
+			end: sweep >= 359.9 ? start + 359.9 : angle,
+			color: chartSeriesColor(index, segment.color),
+			percent: total > 0 ? Math.round((value / total) * 100) : 0,
 		};
-	}, {
-		list: [],
-		angle: 0
-	}).list;
+	});
 
 	const hovered = arcs.find((arc) => arc.key === hoveredKey) ?? null;
-
-	const displayValue = hovered && hoverExpand
-		? hovered.value
-		: centerValue;
-	const displayLabel = hovered && hoverExpand
-		? hovered.label
-		: centerLabel;
-	const showCenter = displayValue != null || displayLabel != null
-		|| (hoverExpand && hovered != null);
+	const displayValue = hovered && hoverExpand ? hovered.value : centerValue;
+	const displayLabel = hovered && hoverExpand ? hovered.label : centerLabel;
+	const showCenter = displayValue != null || displayLabel != null || (hoverExpand && hovered != null);
 
 	return (
 		<ChartBase
-			containerRef={ref}
+			ref={ref}
 			className={cn(styles.root, className)}
 			{...rest}
 		>
@@ -136,12 +93,13 @@ export const DonutChart = forwardRef<HTMLDivElement, DonutChartProps>(function D
 					width: size,
 					height: size,
 				}}
+				role='img'
+				aria-label='Круговая диаграмма'
 			>
 				<svg
 					width={size}
 					height={size}
-					role='img'
-					aria-label={t('charts.donut')}
+					aria-hidden
 					onMouseLeave={() => setHoveredKey(null)}
 				>
 					<circle
@@ -156,53 +114,28 @@ export const DonutChart = forwardRef<HTMLDivElement, DonutChartProps>(function D
 					{total > 0 && arcs.map((arc) => {
 						const isHovered = hoverExpand && hoveredKey === arc.key;
 						const isDimmed = hoverExpand && hoveredKey != null && !isHovered;
-						const r = isHovered ? radius + HOVER_GROW / 2 : radius;
-						const strokeW = isHovered ? thickness + HOVER_GROW : thickness;
-						const basePath = arcPath(cx, cy, radius, arc.start, arc.end);
-
 						return (
-							<g key={arc.key}>
-								{/* Стабильная hit-area — геометрия не меняется при enlarge */}
-								{hoverExpand && (
-									<path
-										d={basePath}
-										fill='none'
-										stroke='transparent'
-										strokeWidth={thickness + HOVER_GROW}
-										strokeLinecap='butt'
-										className={styles.segmentHit}
-										onMouseEnter={() => setHoveredKey(arc.key)}
-									>
-										<title>
-											{`${arc.label}: ${arc.value}`}
-										</title>
-									</path>
+							<path
+								key={arc.key}
+								d={arcPath(cx, cy, radius, arc.start, arc.end)}
+								fill='none'
+								stroke={arc.color}
+								strokeWidth={thickness}
+								strokeLinecap='butt'
+								className={cn(
+									series.item,
+									styles.segment,
+									isHovered && series.active,
+									isHovered && styles.grow,
+									isDimmed && series.dimmed,
 								)}
-								<path
-									d={arcPath(cx, cy, r, arc.start, arc.end)}
-									fill='none'
-									stroke={arc.color}
-									strokeWidth={strokeW}
-									strokeLinecap='butt'
-									pointerEvents={hoverExpand ? 'none' : 'auto'}
-									className={cn(
-										styles.segment,
-										isHovered && styles.active,
-										isDimmed && styles.dimmed,
-									)}
-								>
-									{!hoverExpand && (
-										<title>
-											{`${arc.label}: ${arc.value}`}
-										</title>
-									)}
-								</path>
-							</g>
+								onMouseEnter={hoverExpand ? () => setHoveredKey(arc.key) : undefined}
+							/>
 						);
 					})}
 				</svg>
 				{showCenter && (
-					<div className={cn(styles.center, hovered && hoverExpand && styles.centerHover)}>
+					<div className={styles.center}>
 						{displayValue != null && (
 							<span className={styles.centerValue}>
 								{displayValue}
@@ -224,6 +157,7 @@ export const DonutChart = forwardRef<HTMLDivElement, DonutChartProps>(function D
 			</div>
 			{showLegend && (
 				<ChartLegend
+					className={styles.legendStack}
 					layout='stack'
 					showWhenSingle
 					onItemHover={hoverExpand ? setHoveredKey : undefined}

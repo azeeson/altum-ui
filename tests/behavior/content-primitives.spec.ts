@@ -128,9 +128,7 @@ test.describe('Separator', () => {
 		await visitStory(page, 'altum-components-separator--playground');
 		await expect(page.getByRole('separator').first()).toBeVisible();
 	});
-});
 
-test.describe('Spacer', () => {
 	test('рендерит подписанный разделитель', async ({page}) => {
 		await visitStory(page, 'altum-components-separator--with-label');
 		await expect(page.getByText('или')).toBeVisible();

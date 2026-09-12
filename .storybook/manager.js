@@ -26,7 +26,7 @@ function paintHtmlShell(mode) {
 	try {
 		document.documentElement.setAttribute('data-altum-manager-theme', mode);
 		document.documentElement.style.background =
-			mode === 'dark' ? '#131721' : '#f8fafc';
+			mode === 'dark' ? '#141416' : '#f8fafc';
 	} catch {
 		// игнорируем
 	}

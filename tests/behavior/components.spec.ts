@@ -3,7 +3,7 @@ import {visitStory} from '../helpers/storybook';
 
 test.describe('TextField', () => {
 	test('принимает введённое значение', async ({page}) => {
-		await visitStory(page, 'altum-components-textfield--playground');
+		await visitStory(page, 'altum-components-formfield-textfield--playground');
 
 		const input = page.getByRole('textbox').first();
 		await input.fill('Hello altum');
@@ -13,7 +13,7 @@ test.describe('TextField', () => {
 
 test.describe('TextareaField', () => {
 	test('принимает многострочный ввод', async ({page}) => {
-		await visitStory(page, 'altum-components-textareafield--playground');
+		await visitStory(page, 'altum-components-formfield-textareafield--playground');
 
 		const textarea = page.getByRole('textbox');
 		await textarea.fill('Line 1\nLine 2');

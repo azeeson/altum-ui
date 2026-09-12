@@ -49,7 +49,7 @@ const CustomSelectRoot = forwardRef<HTMLDivElement, CustomSelectRootProps>(funct
 		onFilterQueryChange,
 		renderTarget,
 		align = 'auto',
-		widthMode = 'trigger',
+		widthMode = 'trigger-fit',
 		triggerMode,
 		mobileTitle,
 		mobileLeftControls,
@@ -306,24 +306,19 @@ const CustomSelectRoot = forwardRef<HTMLDivElement, CustomSelectRootProps>(funct
 							if (next) handleOpen();
 							else handleClose();
 						}}
-						onClose={handleClose}
-						widthMode={widthMode}
-						align={align}
 						popupRole='none'
 						triggerMode={resolvedTriggerMode}
+						className={className}
+						widthMode={widthMode}
+						align={align}
 						mobileTitle={mobileTitle}
 						mobileLeftControls={mobileLeftControls}
 						mobileRightControls={mobileRightControls}
 						panelScroll={panelScroll}
-						className={className}
+						renderTrigger={handleRenderTarget}
 						{...rest}
 					>
-						<Dropdown.Trigger asChild={false}>
-							{handleRenderTarget}
-						</Dropdown.Trigger>
-						<Dropdown.Content>
-							{children}
-						</Dropdown.Content>
+						{children}
 					</Dropdown>
 				</CustomSelectFilterContext.Provider>
 			</CustomSelectSelectionContext.Provider>

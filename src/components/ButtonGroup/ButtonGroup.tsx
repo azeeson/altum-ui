@@ -1,55 +1,92 @@
-import type {ButtonGroupRootProps, ButtonGroupItemProps} from './ButtonGroup.types';
+import type {
+	ButtonGroupRootProps,
+	ButtonGroupItemProps,
+	ButtonGroupMode,
+} from './ButtonGroup.types';
 export type {
+	ButtonGroupMode,
+	ButtonGroupItemFit,
+	ButtonGroupVariant,
 	ButtonGroupRootProps,
 	ButtonGroupItemProps,
 } from './ButtonGroup.types';
 
-import React, {createContext, forwardRef, useCallback, useContext, useId, useMemo, useState} from 'react';
+import React, {
+	createContext,
+	forwardRef,
+	useCallback,
+	useId,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
+import unstyled from '../../styles/unstyledControl.module.css';
 import styles from './ButtonGroup.module.css';
-import {handleRovingFocusKeyDown} from '../../utils/keyboard';
-import {focusElement} from '../../utils/a11y';
 import {cn} from '../../utils/cn';
 import {composeEventHandlers} from '../../utils/composeEvents';
-import {useLocale} from '../LocaleProvider/LocaleProvider';
-import {ButtonBase, type ButtonVariant, type ButtonStatus} from '../../base/ButtonBase';
+import {composeRefs} from '../../utils/composeRefs';
+import {useControlledStateWithCallback} from '../../hooks/useControlledState';
+import {useLocale} from '../../locales/localeContext';
+import {useRequiredContext} from '../../hooks/useRequiredContext';
+import {ROVING_ITEM_ATTR, useRovingList} from '../../hooks/useRovingList';
+import {useTrackThumb} from '../../hooks/useTrackThumb';
 import {controlTrackClassName} from '../../utils/controlTrack';
-import type {ControlSize} from '../../types';
 
-const ITEM_ATTR = 'data-button-group-item';
+const VALUE_ATTR = 'data-button-group-value';
 
 interface ButtonGroupContextValue {
-	size: ControlSize;
-	variant: ButtonVariant;
-	status: ButtonStatus;
+	mode: ButtonGroupMode;
 	disabled: boolean;
+	readOnly: boolean;
 	focusable: boolean;
+	selected: string | readonly string[];
+	selectItem: (itemValue: string) => void;
 	focusedId: string | null;
 	setFocusedId: (id: string) => void;
-	registerItem: (id: string, enabled: boolean) => void;
-	unregisterItem: (id: string) => void;
-	getEnabledIds: () => string[];
 }
 
 const ButtonGroupContext = createContext<ButtonGroupContextValue | null>(null);
 
-function useButtonGroupContext(component: string): ButtonGroupContextValue {
-	const context = useContext(ButtonGroupContext);
-	if (!context) {
-		throw new Error(`${component} должен использоваться внутри ButtonGroup`);
-	}
-	return context;
+function isItemSelected(
+	mode: ButtonGroupMode,
+	selected: string | readonly string[],
+	itemValue: string | undefined,
+	activeProp: boolean | undefined,
+): boolean {
+	if (mode === 'button' || itemValue == null) return Boolean(activeProp);
+	if (mode === 'toggle') return selected === itemValue;
+	return Array.isArray(selected) && selected.includes(itemValue);
 }
 
+/**
+ * Составная группа кнопок: `button` (независимые), `toggle` (один выбранный),
+ * `multi_toggle` (несколько). Roving focus, `itemFit`, варианты заливки.
+ *
+ * @component
+ * @example
+ * <ButtonGroup aria-label="Форматирование" mode="multi_toggle" value={marks} onChange={setMarks}>
+ *   <ButtonGroup.Item value="bold">Ж</ButtonGroup.Item>
+ *   <ButtonGroup.Item value="italic">К</ButtonGroup.Item>
+ * </ButtonGroup>
+ */
 const ButtonGroupRoot = forwardRef<HTMLDivElement, ButtonGroupRootProps>(function ButtonGroupRoot(
 	{
 		children,
+		mode = 'button',
 		variant = 'secondary',
 		status = 'default',
 		size = 'md',
 		disabled = false,
+		readOnly = false,
 		borderless = false,
 		focusable = true,
 		width = 'auto',
+		itemFit = 'equal',
+		value: valueProp,
+		defaultValue,
+		onChange,
+		activateOnFocus = true,
 		'aria-label': ariaLabel,
 		className,
 		onKeyDown,
@@ -58,103 +95,123 @@ const ButtonGroupRoot = forwardRef<HTMLDivElement, ButtonGroupRootProps>(functio
 	ref,
 ) {
 	const {t} = useLocale();
-	const [focusedId, setFocusedIdState] = useState<string | null>(null);
-	const itemsRef = React.useRef<Map<string, boolean>>(new Map());
+	const containerRef = useRef<HTMLDivElement>(null);
+	const [focusedId, setFocusedId] = useState<string | null>(null);
+	const isReadOnly = readOnly && !disabled;
+	const fallbackValue: string | string[] = mode === 'multi_toggle' ? [] : '';
+	const [selected, setSelected] = useControlledStateWithCallback<string | string[]>(
+		valueProp as string | string[] | undefined,
+		(defaultValue as string | string[] | undefined) ?? fallbackValue,
+		onChange,
+	);
 
-	const registerItem = useCallback((id: string, enabled: boolean) => {
-		itemsRef.current.set(id, enabled);
-	}, []);
-
-	const unregisterItem = useCallback((id: string) => {
-		itemsRef.current.delete(id);
-	}, []);
-
-	const getEnabledIds = useCallback(() => {
-		return Array.from(itemsRef.current.entries())
-			.filter(([, enabled]) => enabled)
-			.map(([id]) => id);
-	}, []);
-
-	const setFocusedId = useCallback((id: string) => {
-		setFocusedIdState(id);
-	}, []);
+	const selectItem = useCallback((itemValue: string) => {
+		if (disabled || isReadOnly || mode === 'button') return;
+		if (mode === 'toggle') {
+			setSelected(itemValue);
+			return;
+		}
+		const current = Array.isArray(selected) ? selected : [];
+		setSelected(
+			current.includes(itemValue)
+				? current.filter((entry) => entry !== itemValue)
+				: [...current, itemValue],
+		);
+	}, [
+		disabled,
+		isReadOnly,
+		mode,
+		selected,
+		setSelected
+	]);
 
 	const contextValue = useMemo<ButtonGroupContextValue>(() => ({
-		size,
-		variant,
-		status,
+		mode,
 		disabled,
+		readOnly: isReadOnly,
 		focusable,
+		selected,
+		selectItem,
 		focusedId,
 		setFocusedId,
-		registerItem,
-		unregisterItem,
-		getEnabledIds,
 	}), [
 		disabled,
 		focusable,
 		focusedId,
-		getEnabledIds,
-		registerItem,
-		setFocusedId,
-		size,
-		status,
-		unregisterItem,
-		variant,
+		isReadOnly,
+		mode,
+		selectItem,
+		selected
 	]);
 
-	const handleRovingKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-		if (!focusable || disabled) return;
-
-		const enabledIds = getEnabledIds();
-		if (enabledIds.length === 0) return;
-
-		const currentId = focusedId && enabledIds.includes(focusedId)
-			? focusedId
-			: enabledIds[0];
-		const currentIndex = enabledIds.indexOf(currentId);
-
-		handleRovingFocusKeyDown(event, {
-			currentIndex: currentIndex === -1 ? 0 : currentIndex,
-			length: enabledIds.length,
-			orientation: 'horizontal',
-			onMove: (nextIndex) => {
-				const nextId = enabledIds[nextIndex];
-				setFocusedId(nextId);
-				const buttons = event.currentTarget.querySelectorAll<HTMLButtonElement>(
-					`button[${ITEM_ATTR}]:not(:disabled)`,
-				);
-				focusElement(buttons[nextIndex]);
-			},
-		});
-	};
-
-	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-		composeEventHandlers(onKeyDown, handleRovingKeyDown)(event);
-	};
-
-	const rootClasses = cn(
-		styles.group,
-		controlTrackClassName(variant),
-		styles[variant],
-		styles[size],
-		status === 'danger' ? styles.statusDanger : '',
-		borderless ? styles.borderless : '',
-		disabled ? styles.disabled : '',
-		width === 'full' ? styles.widthFull : '',
-		className,
+	const showSlider = mode === 'toggle';
+	const thumb = useTrackThumb(
+		containerRef,
+		showSlider ? `.${styles.itemActive}` : '',
+		selected,
 	);
+
+	const roving = useRovingList('horizontal', (el) => {
+		setFocusedId(el.dataset.itemId ?? '');
+		if (mode === 'toggle' && activateOnFocus) {
+			const nextValue = el.getAttribute(VALUE_ATTR);
+			if (nextValue) selectItem(nextValue);
+		}
+	});
+
+	useLayoutEffect(() => {
+		if (!focusable || disabled || isReadOnly) return;
+		const container = containerRef.current;
+		if (!container) return;
+		const items = Array.from(
+			container.querySelectorAll<HTMLElement>(`[${ROVING_ITEM_ATTR}]:not([disabled])`),
+		);
+		if (items.length === 0) return;
+		setFocusedId((current) => {
+			if (current && items.some((el) => el.dataset.itemId === current)) return current;
+			return items[0].dataset.itemId ?? current;
+		});
+	}, [
+		children,
+		disabled,
+		focusable,
+		isReadOnly
+	]);
 
 	return (
 		<ButtonGroupContext.Provider value={contextValue}>
 			<div
-				ref={ref}
-				className={rootClasses}
+				ref={composeRefs(ref, containerRef)}
+				className={cn(
+					styles.group,
+					controlTrackClassName(variant, {readOnly: isReadOnly}),
+					styles[variant] ?? '',
+					size !== 'md' && styles[size],
+					showSlider && styles.modeToggle,
+					status === 'danger' && styles.statusDanger,
+					borderless && styles.borderless,
+					disabled && styles.disabled,
+					width === 'full' && styles.widthFull,
+					itemFit === 'content' && styles.fitContent,
+					className,
+				)}
 				{...rest}
-				role='group'
+				role={mode === 'toggle' ? 'radiogroup' : 'group'}
 				aria-label={ariaLabel ?? t('buttonGroup.ariaLabel')}
-				onKeyDown={handleKeyDown}
+				aria-readonly={isReadOnly || undefined}
+				aria-disabled={disabled || undefined}
+				onKeyDown={composeEventHandlers(
+					onKeyDown,
+					focusable && !disabled && !isReadOnly ? roving : undefined,
+				)}
 			>
+				{showSlider && (
+					<div
+						className={cn(styles.slider, thumb.ready && styles.sliderReady)}
+						style={thumb.style}
+						aria-hidden='true'
+					/>
+				)}
 				{children}
 			</div>
 		</ButtonGroupContext.Provider>
@@ -164,11 +221,12 @@ const ButtonGroupRoot = forwardRef<HTMLDivElement, ButtonGroupRootProps>(functio
 const ButtonGroupItem = React.forwardRef<HTMLButtonElement, ButtonGroupItemProps>(
 	function ButtonGroupItem(
 		{
-			active,
+			value: itemValue,
+			active: activeProp,
 			icon,
 			children,
 			disabled: itemDisabled = false,
-			className = '',
+			className,
 			onClick,
 			onFocus,
 			'aria-label': ariaLabel,
@@ -178,111 +236,66 @@ const ButtonGroupItem = React.forwardRef<HTMLButtonElement, ButtonGroupItemProps
 	) {
 		const itemId = useId();
 		const {
-			size,
-			variant,
-			status,
+			mode,
 			disabled: groupDisabled,
+			readOnly,
 			focusable,
+			selected,
+			selectItem,
 			focusedId,
 			setFocusedId,
-			registerItem,
-			unregisterItem,
-			getEnabledIds,
-		} = useButtonGroupContext('ButtonGroup.Item');
+		} = useRequiredContext(ButtonGroupContext, 'ButtonGroup.Item должен использоваться внутри ButtonGroup');
 
 		const isDisabled = groupDisabled || itemDisabled;
-		const isEnabled = !isDisabled;
-
-		React.useEffect(() => {
-			registerItem(itemId, isEnabled);
-			return () => unregisterItem(itemId);
-		}, [
-			isEnabled,
-			itemId,
-			registerItem,
-			unregisterItem
-		]);
-
-		React.useEffect(() => {
-			if (!focusable || !isEnabled || focusedId !== null) return;
-			const enabledIds = getEnabledIds();
-			if (enabledIds.length > 0 && enabledIds[0] === itemId) {
-				setFocusedId(itemId);
-			}
-		}, [
-			focusable,
-			focusedId,
-			getEnabledIds,
-			isEnabled,
-			itemId,
-			setFocusedId
-		]);
-
-		const isTabStop = focusable && isEnabled && (focusedId === itemId || (
-			focusedId === null && getEnabledIds()[0] === itemId
-		));
-
-		const accessibleName = ariaLabel
-			?? (typeof children === 'string' ? children : undefined);
+		const isActive = isItemSelected(mode, selected, itemValue, activeProp);
+		const isTabStop = (() => {
+			if (!focusable || isDisabled || readOnly) return false;
+			if (mode === 'toggle') return isActive || (selected === '' && focusedId === itemId);
+			return focusedId === itemId;
+		})();
 
 		return (
-			<ButtonBase
+			<button
 				ref={forwardedRef}
+				type='button'
 				{...props}
-				variant={variant}
-				status={status}
-				size={size}
-				active={active}
-				{...{[ITEM_ATTR]: ''}}
+				{...{[ROVING_ITEM_ATTR]: ''}}
+				{...(itemValue != null ? {[VALUE_ATTR]: itemValue} : {})}
 				data-item-id={itemId}
 				className={cn(
+					unstyled.control,
 					styles.item,
-					active ? styles.itemActive : '',
+					isActive && styles.itemActive,
+					readOnly && styles.itemReadOnly,
 					className,
 				)}
-				contentClassName={styles.itemContent}
-				aria-label={accessibleName}
+				aria-label={ariaLabel ?? (typeof children === 'string' ? children : undefined)}
 				disabled={isDisabled}
-				tabIndex={focusable ? (isTabStop ? 0 : -1) : -1}
-				onFocus={composeEventHandlers(onFocus, () => {
-					if (focusable && isEnabled) {
-						setFocusedId(itemId);
+				aria-disabled={readOnly || undefined}
+				tabIndex={isTabStop ? 0 : -1}
+				{...(mode === 'toggle'
+					? {
+						role: 'radio' as const,
+						'aria-checked': isActive,
 					}
+					: {
+						'aria-pressed': isActive || undefined,
+					})}
+				onFocus={composeEventHandlers(onFocus, () => {
+					if (focusable && !isDisabled && !readOnly) setFocusedId(itemId);
 				})}
 				onClick={composeEventHandlers(onClick, () => {
-					if (isDisabled) return;
+					if (isDisabled || readOnly || itemValue == null) return;
+					selectItem(itemValue);
 				})}
 			>
-				{icon && (
-					<span className={styles.icon} aria-hidden={children ? true : undefined}>
-						{icon}
-					</span>
-				)}
-				{children != null && (
-					<span className={styles.label}>
-						{children}
-					</span>
-				)}
-			</ButtonBase>
+				{icon}
+				{children}
+			</button>
 		);
 	},
 );
 
-/**
- * Составная группа связанных кнопок с roving focus, вариантами заливки и toggle-состоянием `active`.
- * Стили группы (`variant` / `status` / `size`) задаются на Root; у Item — `active`.
- *
- * @component
- * @example
- * <ButtonGroup aria-label="Форматирование" variant="secondary">
- *   <ButtonGroup.Item active={bold} onClick={() => setBold((v) => !v)} aria-label="Жирный">
- *     Ж
- *   </ButtonGroup.Item>
- *   <ButtonGroup.Item active={italic} onClick={() => setItalic((v) => !v)} aria-label="Курсив">
- *     К
- *   </ButtonGroup.Item>
- * </ButtonGroup>
- */
 ButtonGroupRoot.displayName = 'ButtonGroup';
 ButtonGroupItem.displayName = 'ButtonGroup.Item';
 

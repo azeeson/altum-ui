@@ -1,28 +1,17 @@
 import type {
-	BadgeVariant,
 	BadgeProps,
-	BadgeCounterProps,
 } from './Badge.types';
 export type {
 	BadgeVariant,
 	BadgeSize,
 	BadgePosition,
 	BadgeProps,
-	BadgeCounterProps,
 } from './Badge.types';
 
 import {forwardRef} from 'react';
 import styles from './Badge.module.css';
+import status from '../../styles/status.module.css';
 import {cn} from '../../utils/cn';
-
-const VARIANT_CLASS: Record<BadgeVariant, string> = {
-	error: 'danger',
-	success: 'success',
-	info: 'info',
-	warning: 'warning',
-	primary: 'primary',
-	secondary: 'secondary',
-};
 
 function formatBadgeLabel(
 	label: React.ReactNode,
@@ -64,96 +53,48 @@ export const Badge = forwardRef<HTMLDivElement | HTMLSpanElement, BadgeProps>(fu
 	},
 	ref,
 ) {
-	const tone = VARIANT_CLASS[variant];
-	const position = positionProp ?? (children != null ? 'overlay' : 'standalone');
-	const badgeClasses = cn(
-		styles.badge,
-		styles[tone],
-		styles[size],
-		dot ? styles.badgeDot : '',
-		position === 'standalone' ? styles.standalone : styles.overlay,
-		className,
-	);
-
+	const isStatus = variant === 'error' || variant === 'success' || variant === 'info' || variant === 'warning';
+	const overlay = children != null && (positionProp ?? 'overlay') !== 'standalone';
 	const displayLabel = formatBadgeLabel(label, max);
+	const showMark = label !== undefined || dot;
+	const markClass = cn(
+		styles.badge,
+		isStatus ? status[variant] : styles[variant],
+		isStatus ? (variant === 'warning' && !dot ? status.surface : status.fill) : '',
+		styles[size],
+		dot ? styles.dot : '',
+		overlay ? styles.overlay : styles.standalone,
+		overlay ? '' : className,
+	);
+	const glyph = !dot && displayLabel != null ? displayLabel : null;
 
-	const mark = (label !== undefined || dot) ? (
-		<span
-			ref={position === 'standalone' ? ref as React.Ref<HTMLSpanElement> : undefined}
-			className={badgeClasses}
-			{...(position === 'standalone' ? rest : {})}
-		>
-			{/* Числовой 0 — валидный видимый счётчик (falsy `&&` в React прятал глиф). */}
-			{!dot && displayLabel != null ? displayLabel : null}
-		</span>
-	) : null;
-
-	if (position === 'standalone' || children == null) {
-		return mark;
+	if (!overlay) {
+		if (!showMark) return null;
+		return (
+			<span
+				ref={ref as React.Ref<HTMLSpanElement>}
+				className={markClass}
+				{...rest}
+			>
+				{glyph}
+			</span>
+		);
 	}
 
 	return (
 		<div
 			ref={ref as React.Ref<HTMLDivElement>}
-			className={styles.badgeContainer}
+			className={cn(styles.wrap, className)}
 			{...rest}
 		>
 			{children}
-			{mark}
+			{showMark ? (
+				<span className={markClass}>
+					{glyph}
+				</span>
+			) : null}
 		</div>
 	);
 });
 
 Badge.displayName = 'Badge';
-
-/**
- * Показывает `Badge` только при `counter > 0`.
- * Числа по умолчанию капаются через `max` (9 → `9+`).
- */
-export const BadgeCounter = forwardRef<HTMLDivElement | HTMLSpanElement, BadgeCounterProps>(
-	function BadgeCounter(
-		{
-			counter,
-			variant,
-			size,
-			position,
-			max = 9,
-			children,
-			className,
-			...rest
-		},
-		ref,
-	) {
-		if (counter > 0) {
-			return (
-				<Badge
-					ref={ref}
-					label={counter}
-					variant={variant}
-					size={size}
-					position={position}
-					max={max}
-					className={className}
-					{...rest}
-				>
-					{children}
-				</Badge>
-			);
-		}
-
-		if (children == null) {
-			return null;
-		}
-
-		return (
-			<span
-				ref={ref as React.Ref<HTMLSpanElement>}
-				style={{display: 'contents'}}
-			>
-				{children}
-			</span>
-		);
-	},
-);
-
-BadgeCounter.displayName = 'BadgeCounter';

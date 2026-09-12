@@ -84,7 +84,7 @@ const TaskAppDemo = () => {
 					<Title level={4}>
 						Мои задачи
 					</Title>
-					<Chip mode='tag' variant='secondary'>
+					<Chip as='tag' variant='secondary'>
 						Работа
 					</Chip>
 				</Inline>
@@ -129,59 +129,13 @@ const TaskAppDemo = () => {
 				</aside>
 
 				<main className={styles.main}>
-					<Card>
-						<Card.Header>
+					<Card
+						header={(
 							<Title level={4}>
 								Сегодня
 							</Title>
-						</Card.Header>
-						<Card.Body>
-							{loading ? (
-								<div className={styles.taskList}>
-									{[1, 2, 3].map((i) => (
-										<Inline
-											key={i}
-											align='center'
-											gap='md'
-										>
-											<Skeleton
-												circle
-												width={20}
-												height={20}
-											/>
-											<Skeleton height={14} />
-										</Inline>
-									))}
-								</div>
-							) : filtered.length === 0 ? (
-								<EmptyState
-									icon={<IconChecklist size={40} />}
-									title='Задачи не найдены'
-									description={search ? 'Попробуйте другой запрос' : 'Добавьте задачу…'}
-									action={(
-										<Button size='sm' iconStart={<IconPlus size={14} />}>
-											Добавить задачу
-										</Button>
-									)}
-								/>
-							) : (
-								<div className={styles.taskList}>
-									{filtered.map((task) => (
-										<label key={task.id} className={styles.taskItem}>
-											<Checkbox
-												mode='task'
-												checked={task.done}
-												onChange={() => toggleTask(task.id)}
-											/>
-											<span className={task.done ? styles.done : ''}>
-												{task.title}
-											</span>
-										</label>
-									))}
-								</div>
-							)}
-						</Card.Body>
-						<Card.Actions>
+						)}
+						actions={(
 							<Split align='center'>
 								<Text size='sm'>
 									{filtered.length}
@@ -197,74 +151,117 @@ const TaskAppDemo = () => {
 									Очистить готовые
 								</Button>
 							</Split>
-						</Card.Actions>
+						)}
+					>
+						{loading ? (
+							<div className={styles.taskList}>
+								{[1, 2, 3].map((i) => (
+									<Inline
+										key={i}
+										align='center'
+										gap='md'
+									>
+										<Skeleton
+											circle
+											width={20}
+											height={20}
+										/>
+										<Skeleton height={14} />
+									</Inline>
+								))}
+							</div>
+						) : filtered.length === 0 ? (
+							<EmptyState
+								icon={<IconChecklist size={40} />}
+								title='Задачи не найдены'
+								description={search ? 'Попробуйте другой запрос' : 'Добавьте задачу…'}
+								action={(
+									<Button size='sm' iconStart={<IconPlus size={14} />}>
+										Добавить задачу
+									</Button>
+								)}
+							/>
+						) : (
+							<div className={styles.taskList}>
+								{filtered.map((task) => (
+									<label key={task.id} className={styles.taskItem}>
+										<Checkbox
+											mode='task'
+											checked={task.done}
+											onChange={() => toggleTask(task.id)}
+										/>
+										<span className={task.done ? styles.done : ''}>
+											{task.title}
+										</span>
+									</label>
+								))}
+							</div>
+						)}
 					</Card>
 
-					<Card>
-						<Card.Header>
+					<Card
+						header={(
 							<Title level={4}>
 								Общий доступ
 							</Title>
-						</Card.Header>
-						<Card.Body>
-							<Inline gap='sm'>
-								{sharedUsers.map((email) => (
-									<Chip key={email} onRemove={() => setSharedUsers((u) => u.filter((e) => e !== email))}>
-										{email}
-									</Chip>
-								))}
-							</Inline>
-						</Card.Body>
+						)}
+					>
+						<Inline gap='sm'>
+							{sharedUsers.map((email) => (
+								<Chip key={email} onRemove={() => setSharedUsers((u) => u.filter((e) => e !== email))}>
+									{email}
+								</Chip>
+							))}
+						</Inline>
 					</Card>
 
-					<Card>
-						<Card.Header>
+					<Card
+						header={(
 							<Title level={4}>
 								Превью календаря
 							</Title>
-						</Card.Header>
-						<Card.Body>
-							<div className={styles.calendarRow}>
-								{[
-									'Пн',
-									'Вт',
-									'Ср',
-									'Чт',
-									'Пт'
-								].map((day, i) => (
-									<div key={day} className={styles.calendarDay}>
-										<Text size='sm'>
-											{day}
-										</Text>
-										{i === 1 && (
-											<Chip
-												mode='tag'
-												size='sm'
-												variant='info'
-											>
-												Стендап
-											</Chip>
-										)}
-										{i === 3 && (
-											<Chip
-												mode='tag'
-												size='sm'
-												variant='error'
-											>
-												Деплой
-											</Chip>
-										)}
-									</div>
-								))}
-							</div>
-						</Card.Body>
+						)}
+					>
+						<div className={styles.calendarRow}>
+							{[
+								'Пн',
+								'Вт',
+								'Ср',
+								'Чт',
+								'Пт'
+							].map((day, i) => (
+								<div key={day} className={styles.calendarDay}>
+									<Text size='sm'>
+										{day}
+									</Text>
+									{i === 1 && (
+										<Chip
+											as='tag'
+											size='sm'
+											variant='info'
+										>
+											Стендап
+										</Chip>
+									)}
+									{i === 3 && (
+										<Chip
+											as='tag'
+											size='sm'
+											variant='error'
+										>
+											Деплой
+										</Chip>
+									)}
+								</div>
+							))}
+						</div>
 					</Card>
 				</main>
 			</div>
 
 			<Sheet
 				open={drawerOpen}
-				onClose={() => setDrawerOpen(false)}
+				onOpenChange={setDrawerOpen}
 				mode='sidebar'
 				direction='start'
 				backdrop
@@ -296,7 +293,7 @@ const TaskAppDemo = () => {
 				confirmLabel='Очистить'
 				status='danger'
 				loading={loading}
-				onCancel={() => setDeleteOpen(false)}
+				onOpenChange={setDeleteOpen}
 				onConfirm={() => {
 					setLoading(true);
 					setTimeout(() => {
