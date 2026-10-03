@@ -12,6 +12,7 @@ export type {
 	LayoutContentProps,
 	LayoutFooterProps,
 	LayoutFooterAlign,
+	LayoutSpacing,
 } from './Layout.types';
 
 export {LayoutItem} from './LayoutItem';

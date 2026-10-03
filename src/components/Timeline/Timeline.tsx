@@ -7,9 +7,18 @@ export type {
 	TimelineProps,
 } from './Timeline.types';
 
-import {forwardRef} from 'react';
 import styles from './Timeline.module.css';
-import {cn} from '../../utils/cn';
+import utilities from '../../styles/utilities.module.css';
+import {cn} from '../../core/utils/cn';
+
+/** React на каждом коммите заново пишет атрибут `open` и сбрасывает жест пользователя. */
+const openedOnce = new WeakSet<HTMLDetailsElement>();
+
+function openDetailsOnce(node: HTMLDetailsElement | null) {
+	if (!node || openedOnce.has(node)) return;
+	openedOnce.add(node);
+	node.open = true;
+}
 
 /**
  * Таймлайн: vertical/horizontal, collapsible details, current крупнее.
@@ -22,31 +31,31 @@ import {cn} from '../../utils/cn';
  *   items={[{ id: '1', title: 'Создан', details: '…' }]}
  * />
  */
-export const Timeline = forwardRef<HTMLOListElement, TimelineProps>(function Timeline(
-	{
-		items,
-		orientation = 'vertical',
-		currentId,
-		defaultExpandedIds,
-		className,
-		...rest
-	},
-	ref,
-) {
+export function Timeline({
+	items,
+	orientation = 'vertical',
+	currentId,
+	defaultExpandedIds,
+	className,
+	rootRef,
+	...rest
+}: TimelineProps) {
 	return (
 		<ol
-			ref={ref}
-			className={cn(styles.timeline, styles[orientation], className)}
+			ref={rootRef}
+			className={cn(styles.timeline, className)}
+			data-orientation={orientation}
 			{...rest}
 		>
 			{items.map((item) => (
 				<li
 					key={item.id}
-					className={cn(styles.item, currentId === item.id && styles.current)}
+					className={styles.item}
 					data-status={item.status ?? 'default'}
+					data-current={currentId === item.id ? '' : undefined}
 				>
 					<div className={styles.rail} aria-hidden>
-						<span className={styles.dot}>
+						<span className={cn(utilities.fCenter, styles.dot)}>
 							{item.icon}
 						</span>
 						<span className={styles.line} />
@@ -70,11 +79,7 @@ export const Timeline = forwardRef<HTMLOListElement, TimelineProps>(function Tim
 						{item.details != null && (
 							<details
 								className={styles.details}
-								ref={(node) => {
-									if (!node || node.dataset.o != null) return;
-									node.dataset.o = '';
-									if (defaultExpandedIds?.includes(item.id)) node.open = true;
-								}}
+								ref={defaultExpandedIds?.includes(item.id) ? openDetailsOnce : undefined}
 							>
 								<summary className={styles.summary}>
 									›
@@ -89,6 +94,4 @@ export const Timeline = forwardRef<HTMLOListElement, TimelineProps>(function Tim
 			))}
 		</ol>
 	);
-});
-
-Timeline.displayName = 'Timeline';
+}

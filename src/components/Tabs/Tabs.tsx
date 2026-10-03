@@ -1,178 +1,176 @@
 import type {
 	TabsProps,
 	TabsListProps,
-	TabsTriggerProps,
 	TabsPanelProps,
 } from './Tabs.types';
 export type {
 	TabsVariant,
 	TabsOrientation,
+	TabsItem,
 	TabsProps,
 	TabsListProps,
-	TabsTriggerProps,
 	TabsPanelProps,
 } from './Tabs.types';
 
-import React, {createContext, forwardRef, useContext, useId} from 'react';
+import {
+	createContext,
+	useContext,
+	useId,
+	useMemo,
+} from 'react';
 import styles from './Tabs.module.css';
-import unstyled from '../../styles/unstyledControl.module.css';
-import scroll from '../../styles/scroll.module.css';
-import {SelectionGroup, useSelectionGroupContext} from '../SelectionGroup/SelectionGroup';
-import {cn} from '../../utils/cn';
+import utilities from '../../styles/utilities.module.css';
+import {SegmentedControl} from '../SegmentedControl/SegmentedControl';
+import {cn} from '../../core/utils/cn';
+import {useControlledStateWithCallback} from '../../hooks/useControlledState';
+import {tabPanelDomId, tabTriggerDomId} from './Tabs.utils';
 
-const TabsIdContext = createContext<string>('');
+type TabsContextValue = {
+	tabsId: string;
+	value: string;
+	onChange: (value: string) => void;
+	orientation: 'horizontal' | 'vertical';
+	variant: 'line' | 'pill';
+};
 
-function useTabsId(): string {
-	return useContext(TabsIdContext);
+const TabsContext = createContext<TabsContextValue | null>(null);
+
+function useTabsContext(): TabsContextValue | null {
+	return useContext(TabsContext);
 }
 
-const TabsList = forwardRef<HTMLDivElement, TabsListProps>(function TabsList(
-	{className, children, ...rest},
-	ref,
-) {
-	const {orientation} = useSelectionGroupContext('Tabs.List');
-	return (
-		<SelectionGroup.List
-			ref={ref}
-			className={cn(scroll.area, styles.tabsHeader, className)}
-			{...rest}
-			role='tablist'
-			aria-orientation={orientation}
-		>
-			{children}
-		</SelectionGroup.List>
-	);
-});
-
-const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(function TabsTrigger(
-	{
-		value,
-		badge,
-		badgeDot = false,
-		disabled = false,
-		className,
-		children,
-		...rest
-	},
-	ref,
-) {
-	const {value: activeId} = useSelectionGroupContext('Tabs.Trigger');
-	const tabsId = useTabsId();
-	const isActive = activeId === value;
-	return (
-		<SelectionGroup.Item
-			ref={ref}
-			value={value}
-			id={`${tabsId}-tab-${value}`}
-			disabled={disabled}
-			className={cn(unstyled.control, styles.tab, isActive && styles.active, className)}
-			{...rest}
-			role='tab'
-			aria-selected={isActive}
-			aria-controls={`${tabsId}-tabpanel-${value}`}
-		>
-			{children}
-			{(badgeDot || badge != null) && (
-				badgeDot
+const TabsList = ({
+	className,
+	items,
+	rootRef,
+	...rest
+}: TabsListProps) => {
+	const ctx = useTabsContext();
+	const tabsId = ctx?.tabsId ?? '';
+	const options = useMemo(() => items.map((item) => ({
+		value: item.value,
+		disabled: item.disabled,
+		id: tabTriggerDomId(tabsId, item.value),
+		controls: tabPanelDomId(tabsId, item.value),
+		label: (
+			<>
+				{item.label}
+				{item.badgeDot
 					? <span className={styles.tabBadgeDot} aria-hidden />
-					: <span className={styles.tabBadge}>
-						{badge}
-					</span>
-			)}
-		</SelectionGroup.Item>
-	);
-});
+					: null}
+				{!item.badgeDot && item.badge != null
+					? (
+						<span className={cn(utilities.fCenter, styles.tabBadge)}>
+							{item.badge}
+						</span>
+					)
+					: null}
+			</>
+		),
+	})), [items, tabsId]);
 
-const TabsPanel = forwardRef<HTMLDivElement, TabsPanelProps>(function TabsPanel(
-	{
-		value,
-		className,
-		children,
-		...rest
-	},
-	ref,
-) {
-	const tabsId = useTabsId();
+	if (ctx == null) return null;
+
 	return (
-		<SelectionGroup.Panel
-			ref={ref}
-			value={value}
+		<SegmentedControl
+			{...rest}
+			rootRef={rootRef}
+			className={cn(styles.tabsHeader, className)}
+			options={options}
+			value={ctx.value}
+			onChange={ctx.onChange}
+			orientation={ctx.orientation}
+			variant={ctx.variant === 'pill' ? 'pill' : 'plain'}
+			width='auto'
+			itemRole='tab'
+			aria-orientation={ctx.orientation}
+		/>
+	);
+};
+
+const TabsPanel = ({
+	value,
+	className,
+	children,
+	forceMount: _forceMount,
+	hidden,
+	rootRef,
+	...rest
+}: TabsPanelProps) => {
+	const ctx = useTabsContext();
+	const tabsId = ctx?.tabsId ?? '';
+	const inactive = ctx != null && ctx.value !== value;
+
+	return (
+		<div
+			ref={rootRef}
 			className={cn(styles.tabPanel, className)}
 			tabIndex={0}
 			{...rest}
+			hidden={hidden != null ? hidden : (ctx == null ? undefined : inactive)}
 			role='tabpanel'
-			id={`${tabsId}-tabpanel-${value}`}
-			aria-labelledby={`${tabsId}-tab-${value}`}
+			id={tabPanelDomId(tabsId, value)}
+			aria-labelledby={tabTriggerDomId(tabsId, value)}
 		>
 			{children}
-		</SelectionGroup.Panel>
+		</div>
 	);
-});
+};
 
 /**
- * Вкладки на базе SelectionGroup с декларативными List, Trigger и Panel.
- * Состояние читается из SelectionGroup context (отдельный TabsContext не нужен).
+ * Вкладки: список — `SegmentedControl`, панели остаются здесь.
+ * `line` — черта у выбранной вкладки, `pill` — заливка сегмента.
+ * Активная вкладка — CSS `button[aria-selected="true"]` (без JS-трекинга бегунка).
  *
  * @component
  * @example
  * <Tabs defaultValue="info">
- *   <Tabs.List><Tabs.Trigger value="info">Инфо</Tabs.Trigger></Tabs.List>
+ *   <Tabs.List items={[{value: 'info', label: 'Инфо'}]} />
  *   <Tabs.Panel value="info"><InfoTab /></Tabs.Panel>
  * </Tabs>
  */
-const TabsRoot = forwardRef<HTMLDivElement, TabsProps>(function TabsRoot(
-	{
-		value,
-		defaultValue,
-		onChange,
-		variant = 'line',
-		orientation = 'horizontal',
-		className,
-		children,
-		...rest
-	},
-	ref,
-) {
+const TabsRoot = ({
+	value: valueProp,
+	defaultValue,
+	onChange,
+	variant = 'line',
+	orientation = 'horizontal',
+	className,
+	children,
+	rootRef,
+	...rest
+}: TabsProps) => {
 	const tabsId = useId();
+	const [value, setValue] = useControlledStateWithCallback(
+		valueProp,
+		defaultValue ?? '',
+		onChange,
+	);
+
 	return (
-		<TabsIdContext.Provider value={tabsId}>
-			<SelectionGroup.Root
-				ref={ref}
-				value={value}
-				defaultValue={defaultValue}
-				onChange={onChange}
-				orientation={orientation}
-				className={cn(
-					styles.tabsContainer,
-					variant === 'pill' && styles.pill,
-					orientation === 'vertical' && styles.vertical,
-					className,
-				)}
+		<TabsContext.Provider value={{
+			tabsId,
+			value,
+			onChange: setValue,
+			orientation,
+			variant,
+		}}
+		>
+			<div
+				ref={rootRef}
 				{...rest}
+				className={cn(styles.tabsContainer, className)}
+				data-orientation={orientation}
+				data-variant={variant}
 			>
 				{children}
-			</SelectionGroup.Root>
-		</TabsIdContext.Provider>
+			</div>
+		</TabsContext.Provider>
 	);
-});
-
-TabsRoot.displayName = 'Tabs';
-TabsList.displayName = 'Tabs.List';
-TabsTrigger.displayName = 'Tabs.Trigger';
-TabsPanel.displayName = 'Tabs.Panel';
-
-type TabsComponent = React.ForwardRefExoticComponent<
-	TabsProps & React.RefAttributes<HTMLDivElement>
-> & {
-	Root: typeof TabsRoot;
-	List: typeof TabsList;
-	Trigger: typeof TabsTrigger;
-	Panel: typeof TabsPanel;
 };
 
 export const Tabs = Object.assign(TabsRoot, {
 	Root: TabsRoot,
 	List: TabsList,
-	Trigger: TabsTrigger,
 	Panel: TabsPanel,
-}) as TabsComponent;
+});

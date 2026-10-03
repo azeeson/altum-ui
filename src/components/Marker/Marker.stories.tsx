@@ -2,7 +2,7 @@ import type {Meta} from '@storybook/react';
 import React from 'react';
 import {Marker, MarkerProps} from './Marker';
 import {Card} from '../Card/Card';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Spinner} from '../Spinner/Spinner';
 import {IconSearch} from '../../icons/icons/IconSearch';

@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {SegmentedControl, SegmentedControlProps} from './SegmentedControl';
 import {Text} from '../Text/Text';
 import {TextField} from '../TextField/TextField';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Card} from '../Card/Card';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
@@ -41,7 +41,7 @@ export default {
 	title: 'altum/Components/SegmentedControl',
 	component: SegmentedControl,
 	tags: ['autodocs'],
-	parameters: componentParameters('Переключатель сегментов: обёртка над ButtonGroup (`mode="toggle"`, `width="full"`).'),
+	parameters: componentParameters('Один сегмент: SelectionGroup, выбранный пункт — заливка кнопки.'),
 	argTypes: {
 		size: {
 			control: {
@@ -54,6 +54,7 @@ export default {
 			control: {
 				type: 'select',
 				options: [
+					'pill',
 					'primary',
 					'tinted',
 					'secondary',
@@ -61,11 +62,7 @@ export default {
 					'plain'
 				]
 			},
-			description: 'primary — плотный акцент; tinted — приглушённая заливка; secondary — нейтральный; ghost — прозрачный трек; plain — минимальный',
-		},
-		borderless: {
-			control: 'boolean',
-			description: 'Без рамки у трека',
+			description: 'pill — скруглённый трек (default); primary — плотный акцент; tinted — приглушённая заливка; secondary — алиас pill; ghost — прозрачный трек; plain — минимальный',
 		},
 		itemFit: {
 			control: {
@@ -79,6 +76,13 @@ export default {
 		},
 		readOnly: {
 			control: 'boolean',
+		},
+		orientation: {
+			control: {
+				type: 'select',
+				options: ['horizontal', 'vertical'],
+			},
+			description: 'Ряд или колонка',
 		},
 		onChange: {
 			action: 'change',
@@ -100,7 +104,7 @@ export const Playground: Story<SegmentedControlProps> = {
 	},
 	args: {
 		size: 'md',
-		variant: 'secondary',
+		variant: 'pill',
 		itemFit: 'equal',
 	},
 	parameters: story('Используйте панель Controls для настройки.'),
@@ -123,7 +127,6 @@ export const HeightsVsTextField: Story<SegmentedControlProps> = {
 						<Inline gap='sm' align='center'>
 							<TextField
 								label={`Field ${size}`}
-								labelPlacement='outside'
 								size={size}
 								width='md'
 								defaultValue='1'
@@ -309,25 +312,10 @@ export const AllVariants: Story<SegmentedControlProps> = {
 						variant='secondary'
 					/>
 				</div>
-				<div>
-					<div style={{marginBottom: '6px'}}>
-						<Text size='sm'>
-							secondary + без рамки:
-						</Text>
-					</div>
-					<SegmentedControl
-						options={OPTIONS}
-						value={val2}
-						onChange={setVal2}
-						size='md'
-						variant='secondary'
-						borderless
-					/>
-				</div>
 			</div>
 		);
 	},
-	parameters: story('Размеры (`sm`–`lg`), варианты и `borderless`.'),
+	parameters: story('Размеры (`sm`–`lg`) и варианты.'),
 };
 
 const CONTENT_FIT_OPTIONS = [
@@ -479,4 +467,21 @@ export const UsageExample: Story<SegmentedControlProps> = {
 		);
 	},
 	parameters: story('Сегменты периода в карточке аналитики.'),
+};
+
+export const Vertical: Story<SegmentedControlProps> = {
+	render: function VerticalRender() {
+		const [value, setValue] = useState('one');
+		return (
+			<div style={{width: 180}}>
+				<SegmentedControl
+					orientation='vertical'
+					options={OPTIONS}
+					value={value}
+					onChange={setValue}
+				/>
+			</div>
+		);
+	},
+	parameters: story('Вертикальный трек.'),
 };

@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {PinInput, PinInputProps} from './PinInput';
 import {Button} from '../Button/Button';
 import {Card} from '../Card/Card';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {Text} from '../Text/Text';
 import {
 	componentParameters,
@@ -95,7 +95,6 @@ export const Sizes: Story<PinInputProps> = {
 					<PinInput
 						key={size}
 						label={`Код (${size})`}
-						labelPlacement='outside'
 						length={4}
 						size={size}
 						value={value}
@@ -141,9 +140,8 @@ export const Empty: Story<PinInputProps> = {
 	render: () => (
 		<PinInput
 			label='Код из SMS'
-			labelPlacement='outside'
 			length={6}
-			helperText='Придёт в течение минуты'
+			description='Придёт в течение минуты'
 			value=''
 			onChange={() => undefined}
 		/>
@@ -156,14 +154,13 @@ export const OverflowText: Story<PinInputProps> = {
 		<div style={{maxWidth: 280}}>
 			<PinInput
 				label='Код подтверждения из письма, которое мы отправили на почту'
-				labelPlacement='outside'
 				length={6}
 				value='12'
 				onChange={() => undefined}
 			/>
 		</div>
 	),
-	parameters: story('Длинный outside-лейбл над группой ячеек.'),
+	parameters: story('Длинный лейбл над группой ячеек.'),
 };
 
 export const Focused: Story<PinInputProps> = {
@@ -224,8 +221,6 @@ export const UsageExample: Story<PinInputProps> = {
 						Введите код из SMS, отправленный на +7 ••• ••• 12-34
 					</Text>
 					<PinInput
-						label='Код'
-						labelPlacement='none'
 						length={6}
 						value={code}
 						onChange={setCode}

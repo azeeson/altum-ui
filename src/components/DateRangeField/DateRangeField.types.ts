@@ -1,5 +1,5 @@
-import type {ComponentPropsWithoutRef} from 'react';
-import type {FieldBaseProps} from '../../base/FieldBase';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
+import type {FieldBaseProps} from '../TextField/TextField.types';
 import {type DateRangeValue} from '../Calendar/Calendar.utils';
 
 export type {DateRangeValue};
@@ -21,4 +21,8 @@ export interface DateRangeFieldProps extends
 	endLabel?: string;
 	/** Расположение полей. @default 'single' */
 	layout?: 'single' | 'split';
+	/** DOM-узел корня. */
+	rootRef?: Ref<HTMLDivElement>;
+	/** Поле ввода: единственное либо поле «от» в `split`. */
+	inputRef?: Ref<HTMLInputElement>;
 }

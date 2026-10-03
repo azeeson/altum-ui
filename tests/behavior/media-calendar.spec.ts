@@ -58,7 +58,7 @@ test.describe('UploadZone', () => {
 			mimeType: 'text/plain',
 			buffer: Buffer.from('hello'),
 		});
-		await expect(page.getByText(/Выбрано файлов:\s*1|Selected files:\s*1/i)).toBeVisible();
+		await expect(page.getByText(/Выбран 1 файл|1 file selected/i)).toBeVisible();
 	});
 });
 
@@ -86,6 +86,13 @@ test.describe('ColorSwatchGroup', () => {
 		const radios = group.getByRole('radio');
 		await radios.nth(1).click();
 		await expect(radios.nth(1)).toBeChecked();
+	});
+
+	test('образцы залиты цветом палитры', async ({page}) => {
+		await visitStory(page, 'altum-components-colorswatchgroup--playground');
+		const first = page.getByRole('radio').first();
+		const backgroundColor = await first.evaluate((el) => getComputedStyle(el).backgroundColor);
+		expect(backgroundColor).toBe('rgb(239, 68, 68)');
 	});
 });
 
@@ -131,12 +138,15 @@ test.describe('DateRangeField', () => {
 });
 
 test.describe('DayStripCalendar', () => {
-	test('навигация выбирает соседний день', async ({page}) => {
+	test('шапка листает окно и не меняет выбранный день', async ({page}) => {
 		await visitStory(page, 'altum-components-daystripcalendar--playground');
 		const selected = page.getByText(/Выбрано:/);
 		const before = (await selected.innerText()).trim();
+		const listbox = page.getByRole('listbox', {name: /Дни|Days/i});
+		const firstBefore = (await listbox.getByRole('option').first().innerText()).trim();
 		await page.getByRole('button', {name: /Следующий день|Next day/i}).click();
-		await expect(selected).not.toHaveText(before);
+		await expect(selected).toHaveText(before);
+		await expect(listbox.getByRole('option').first()).not.toHaveText(firstBefore);
 	});
 
 	test('сдвигает полосу, когда выбранный день выходит за край', async ({page}) => {

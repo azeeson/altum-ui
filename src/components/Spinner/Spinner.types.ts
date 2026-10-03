@@ -1,7 +1,5 @@
 import type React from 'react';
-import type {
-	ComponentPropsWithoutRef,
-} from 'react';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
 
 /**
  * Вариант отрисовки спиннера.
@@ -21,6 +19,8 @@ export type SpinnerSize = 'sm' | 'md' | 'lg';
  * Свойства `Spinner`.
  */
 export interface SpinnerProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
+	/** DOM-узел индикатора. */
+	rootRef?: Ref<HTMLDivElement>;
 	/**
 	 * `spin` — круг; `typing` — точки в пузыре; `dots` — точки inline; `pulse` — пульс.
 	 * @default 'spin'

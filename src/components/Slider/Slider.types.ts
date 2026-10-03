@@ -1,5 +1,6 @@
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 /** Пара значений для режима диапазона. */
@@ -13,6 +14,8 @@ type SliderSharedProps = Omit<ComponentPropsWithoutRef<'div'>, 'onChange' | 'def
 	readOnly?: boolean;
 	/** Показывать значения над ползунками. @default true */
 	showValues?: boolean;
+	/** Корень. */
+	rootRef?: Ref<HTMLDivElement>;
 };
 
 /**

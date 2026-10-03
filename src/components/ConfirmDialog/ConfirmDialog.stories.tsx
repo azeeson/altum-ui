@@ -4,7 +4,7 @@ import {ConfirmDialog, ConfirmDialogProps} from './ConfirmDialog';
 import {Button} from '../Button/Button';
 import {Text} from '../Text/Text';
 import {Card} from '../Card/Card';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
@@ -50,8 +50,7 @@ export const Playground: Story<ConfirmDialogProps> = {
 		return (
 			<>
 				<Button
-					variant='primary'
-					status='danger'
+					variant='danger'
 					onClick={() => setIsOpen(true)}
 				>
 					Удалить список
@@ -118,8 +117,7 @@ export const Variants: Story<ConfirmDialogProps> = {
 			}}
 			>
 				<Button
-					variant='primary'
-					status='danger'
+					variant='danger'
 					onClick={() => setDestructiveOpen(true)}
 				>
 					Опасное
@@ -230,8 +228,7 @@ export const UsageExample: Story<ConfirmDialogProps> = {
 					</Text>
 					<Inline gap='sm'>
 						<Button
-							variant='primary'
-							status='danger'
+							variant='danger'
 							disabled={deleted}
 							onClick={() => setOpen(true)}
 						>
@@ -264,8 +261,7 @@ export const Interaction: Story<ConfirmDialogProps> = {
 		return (
 			<>
 				<Button
-					variant='primary'
-					status='danger'
+					variant='danger'
 					onClick={() => setOpen(true)}
 				>
 					Удалить список

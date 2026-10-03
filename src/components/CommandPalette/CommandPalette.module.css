@@ -1,36 +1,64 @@
 .panel {
-  position: relative;
-  z-index: var(--altum-g-z-raised);
-
   display: flex;
-  box-sizing: border-box;
   overflow: hidden;
 
-  flex: 0 1 auto;
   flex-direction: column;
   align-self: flex-start;
 
-  width: 100%;
-  max-width: var(--altum-command-palette-max-width);
+  width: min(var(--altum-command-palette-max-width), calc(100dvw - 2 * var(--altum-g-space-4)));
   max-height: min(72vh, var(--altum-command-palette-max-height));
 
   margin-top: var(--altum-g-space-8);
-
-  pointer-events: auto;
+  margin-inline: auto;
 
   & .title {
     flex-shrink: 0;
 
-    margin: 0;
     padding: var(--altum-g-space-3) var(--altum-g-space-3) var(--altum-g-space-2);
 
     border-bottom: 1px solid var(--altum-color-dropdown-border);
 
     font-size: var(--altum-g-font-size-2xs);
-    font-weight: var(--altum-g-font-weight-medium);
     line-height: var(--altum-g-line-height-2xs);
 
     color: var(--altum-color-muted);
+  }
+
+  & .body {
+    display: flex;
+    overflow: hidden;
+
+    flex: 1 1 auto;
+    flex-direction: column;
+
+    min-height: 0;
+  }
+
+  & .filter {
+    flex-shrink: 0;
+
+    padding: var(--altum-g-space-2) var(--altum-g-space-3);
+
+    border-bottom: 1px solid var(--altum-color-dropdown-border);
+  }
+
+  /*
+   * Combobox: DOM-фокус в фильтре, visual chrome гасим пока есть подсветка пункта
+   * (`data-list-focus` на `.body`). :is(...) должен перебить TextField
+   * `:focus-within` / `[data-active]` / `:has([aria-expanded])` на том же узле.
+   */
+  & [data-list-focus] .filter:is(
+    :focus-within,
+    [data-active],
+    :has([aria-expanded='true'])
+  ):not([data-disabled]):not([data-error]):not([data-readonly]) {
+    --altum-field-control-border: var(--altum-color-field-border);
+    --altum-field-control-shadow: none;
+    --altum-field-label-color: var(--altum-field-label);
+  }
+
+  & [data-list-focus] .filter:hover:not([data-disabled]):not([data-readonly]) {
+    --altum-field-control-border: var(--altum-color-border-hover);
   }
 
   & .list {
@@ -38,7 +66,27 @@
 
     min-height: 0;
 
-    background: transparent;
+    padding: var(--altum-g-space-2);
+  }
+
+  /* Класс пункта задаёт display и перебивает UA-правило [hidden]. */
+  & [hidden] {
+    display: none !important;
+  }
+
+  & .empty {
+    display: none;
+
+    padding: var(--altum-g-space-3) var(--altum-g-space-4);
+
+    font-size: var(--altum-g-font-size-base);
+    text-align: center;
+
+    color: var(--altum-field-label);
+
+    &[data-visible] {
+      display: block;
+    }
   }
 
   & .footer {

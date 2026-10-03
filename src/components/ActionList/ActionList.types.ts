@@ -1,6 +1,7 @@
 import type {
 	ReactNode,
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 import type {ListboxOption} from '../Listbox/Listbox';
 
@@ -20,27 +21,32 @@ export interface ActionListItem {
 	groupId?: string;
 }
 
+/**
+ * Линия между пунктами. Не выбирается и не участвует в клавиатуре.
+ * С `groups` остаётся в группе по `groupId`; без `groupId` — в хвосте без заголовка.
+ */
+export interface ActionListSeparator {
+	type: 'separator';
+	/** Стабильный ключ. Без него ключ — позиция в `items`. */
+	id?: string;
+	groupId?: string;
+}
+
+/** Пункт или разделитель в `items`. */
+export type ActionListEntry = ActionListItem | ActionListSeparator;
+
 /** Метаданные группы. Пункты — в плоском `items` через `groupId`. */
 export interface ActionListGroup {
 	id: string;
 	label: ReactNode;
 }
 
-/** Императивный API подсветки / выбора в `ActionList`. */
-export interface ActionListHandle {
-	highlightNext: () => void;
-	highlightPrev: () => void;
-	highlightFirst: () => void;
-	highlightLast: () => void;
-	selectHighlighted: () => ActionListItem | undefined;
-	getHighlightedIndex: () => number;
-	getActiveDescendantId: () => string | undefined;
-	getListId: () => string;
-}
-
 /** Свойства `ActionList`. */
 export interface ActionListProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'onSelect'> {
-	items: ActionListItem[];
+	/** DOM-узел корня. */
+	rootRef?: Ref<HTMLDivElement>;
+	/** Пункты и `{ type: 'separator' }` между ними — как `options` у `Listbox`. */
+	items: ActionListEntry[];
 	groups?: ActionListGroup[];
 	onAction?: (item: ActionListItem) => void;
 	onHighlightChange?: (index: number) => void;

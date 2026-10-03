@@ -1,4 +1,4 @@
-import {startOfDay, startOfWeek} from '../Calendar/Calendar.utils';
+import {getWeekStart, startOfDay} from '../Calendar/Calendar.utils';
 
 export function formatTimeRange(start: Date, end: Date): string {
 	const fmt = (date: Date) => {
@@ -16,9 +16,9 @@ export function resolveWindowStart(
 ): Date {
 	const day = startOfDay(viewDate);
 	if (daysCount === 1) return day;
-	const weekStart = startOfWeek(day, weekStartsOn);
+	const weekStart = getWeekStart(day, weekStartsOn);
 	if (daysCount === 5) {
-		return startOfWeek(day, 1);
+		return getWeekStart(day, 1);
 	}
 	return weekStart;
 }

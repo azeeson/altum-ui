@@ -3,7 +3,7 @@ import React from 'react';
 import {ThemeProvider, useTheme, type Theme} from './ThemeProvider';
 import {Button} from '../Button/Button';
 import {TextField} from '../TextField/TextField';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {Text} from '../Text/Text';
 import {Box} from '../Box/Box';
 import {componentParameters, story, Story} from '../../storybook/meta';
@@ -54,7 +54,7 @@ function ThemeDemo() {
 			<Box
 				variant='outlined'
 				border
-				padding='md'
+				style={{padding: 'var(--altum-g-space-3)'}}
 			>
 				<Stack gap='sm'>
 					<TextField

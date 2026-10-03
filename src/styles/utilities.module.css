@@ -1,0 +1,33 @@
+/* Shared layout / control micro-classes — one copy in the CSS bundle. */
+.fCenter {
+  display: flex;
+  box-sizing: border-box;
+
+  justify-content: center;
+  align-items: center;
+}
+
+.fColumn {
+  display: flex;
+  box-sizing: border-box;
+
+  flex-direction: column;
+}
+
+.resetButton {
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  cursor: pointer;
+  appearance: none;
+}
+
+.scrollport {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  -webkit-overflow-scrolling: touch;
+}

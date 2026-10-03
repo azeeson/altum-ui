@@ -1,11 +1,12 @@
-import {forwardRef} from 'react';
-import {Inline} from './Inline';
-import {LayoutItem} from './LayoutItem';
+import type {ReactElement} from 'react';
 import type {ControlRowProps} from './Layout.types';
-
 export type {LayoutAlign, LayoutGap, LayoutJustify, ControlRowProps} from './Layout.types';
 
-type ControlRowComponent = typeof ControlRowInner & {
+import {Inline} from './Inline';
+import {LayoutItem} from './LayoutItem';
+
+type ControlRowComponent = {
+	(props: ControlRowProps): ReactElement;
 	Item: typeof LayoutItem;
 };
 
@@ -21,17 +22,19 @@ type ControlRowComponent = typeof ControlRowInner & {
  *   <Button variant="primary">Найти</Button>
  * </ControlRow>
  */
-const ControlRowInner = forwardRef<HTMLDivElement, ControlRowProps>(function ControlRow(props, ref) {
-	return (
-		<Inline
-			ref={ref}
-			{...props}
-			role={props.role ?? 'group'}
-		/>
-	);
-});
-
-export const ControlRow = ControlRowInner as ControlRowComponent;
-
-ControlRow.Item = LayoutItem;
-ControlRow.displayName = 'ControlRow';
+export const ControlRow: ControlRowComponent = Object.assign(
+	function ControlRow({
+		role,
+		rootRef,
+		...props
+	}: ControlRowProps) {
+		return (
+			<Inline
+				rootRef={rootRef}
+				{...props}
+				role={role ?? 'group'}
+			/>
+		);
+	},
+	{Item: LayoutItem},
+);

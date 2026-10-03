@@ -1,3 +1,3 @@
-import {createIcon} from '../createIcon';
-
-export const IconAlignLeft = createIcon('M82,18H10c-2.2,0-4-1.8-4-4s1.8-4,4-4h72c2.2,0,4,1.8,4,4S84.2,18,82,18z M55.4,35.4c0-2.2-1.8-4-4-4H10 c-2.2,0-4,1.8-4,4s1.8,4,4,4h41.4C53.6,39.4,55.4,37.6,55.4,35.4z M67.6,56.7c0-2.2-1.8-4-4-4H10c-2.2,0-4,1.8-4,4s1.8,4,4,4h53.6 C65.8,60.7,67.6,58.9,67.6,56.7z M82.4,78c0-2.2-1.8-4-4-4H10.3c-2.2,0-4,1.8-4,4s1.8,4,4,4h68.1C80.6,82,82.4,80.2,82.4,78z');
+import {IconBase, type IconProps} from '../IconBase';
+import {ICON_PATHS} from '../registry';
+export const IconAlignLeft = (p: IconProps) => <IconBase d={ICON_PATHS.alignLeft} {...p} />;

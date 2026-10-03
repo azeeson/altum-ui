@@ -1,9 +1,10 @@
-import React, {
-	forwardRef,
+import {
 	useCallback,
 	useId,
 	useMemo,
 	useState,
+	type CSSProperties,
+	type MouseEvent,
 } from 'react';
 import {
 	addDays,
@@ -17,25 +18,35 @@ import {
 import {
 	buildHourMarks,
 	clipEventToDay,
-	formatHourLabel,
 	packSpanSegments,
 	packTimedEventsInDay,
 	resolveAllDay,
 	segmentSpanInColumns,
 } from './calendar.schedule';
+import {formatHourTime} from '../../core/utils/date';
 import {CalendarBoardEvent} from './CalendarBoard.Event';
 import {PeriodHeader} from '../../base/PeriodHeader';
 import unstyled from '../../styles/unstyledControl.module.css';
 import chrome from '../../styles/calendarChrome.module.css';
+import utilities from '../../styles/utilities.module.css';
 import styles from './CalendarBoard.Schedule.module.css';
-import {cn} from '../../utils/cn';
-import {mergeStyles} from '../../utils/mergeStyles';
+import {cn} from '../../core/utils/cn';
 import {useLocale} from '../../locales/localeContext';
 import {
 	type CalendarScheduleProps,
 	SCHEDULE_LANE_HEIGHT,
 } from './CalendarBoard.Schedule.types';
 import {formatTimeRange, resolveWindowStart} from './CalendarBoard.Schedule.utils';
+import {ruSlice as ru_calendar} from '../../locales/slices/calendar.ru';
+import {ruSlice as ru_calendarBoard} from '../../locales/slices/calendarBoard.ru';
+
+const localeFallback = {
+	calendar: ru_calendar,
+	calendarBoard: ru_calendarBoard,
+};
+
+
+
 
 export type {
 	CalendarScheduleEvent,
@@ -56,31 +67,29 @@ export type {
  *   onEventClick={openEvent}
  * />
  */
-export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps>(function CalendarSchedule(
-	{
-		viewDate: controlledViewDate,
-		onViewDateChange,
-		daysCount = 7,
-		weekStartsOn = 1,
-		events = [],
-		dayStartHour = 8,
-		dayEndHour = 20,
-		hourHeight = 48,
-		selectedDate,
-		onSelectDate,
-		onEventClick,
-		showHeader = true,
-		showNav = true,
-		className,
-		'aria-label': ariaLabel,
-		renderSpanEvent,
-		renderTimedEvent,
-		style,
-		...rest
-	},
-	ref,
-) {
-	const {messages} = useLocale();
+export const CalendarSchedule = ({
+	viewDate: controlledViewDate,
+	onViewDateChange,
+	daysCount = 7,
+	weekStartsOn = 1,
+	events = [],
+	dayStartHour = 8,
+	dayEndHour = 20,
+	hourHeight = 48,
+	selectedDate,
+	onSelectDate,
+	onEventClick,
+	showHeader = true,
+	showNav = true,
+	className,
+	'aria-label': ariaLabel,
+	renderSpanEvent,
+	renderTimedEvent,
+	style,
+	rootRef,
+	...rest
+}: CalendarScheduleProps) => {
+	const {messages} = useLocale(localeFallback);
 	const {months, weekdaysShort} = messages.calendar;
 	const labelId = useId();
 	const [internalViewDate, setInternalViewDate] = useState(() => (
@@ -125,6 +134,8 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 		}
 		setViewDate(addDays(windowStart, direction * (daysCount === 5 ? 7 : daysCount)));
 	};
+	const goPrev = () => shift(-1);
+	const goNext = () => shift(1);
 
 	const allDayPacked = useMemo(() => {
 		const entries = events
@@ -177,39 +188,53 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 
 	const allDayHeight = Math.max(allDayPacked.laneCount, 1) * SCHEDULE_LANE_HEIGHT + 8;
 
-	const rootStyle = mergeStyles({
-		'--altum-schedule-columns': String(daysCount),
-		'--altum-schedule-hour-height': `${hourHeight}px`,
-		'--altum-schedule-all-day-height': `${allDayHeight}px`,
-	} as React.CSSProperties, style);
+	const rootStyle = {
+		'--local-columns': String(daysCount),
+		'--local-hour-height': `${hourHeight}px`,
+		'--local-all-day-height': `${allDayHeight}px`,
+		'--local-grid-height': `${gridHeight}px`,
+		...style,
+	} as CSSProperties;
+
+	const activate = (event: MouseEvent<HTMLDivElement>) => {
+		const eventNode = (event.target as HTMLElement).closest('[data-event-id],[data-task-id]');
+		if (eventNode instanceof HTMLElement) {
+			const id = eventNode.dataset.eventId ?? eventNode.dataset.taskId;
+			const item = events.find((entry) => entry.id === id);
+			if (item) onEventClick?.(item);
+			return;
+		}
+		const button = (event.target as HTMLElement).closest('button[data-date]');
+		if (!(button instanceof HTMLButtonElement) || !button.dataset.date) return;
+		const date = new Date(button.dataset.date);
+		if (!Number.isNaN(date.getTime())) onSelectDate?.(startOfDay(date));
+	};
 
 	return (
 		<div
-			ref={ref}
+			{...rest}
+			ref={rootRef}
 			className={cn(styles.root, className)}
 			role='region'
 			aria-label={ariaLabel ?? messages.calendarBoard.scheduleAria}
 			aria-labelledby={showHeader ? labelId : undefined}
 			style={rootStyle}
-			{...rest}
+			onClick={activate}
 		>
 			<PeriodHeader
 				title={headerLabel}
 				titleId={labelId}
 				showTitle={showHeader}
 				showNav={showNav}
-				onPrev={() => shift(-1)}
-				onNext={() => shift(1)}
+				onPrev={goPrev}
+				onNext={goNext}
 				prevLabel={messages.calendarBoard.prevPeriod}
 				nextLabel={messages.calendarBoard.nextPeriod}
 			/>
 
 			<div className={styles.gutterRow}>
 				<div className={styles.gutterCorner} aria-hidden='true' />
-				<div
-					className={styles.cols}
-					style={{gridTemplateColumns: `repeat(${daysCount}, minmax(0, 1fr))`}}
-				>
+				<div className={styles.cols}>
 					{columns.map((date) => {
 						const isSelected = selected ? isSameDay(date, selected) : false;
 						const today = isToday(date);
@@ -219,15 +244,10 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 							<button
 								key={date.toISOString()}
 								type='button'
-								className={cn(
-									unstyled.control,
-									chrome.cell,
-									styles.dayHeader,
-									isSelected ? chrome.selected : '',
-									isSelected ? styles.dayHeaderSelected : '',
-									today ? chrome.today : '',
-								)}
-								onClick={() => onSelectDate?.(startOfDay(date))}
+								className={cn(unstyled.control, utilities.fCenter, chrome.cell, styles.dayHeader)}
+								data-date={date.toISOString()}
+								data-selected={isSelected ? '' : undefined}
+								data-today={today ? '' : undefined}
 								aria-pressed={onSelectDate ? isSelected : undefined}
 								aria-current={today ? 'date' : undefined}
 							>
@@ -247,13 +267,7 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 				<div className={styles.gutterLabel}>
 					{messages.calendarBoard.allDayShort}
 				</div>
-				<div
-					className={cn(styles.cols, styles.allDayTrack)}
-					style={{
-						gridTemplateColumns: `repeat(${daysCount}, minmax(0, 1fr))`,
-						minHeight: allDayHeight,
-					}}
-				>
+				<div className={cn(styles.cols, styles.allDayTrack)}>
 					{columns.map((date) => (
 						<div
 							key={`allday-cell-${date.toISOString()}`}
@@ -277,7 +291,7 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 									color={item.color}
 									continuesBefore={segment.continuesBefore}
 									continuesAfter={segment.continuesAfter}
-									onClick={onEventClick ? () => onEventClick(item) : undefined}
+									data-event-id={onEventClick ? item.id : undefined}
 								/>
 							);
 
@@ -286,11 +300,11 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 								key={`span-${item.id}-${segment.startIndex}`}
 								className={styles.spanSlot}
 								style={{
-									left: `calc(${leftPercent}% + 2px)`,
-									width: `calc(${widthPercent}% - 4px)`,
-									top: 4 + lane * SCHEDULE_LANE_HEIGHT,
-									height: SCHEDULE_LANE_HEIGHT - 2,
-								}}
+									'--local-span-left': `calc(${leftPercent}% + 2px)`,
+									'--local-span-width': `calc(${widthPercent}% - 4px)`,
+									'--local-span-top': `${4 + lane * SCHEDULE_LANE_HEIGHT}px`,
+									'--local-span-height': `${SCHEDULE_LANE_HEIGHT - 2}px`,
+								} as CSSProperties}
 							>
 								{node}
 							</div>
@@ -299,16 +313,15 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 				</div>
 			</div>
 
-			<div className={cn(styles.gutterRow, styles.timeGrid)} style={{height: gridHeight}}>
+			<div className={cn(styles.gutterRow, styles.timeGrid)}>
 				<div className={styles.gutter}>
 					{hours.map((hour) => (
 						<div
 							key={hour}
 							className={styles.hourMark}
-							style={{height: hourHeight}}
 						>
 							<span className={styles.hourLabel}>
-								{formatHourLabel(hour)}
+								{formatHourTime(hour)}
 							</span>
 						</div>
 					))}
@@ -316,7 +329,6 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 
 				<div
 					className={cn(styles.cols, styles.columns)}
-					style={{gridTemplateColumns: `repeat(${daysCount}, minmax(0, 1fr))`}}
 					role='grid'
 					aria-colcount={daysCount}
 				>
@@ -327,7 +339,8 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 						return (
 							<div
 								key={date.toISOString()}
-								className={cn(styles.column, today ? styles.columnToday : '')}
+								className={styles.column}
+								data-today={today ? '' : undefined}
 								role='gridcell'
 								aria-label={`${weekdayLabelFor(date, weekStartsOn, weekdaysShort)} ${date.getDate()}`}
 							>
@@ -335,7 +348,6 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 									<div
 										key={`${date.toISOString()}-${hour}`}
 										className={styles.hourLine}
-										style={{height: hourHeight}}
 									/>
 								))}
 
@@ -361,7 +373,7 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 													title={item.title}
 													timeLabel={timeLabel}
 													color={item.color}
-													onClick={onEventClick ? () => onEventClick(item) : undefined}
+													data-event-id={onEventClick ? item.id : undefined}
 												/>
 											);
 
@@ -370,11 +382,11 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 												key={`timed-${item.id}-${layout.start.getTime()}`}
 												className={styles.timedSlot}
 												style={{
-													top: `${layout.topPercent}%`,
-													height: `${layout.heightPercent}%`,
-													left: `calc(${left}% + 2px)`,
-													width: `calc(${width}% - 4px)`,
-												}}
+													'--local-event-top': `${layout.topPercent}%`,
+													'--local-event-height': `${layout.heightPercent}%`,
+													'--local-event-left': `calc(${left}% + 2px)`,
+													'--local-event-width': `calc(${width}% - 4px)`,
+												} as CSSProperties}
 											>
 												{node}
 											</div>
@@ -388,6 +400,4 @@ export const CalendarSchedule = forwardRef<HTMLDivElement, CalendarScheduleProps
 			</div>
 		</div>
 	);
-});
-
-CalendarSchedule.displayName = 'CalendarBoard.Schedule';
+};

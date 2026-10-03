@@ -1,6 +1,7 @@
 import type {
 	ComponentPropsWithoutRef,
 	ReactNode,
+	Ref,
 } from 'react';
 
 /**
@@ -29,6 +30,11 @@ export interface AvatarProps extends ComponentPropsWithoutRef<'div'> {
 	status?: AvatarStatus;
 	/** Fallback-иконка; по умолчанию `IconUser`, если нет name/src */
 	icon?: ReactNode;
+	/** DOM-узел корня. */
+	rootRef?: Ref<HTMLDivElement>;
 }
 
-export type AvatarGroupProps = ComponentPropsWithoutRef<'div'>;
+export interface AvatarGroupProps extends ComponentPropsWithoutRef<'div'> {
+	/** DOM-узел корня. */
+	rootRef?: Ref<HTMLDivElement>;
+}

@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 export type BubbleVariant = 'default' | 'outgoing' | 'incoming' | 'system';
@@ -37,4 +38,6 @@ export interface BubbleProps extends Omit<ComponentPropsWithoutRef<'div'>, 'cont
 	collapsedLines?: number;
 	expandLabel?: string;
 	collapseLabel?: string;
+	/** Корень пузыря. */
+	rootRef?: Ref<HTMLDivElement>;
 }

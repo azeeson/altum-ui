@@ -1,4 +1,4 @@
-import type {ComponentPropsWithoutRef} from 'react';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
 
 /**
  * Публичный тип `ImageGalleryItem`.
@@ -30,4 +30,6 @@ export interface ImageGalleryProps extends Omit<ComponentPropsWithoutRef<'div'>,
 	/** Счётчик «n / N». @default `chrome === 'default'` */
 	showCounter?: boolean;
 	enableKeyboard?: boolean;
+	/** DOM-узел галереи. */
+	rootRef?: Ref<HTMLDivElement>;
 }

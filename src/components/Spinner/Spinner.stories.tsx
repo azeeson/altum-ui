@@ -1,7 +1,7 @@
 import type {Meta} from '@storybook/react';
 import React from 'react';
 import {Spinner, type SpinnerProps, type SpinnerSize, type SpinnerVariant} from './Spinner';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Button} from '../Button/Button';
 import {Card} from '../Card/Card';

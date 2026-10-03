@@ -2,24 +2,33 @@
   --altum-notification-max-width: 360px;
   --altum-notify-from-x: 0;
   --altum-notify-from-y: 0;
+  /* 1 — выступ стопки вниз, -1 — вверх */
+  --altum-stack-peek: 1;
 
   position: fixed;
+  inset: unset;
   z-index: var(--altum-g-z-notification);
 
   display: flex;
   box-sizing: border-box;
-
-  flex-direction: column;
-  gap: var(--altum-g-space-3);
+  overflow: visible;
 
   width: min(var(--altum-notification-max-width), calc(100vw - var(--altum-g-space-8)));
   max-width: var(--altum-notification-max-width);
+
+  margin: 0;
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
 
   pointer-events: none;
 
   &[data-position^='top'] {
 
     --altum-notify-from-y: calc(-1 * var(--altum-g-space-5));
+    --altum-stack-peek: -1;
     top: max(var(--altum-g-space-6), env(safe-area-inset-top, 0px));
     bottom: auto;
   }
@@ -57,8 +66,8 @@
     transform: translateX(-50%);
   }
 
-  &[data-position^='top'] .stackCollapsed .stackItem:not(:first-child):not(.stackItemHidden) {
-    transform-origin: center top;
+  &[data-position^='top'] .stackCollapsed:not(:hover):not(:focus-within) .stackItem {
+    align-self: start;
   }
 
   &[data-position^='bottom'] .stackCollapsed .stackItem:not(:first-child):not(.stackItemHidden) {
@@ -72,46 +81,16 @@
   display: flex;
 
   flex-direction: column;
-  gap: 0;
+  gap: var(--altum-g-space-3);
 
   width: 100%;
 
   pointer-events: auto;
 
-  transition: gap 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.stackExpanded {
-  gap: var(--altum-g-space-3);
-  & .stackItem {
-    position: relative;
-    top: auto;
-    right: auto;
-    left: auto;
-
-    visibility: visible;
-    overflow: visible;
-
-    height: auto;
-
-    margin-top: 0;
-
-    opacity: 1;
-
-    pointer-events: auto;
-
-    transform: none;
-  }
-
-  & .stackItemHidden {
-    visibility: visible;
-    overflow: visible;
-
-    height: auto;
-
-    opacity: 1;
-
-    pointer-events: auto;
+  /* Hover / focus на любом toast — пауза auto-dismiss на всех с data-pause */
+  &:is(:hover, :focus-within) .notification[data-pause]:not([data-closing]),
+  &:is(:hover, :focus-within) .notification[data-pause]:not([data-closing]) .timer circle:last-child {
+    animation-play-state: paused;
   }
 }
 
@@ -122,37 +101,40 @@
 
   transition:
     transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    margin-top 0.2s cubic-bezier(0.16, 1, 0.3, 1),
     opacity 0.2s ease;
-  will-change: transform, margin-top;
 }
 
-.stackCollapsed .stackItem:not(:first-child):not(.stackItemHidden) {
-  margin-top: calc(var(--altum-badge-overhang) - var(--altum-stack-front-h, var(--altum-notification-stack-front)));
+.stackCollapsed:not(:hover):not(:focus-within) {
+  display: grid;
 
-  pointer-events: none;
+  gap: 0;
 
-  transform: scale(calc(1 - var(--altum-stack-i, 1) * 0.035));
-}
+  & .stackItem {
+    z-index: calc(100 - var(--altum-stack-i, 0));
 
-.stackCollapsed .stackItemHidden {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
+    align-self: end;
+    grid-area: 1 / 1;
+  }
 
-  visibility: hidden;
-  overflow: hidden;
+  & .stackItem:not(:first-child):not(.stackItemHidden) {
+    pointer-events: none;
 
-  height: 0;
+    transform:
+      translateY(calc(var(--altum-stack-i, 1) * var(--altum-badge-overhang) * var(--altum-stack-peek, 1)))
+      scale(calc(1 - var(--altum-stack-i, 1) * 0.035));
+  }
 
-  margin-top: 0;
+  & .stackItemHidden {
+    visibility: hidden;
+    overflow: hidden;
 
-  opacity: 0;
+    height: 0;
+    min-height: 0;
 
-  pointer-events: none;
+    opacity: 0;
 
-  transform: scale(0.92);
+    pointer-events: none;
+  }
 }
 
 .notification {
@@ -170,58 +152,134 @@
 
   padding: var(--altum-g-space-3) var(--altum-g-space-4);
 
-  border: 1px solid var(--altum-box-border-color, var(--altum-color-border));
-  border-left: 4px solid var(--altum-color-brand);
+  border: 1px solid var(--altum-color-border);
   border-radius: var(--altum-g-radius);
 
   font-family: var(--altum-g-font-family-ui);
 
   color: var(--altum-color-fill-floating-fg);
   background-color: var(--altum-color-fill-floating-bg);
-  box-shadow: var(--altum-shadow-dropdown, var(--altum-shadow-surface));
+  box-shadow: var(--altum-shadow-dropdown);
 
   pointer-events: auto;
 
   transition: var(--altum-transition-smooth);
-  animation: notificationSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  animation-name: global(altum-notification-enter);
+  animation-duration: 0.2s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 
-  &.exit {
-    animation: notificationSlideOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition-behavior: allow-discrete;
+
+  &::before {
+    position: absolute;
+    top: var(--altum-g-radius);
+    bottom: var(--altum-g-radius);
+    left: 0;
+
+    content: '';
+
+    width: var(--altum-g-space-1);
+
+    border-radius: 0 var(--altum-g-radius) var(--altum-g-radius) 0;
+
+    background-color: var(--altum-color-status-info);
+  }
+
+  &[data-variant='success']::before {
+    background-color: var(--altum-color-status-success);
+  }
+
+  &[data-variant='warning']::before {
+    background-color: var(--altum-color-status-warning);
+  }
+
+  &[data-variant='error']::before {
+    background-color: var(--altum-color-status-error);
+  }
+
+  &[data-life] {
+    animation-name: global(altum-notification-enter), global(altum-notification-leave);
+    animation-duration: 0.2s, 0.2s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1), cubic-bezier(0.16, 1, 0.3, 1);
+    animation-delay: 0s, var(--altum-toast-life, 10000ms);
+    animation-fill-mode: both, forwards;
+  }
+
+  &[data-closing] {
+    animation-name: global(altum-notification-leave);
+    animation-duration: 0.2s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    animation-delay: 0s;
+    animation-fill-mode: forwards;
+
+    & .timer {
+      visibility: hidden;
+    }
+  }
+
+  /* Standalone-карточка вне стопки */
+  &[data-pause]:hover:not([data-closing]),
+  &[data-pause]:focus-within:not([data-closing]),
+  &[data-pause]:hover:not([data-closing]) .timer circle:last-child,
+  &[data-pause]:focus-within:not([data-closing]) .timer circle:last-child {
+    animation-play-state: paused;
+  }
+
+  &:hover .timer,
+  &:focus-within .timer {
+    opacity: 0;
+  }
+
+  &:hover .closePending,
+  &:focus-within .closePending {
+    opacity: 1;
+
+    pointer-events: auto;
   }
 
   & .title {
-    overflow: visible;
-
     grid-row: 1;
     grid-column: 1;
-
-    margin: 0;
 
     font-size: var(--altum-g-font-size-base);
     font-weight: var(--altum-g-font-weight-semibold);
     line-height: var(--altum-g-line-height-base);
-    text-overflow: unset;
-    white-space: normal;
   }
 
   & .description {
-    overflow: visible;
-
     grid-column: 1 / -1;
-
-    margin: 0;
 
     font-size: var(--altum-g-font-size-sm);
     line-height: var(--altum-g-line-height-sm);
-    text-overflow: unset;
-    white-space: normal;
 
     color: var(--altum-color-ink-muted);
   }
 
-  & .close {
+  & .dismiss {
+    position: relative;
+
     grid-row: 1;
     grid-column: 2;
+
+    width: var(--altum-overlay-close-size);
+    height: var(--altum-overlay-close-size);
+  }
+
+  & .timer circle:last-child {
+    transition: none;
+    animation-name: notificationCountdown;
+    animation-duration: var(--altum-toast-life, 10000ms);
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+
+  & .closePending {
+    position: absolute;
+    inset: 0;
+
+    opacity: 0;
+
+    pointer-events: none;
   }
 
   & .actions {
@@ -240,49 +298,19 @@
 
     opacity: 0.75;
   }
+}
 
-  & .progressTrack {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-
-    overflow: hidden;
-
-    height: var(--altum-g-space-1);
-
-    background-color: var(--altum-color-surface);
+@keyframes notificationCountdown {
+  from {
+    stroke-dashoffset: 0;
   }
 
-  & .progressBar {
-    width: 100%;
-    height: 100%;
-
-    background-color: color-mix(in srgb, var(--altum-color-input-text) 22%, transparent);
-
-    transform-origin: left center;
-
-    animation: notificationProgress linear forwards;
-  }
-
-  &.info {
-    border-left-color: var(--altum-color-status-info);
-  }
-
-  &.success {
-    border-left-color: var(--altum-color-status-success);
-  }
-
-  &.warning {
-    border-left-color: var(--altum-color-status-warning);
-  }
-
-  &.error {
-    border-left-color: var(--altum-color-status-error);
+  to {
+    stroke-dashoffset: 100;
   }
 }
 
-@keyframes notificationSlideIn {
+@keyframes :global(altum-notification-enter) {
   from {
     opacity: 0;
 
@@ -296,7 +324,7 @@
   }
 }
 
-@keyframes notificationSlideOut {
+@keyframes :global(altum-notification-leave) {
   from {
     opacity: 1;
 
@@ -307,24 +335,38 @@
     opacity: 0;
 
     transform: translate(var(--altum-notify-from-x), var(--altum-notify-from-y)) scale(0.96);
-  }
-}
-
-@keyframes notificationProgress {
-  from {
-    transform: scaleX(1);
-  }
-
-  to {
-    transform: scaleX(0);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .notification,
-  .notification.exit,
-  .progressBar {
+  .notification {
     animation: none;
+  }
+
+  .notification[data-life] {
+    animation-name: global(altum-notification-leave);
+    animation-duration: 1ms;
+    animation-timing-function: linear;
+    animation-delay: var(--altum-toast-life, 10000ms);
+    animation-fill-mode: forwards;
+  }
+
+  .notification[data-closing] {
+    animation-name: global(altum-notification-leave);
+    animation-duration: 1ms;
+    animation-timing-function: linear;
+    animation-delay: 0s;
+    animation-fill-mode: forwards;
+  }
+
+  .notification .timer {
+    visibility: hidden;
+  }
+
+  .notification .closePending {
+    opacity: 1;
+
+    pointer-events: auto;
   }
 
   .stack,

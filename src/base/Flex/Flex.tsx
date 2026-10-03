@@ -1,35 +1,16 @@
-import {forwardRef, type CSSProperties, type ComponentPropsWithoutRef, type ElementType} from 'react';
-import {As} from '../As';
-import {cn} from '../../utils/cn';
-import {mergeStyles} from '../../utils/mergeStyles';
-import {resolveSpacingCss} from '../../utils/spacing';
+import type {CSSProperties, ComponentPropsWithoutRef, ElementType, Ref} from 'react';
+import {cn} from '../../core/utils/cn';
+import {spacingCss} from '../../core/utils/spacing';
 import type {SpacingValue} from '../../types/spacing';
 import styles from './Flex.module.css';
 
-const ALIGN = {
-	start: 'flex-start',
-	center: 'center',
-	end: 'flex-end',
-	baseline: 'baseline',
-	stretch: 'stretch',
-} as const;
-
-const JUSTIFY = {
-	start: 'flex-start',
-	center: 'center',
-	end: 'flex-end',
-	between: 'space-between',
-	around: 'space-around',
-	evenly: 'space-evenly',
-} as const;
-
-export type FlexAlign = keyof typeof ALIGN;
-export type FlexJustify = keyof typeof JUSTIFY;
+export type FlexAlign = 'start' | 'center' | 'end' | 'baseline' | 'stretch';
+export type FlexJustify = 'start' | 'center' | 'end' | 'between' | 'around' | 'evenly';
 export type FlexDirection = 'row' | 'column';
 
 /**
  * Внутренний flex-хост для `Stack` / `Inline` / `Split` / `ControlRow`.
- * Gap и выравнивание — CSS-переменные и inline-style, не utility-классы.
+ * Направление, перенос и выравнивание — `data-*`, промежуток — `--altum-flex-gap`.
  *
  * @component
  */
@@ -40,40 +21,41 @@ export interface FlexProps extends ComponentPropsWithoutRef<'div'> {
 	align?: FlexAlign;
 	justify?: FlexJustify;
 	wrap?: boolean;
+	rootRef?: Ref<HTMLElement>
+		| Ref<HTMLDivElement>
+		| Ref<HTMLSpanElement>
+		| Ref<HTMLUListElement>
+		| Ref<HTMLOListElement>
+		| Ref<HTMLLIElement>;
 }
 
-export const Flex = forwardRef<HTMLElement, FlexProps>(function Flex(
-	{
-		as,
-		direction,
-		gap = 'md',
-		align = 'stretch',
-		justify = 'start',
-		wrap,
-		className,
-		style,
-		...rest
-	},
-	ref,
-) {
+export const Flex = ({
+	as,
+	direction = 'row',
+	gap = 'md',
+	align = 'stretch',
+	justify = 'start',
+	wrap,
+	className,
+	style,
+	rootRef,
+	...rest
+}: FlexProps) => {
+	const Component = (as ?? 'div') as ElementType;
+
 	return (
-		<As
-			ref={ref}
-			as={as}
-			className={cn(
-				styles.flex,
-				direction === 'column' ? styles.col : styles.row,
-				wrap === false && styles.nowrap,
-				className,
-			)}
-			style={mergeStyles({
-				'--altum-flex-gap': resolveSpacingCss(gap),
-				alignItems: ALIGN[align],
-				justifyContent: JUSTIFY[justify],
-			} as CSSProperties, style)}
+		<Component
+			ref={rootRef}
+			className={cn(styles.flex, className)}
+			data-direction={direction}
+			data-align={align}
+			data-justify={justify}
+			data-wrap={wrap === false ? 'false' : undefined}
+			style={{
+				'--altum-flex-gap': spacingCss(gap),
+				...style,
+			} as CSSProperties}
 			{...rest}
 		/>
 	);
-});
-
-Flex.displayName = 'Flex';
+};

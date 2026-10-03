@@ -8,18 +8,12 @@
   --altum-es-title-mb: var(--altum-g-space-2);
   --altum-es-desc-mb: var(--altum-g-space-5);
 
-  display: flex;
-
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
   padding: var(--altum-es-pad);
 
   text-align: center;
 }
 
-.sm {
+.emptyState[data-size='sm'] {
   --altum-es-pad: var(--altum-g-space-4) var(--altum-g-space-3);
   --altum-es-icon: calc(var(--altum-g-font-size-3xl) + var(--altum-g-space-1));
   --altum-es-title: var(--altum-g-font-size-sm);
@@ -30,7 +24,7 @@
   --altum-es-desc-mb: var(--altum-g-space-3);
 }
 
-.lg {
+.emptyState[data-size='lg'] {
   --altum-es-pad: calc(var(--altum-g-space-8) + var(--altum-g-space-8)) var(--altum-g-space-8);
   --altum-es-icon: calc(var(--altum-g-font-size-4xl) * 1.75);
   --altum-es-title: var(--altum-g-font-size-xl);
@@ -39,11 +33,6 @@
 }
 
 .icon {
-  display: flex;
-
-  justify-content: center;
-  align-items: center;
-
   margin-bottom: var(--altum-es-icon-mb);
 
   font-size: var(--altum-es-icon);

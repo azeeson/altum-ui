@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 /**
@@ -21,4 +22,6 @@ export interface EmptyStateProps extends Omit<ComponentPropsWithoutRef<'div'>, '
 	 * @default 'md'
 	 */
 	size?: EmptyStateSize;
+	/** Корень. */
+	rootRef?: Ref<HTMLDivElement>;
 }

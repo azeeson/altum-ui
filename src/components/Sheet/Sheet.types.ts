@@ -1,13 +1,8 @@
 import type {
 	HTMLAttributes,
-	ButtonHTMLAttributes,
 	ReactNode,
+	Ref,
 } from 'react';
-import type {DialogFooterAlign} from '../../base/DialogBase';
-import type {OverlayZIndexTier} from '../../utils/overlayZIndex';
-import type {OverlayDismiss} from '../Overlay/Overlay.types';
-
-export type {OverlayZIndexTier};
 
 /**
  * Режим панели: sheet (низ/верх), sidebar (бок), auto (по breakpoint).
@@ -23,12 +18,12 @@ export type SheetDirection = 'start' | 'end';
 /**
  * Выравнивание действий в `Sheet.Footer`.
  */
-export type SheetFooterAlign = DialogFooterAlign;
+export type SheetFooterAlign = 'start' | 'center' | 'end' | 'space-between';
 
 /**
  * Свойства корня `Sheet`.
  *
- * Составной: `Sheet.Header` / `Title` / `Close` / `Body` / `Footer`.
+ * Составной: `Sheet.Header` / `Body` / `Footer`. Заголовок — `Title`.
  */
 export interface SheetProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
 	open: boolean;
@@ -46,26 +41,12 @@ export interface SheetProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'
 	 * @default 'end'
 	 */
 	direction?: SheetDirection;
-	/** Показывать Backdrop; при `false` — немодальный. @default true */
-	backdrop?: boolean;
 	/** Ширина для `mode="sidebar"`. @default 280 */
 	width?: number | string;
 	/** Высота для `mode="sheet"`. */
 	height?: number | string;
-	backdropVariant?: 'default' | 'strong';
-	backdropBlur?: 'none' | 'sm' | 'md';
-	/**
-	 * Именованный слой ThemeProvider (`--altum-g-z-*`), мапится в Overlay `purpose`.
-	 * @default CSS `--altum-g-z-overlay` (`purpose="sheet"`)
-	 */
-	zIndexTier?: OverlayZIndexTier;
-	/** Сырой z-index корня; перекрывает `zIndexTier` / `purpose`. */
-	zIndex?: number | string;
-	/**
-	 * Закрытие: снаружи, Escape, оба или выкл.
-	 * @default `'all'` при `backdrop`, иначе `'escape'`
-	 */
-	dismiss?: OverlayDismiss;
+	/** Поверхность панели. */
+	rootRef?: Ref<HTMLDivElement>;
 }
 
 /**
@@ -82,25 +63,10 @@ export interface SheetHeaderProps extends HTMLAttributes<HTMLElement> {
 	variant?: 'chrome' | 'plain';
 	leftControls?: ReactNode;
 	rightControls?: ReactNode;
-	/** Встроенный `Sheet.Close` справа. По умолчанию `true`, если нет `rightControls`. */
+	/** Крестик в правой ячейке. По умолчанию `true`, если нет `rightControls`. */
 	showClose?: boolean;
-}
-
-/**
- * Свойства `Sheet.Title`.
- */
-export interface SheetTitleProps extends Omit<HTMLAttributes<HTMLHeadingElement>, 'children' | 'className'> {
-	children: ReactNode;
-	className?: string;
-	as?: 'h2' | 'h3' | 'h4';
-}
-
-/**
- * Свойства `Sheet.Close`.
- */
-export interface SheetCloseProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'className' | 'onClick' | 'type'> {
-	className?: string;
-	'aria-label'?: string;
+	/** Узел шапки. */
+	rootRef?: Ref<HTMLElement>;
 }
 
 /**
@@ -114,6 +80,8 @@ export interface SheetBodyProps extends HTMLAttributes<HTMLElement> {
 	 * @default true
 	 */
 	padding?: boolean;
+	/** Узел тела. */
+	rootRef?: Ref<HTMLElement>;
 }
 
 /**
@@ -123,4 +91,6 @@ export interface SheetFooterProps extends Omit<HTMLAttributes<HTMLElement>, 'ali
 	children?: ReactNode;
 	className?: string;
 	align?: SheetFooterAlign;
+	/** Узел подвала. */
+	rootRef?: Ref<HTMLElement>;
 }

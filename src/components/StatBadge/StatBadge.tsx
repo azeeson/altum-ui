@@ -5,10 +5,8 @@ export type {
 	StatBadgeProps,
 } from './StatBadge.types';
 
-import {forwardRef} from 'react';
 import styles from './StatBadge.module.css';
-import status from '../../styles/status.module.css';
-import {cn} from '../../utils/cn';
+import {cn} from '../../core/utils/cn';
 
 /**
  * Компактный блок метрики «подпись + значение» для дашбордов и профилей.
@@ -17,37 +15,31 @@ import {cn} from '../../utils/cn';
  * @example
  * <StatBadge label="Задачи" value={12} variant="success" />
  */
-export const StatBadge = forwardRef<HTMLDivElement, StatBadgeProps>(function StatBadge(
-	{
-		label,
-		value,
-		variant = 'default',
-		size = 'md',
-		className,
-		...rest
-	},
-	ref,
-) {
+export const StatBadge = ({
+	label,
+	value,
+	variant = 'default',
+	size = 'md',
+	className,
+	rootRef,
+	style,
+	...rest
+}: StatBadgeProps) => {
 	return (
 		<div
-			ref={ref}
-			className={cn(
-				styles.statBadge,
-				variant !== 'default' && status[variant],
-				size === 'sm' && styles.sm,
-				className,
-			)}
-			aria-label={`${value} ${label}`}
 			{...rest}
-		>
-			<span className={styles.value}>
-				{value}
-			</span>
-			<span className={styles.label}>
-				{label}
-			</span>
-		</div>
+			ref={rootRef}
+			style={{
+				border: 'none',
+				boxShadow: 'none',
+				...style,
+			}}
+			className={cn(styles.statBadge, className)}
+			aria-label={`${value} ${label}`}
+			data-value={value}
+			data-label={label}
+			data-variant={variant !== 'default' ? variant : 'ghost'}
+			data-size={size === 'sm' ? 'sm' : undefined}
+		/>
 	);
-});
-
-StatBadge.displayName = 'StatBadge';
+};

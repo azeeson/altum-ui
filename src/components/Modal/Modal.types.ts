@@ -1,48 +1,57 @@
-import type React from 'react';
 import type {
-	DialogBodyProps,
-	DialogCloseProps,
-	DialogFooterAlign,
-	DialogFooterProps,
-	DialogHeaderProps,
-	DialogTitleProps,
-} from '../../base/DialogBase';
+	ComponentPropsWithoutRef,
+	ReactNode,
+	Ref,
+} from 'react';
+import type {ControlSize} from '../../types';
 
-/** Выравнивание футера модалки (как у `DialogBase`). */
-export type ModalFooterAlign = DialogFooterAlign;
+/** Выравнивание действий в `Modal.Footer`. */
+export type ModalFooterAlign = 'start' | 'center' | 'end' | 'space-between';
 
 /** Свойства корня `Modal`. */
-export interface ModalRootProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title' | 'children'> {
+export interface ModalRootProps extends Omit<ComponentPropsWithoutRef<'div'>, 'title' | 'children'> {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	children: React.ReactNode;
+	children: ReactNode;
+	/**
+	 * Ширина диалога: `sm` 400px, `md` 500px, `lg` 600px.
+	 * Не шире окна браузера: 16px отступа с каждой стороны.
+	 * @default 'md'
+	 */
+	size?: ControlSize;
 	className?: string;
+	/**
+	 * Крестик в правом верхнем углу.
+	 * @default true
+	 */
+	showClose?: boolean;
 	'aria-labelledby'?: string;
 	'aria-label'?: string;
 	'aria-describedby'?: string;
+	/** Поверхность диалога (`DialogLayout`). */
+	rootRef?: Ref<HTMLElement>;
 }
 
 /** Свойства шапки `Modal.Header`. */
-export type ModalHeaderProps = DialogHeaderProps;
-
-/** Свойства заголовка `Modal.Title`. */
-export type ModalTitleProps = DialogTitleProps;
-
-/** Свойства кнопки закрытия `Modal.Close`. */
-export type ModalCloseProps = DialogCloseProps;
+export interface ModalHeaderProps extends Omit<ComponentPropsWithoutRef<'header'>, 'children'> {
+	children?: ReactNode;
+	/** Узел шапки. */
+	rootRef?: Ref<HTMLElement>;
+}
 
 /** Свойства тела `Modal.Body`. */
-export type ModalBodyProps = DialogBodyProps;
+export interface ModalBodyProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
+	children?: ReactNode;
+	/** Узел тела. */
+	rootRef?: Ref<HTMLElement>;
+}
 
 /** Свойства футера `Modal.Footer`. */
-export type ModalFooterProps = DialogFooterProps;
-
-/** Свойства футера формы `Modal.FormFooter`. */
-export interface ModalFormFooterProps extends Omit<React.HTMLAttributes<HTMLElement>, 'children'> {
-	className?: string;
-	message?: React.ReactNode;
+export interface ModalFooterProps extends Omit<ComponentPropsWithoutRef<'footer'>, 'align' | 'children'> {
+	children?: ReactNode;
 	align?: ModalFooterAlign;
-	children?: React.ReactNode;
+	/** Узел футера. */
+	rootRef?: Ref<HTMLElement>;
 }
 
 /** Алиас свойств корня `Modal`. */

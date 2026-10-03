@@ -1,19 +1,30 @@
-.h1 {
-  font-size: var(--altum-g-font-size-4xl);
-  line-height: 1.25;
-}
+.title {
+  margin: 0;
 
-.h2 {
+  font-family: var(--altum-g-font-family-ui);
   font-size: var(--altum-g-font-size-3xl);
+  font-weight: var(--altum-g-font-weight-bold);
   line-height: 1.25;
-}
 
-.h3 {
-  font-size: var(--altum-g-font-size-2xl);
-  line-height: 1.25;
-}
+  color: var(--altum-color-type);
 
-.h4 {
-  font-size: var(--altum-g-font-size-lg);
-  line-height: 1.25;
+  &[data-level='1'] {
+    font-size: var(--altum-g-font-size-4xl);
+  }
+
+  &[data-level='3'] {
+    font-size: var(--altum-g-font-size-2xl);
+  }
+
+  &[data-level='4'] {
+    font-size: var(--altum-g-font-size-lg);
+  }
+
+  &[data-weight='normal'] {
+    font-weight: var(--altum-g-font-weight-normal);
+  }
+
+  &[data-weight='medium'] {
+    font-weight: var(--altum-g-font-weight-medium);
+  }
 }

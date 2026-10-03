@@ -1,94 +1,112 @@
+/*
+ * Overlay — слепой донор Top Layer.
+ *
+ * Platform (остаётся здесь): reset `<dialog>`, open/display, геометрия слоя
+ * (центр modal, край sheet), минимальный `::backdrop` без затемнения.
+ *
+ * Consumer chrome: поверхность Box / DialogLayout у Modal, Sheet, CommandPalette;
+ * визуальный scrim — `src/styles/overlayScrim.module.css` через `hostClassName`.
+ * Sheet.module.css докручивает mobile `data-mode="auto"` через :global(dialog…).
+ *
+ * Layer motion: opacity/scale — `overlayTransition.fadeScale` (floating host + modal panel).
+ * Sheet slide — translate на `.scrim` ниже.
+ */
+
 .scrim {
-  position: fixed;
-  inset: 0;
+  --altum-overlay-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-  pointer-events: none;
+/* --- platform: dialog host --- */
+.scrim {
+  display: none;
+  overflow: hidden;
 
-  &[data-kind='modal'],
-  &[data-kind='floating'] {
-    z-index: var(--altum-g-z-modal);
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+
+  margin: 0;
+  padding: 0;
+
+  border: none;
+
+  font: inherit;
+
+  color: inherit;
+  background: transparent;
+
+  transition:
+    display var(--altum-motion-overlay) allow-discrete,
+    overlay var(--altum-motion-overlay) allow-discrete;
+
+  &[open] {
+    display: flex;
   }
 
   &[data-kind='modal'] {
-    display: flex;
-
+    justify-content: center;
     align-items: center;
   }
 
+  /* platform geometry + shared slide for sheet dialog root */
   &[data-kind='sheet'] {
-    z-index: var(--altum-g-z-overlay);
+    position: fixed;
+    inset: auto 0 0 0;
+
+    overflow: visible;
+
+    width: 100%;
+    height: auto;
+    max-height: 95vh;
+    max-height: 95dvh;
+
+    translate: 0 100%;
+
+    transition:
+      translate var(--altum-motion-overlay) var(--altum-overlay-ease),
+      display var(--altum-motion-overlay) allow-discrete,
+      overlay var(--altum-motion-overlay) allow-discrete;
+
+    &[data-side='top'] {
+      inset: 0 0 auto 0;
+
+      translate: 0 -100%;
+    }
+
+    &[data-side='left'],
+    &[data-side='right'] {
+      width: fit-content;
+      max-width: 95vw;
+      max-width: 95dvw;
+      height: 100%;
+      max-height: none;
+    }
+
+    &[data-side='left'] {
+      inset: 0 auto 0 0;
+
+      translate: -100% 0;
+    }
+
+    &[data-side='right'] {
+      inset: 0 0 0 auto;
+
+      translate: 100% 0;
+    }
+
+    &[open] {
+      translate: 0 0;
+    }
   }
 }
 
-.fade {
-  transition: opacity var(--altum-motion-overlay) cubic-bezier(0.16, 1, 0.3, 1);
+/* platform: ::backdrop reset — заливка/blur у потребителей (overlayScrim) */
+.scrim::backdrop {
+  background: transparent;
 }
 
-.scrim[data-presented] .fade {
-  opacity: 1;
-
-  pointer-events: auto;
-}
-
-.scrim:not([data-presented]) .fade {
-  opacity: 0;
-
-  pointer-events: none;
-}
-
-.trap {
-  pointer-events: none;
-  & > * {
-    pointer-events: auto;
-  }
-}
-
-.scrim[data-kind='modal'] .trap {
-  position: relative;
-  z-index: var(--altum-g-z-raised);
-
-  display: flex;
-
-  justify-content: center;
-  align-items: center;
-
-  width: 100%;
-  height: 100%;
-}
-
-.scrim[data-kind='floating'] .trap,
-.scrim[data-kind='sheet'] .trap {
-  position: absolute;
-  inset: 0;
-}
-
-.scrim[data-kind='sheet'] .trap {
-  display: flex;
-
-  width: 100%;
-  height: 100%;
-}
-
-.scrim[data-kind='sheet'][data-side='bottom'] .trap {
-  justify-content: center;
-  align-items: flex-end;
-}
-
-.scrim[data-kind='sheet'][data-side='top'] .trap {
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.scrim[data-kind='sheet'][data-side='left'] .trap {
-  justify-content: flex-start;
-  align-items: stretch;
-}
-
-.scrim[data-kind='sheet'][data-side='right'] .trap {
-  justify-content: flex-end;
-  align-items: stretch;
-}
-
+/* geometry only; surface fill/radius/shadow — у потребителей; motion — fadeScale / sheet translate */
 .panel {
   pointer-events: auto;
 
@@ -98,189 +116,72 @@
     max-height: 100vh;
     max-height: 100dvh;
 
-    transition:
-      opacity var(--altum-motion-overlay) cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-
-    &[data-presented] {
-      opacity: 1;
-
-      transform: translateY(0);
-    }
-
-    &:not([data-presented]) {
-      opacity: 0;
-
-      transform: translateY(8px);
+    & > * {
+      max-height: inherit;
     }
   }
 
   &[data-kind='floating'] {
     position: fixed;
-    z-index: var(--altum-g-z-modal);
+    inset: unset;
 
-    transition:
-      opacity var(--altum-motion-overlay) cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: visible;
 
-    &[data-presented] {
-      opacity: 1;
+    width: fit-content;
+    height: fit-content;
 
-      transform: scale(1);
-    }
+    margin: 0;
+    padding: 0;
 
-    &:not([data-presented]) {
-      opacity: 0;
+    border: none;
 
-      transform: scale(0.96);
-    }
+    background: transparent;
   }
 
   &[data-kind='sheet'] {
     position: relative;
-    z-index: var(--altum-g-z-raised);
 
     box-sizing: border-box;
 
-    transition: transform var(--altum-motion-overlay) cubic-bezier(0.16, 1, 0.3, 1);
+    width: 100%;
+    max-height: inherit;
 
-    &[data-presented] {
-      transform: translate(0, 0);
-    }
-
-    &:not([data-presented]) {
-      transform: translate(var(--altum-sheet-x, 0), var(--altum-sheet-y, 100%));
-    }
-
-    &[data-side='top'],
-    &[data-side='bottom'] {
-      width: 100%;
-      max-height: 95vh;
-      max-height: 95dvh;
-    }
-
-    &[data-side='top'] {
-      --altum-sheet-x: 0;
-      --altum-sheet-y: -100%;
-    }
-
-    &[data-side='bottom'] {
-      --altum-sheet-x: 0;
-      --altum-sheet-y: 100%;
+    & > * {
+      max-height: inherit;
     }
 
     &[data-side='left'],
     &[data-side='right'] {
-      max-width: 95vw;
-      max-width: 95dvw;
+      width: fit-content;
       height: 100%;
-    }
 
-    &[data-side='left'] {
-      --altum-sheet-x: -100%;
-      --altum-sheet-y: 0;
-    }
-
-    &[data-side='right'] {
-      --altum-sheet-x: 100%;
-      --altum-sheet-y: 0;
+      & > * {
+        height: 100%;
+      }
     }
   }
 }
 
-.anchor {
-  position: fixed;
-  z-index: var(--altum-g-z-dropdown);
-
-  overflow: auto;
-
-  max-width: calc(100vw - var(--altum-g-space-4));
-  max-height: calc(100vh - var(--altum-g-space-4));
-  max-height: calc(100dvh - var(--altum-g-space-4));
-
-  pointer-events: auto;
-
-  transition: opacity var(--altum-motion-overlay) cubic-bezier(0.16, 1, 0.3, 1);
-
-  &[data-presented] {
-    opacity: 1;
+@starting-style {
+  .scrim[data-kind='sheet'][open] {
+    translate: 0 100%;
   }
 
-  &:not([data-presented]) {
-    opacity: 0;
+  .scrim[data-kind='sheet'][data-side='top'][open] {
+    translate: 0 -100%;
   }
 
-  &.anchorTooltip {
-    overflow: visible;
-
-    max-height: none;
+  .scrim[data-kind='sheet'][data-side='left'][open] {
+    translate: -100% 0;
   }
 
-  &.anchorPopover {
-    overflow: visible;
-  }
-}
-
-.originTop {
-  transform-origin: top center;
-}
-
-.originBottom {
-  transform-origin: bottom center;
-}
-
-.originLeft {
-  transform-origin: center left;
-}
-
-.originRight {
-  transform-origin: center right;
-}
-
-.dropdown {
-  box-sizing: border-box;
-
-  transition:
-    opacity var(--altum-motion-overlay) cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-
-  &[data-presented] {
-    opacity: 1;
-
-    transform: scale(1);
-  }
-
-  &:not([data-presented]).originTop,
-  &:not([data-presented]).originBottom {
-    opacity: 0;
-
-    transform: scaleY(0.85);
-  }
-
-  &:not([data-presented]).originLeft,
-  &:not([data-presented]).originRight {
-    opacity: 0;
-
-    transform: scaleX(0.85);
+  .scrim[data-kind='sheet'][data-side='right'][open] {
+    translate: 100% 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fade,
-  .panel,
-  .anchor,
-  .dropdown {
+  .scrim {
     transition: none;
-  }
-
-  .panel[data-kind='modal']:not([data-presented]),
-  .panel[data-kind='floating']:not([data-presented]),
-  .panel[data-kind='sheet']:not([data-presented]),
-  .dropdown:not([data-presented]) {
-    transform: none;
-  }
-
-  .panel[data-kind='sheet']:not([data-presented]) {
-    opacity: 0;
   }
 }

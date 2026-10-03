@@ -20,6 +20,7 @@ dist/
 /types/
 dist-storybook/
 dist-test-types/
+dist-demo/
 
 node_modules/
 *storybook.log

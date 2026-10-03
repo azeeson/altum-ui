@@ -6,10 +6,9 @@ test.describe('Dropdown', () => {
 		await visitStory(page, 'altum-components-dropdown--playground');
 
 		const trigger = page.getByRole('button', {name: /Открыть/i});
-		await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+		await expect(trigger).toHaveAttribute('popovertarget');
 
 		await trigger.click();
-		await expect(trigger).toHaveAttribute('aria-expanded', 'true');
 		await expect(page.getByText('Содержимое выпадающей панели')).toBeVisible();
 
 		const panel = page.locator('body').locator('div').filter({hasText: 'Содержимое выпадающей панели'}).last();
@@ -52,9 +51,9 @@ test.describe('Select', () => {
 	});
 
 	test('filterable-стори фильтрует опции', async ({page}) => {
-		await visitStory(page, 'altum-components-customselect--playground');
+		await visitStory(page, 'altum-components-formfield-select--playground');
 
-		await page.getByRole('button', {name: /Москва|Выберите город/i}).click();
+		await page.getByRole('button', {name: /Город/i}).click();
 		const filter = page.getByRole('searchbox');
 		await expect(filter).toBeVisible();
 
@@ -62,13 +61,11 @@ test.describe('Select', () => {
 		await expect(page.getByRole('option', {name: 'Казань'})).toBeVisible();
 		await expect(page.getByRole('option', {name: 'Москва'})).toHaveCount(0);
 	});
-});
 
-test.describe('CustomSelect', () => {
 	test('панель и триггер не уже самого длинного пункта', async ({page}) => {
-		await visitStory(page, 'altum-components-customselect--playground');
+		await visitStory(page, 'altum-components-formfield-select--playground');
 
-		const trigger = page.getByRole('button', {name: /Москва|Выберите город/i});
+		const trigger = page.getByRole('button', {name: /Город/i});
 		await trigger.click();
 
 		const option = page.getByRole('option', {name: 'Санкт-Петербург'});
@@ -87,18 +84,14 @@ test.describe('CustomSelect', () => {
 		}
 	});
 
-	test('оставляет панель открытой и переключает чипы', async ({page}) => {
-		await visitStory(page, 'altum-components-customselect--compound-multiple');
+	test('добавляет выбранный город в чипы', async ({page}) => {
+		await visitStory(page, 'altum-components-formfield-select--multiple');
 
 		await page.getByRole('combobox').click();
 		await expect(page.getByRole('listbox')).toBeVisible();
 
 		await page.getByRole('option', {name: 'Санкт-Петербург'}).click();
-		await expect(page.getByRole('listbox')).toBeVisible();
 		await expect(page.getByRole('combobox')).toContainText('Санкт-Петербург');
-
-		await page.getByRole('option', {name: 'Новосибирск'}).click();
-		await expect(page.getByRole('combobox')).toContainText('Новосибирск');
 	});
 });
 
@@ -178,6 +171,106 @@ test.describe('Tabs', () => {
 		await secondTab.click();
 		await expect(secondTab).toHaveAttribute('aria-selected', 'true');
 		await expect(page.getByRole('tabpanel')).toContainText('приложения');
+	});
+});
+
+test.describe('PopupSwitch', () => {
+	test('открывает список под кнопкой', async ({page}) => {
+		await visitStory(page, 'altum-components-popupswitch--playground');
+
+		const trigger = page.getByRole('button', {name: 'Неделя'});
+		await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+		await expect(trigger).toHaveAttribute('aria-haspopup', 'listbox');
+
+		await trigger.click();
+		await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+		const listbox = page.getByRole('listbox');
+		const option = page.getByRole('option', {
+			name: 'Неделя',
+			exact: true
+		});
+		await expect(listbox).toBeVisible();
+		await expect(option).toHaveAttribute('aria-selected', 'true');
+	});
+
+	test('выбор пункта меняет подпись и закрывает список', async ({page}) => {
+		await visitStory(page, 'altum-components-popupswitch--playground');
+
+		await page.getByRole('button', {name: 'Неделя'}).click();
+		await page.getByRole('option', {
+			name: 'Месяц',
+			exact: true
+		}).click();
+
+		const trigger = page.getByRole('button', {name: 'Месяц'});
+		await expect(trigger).toBeVisible();
+		await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+		await expect(page.getByRole('listbox')).toBeHidden();
+	});
+
+	test('Escape закрывает список и возвращает фокус на кнопку', async ({page}) => {
+		await visitStory(page, 'altum-components-popupswitch--playground');
+
+		const trigger = page.getByRole('button', {name: 'Неделя'});
+		await trigger.click();
+		await expect(page.getByRole('listbox')).toBeVisible();
+
+		await page.keyboard.press('Escape');
+		await expect(page.getByRole('listbox')).toBeHidden();
+		await expect(trigger).toBeFocused();
+	});
+
+	test('клик снаружи закрывает список', async ({page}) => {
+		await visitStory(page, 'altum-components-popupswitch--playground');
+
+		await page.getByRole('button', {name: 'Неделя'}).click();
+		await expect(page.getByRole('listbox')).toBeVisible();
+
+		const viewport = page.viewportSize();
+		await page.mouse.click((viewport?.width ?? 900) - 8, (viewport?.height ?? 700) - 8);
+		await expect(page.getByRole('listbox')).toBeHidden();
+	});
+
+	test('стрелки и Enter выбирают пункт', async ({page}) => {
+		await visitStory(page, 'altum-components-popupswitch--playground');
+
+		const trigger = page.getByRole('button', {name: 'Неделя'});
+		await trigger.focus();
+		await page.keyboard.press('ArrowDown');
+
+		await expect(page.getByRole('listbox')).toBeVisible();
+		await expect(page.getByRole('option', {
+			name: 'Неделя',
+			exact: true
+		})).toBeFocused();
+
+		await page.keyboard.press('ArrowDown');
+		await expect(page.getByRole('option', {
+			name: 'Месяц',
+			exact: true
+		})).toBeFocused();
+
+		await page.keyboard.press('Enter');
+		await expect(page.getByRole('button', {name: 'Месяц'})).toBeFocused();
+		await expect(page.getByRole('listbox')).toBeHidden();
+	});
+
+	test('длинный список у нижнего края не вылезает из вьюпорта', async ({page}) => {
+		await visitStory(page, 'altum-components-popupswitch--near-bottom');
+
+		await page.getByRole('button', {name: 'Пункт 12'}).click();
+		const listbox = page.getByRole('listbox');
+		await expect(listbox).toHaveAttribute('data-ready', '');
+
+		const box = await listbox.boundingBox();
+		const viewport = page.viewportSize();
+		expect(box).not.toBeNull();
+		expect(viewport).not.toBeNull();
+		if (box && viewport) {
+			expect(box.y).toBeGreaterThanOrEqual(7);
+			expect(box.y + box.height).toBeLessThanOrEqual(viewport.height - 7);
+		}
 	});
 });
 

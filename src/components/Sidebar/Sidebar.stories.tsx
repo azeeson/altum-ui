@@ -4,7 +4,7 @@ import {Sidebar, type SidebarProps} from './Sidebar';
 import {Button} from '../Button/Button';
 import {Text} from '../Text/Text';
 import {Card} from '../Card/Card';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {IconBox} from '../../icons/icons/IconBox';
 import {IconCard} from '../../icons/icons/IconCard';
 import {IconGear} from '../../icons/icons/IconGear';
@@ -25,7 +25,6 @@ function SidebarNavigation({value, onChange}: Pick<SidebarProps, 'value' | 'onCh
 				<Sidebar.Title>
 					Админка
 				</Sidebar.Title>
-				<Sidebar.Collapse />
 			</Sidebar.Header>
 			<Sidebar.Content>
 				<Sidebar.Group>
@@ -114,7 +113,6 @@ export const Collapsed: Story<SidebarProps> = {
 						<Sidebar.Title>
 							Админка
 						</Sidebar.Title>
-						<Sidebar.Collapse />
 					</Sidebar.Header>
 					<Sidebar.Content>
 						<Sidebar.Item
@@ -151,7 +149,6 @@ export const WithFooter: Story<SidebarProps> = {
 						<Sidebar.Title>
 							Админка
 						</Sidebar.Title>
-						<Sidebar.Collapse />
 					</Sidebar.Header>
 					<Sidebar.Content>
 						<Sidebar.Item value='overview'>
@@ -191,7 +188,6 @@ export const Disabled: Story<SidebarProps> = {
 						<Sidebar.Title>
 							Админка
 						</Sidebar.Title>
-						<Sidebar.Collapse />
 					</Sidebar.Header>
 					<Sidebar.Content>
 						<Sidebar.Item
@@ -233,7 +229,6 @@ export const OverflowText: Story<SidebarProps> = {
 						<Sidebar.Title>
 							Административная панель водоканала
 						</Sidebar.Title>
-						<Sidebar.Collapse />
 					</Sidebar.Header>
 					<Sidebar.Content>
 						<Sidebar.Item
@@ -276,7 +271,6 @@ export const UsageExample: Story<SidebarProps> = {
 						<Sidebar.Title>
 							Кабинет
 						</Sidebar.Title>
-						<Sidebar.Collapse />
 					</Sidebar.Header>
 					<Sidebar.Content>
 						<Sidebar.Item

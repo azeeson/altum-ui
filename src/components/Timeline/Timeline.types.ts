@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 /**
@@ -33,4 +34,6 @@ export interface TimelineProps extends Omit<ComponentPropsWithoutRef<'ol'>, 'chi
 	currentId?: string;
 	/** Раскрытые details по умолчанию */
 	defaultExpandedIds?: string[];
+	/** Узел `<ol>`. */
+	rootRef?: Ref<HTMLOListElement>;
 }

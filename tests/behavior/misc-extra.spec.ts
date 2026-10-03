@@ -7,6 +7,13 @@ test.describe('Button', () => {
 		await expect(page.getByRole('button', {name: 'Заблокировано'})).toBeDisabled();
 		await expect(page.getByRole('button', {name: /Сохранение/i})).toHaveAttribute('aria-busy', 'true');
 	});
+
+	test('отдаёт недоступную кнопку и ссылку', async ({page}) => {
+		await visitStory(page, 'altum-components-button--as-link');
+		await expect(page.getByRole('button', {name: 'Действие'})).toBeEnabled();
+		await expect(page.getByRole('button', {name: 'Недоступно'})).toBeDisabled();
+		await expect(page.getByRole('link', {name: 'Ссылка'})).toHaveAttribute('href', '#base-link');
+	});
 });
 
 test.describe('Chip', () => {

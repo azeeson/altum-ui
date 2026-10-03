@@ -1,7 +1,7 @@
 import type {Meta} from '@storybook/react';
 import React from 'react';
 import {RelativeTime, RelativeTimeProps} from './RelativeTime';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Item} from '../Item/Item';
 import {Card} from '../Card/Card';

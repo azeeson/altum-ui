@@ -1,0 +1,27 @@
+.root {
+  --altum-field-body-align: flex-start;
+  --altum-field-body-height: auto;
+  --altum-field-body-min-height: var(--altum-field-size-height);
+
+  & textarea {
+    height: auto;
+    min-height: var(--altum-field-size-height);
+
+    padding-top: max(var(--altum-g-space-2), calc((var(--altum-field-size-height) - var(--altum-control-inset) - var(--altum-g-line-height-2xs) * 1em) / 2));
+    padding-bottom: max(var(--altum-g-space-2), calc((var(--altum-field-size-height) - var(--altum-control-inset) - var(--altum-g-line-height-2xs) * 1em) / 2));
+
+    line-height: var(--altum-g-line-height-2xs);
+
+    resize: vertical;
+
+    &[data-autoresize] {
+      overflow-y: auto;
+
+      max-height: var(--local-textarea-max-height, none);
+
+      resize: none;
+      /* Платформенный авто-рост без JS-замеров scrollHeight */
+      field-sizing: content;
+    }
+  }
+}

@@ -45,8 +45,8 @@
 Tab должен ощущаться одним языком. Токены: [`docs/THEMING.md`](../docs/THEMING.md).
 
 1. **Контролы / навигация / тогглы / выбор** — outline `--altum-focus-ring-*` (light: цвет → `--altum-color-input-border-focus`; dark: светлая hairline `rgba(248,250,252,0.55)`).
-2. **Поля** — кольцо 1px на `:focus-within` / `.focused` / `.isOpen`. Невалидное + в фокусе остаётся `--altum-color-status-error`.
-3. **Кнопки (`ButtonBase`)** — двойной box-shadow (`--altum-color-button-focus-inner` / `--altum-color-button-focus-outer`). Danger: `--altum-color-danger-bg-solid`, не primary.
+2. **Поля** — кольцо 1px на `:focus-within` / `.active`. Невалидное + в фокусе остаётся `--altum-color-status-error`.
+3. **Кнопки (`Button`)** — двойной box-shadow (`--altum-color-button-focus-inner` / `--altum-color-button-focus-outer`). Danger: `--altum-color-danger-bg-solid`, не primary.
 
 Опции списка: outline **плюс** фон при наведении — никогда один только `outline: none`.
 
@@ -56,16 +56,16 @@ Tab должен ощущаться одним языком. Токены: [`doc
 
 ### Высоты контролов
 
-Публичный `size` (`ControlSize`) — **`sm` \| `md` \| `lg`**. `--altum-control-height-xs` — инфраструктура раскладки (ручки Sortable), не `size="xs"` у Button / Chip / FieldBase / PinInput / SegmentedControl.
+Публичный `size` (`ControlSize`) — **`sm` \| `md` \| `lg`**. `--altum-control-height-xs` — инфраструктура раскладки (ручки Sortable), не `size="xs"` у Button / Chip / TextField / PinInput / SegmentedControl.
 
-Chrome однострочного поля — `--altum-field-size-height` / `--altum-control-height-*` при любом `labelPlacement`. `TextareaField` стартует с той же высоты, когда пуст / `minRows={1}`, затем растёт.
+Chrome однострочного поля — `--altum-field-size-height` / `--altum-control-height-*` с лейблом и без. `TextareaField` стартует с той же высоты, когда пуст / `minRows={1}`, затем растёт.
 
-Стеки форм: `labelPlacement="outside"` (включая SearchField и date/time). Поиск в тулбаре: `labelPlacement="none"`. Не смешивайте плавающие лейблы с Button в одном flex-ряду без согласованных высот.
+Стеки форм: `TextField` с `label` (floating). Поиск в тулбаре: без `label`. Внешняя подпись — `FieldLabel`. Не смешивайте плавающие лейблы с Button в одном flex-ряду без согласованных высот.
 
 ### Helper поля / диалог / движение
 
-- Helper/ошибка: FieldBase `helperText` / `error` и `--altum-form-helper-*` / `--altum-field-message-gap` — не одноразовый `.hint`.
-- Modal / ConfirmDialog / Sheet делят `--altum-dialog-*` и `--altum-shadow-md`.
+- Helper/ошибка: TextField `description` / `error` и `--altum-field-message-gap` — не одноразовый `.hint`.
+- Modal / ConfirmDialog / Sheet делят `--altum-dialog-*` и `--altum-shadow-dropdown`.
 - Предпочитайте `--altum-transition-smooth`. Слои оверлея используют `--altum-motion-overlay`; слайдер Segmented может пружинить. Всегда `prefers-reduced-motion: reduce`.
 
 ---
@@ -87,7 +87,7 @@ Chrome однострочного поля — `--altum-field-size-height` / `--
 ## Анти-паттерны (не делать)
 
 - Классы Tailwind, импорты shadcn, инлайн `style={{ color: '#...' }}`
-- Выдуманные токены, которых **нет** (`--altum-color-accent`) — используйте реальные токены altum (`--altum-g-space-4`, `--altum-shadow-sm`, `--altum-g-line-height-relaxed` **существуют**)
+- Выдуманные токены, которых **нет** (`--altum-color-accent`) — используйте реальные токены altum (`--altum-g-space-4`, `--altum-shadow-surface`)
 - Хардкод hex в `.module.css` компонента
 - `outline: none` без замены через `:focus-visible`
 - `:focus` вместо `:focus-visible` на кнопках (кольцо появляется по клику мыши)

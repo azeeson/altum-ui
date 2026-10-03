@@ -62,18 +62,12 @@
   --altum-g-color-brand-active: var(--altum-g-color-slate-800);
 
   /* Chrome диалога / списка / тоггла / фокуса */
-  --altum-dialog-header-padding: var(--altum-g-space-4) var(--altum-g-space-4) var(--altum-g-space-3);
-  --altum-dialog-body-padding: var(--altum-g-space-4);
-  --altum-dialog-footer-padding: var(--altum-g-space-3) var(--altum-g-space-4) var(--altum-g-space-4);
-  --altum-dialog-title-size: var(--altum-g-font-size-lg);
-  --altum-dialog-title-weight: var(--altum-g-font-weight-semibold);
   --altum-dialog-body-size: var(--altum-g-font-size-base);
-  --altum-dialog-max-width-sm: 420px;
-  --altum-dialog-max-width-md: 500px;
-  --altum-dialog-max-width-lg: 600px;
+  --altum-dialog-max-width-sm: 460px;
+  --altum-dialog-max-width-md: 620px;
+  --altum-dialog-max-width-lg: 760px;
   --altum-dialog-max-height: 85vh;
   --altum-motion-overlay: 0.2s;
-  --altum-list-max-height: 280px;
   --altum-option-padding-y: var(--altum-g-space-2);
   --altum-option-padding-x: var(--altum-g-space-3);
   /* Лестница боксов Checkbox / Radio (sm / md / lg). */
@@ -119,8 +113,6 @@
   --altum-overlay-close-fg-hover: var(--altum-color-text);
   --altum-overlay-close-bg: transparent;
   --altum-overlay-close-bg-hover: var(--altum-color-option-hover);
-  --altum-overlay-arrow-size: 8px;
-  --altum-field-label-gap: var(--altum-g-space-1);
   --altum-field-message-gap: var(--altum-g-space-1);
   /*
    * Вертикальные отступы плавающего лейбла (оптические; документированные исключения из чистых пар 4pt).
@@ -132,15 +124,10 @@
   --altum-field-pad-bottom-md: var(--altum-g-space-2);
   --altum-field-pad-top-lg: var(--altum-g-space-6);
   --altum-field-pad-bottom-lg: calc(var(--altum-g-space-2) + var(--altum-control-inset));
-  /* Общая типографика форм (внешние лейблы, легенды, подсказки). */
-  --altum-form-label-size: var(--altum-g-font-size-sm);
-  --altum-form-label-weight: var(--altum-g-font-weight-medium);
-  --altum-form-label-line-height: var(--altum-g-line-height-sm);
+  /* Общая типографика легенды и подсказки. */
   --altum-form-legend-size: var(--altum-g-font-size-base);
   --altum-form-legend-weight: var(--altum-g-font-weight-semibold);
   --altum-form-legend-line-height: var(--altum-g-line-height-sm);
-  --altum-form-helper-size: var(--altum-g-font-size-xs);
-  --altum-form-helper-line-height: var(--altum-g-line-height-xs);
   --altum-form-helper-indent: var(--altum-g-space-1);
   /* Иконки аффиксов / выбора — общие для FieldBase, ButtonGroup, Segmented. */
   --altum-control-icon-size-sm: 14px;
@@ -175,27 +162,6 @@
   --altum-surface-secondary-shadow: var(--altum-shadow-surface);
   --altum-color-ink-default: var(--altum-color-input-text);
   --altum-color-ink-muted: var(--altum-color-muted);
-  --altum-color-ink-danger: var(--altum-color-status-error);
-  --altum-color-status-success-bg: color-mix(in srgb, var(--altum-color-status-success) 11%, transparent);
-  --altum-color-status-success-border: color-mix(in srgb, var(--altum-color-status-success) 34%, transparent);
-  --altum-color-status-success-fg: var(--altum-color-status-success-strong);
-  --altum-color-status-success-bg-hover: color-mix(in srgb, var(--altum-color-status-success) 18%, transparent);
-  --altum-color-status-success-border-hover: color-mix(in srgb, var(--altum-color-status-success) 46%, transparent);
-  --altum-color-status-info-bg: color-mix(in srgb, var(--altum-color-status-info) 11%, transparent);
-  --altum-color-status-info-border: color-mix(in srgb, var(--altum-color-status-info) 34%, transparent);
-  --altum-color-status-info-fg: var(--altum-color-status-info);
-  --altum-color-status-info-bg-hover: color-mix(in srgb, var(--altum-color-status-info) 18%, transparent);
-  --altum-color-status-info-border-hover: color-mix(in srgb, var(--altum-color-status-info) 46%, transparent);
-  --altum-color-status-warning-bg: color-mix(in srgb, var(--altum-color-status-warning) 12%, transparent);
-  --altum-color-status-warning-border: color-mix(in srgb, var(--altum-color-status-warning) 36%, transparent);
-  --altum-color-status-warning-fg: var(--altum-color-status-warning-strong);
-  --altum-color-status-warning-bg-hover: color-mix(in srgb, var(--altum-color-status-warning) 20%, transparent);
-  --altum-color-status-warning-border-hover: color-mix(in srgb, var(--altum-color-status-warning) 48%, transparent);
-  --altum-color-status-danger-bg: color-mix(in srgb, var(--altum-color-status-error) 11%, transparent);
-  --altum-color-status-danger-border: color-mix(in srgb, var(--altum-color-status-error) 34%, transparent);
-  --altum-color-status-danger-fg: var(--altum-color-status-error);
-  --altum-color-status-danger-bg-hover: color-mix(in srgb, var(--altum-color-status-error) 18%, transparent);
-  --altum-color-status-danger-border-hover: color-mix(in srgb, var(--altum-color-status-error) 46%, transparent);
 
   --altum-transition-smooth: color 0.16s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.16s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.16s cubic-bezier(0.16, 1, 0.3, 1);
 
@@ -240,12 +206,7 @@
   --altum-g-z-control: 5;
   --altum-g-z-local: 10;
   --altum-g-z-upload: 50;
-  --altum-g-z-overlay: 1000;
-  --altum-g-z-modal: 1100;
-  /* Подсказки выше модалки, чтобы якоря работали внутри диалогов. */
-  --altum-g-z-tooltip: 1150;
   --altum-g-z-dropdown: 1200;
-  --altum-g-z-lightbox: 1250;
   --altum-g-z-notification: 1300;
   --altum-g-z-skip: 10000;
 
@@ -270,20 +231,14 @@
   --altum-rating-size-sm: 16px;
   --altum-rating-size-md: 22px;
   --altum-rating-size-lg: 28px;
-  --altum-command-palette-max-width: 560px;
+  --altum-command-palette-max-width: var(--altum-dialog-max-width-md);
   --altum-command-palette-max-height: 520px;
   --altum-button-group-item-min-sm: var(--altum-g-space-6);
   --altum-button-group-item-min-md: var(--altum-g-space-7);
   --altum-button-group-item-min-lg: var(--altum-g-space-8);
 
-  /* Overlay purpose → sideOffset (якорь) */
-  --altum-overlay-offset-tooltip: 8px;
-  --altum-overlay-offset-popover: 8px;
-  --altum-overlay-offset-dropdown: 8px;
-  --altum-overlay-offset-modal: 0px;
-  --altum-overlay-offset-sheet: 0px;
-  --altum-overlay-offset-lightbox: 0px;
-  --altum-overlay-offset-notification: 0px;
+  /* Зазор Popover до якоря. Tooltip и Dropdown сидят на Popover. */
+  --altum-overlay-offset-popover: 4px;
 
   /* --- СВЕТЛАЯ ТЕМА --- */
   /* Primary — сильнее secondary slate, чтобы enabled ≠ disabled/muted. */
@@ -317,9 +272,6 @@
   /* Рамки панелей совпадают с рамками полей (slate-200). */
   --altum-color-border: var(--altum-g-color-slate-200);
   --altum-shadow-surface: 0 1px 2px rgba(15, 23, 42, 0.06), 0 4px 12px rgba(15, 23, 42, 0.04);
-  /* Лестница возвышения (алиасы семантических теней). */
-  --altum-shadow-sm: var(--altum-shadow-surface);
-  --altum-shadow-md: var(--altum-shadow-dropdown);
   --altum-shadow-lg: 0 16px 48px color-mix(in srgb, var(--altum-color-input-text) 16%, transparent);
 
   /* Опасность — пыльный red-700, не Tailwind-600; AA на белом тексте. */
@@ -332,7 +284,6 @@
   /* Опасность, вторичный — та же пыль, что Alert, не сырой red-50/100 */
   --altum-color-danger-bg-secondary: var(--altum-g-color-white);
   --altum-color-danger-bg-secondary-hover: color-mix(in srgb, var(--altum-color-status-error) 12%, transparent);
-  --altum-color-danger-bg-secondary-active: color-mix(in srgb, var(--altum-color-status-error) 18%, transparent);
   --altum-color-danger-text-secondary: var(--altum-color-status-error);
   --altum-color-danger-text-secondary-hover: color-mix(in srgb, var(--altum-color-status-error) 82%, var(--altum-color-input-text));
   --altum-color-danger-shadow-secondary: 0 1px 2px rgba(0, 0, 0, 0.02);
@@ -360,7 +311,6 @@
   --altum-overlay-on-scrim: var(--altum-g-color-white);
   --altum-overlay-control-bg: rgba(255, 255, 255, 0.12);
   --altum-overlay-control-border: rgba(255, 255, 255, 0.18);
-  --altum-overlay-control-hover: rgba(255, 255, 255, 0.2);
   --altum-overlay-content-bg: rgba(15, 23, 42, 0.35);
   --altum-overlay-content-border: rgba(255, 255, 255, 0.12);
   --altum-overlay-text-muted: rgba(255, 255, 255, 0.85);
@@ -377,7 +327,6 @@
   --altum-color-muted: var(--altum-g-color-slate-500);
   --altum-color-input-bg-readonly: var(--altum-g-color-slate-50);
   --altum-color-input-border-readonly: var(--altum-g-color-slate-400);
-  --altum-color-input-border-readonly-ring: rgba(100, 116, 139, 0.28);
   --altum-color-input-label-readonly: var(--altum-g-color-slate-500);
   --altum-color-control-bg-readonly: var(--altum-g-color-slate-50);
   --altum-color-control-border-readonly: var(--altum-g-color-slate-400);
@@ -426,7 +375,6 @@
   --altum-field-placeholder: var(--altum-color-input-placeholder);
   --altum-field-bg-readonly: var(--altum-color-input-bg-readonly);
   --altum-field-border-readonly: var(--altum-color-input-border-readonly);
-  --altum-field-border-readonly-ring: var(--altum-color-input-border-readonly-ring);
   --altum-field-label-readonly: var(--altum-color-input-label-readonly);
 
   --altum-color-button-secondary-bg: var(--altum-color-surface);
@@ -471,13 +419,6 @@
   --altum-color-selection-neutral-slider: var(--altum-color-surface);
 
   --altum-color-segmented-primary-slider-bg: var(--altum-color-selection-fill-emphasis);
-  --altum-color-segmented-secondary-track-bg: color-mix(in srgb, var(--altum-color-text-secondary) 14%, var(--altum-color-surface));
-  --altum-color-segmented-secondary-track-border: color-mix(in srgb, var(--altum-color-text-secondary) 22%, var(--altum-color-border));
-  --altum-color-segmented-secondary-slider-bg: var(--altum-color-selection-neutral-slider);
-  --altum-color-segmented-tinted-track-bg: var(--altum-color-button-tinted-bg);
-  --altum-color-segmented-tinted-track-border: var(--altum-color-button-tinted-border);
-  --altum-color-segmented-tinted-slider-bg: var(--altum-color-selection-neutral-slider);
-  --altum-color-segmented-ghost-track-border: var(--altum-color-button-secondary-border);
   --altum-color-segmented-ghost-slider-bg: var(--altum-color-selection-neutral-slider);
   --altum-color-segmented-slider-shadow:
     0 1px 2px color-mix(in srgb, var(--altum-g-color-slate-900) 12%, transparent),
@@ -504,9 +445,6 @@
   --altum-color-link-muted-hover: var(--altum-color-text-secondary);
   --altum-color-link-danger: var(--altum-color-status-error);
   --altum-color-link-danger-hover: color-mix(in srgb, var(--altum-color-status-error) 82%, var(--altum-color-input-text));
-  --altum-color-link-focus-ring: var(--altum-focus-ring-color);
-
-  --altum-chip-mask: var(--altum-g-color-black);
 
   font-family: var(--altum-g-font-family-ui);
 
@@ -518,7 +456,7 @@
 
 .light {}
 
-.dark {/* --- ТЁМНАЯ ТЕМА --- */
+.themeProvider[data-theme='dark'] {/* --- ТЁМНАЯ ТЕМА --- */
   /* Canvas → surface → overlay: нейтральный charcoal в климате steel CTA
      (без фиолетового B-канала). Primary — плотный steel, не мытый #6b7f98. */
   --altum-g-color-brand: #4e6480;
@@ -538,11 +476,6 @@
   --altum-color-selection-neutral-fill: color-mix(in srgb, var(--altum-color-text-secondary) 22%, transparent);
   --altum-color-selection-neutral-border: color-mix(in srgb, var(--altum-color-text-secondary) 45%, var(--altum-color-border));
   --altum-color-selection-neutral-slider: color-mix(in srgb, var(--altum-color-brand-text) 11%, var(--altum-color-surface-elevated));
-  --altum-color-segmented-secondary-track-bg: color-mix(in srgb, var(--altum-g-color-black) 32%, var(--altum-color-surface));
-  --altum-color-segmented-secondary-track-border: color-mix(in srgb, var(--altum-g-color-white) 14%, var(--altum-color-surface));
-  --altum-color-segmented-secondary-slider-bg: var(--altum-color-selection-neutral-slider);
-  --altum-color-segmented-tinted-slider-bg: var(--altum-color-selection-neutral-slider);
-  --altum-color-segmented-ghost-track-border: color-mix(in srgb, var(--altum-g-color-white) 16%, var(--altum-color-surface));
   --altum-color-segmented-ghost-slider-bg: var(--altum-color-selection-neutral-slider);
   --altum-color-segmented-slider-shadow:
     0 1px 1px color-mix(in srgb, var(--altum-g-color-black) 28%, transparent),
@@ -582,7 +515,6 @@
   /* Опасность, вторичный — едва тёплый подтон на surface, не twin обычного secondary. */
   --altum-color-danger-bg-secondary: color-mix(in srgb, var(--altum-color-status-error) 9%, var(--altum-color-surface));
   --altum-color-danger-bg-secondary-hover: color-mix(in srgb, var(--altum-color-status-error) 15%, var(--altum-color-surface));
-  --altum-color-danger-bg-secondary-active: color-mix(in srgb, var(--altum-color-status-error) 21%, var(--altum-color-surface));
   --altum-color-danger-text-secondary: var(--altum-color-status-error);
   --altum-color-danger-text-secondary-hover: color-mix(in srgb, var(--altum-color-status-error) 78%, var(--altum-color-text));
   --altum-color-danger-shadow-secondary: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -603,28 +535,18 @@
   --altum-color-status-error: #cf7379;
   --altum-color-chart-4: #8b82b0;
   --altum-color-chart-5: #5a9e96;
-
-  /* Alert / Chip: 14% на surface + hairline 26%, fg = пигмент; hover — тот же mix сильнее */
-  --altum-color-status-success-bg: color-mix(in srgb, var(--altum-color-status-success) 14%, var(--altum-color-surface));
-  --altum-color-status-success-border: color-mix(in srgb, var(--altum-color-status-success) 26%, transparent);
-  --altum-color-status-success-fg: var(--altum-color-status-success);
-  --altum-color-status-success-bg-hover: color-mix(in srgb, var(--altum-color-status-success) 22%, var(--altum-color-surface));
-  --altum-color-status-success-border-hover: color-mix(in srgb, var(--altum-color-status-success) 38%, transparent);
-  --altum-color-status-info-bg: color-mix(in srgb, var(--altum-color-status-info) 14%, var(--altum-color-surface));
-  --altum-color-status-info-border: color-mix(in srgb, var(--altum-color-status-info) 26%, transparent);
-  --altum-color-status-info-fg: var(--altum-color-status-info);
-  --altum-color-status-info-bg-hover: color-mix(in srgb, var(--altum-color-status-info) 22%, var(--altum-color-surface));
-  --altum-color-status-info-border-hover: color-mix(in srgb, var(--altum-color-status-info) 38%, transparent);
-  --altum-color-status-warning-bg: color-mix(in srgb, var(--altum-color-status-warning) 14%, var(--altum-color-surface));
-  --altum-color-status-warning-border: color-mix(in srgb, var(--altum-color-status-warning) 26%, transparent);
-  --altum-color-status-warning-fg: var(--altum-color-status-warning);
-  --altum-color-status-warning-bg-hover: color-mix(in srgb, var(--altum-color-status-warning) 24%, var(--altum-color-surface));
-  --altum-color-status-warning-border-hover: color-mix(in srgb, var(--altum-color-status-warning) 40%, transparent);
-  --altum-color-status-danger-bg: color-mix(in srgb, var(--altum-color-status-error) 14%, var(--altum-color-surface));
-  --altum-color-status-danger-border: color-mix(in srgb, var(--altum-color-status-error) 26%, transparent);
-  --altum-color-status-danger-fg: var(--altum-color-status-error);
-  --altum-color-status-danger-bg-hover: color-mix(in srgb, var(--altum-color-status-error) 20%, var(--altum-color-surface));
-  --altum-color-status-danger-border-hover: color-mix(in srgb, var(--altum-color-status-error) 36%, transparent);
+  /* Доли mix для status.module.css. Пигмент выше, поверхность не дублируется на каждый статус. */
+  --altum-status-bg-amt: 14%;
+  --altum-status-bg-base: var(--altum-color-surface);
+  --altum-status-border-amt: 26%;
+  --altum-status-bg-hover-amt: 22%;
+  --altum-status-border-hover-amt: 38%;
+  --altum-status-warning-bg-amt: 14%;
+  --altum-status-warning-border-amt: 26%;
+  --altum-status-warning-bg-hover-amt: 24%;
+  --altum-status-warning-border-hover-amt: 40%;
+  --altum-status-danger-bg-hover-amt: 20%;
+  --altum-status-danger-border-hover-amt: 36%;
 
   /* Оверлеи — скрам холста (#0a0a0c), не чистый чёрный и не navy */
   --altum-overlay-scrim: rgba(10, 10, 12, 0.72);
@@ -632,7 +554,6 @@
   --altum-overlay-on-scrim: #f8fafc;
   --altum-overlay-control-bg: var(--altum-color-input-bg);
   --altum-overlay-control-border: var(--altum-color-input-border);
-  --altum-overlay-control-hover: var(--altum-color-option-hover);
   --altum-overlay-content-bg: rgba(10, 10, 12, 0.4);
   --altum-overlay-content-border: rgba(255, 255, 255, 0.1);
   --altum-overlay-text-muted: rgba(248, 250, 252, 0.85);
@@ -659,7 +580,6 @@
   --altum-color-type-muted: #8C8C99;
   --altum-color-input-bg-readonly: var(--altum-color-surface);
   --altum-color-input-border-readonly: #475569;
-  --altum-color-input-border-readonly-ring: rgba(168, 168, 179, 0.28);
   --altum-color-input-label-readonly: #A8A8B3;
   --altum-color-control-bg-readonly: var(--altum-color-surface);
   --altum-color-control-border-readonly: #475569;

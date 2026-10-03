@@ -5,25 +5,38 @@ export type {
 	AlertProps,
 } from './Alert.types';
 
-import {forwardRef, type ReactNode} from 'react';
+import type {ComponentType} from 'react';
+
+import {OverlayCloseControl} from '../Button/overlayCloseControl';
+import {Title} from '../Title/Title';
 import {IconCheckmark} from '../../icons/icons/IconCheckmark';
-import {IconCross} from '../../icons/icons/IconCross';
 import {IconInformation} from '../../icons/icons/IconInformation';
 import {IconWarning} from '../../icons/icons/IconWarning';
 import {IconWrong} from '../../icons/icons/IconWrong';
-import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
+import type {IconProps} from '../../icons/IconBase';
 import mediaItem from '../../styles/MediaItem.module.css';
-import overlayClose from '../../styles/overlayClose.module.css';
 import styles from './Alert.module.css';
-import status from '../../styles/status.module.css';
-import {cn} from '../../utils/cn';
+import utilities from '../../styles/utilities.module.css';
+import {cn} from '../../core/utils/cn';
 import {useLocale} from '../../locales/localeContext';
+import {ruSlice as ru_common} from '../../locales/slices/common.ru';
 
-const ALERT_ICONS: Record<AlertVariant, ReactNode> = {
-	info: <IconInformation size={16} />,
-	success: <IconCheckmark size={16} />,
-	warning: <IconWarning size={16} />,
-	error: <IconWrong size={16} />,
+const localeFallback = {
+	common: ru_common,
+};
+
+const ROLE_MAP = {
+	info: 'status',
+	success: 'status',
+	warning: 'status',
+	error: 'alert',
+} as const;
+
+const VARIANT_ICONS: Record<AlertVariant, ComponentType<IconProps>> = {
+	info: IconInformation,
+	success: IconCheckmark,
+	warning: IconWarning,
+	error: IconWrong,
 };
 
 /**
@@ -35,53 +48,56 @@ const ALERT_ICONS: Record<AlertVariant, ReactNode> = {
  *   Проверьте данные.
  * </Alert>
  */
-export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
-	{
-		variant = 'info',
-		size = 'md',
-		layout = 'block',
-		className,
-		role,
-		title,
-		icon,
-		actions,
-		onClose,
-		closeLabel: closeLabelProp,
-		children,
-		...rest
-	},
-	ref,
-) {
-	const {t} = useLocale();
+export function Alert({
+	variant = 'info',
+	size = 'md',
+	layout = 'block',
+	className,
+	role,
+	title,
+	icon,
+	actions,
+	onClose,
+	closeLabel: closeLabelProp,
+	children,
+	rootRef,
+	...rest
+}: AlertProps) {
+	const {t} = useLocale(localeFallback);
 	const closeLabel = closeLabelProp ?? t('common.close');
+	const DefaultIcon = VARIANT_ICONS[variant];
 
 	return (
 		<div
-			ref={ref}
+			ref={rootRef}
+			{...rest}
 			className={cn(
 				mediaItem.row,
 				mediaItem.wrap,
 				styles.alert,
-				styles[variant],
-				status[variant],
-				status.surface,
-				size !== 'md' && styles[size],
-				layout === 'inline' && styles.inline,
 				className,
 			)}
-			role={role ?? (variant === 'error' ? 'alert' : 'status')}
-			{...rest}
+			role={role ?? ROLE_MAP[variant]}
+			data-variant={variant}
+			data-size={size !== 'md' ? size : undefined}
+			data-layout={layout === 'inline' ? 'inline' : undefined}
 		>
-			{icon !== null && (
-				<div className={cn(mediaItem.media, styles.icon)} aria-hidden>
-					{icon ?? ALERT_ICONS[variant]}
+			{icon !== null && icon !== false && (
+				<div
+					className={cn(utilities.fCenter, mediaItem.media, styles.icon)}
+					aria-hidden
+				>
+					{icon ?? <DefaultIcon size={16} />}
 				</div>
 			)}
-			<div className={cn(mediaItem.content, styles.body)}>
+			<div className={cn(utilities.fColumn, mediaItem.content, styles.body)}>
 				{title != null && title !== '' && (
-					<div className={cn(mediaItem.title, styles.title)}>
+					<Title
+						level={4}
+						className={cn(mediaItem.title, styles.title)}
+					>
 						{title}
-					</div>
+					</Title>
 				)}
 				{children != null && children !== '' && (
 					<div className={cn(mediaItem.description, styles.content)}>
@@ -95,21 +111,11 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
 				)}
 			</div>
 			{onClose != null && (
-				<ButtonIcon
-					appearance='diskClose'
+				<OverlayCloseControl
 					aria-label={closeLabel}
-					icon={(
-						<IconCross
-							className={overlayClose.icon}
-							size={16}
-							aria-hidden
-						/>
-					)}
 					onClick={onClose}
 				/>
 			)}
 		</div>
 	);
-});
-
-Alert.displayName = 'Alert';
+}

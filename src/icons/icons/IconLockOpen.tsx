@@ -1,3 +1,3 @@
-import {createIcon} from '../createIcon';
-
-export const IconLockOpen = createIcon('M73,33H30v-6.9C30,15.9,36.5,9,45.8,9c6.8,0,12.2,3.5,14.5,9.7c0.8,2.1,3.1,3.1,5.2,2.3 c2.1-0.8,3.1-3.1,2.3-5.2C64.4,6.6,56,1,45.8,1C31.9,1,22,11.3,22,26.1V33h-3c-2.2,0-4,1.8-4,4v50c0,2.2,1.8,4,4,4h54 c2.2,0,4-1.8,4-4V37C77,34.8,75.2,33,73,33z M69,83H23V41h46V83z');
+import {IconBase, type IconProps} from '../IconBase';
+import {ICON_PATHS} from '../registry';
+export const IconLockOpen = (p: IconProps) => <IconBase d={ICON_PATHS.lockOpen} {...p} />;

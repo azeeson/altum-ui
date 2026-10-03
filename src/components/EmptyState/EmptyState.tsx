@@ -1,16 +1,11 @@
-import type {
-	EmptyStateProps,
-} from './EmptyState.types';
-export type {
-	EmptyStateSize,
-	EmptyStateProps,
-} from './EmptyState.types';
+import type {EmptyStateProps} from './EmptyState.types';
+export type {EmptyStateSize, EmptyStateProps} from './EmptyState.types';
 
-import {forwardRef} from 'react';
 import {Text} from '../Text/Text';
 import {Title} from '../Title/Title';
 import styles from './EmptyState.module.css';
-import {cn} from '../../utils/cn';
+import utilities from '../../styles/utilities.module.css';
+import {cn} from '../../core/utils/cn';
 
 /**
  * Заглушка пустого списка или раздела с иконкой, текстом и действием.
@@ -19,26 +14,25 @@ import {cn} from '../../utils/cn';
  * @example
  * <EmptyState size="sm" title="Нет задач" description="Создайте первую задачу." />
  */
-export const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(function EmptyState(
-	{
-		icon,
-		title,
-		description,
-		action,
-		size = 'md',
-		className,
-		...rest
-	},
-	ref,
-) {
+export function EmptyState({
+	icon,
+	title,
+	description,
+	action,
+	size = 'md',
+	className,
+	rootRef,
+	...rest
+}: EmptyStateProps) {
 	return (
 		<div
-			ref={ref}
-			className={cn(styles.emptyState, size !== 'md' && styles[size], className)}
+			ref={rootRef}
 			{...rest}
+			className={cn(utilities.fColumn, utilities.fCenter, styles.emptyState, className)}
+			data-size={size !== 'md' ? size : undefined}
 		>
 			{icon ? (
-				<div className={styles.icon}>
+				<div className={cn(utilities.fCenter, styles.icon)}>
 					{icon}
 				</div>
 			) : null}
@@ -61,6 +55,4 @@ export const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(function E
 			) : null}
 		</div>
 	);
-});
-
-EmptyState.displayName = 'EmptyState';
+}

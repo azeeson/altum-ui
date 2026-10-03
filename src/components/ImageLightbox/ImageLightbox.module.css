@@ -1,46 +1,43 @@
 .stage {
+  /* Не `fixed`: Overlay `.fadeScale` держит `transform`, fixed привязывается к
+     схлопнутому panel → нулевая ширина кадра (счётчик живой, img нет). */
   position: relative;
 
-  display: flex;
   box-sizing: border-box;
-  overflow: visible;
 
-  justify-content: center;
-  align-items: center;
-
-  width: 100%;
-  height: 100%;
+  /* Явный viewport-бокс: иначе %-высота не резолвится у shrink-wrap panel. */
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
 
   padding: var(--altum-g-space-6);
 
   pointer-events: none;
-}
 
-/* ImageGallery читает эти переменные (CSS Modules не стилизуют классы чужого модуля). */
+  & .gallery {
+    --altum-image-gallery-counter-color: var(--altum-overlay-text-muted);
+    --altum-image-gallery-viewport-height: min(72vh, 640px);
+    --altum-image-gallery-viewport-bg: transparent;
+    --altum-image-gallery-viewport-border: transparent;
+    --altum-image-gallery-viewport-overflow: visible;
+    --altum-image-gallery-image-filter: drop-shadow(var(--altum-overlay-media-shadow));
+    --altum-image-gallery-nav-bg: var(--altum-overlay-control-bg);
+    --altum-image-gallery-nav-border: var(--altum-overlay-control-border);
+    --altum-image-gallery-nav-color: var(--altum-overlay-on-scrim);
 
-.gallery.gallery {
-  --altum-image-gallery-counter-color: var(--altum-overlay-text-muted);
-  --altum-image-gallery-viewport-height: min(72vh, 640px);
-  --altum-image-gallery-viewport-bg: transparent;
-  --altum-image-gallery-viewport-border: transparent;
-  --altum-image-gallery-viewport-overflow: visible;
-  --altum-image-gallery-image-filter: drop-shadow(var(--altum-overlay-media-shadow));
-  --altum-image-gallery-nav-bg: var(--altum-overlay-control-bg);
-  --altum-image-gallery-nav-border: var(--altum-overlay-control-border);
-  --altum-image-gallery-nav-color: var(--altum-overlay-on-scrim);
+    width: min(100%, 960px);
+    min-width: 0;
+    max-height: calc(100dvh - 2 * var(--altum-g-space-6));
 
-  width: min(100%, 960px);
-  min-width: 0;
-  max-height: calc(100vh - 48px);
+    pointer-events: auto;
+  }
 
-  pointer-events: auto;
-}
+  & .close {
+    position: absolute;
+    top: var(--altum-g-space-5);
+    right: var(--altum-g-space-5);
+    z-index: var(--altum-g-z-raised-above);
 
-.close.close {
-  position: absolute;
-  top: var(--altum-g-space-5);
-  right: var(--altum-g-space-5);
-  z-index: var(--altum-g-z-raised-above);
-
-  pointer-events: auto;
+    pointer-events: auto;
+  }
 }

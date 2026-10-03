@@ -3,7 +3,7 @@ import React from 'react';
 import {EmptyState, EmptyStateProps} from './EmptyState';
 import {Button} from '../Button/Button';
 import {Card} from '../Card/Card';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {IconChecklist} from '../../icons/icons/IconChecklist';
 import {IconSearch} from '../../icons/icons/IconSearch';
 import {IconInbox} from '../../icons/icons/IconInbox';

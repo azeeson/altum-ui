@@ -1,6 +1,9 @@
 import type {Meta} from '@storybook/react';
 import React from 'react';
-import {Layout, type LayoutRootProps} from './Layout';
+import {Layout, type LayoutRootProps, type LayoutSpacing} from './Layout';
+import {ControlRow} from './ControlRow';
+import {Inline} from './Inline';
+import {LayoutItem} from './LayoutItem';
 import {Stack} from './Stack';
 import {Button} from '../Button/Button';
 import {TextField} from '../TextField/TextField';
@@ -16,16 +19,16 @@ const panelShellStyle: React.CSSProperties = {
 };
 
 const headerStyle: React.CSSProperties = {
-	padding: 'var(--altum-g-space-3)',
 	borderBottom: '1px solid var(--altum-color-border)',
 	background: 'var(--altum-color-surface)',
 };
 
 const footerStyle: React.CSSProperties = {
-	padding: 'var(--altum-g-space-3)',
 	borderTop: '1px solid var(--altum-color-border)',
 	background: 'var(--altum-color-surface)',
 };
+
+const SPACING = ['sm', 'md', 'lg'] as const satisfies readonly LayoutSpacing[];
 
 const contentLines = (count: number) => (
 	<Stack gap='sm'>
@@ -39,6 +42,38 @@ const contentLines = (count: number) => (
 	</Stack>
 );
 
+function scrollPanel(args: LayoutRootProps, sticky: boolean) {
+	return (
+		<div style={panelShellStyle}>
+			<Layout padding={args.padding} gap={args.gap}>
+				<Layout.Header
+					sticky={sticky}
+					style={headerStyle}
+				>
+					<Text size='md'>
+						{sticky ? 'Header (sticky)' : 'Header (в потоке)'}
+					</Text>
+				</Layout.Header>
+				<Layout.Content>
+					{contentLines(16)}
+				</Layout.Content>
+				<Layout.Footer
+					sticky={sticky}
+					align='end'
+					style={footerStyle}
+				>
+					<Button size='sm' variant='secondary'>
+						Отмена
+					</Button>
+					<Button size='sm' variant='primary'>
+						OK
+					</Button>
+				</Layout.Footer>
+			</Layout>
+		</div>
+	);
+}
+
 export default {
 	title: 'altum/Components/Layout',
 	component: Layout,
@@ -47,7 +82,25 @@ export default {
 		'Каркас панели: скролл на `Layout`, Header / Footer опционально `sticky`. '
 		+ 'Слоты Header / Content / Footer; примитивы Stack / Inline / Split / Grid — отдельные экспорты.',
 	),
+	args: {
+		padding: 'sm',
+		gap: 'sm',
+	},
 	argTypes: {
+		padding: {
+			control: {
+				type: 'select',
+				options: SPACING,
+			},
+			description: 'Отступ панели: `sm` 12px, `md` 16px, `lg` 24px',
+		},
+		gap: {
+			control: {
+				type: 'select',
+				options: SPACING,
+			},
+			description: 'Промежуток между Header, Content и Footer',
+		},
 		as: {
 			control: {
 				type: 'select',
@@ -65,32 +118,7 @@ export default {
 
 export const StickyChrome: Story<LayoutRootProps> = {
 	name: 'Sticky Header / Footer',
-	render: () => (
-		<div style={panelShellStyle}>
-			<Layout>
-				<Layout.Header sticky style={headerStyle}>
-					<Text size='md'>
-						Header (sticky)
-					</Text>
-				</Layout.Header>
-				<Layout.Content style={{padding: 'var(--altum-g-space-3)'}}>
-					{contentLines(16)}
-				</Layout.Content>
-				<Layout.Footer
-					sticky
-					align='end'
-					style={footerStyle}
-				>
-					<Button size='sm' variant='secondary'>
-						Отмена
-					</Button>
-					<Button size='sm' variant='primary'>
-						OK
-					</Button>
-				</Layout.Footer>
-			</Layout>
-		</div>
-	),
+	render: (args) => scrollPanel(args, true),
 	parameters: story(
 		'Скролл у `Layout`. `Header` / `Footer` с `sticky` остаются у краёв viewport панели.',
 	),
@@ -98,39 +126,15 @@ export const StickyChrome: Story<LayoutRootProps> = {
 
 export const FlowScroll: Story<LayoutRootProps> = {
 	name: 'Header / Footer скроллятся с контентом',
-	render: () => (
-		<div style={panelShellStyle}>
-			<Layout>
-				<Layout.Header style={headerStyle}>
-					<Text size='md'>
-						Header (в потоке)
-					</Text>
-				</Layout.Header>
-				<Layout.Content style={{padding: 'var(--altum-g-space-3)'}}>
-					{contentLines(16)}
-				</Layout.Content>
-				<Layout.Footer
-					align='end'
-					style={footerStyle}
-				>
-					<Button size='sm' variant='secondary'>
-						Отмена
-					</Button>
-					<Button size='sm' variant='primary'>
-						OK
-					</Button>
-				</Layout.Footer>
-			</Layout>
-		</div>
-	),
+	render: (args) => scrollPanel(args, false),
 	parameters: story(
 		'Скролл у `Layout`. Без `sticky` шапка и футер уезжают вместе с контентом.',
 	),
 };
 
 export const Playground: Story<LayoutRootProps> = {
-	render: StickyChrome.render,
-	parameters: story('По умолчанию — sticky chrome (см. также Flow scroll).'),
+	render: (args) => scrollPanel(args, true),
+	parameters: story('По умолчанию — sticky chrome (см. также Flow scroll). `padding` и `gap` — в Controls.'),
 };
 
 export const FooterAlign: Story<LayoutRootProps> = {
@@ -149,14 +153,14 @@ export const FooterAlign: Story<LayoutRootProps> = {
 						height: 160
 					}}
 				>
-					<Layout>
+					<Layout padding='sm' gap='sm'>
 						<Layout.Header style={headerStyle}>
 							<Text size='sm'>
 								align=
 								{align}
 							</Text>
 						</Layout.Header>
-						<Layout.Content style={{padding: 'var(--altum-g-space-3)'}}>
+						<Layout.Content>
 							<Text size='sm'>
 								Контент
 							</Text>
@@ -187,8 +191,8 @@ export const Empty: Story<LayoutRootProps> = {
 			height: 140
 		}}
 		>
-			<Layout>
-				<Layout.Content style={{padding: 'var(--altum-g-space-3)'}}>
+			<Layout padding='sm' gap='sm'>
+				<Layout.Content>
 					<Text size='sm' color='muted'>
 						Только Content, без Header / Footer.
 					</Text>
@@ -203,9 +207,9 @@ export const CompoundLayout: Story<LayoutRootProps> = {
 	render: () => (
 		<Stack gap='md'>
 			<Text size='sm' color='muted'>
-				Примитивы `Stack` / `Layout.Inline` рядом с панелью.
+				Примитивы `Stack` / `Inline` рядом с панелью.
 			</Text>
-			<Layout.Inline gap='sm'>
+			<Inline gap='sm'>
 				<Button variant='primary' size='sm'>
 					A
 				</Button>
@@ -215,18 +219,18 @@ export const CompoundLayout: Story<LayoutRootProps> = {
 				<Button variant='secondary' size='sm'>
 					C
 				</Button>
-			</Layout.Inline>
-			<Layout.ControlRow>
-				<Layout.Item grow>
+			</Inline>
+			<ControlRow>
+				<LayoutItem grow>
 					<TextField label='Заметка' width='full' />
-				</Layout.Item>
+				</LayoutItem>
 				<Button variant='tinted'>
 					Сохранить
 				</Button>
-			</Layout.ControlRow>
+			</ControlRow>
 		</Stack>
 	),
-	parameters: story('`Stack` отдельно; `Layout.Inline` / `ControlRow` / `Item` — слоты панели.'),
+	parameters: story('`Stack`, `Inline`, `ControlRow` и `LayoutItem` — отдельные компоненты, не слоты `Layout`.'),
 };
 
 export const UsageExample: Story<LayoutRootProps> = {

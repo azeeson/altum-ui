@@ -1,3 +1,3 @@
-import {createIcon} from '../createIcon';
-
-export const IconChevronLeft = createIcon('M61.8,68.1c1.6,1.5,1.6,4.1,0.1,5.7C61.1,74.6,60,75,59,75c-1,0-2-0.4-2.8-1.1l-26-25 C29.4,48.1,29,47.1,29,46s0.4-2.1,1.2-2.9l26-25c1.6-1.5,4.1-1.5,5.7,0.1c1.5,1.6,1.5,4.1-0.1,5.7L38.8,46L61.8,68.1z');
+import {IconBase, type IconProps} from '../IconBase';
+import {ICON_PATHS} from '../registry';
+export const IconChevronLeft = (p: IconProps) => <IconBase d={ICON_PATHS.chevronLeft} {...p} />;

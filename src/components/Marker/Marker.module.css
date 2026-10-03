@@ -1,9 +1,6 @@
 .marker {
-  display: flex;
   box-sizing: border-box;
 
-  justify-content: center;
-  align-items: center;
   gap: var(--altum-g-space-2);
 
   width: fit-content;
@@ -19,19 +16,18 @@
 
   color: var(--altum-color-muted);
 
-  &.default,
-  &.note {
+  &:is([data-variant='default'], [data-variant='note']) {
     padding: var(--altum-g-space-1) var(--altum-g-space-2);
 
     border-radius: var(--altum-g-radius);
   }
 
-  &.note {
+  &[data-variant='note'] {
     color: var(--altum-color-brand-tint-text);
     background: var(--altum-color-brand-tint);
   }
 
-  &.row {
+  &[data-variant='row'] {
     justify-content: flex-start;
 
     width: 100%;
@@ -46,7 +42,7 @@
     background: var(--altum-color-surface);
   }
 
-  &.separator {
+  &[data-variant='separator'] {
     gap: var(--altum-g-space-3);
 
     width: 100%;
@@ -67,38 +63,38 @@
   }
 
   & .icon {
-    display: inline-flex;
-
     flex-shrink: 0;
-    justify-content: center;
-    align-items: center;
 
     color: inherit;
   }
 
   & .content {
     min-width: 0;
-  }
 
-  & .shimmer {
-    color: transparent;
-    background: linear-gradient(
-      90deg,
-      var(--altum-color-muted) 0%,
-      color-mix(in srgb, var(--altum-color-input-text) 70%, transparent) 50%,
-      var(--altum-color-muted) 100%
-    );
-    background-size: 200% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
+    font-size: inherit;
 
-    animation: shimmer 1.4s ease-in-out infinite;
+    color: inherit;
 
-    @media (prefers-reduced-motion: reduce) {
-      color: var(--altum-color-muted);
-      background: none;
+    &[data-shimmer] {
+      color: transparent;
+      background: linear-gradient(
+        90deg,
+        var(--altum-color-muted) 0%,
+        color-mix(in srgb, var(--altum-color-input-text) 70%, transparent) 50%,
+        var(--altum-color-muted) 100%
+      );
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
 
-      animation: none;
+      animation: shimmer 1.4s ease-in-out infinite;
+
+      @media (prefers-reduced-motion: reduce) {
+        color: var(--altum-color-muted);
+        background: none;
+
+        animation: none;
+      }
     }
   }
 }

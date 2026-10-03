@@ -6,10 +6,16 @@ export type {
 	ConfirmDialogProps,
 } from './ConfirmDialog.types';
 
-import {forwardRef, useId} from 'react';
 import {Button} from '../Button/Button';
 import {Modal} from '../Modal/Modal';
+import {Title} from '../Title/Title';
+import {useFallbackId} from '../../hooks/useFallbackId';
 import {useLocale} from '../../locales/localeContext';
+import {ruSlice as ru_confirmDialog} from '../../locales/slices/confirmDialog.ru';
+
+const localeFallback = {
+	confirmDialog: ru_confirmDialog,
+};
 
 /**
  * Модальное окно подтверждения критического или необратимого действия.
@@ -26,27 +32,28 @@ import {useLocale} from '../../locales/localeContext';
  *   onOpenChange={setOpen}
  * />
  */
-export const ConfirmDialog = forwardRef<HTMLElement, ConfirmDialogProps>(function ConfirmDialog(
-	{
-		open,
-		title,
-		message,
-		confirmLabel: confirmLabelProp,
-		cancelLabel: cancelLabelProp,
-		status = 'default',
-		secondaryAction,
-		onConfirm,
-		onOpenChange,
-		loading = false,
-		className,
-		...rest
-	},
-	ref,
-) {
-	const {t} = useLocale();
+export function ConfirmDialog({
+	open,
+	title,
+	message,
+	confirmLabel: confirmLabelProp,
+	cancelLabel: cancelLabelProp,
+	status = 'default',
+	secondaryAction,
+	onConfirm,
+	onOpenChange,
+	loading = false,
+	className,
+	id,
+	rootRef,
+	...rest
+}: ConfirmDialogProps) {
+	const {t} = useLocale(localeFallback);
 	const confirmLabel = confirmLabelProp ?? t('confirmDialog.confirm');
 	const cancelLabel = cancelLabelProp ?? t('confirmDialog.cancel');
-	const messageId = useId();
+	const dialogId = useFallbackId(id);
+	const titleId = `${dialogId}-title`;
+	const messageId = `${dialogId}-message`;
 	const handleDismiss = () => {
 		if (loading) return;
 		onOpenChange(false);
@@ -54,22 +61,31 @@ export const ConfirmDialog = forwardRef<HTMLElement, ConfirmDialogProps>(functio
 
 	return (
 		<Modal
-			ref={ref}
+			rootRef={rootRef}
 			open={open}
 			onOpenChange={onOpenChange}
+			aria-labelledby={titleId}
 			aria-describedby={messageId}
 			className={className}
+			id={dialogId}
 			{...rest}
+			showClose={false}
 		>
-			<Modal.Header showClose={false}>
-				<Modal.Title>
+			<Modal.Header>
+				<Title
+					level={3}
+					id={titleId}
+				>
 					{title}
-				</Modal.Title>
+				</Title>
 			</Modal.Header>
 			<Modal.Body id={messageId}>
 				{message}
 			</Modal.Body>
-			<Modal.Footer align={secondaryAction ? 'space-between' : 'end'}>
+			<Modal.Footer
+				align={secondaryAction ? 'space-between' : 'end'}
+				data-variant={status}
+			>
 				{secondaryAction && (
 					<Button
 						variant={secondaryAction.variant ?? 'secondary'}
@@ -89,8 +105,7 @@ export const ConfirmDialog = forwardRef<HTMLElement, ConfirmDialogProps>(functio
 					{cancelLabel}
 				</Button>
 				<Button
-					variant='primary'
-					status={status === 'danger' ? 'danger' : 'default'}
+					variant={status === 'danger' ? 'danger' : 'primary'}
 					size='md'
 					onClick={onConfirm}
 					loading={loading}
@@ -100,6 +115,4 @@ export const ConfirmDialog = forwardRef<HTMLElement, ConfirmDialogProps>(functio
 			</Modal.Footer>
 		</Modal>
 	);
-});
-
-ConfirmDialog.displayName = 'ConfirmDialog';
+}

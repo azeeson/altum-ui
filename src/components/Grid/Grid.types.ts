@@ -1,8 +1,9 @@
 import type React from 'react';
-import type {ComponentPropsWithoutRef} from 'react';
-import {type AdaptiveValue, type GridGapToken} from './Grid.utils';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
+import type {SpacingToken} from '../../types/spacing';
 
-export type {AdaptiveValue, GridGapToken};
+/** Токенный gap как у `Stack` / `Inline`. */
+export type GridGapToken = SpacingToken;
 
 export type GridMode = 'fixed' | 'autoFit' | 'autoFill';
 
@@ -10,12 +11,12 @@ export type GridMode = 'fixed' | 'autoFit' | 'autoFill';
  * Свойства `Grid`.
  */
 export interface GridProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
-	columns?: number | string | AdaptiveValue<number | string>;
+	columns?: number | string;
 	/**
 	 * Отступ: число (px), CSS-значение или токен `xs`…`xl` / `none`
 	 * (как у Layout: `md` → `var(--altum-g-space-3)`).
 	 */
-	gap?: number | string | AdaptiveValue<number | string>;
+	gap?: number | string;
 	/** `fixed` — фиксированное число колонок; `autoFit` / `autoFill` — карточная сетка по min-width. */
 	mode?: GridMode;
 	/** Минимальная ширина колонки для `autoFit` / `autoFill` (по умолчанию `240px`). */
@@ -23,6 +24,8 @@ export interface GridProps extends Omit<ComponentPropsWithoutRef<'div'>, 'childr
 	children: React.ReactNode;
 	className?: string;
 	as?: 'div' | 'section' | 'ul' | 'ol';
+	/** DOM-узел сетки. */
+	rootRef?: Ref<HTMLElement>;
 }
 
 /**
@@ -30,14 +33,16 @@ export interface GridProps extends Omit<ComponentPropsWithoutRef<'div'>, 'childr
  */
 export interface GridItemProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
 	/** Сколько колонок занимает (1 = одна ячейка). */
-	span?: number | AdaptiveValue<number>;
+	span?: number;
 	/** Начальная линия колонки (1-based). */
-	colStart?: number | AdaptiveValue<number>;
+	colStart?: number;
 	/** Конечная линия колонки (exclusive, как в CSS grid-line). */
-	colEnd?: number | AdaptiveValue<number>;
+	colEnd?: number;
 	/** Сколько строк занимает. */
-	rowSpan?: number | AdaptiveValue<number>;
+	rowSpan?: number;
 	children?: React.ReactNode;
 	className?: string;
 	as?: 'div' | 'section' | 'article' | 'aside' | 'li';
+	/** DOM-узел ячейки. */
+	rootRef?: Ref<HTMLElement>;
 }

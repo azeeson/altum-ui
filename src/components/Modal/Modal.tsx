@@ -1,106 +1,106 @@
 import type {
+	ModalBodyProps,
+	ModalFooterProps,
+	ModalHeaderProps,
 	ModalRootProps,
-	ModalFormFooterProps,
 } from './Modal.types';
 export type {
 	ModalFooterAlign,
 	ModalRootProps,
 	ModalHeaderProps,
-	ModalTitleProps,
-	ModalCloseProps,
 	ModalBodyProps,
 	ModalFooterProps,
-	ModalFormFooterProps,
 	ModalProps,
 } from './Modal.types';
 
-import {forwardRef, useId, type FC, type ForwardRefExoticComponent, type RefAttributes} from 'react';
-import {DialogBase} from '../../base/DialogBase';
-import {Overlay} from '../Overlay/Overlay';
+import {cn} from '../../core/utils/cn';
 import {useLocale} from '../../locales/localeContext';
+import {ruSlice as ru_modal} from '../../locales/slices/modal.ru';
+import {DialogLayout} from '../DialogLayout/DialogLayout';
+import {Layout} from '../Layout/Layout';
+import {Overlay} from '../Overlay/Overlay';
 import styles from './Modal.module.css';
-import {cn} from '../../utils/cn';
-import {treeContainsDialogTitle} from '../../utils/visitElementTree';
+import overlayScrim from '../../styles/overlayScrim.module.css';
 
-const ModalRoot = forwardRef<HTMLElement, ModalRootProps>(function ModalRoot(
-	{
-		open,
-		onOpenChange,
-		children,
-		className,
-		id,
-		style,
-		'aria-labelledby': ariaLabelledBy,
-		'aria-label': ariaLabel,
-		'aria-describedby': ariaDescribedBy,
-		...rest
-	},
-	ref,
-) {
-	const {t} = useLocale();
-	const generatedTitleId = useId();
-	const titleId = ariaLabelledBy ?? generatedTitleId;
-	const labelled = ariaLabelledBy != null || treeContainsDialogTitle(children);
+const localeFallback = {
+	modal: ru_modal,
+};
+
+const ModalHeader = ({rootRef, ...props}: ModalHeaderProps) => (
+	<Layout.Header
+		rootRef={rootRef}
+		sticky
+		{...props}
+	/>
+);
+
+const ModalBody = ({className, rootRef, ...props}: ModalBodyProps) => (
+	<Layout.Content
+		rootRef={rootRef}
+		{...props}
+		className={cn(styles.body, className)}
+	/>
+);
+
+const ModalFooter = ({align = 'end', rootRef, ...props}: ModalFooterProps) => (
+	<Layout.Footer
+		rootRef={rootRef}
+		sticky
+		align={align}
+		{...props}
+	/>
+);
+
+const ModalRoot = ({
+	open,
+	onOpenChange,
+	children,
+	size = 'md',
+	className,
+	'aria-labelledby': ariaLabelledBy,
+	'aria-label': ariaLabel,
+	'aria-describedby': ariaDescribedBy,
+	rootRef,
+	...rest
+}: ModalRootProps) => {
+	const {t} = useLocale(localeFallback);
 
 	return (
 		<Overlay
 			variant='modal'
-			purpose='modal'
 			open={open}
 			onOpenChange={onOpenChange}
-			aria-labelledby={ariaLabel || !labelled ? undefined : titleId}
-			aria-label={ariaLabel ?? (labelled ? undefined : t('modal.ariaLabel'))}
+			hostClassName={overlayScrim.host}
+			aria-labelledby={ariaLabel ? undefined : ariaLabelledBy}
+			aria-label={ariaLabel ?? (ariaLabelledBy ? undefined : t('modal.ariaLabel'))}
 			aria-describedby={ariaDescribedBy}
 		>
-			<DialogBase.Surface
-				ref={ref}
+			<DialogLayout
+				rootRef={rootRef}
+				{...rest}
 				variant='floating'
 				radius='lg'
 				className={cn(styles.modalContent, className)}
-				id={id}
-				style={style}
+				data-size={size !== 'md' ? size : undefined}
 				onClose={() => onOpenChange(false)}
-				titleId={titleId}
-				{...rest}
 			>
-				{children}
-			</DialogBase.Surface>
+				<Layout padding='md' gap='md'>
+					{children}
+				</Layout>
+			</DialogLayout>
 		</Overlay>
 	);
-});
-
-const ModalFormFooter: FC<ModalFormFooterProps> = ({
-	className = '',
-	message,
-	align,
-	children,
-}) => (
-	<DialogBase.Footer
-		align={align ?? (message != null ? 'space-between' : 'end')}
-		className={cn(styles.formFooter, className)}
-	>
-		{message != null && (
-			<div className={styles.formFooterStatus} role='status'>
-				{message}
-			</div>
-		)}
-		{children != null && (
-			<div className={styles.formFooterActions}>
-				{children}
-			</div>
-		)}
-	</DialogBase.Footer>
-);
+};
 
 /**
  * Модальное окно на базе `Overlay` (`variant="modal"`).
- * Составной API: `Modal` + `Header` / `Title` / `Close` / `Body` / `Footer` / `FormFooter`.
+ * Корень — `DialogLayout`, шапка, тело и футер — `Layout`.
  *
  * @component
  * @example
  * <Modal open={open} onOpenChange={setOpen}>
  *   <Modal.Header>
- *     <Modal.Title>Заголовок</Modal.Title>
+ *     <Title level={3}>Заголовок</Title>
  *   </Modal.Header>
  *   <Modal.Body>…</Modal.Body>
  *   <Modal.Footer>
@@ -108,25 +108,8 @@ const ModalFormFooter: FC<ModalFormFooterProps> = ({
  *   </Modal.Footer>
  * </Modal>
  */
-ModalRoot.displayName = 'Modal';
-ModalFormFooter.displayName = 'Modal.FormFooter';
-
-type ModalComponent = ForwardRefExoticComponent<
-	ModalRootProps & RefAttributes<HTMLElement>
-> & {
-	Header: typeof DialogBase.Header;
-	Title: typeof DialogBase.Title;
-	Close: typeof DialogBase.Close;
-	Body: typeof DialogBase.Body;
-	Footer: typeof DialogBase.Footer;
-	FormFooter: typeof ModalFormFooter;
-};
-
 export const Modal = Object.assign(ModalRoot, {
-	Header: DialogBase.Header,
-	Title: DialogBase.Title,
-	Close: DialogBase.Close,
-	Body: DialogBase.Body,
-	Footer: DialogBase.Footer,
-	FormFooter: ModalFormFooter,
-}) as ModalComponent;
+	Header: ModalHeader,
+	Body: ModalBody,
+	Footer: ModalFooter,
+});

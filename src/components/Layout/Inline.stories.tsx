@@ -91,7 +91,7 @@ export const Playground: Story<InlineProps> = {
 				Заказ #1024
 			</Text>
 			<Chip
-				as='tag'
+				mode='tag'
 				variant='tinted'
 				size='sm'
 			>
@@ -118,7 +118,7 @@ export const TagsAndBadges: Story<InlineProps> = {
 					Заказ #1024
 				</Text>
 				<Chip
-					as='tag'
+					mode='tag'
 					variant='tinted'
 					size='sm'
 				>
@@ -163,7 +163,7 @@ export const Wrap: Story<InlineProps> = {
 					'Дизайн-токены'
 				].map((label) => (
 					<Chip
-						as='tag'
+						mode='tag'
 						key={label}
 						size='sm'
 						variant='secondary'
@@ -188,13 +188,13 @@ export const NoWrapOverflow: Story<InlineProps> = {
 				gap='sm'
 				wrap={false}
 			>
-				<Chip as='tag' size='sm'>
+				<Chip mode='tag' size='sm'>
 					Очень длинный тег без переноса
 				</Chip>
-				<Chip as='tag' size='sm'>
+				<Chip mode='tag' size='sm'>
 					Ещё один
 				</Chip>
-				<Chip as='tag' size='sm'>
+				<Chip mode='tag' size='sm'>
 					И третий
 				</Chip>
 			</Inline>

@@ -3,7 +3,7 @@ import React, {useCallback, useMemo, useState} from 'react';
 import {VirtualList} from '../VirtualList/VirtualList';
 import {SwipeToAction} from '../SwipeToAction/SwipeToAction';
 import type {SwipeAction} from '../SwipeToAction/SwipeToAction.types';
-import {ControlRow, Inline, Split, Stack} from '../Layout/Layout';
+import {ControlRow, Inline, Split, Stack} from '../Layout';
 import {SearchField} from '../SearchField/SearchField';
 import {Chip} from '../Chip/Chip';
 import {Checkbox} from '../Checkbox/Checkbox';
@@ -20,6 +20,7 @@ import {Fieldset} from '../Fieldset/Fieldset';
 import {FieldLabel} from '../FieldLabel/FieldLabel';
 import {Switch} from '../Switch/Switch';
 import {Select} from '../Select/Select';
+import {MultiSelect} from '../MultiSelect/MultiSelect';
 import {SegmentedControl} from '../SegmentedControl/SegmentedControl';
 import {TextField} from '../TextField/TextField';
 import {SuggestField} from '../SuggestField/SuggestField';
@@ -30,7 +31,7 @@ import type {ActionListGroup, ActionListItem} from '../ActionList/ActionList.typ
 import {Tabs} from '../Tabs/Tabs';
 import {Avatar} from '../Avatar/Avatar';
 import {Badge} from '../Badge/Badge';
-import {addDays, startOfDay, startOfWeek} from '../Calendar/Calendar.utils';
+import {addDays, getWeekStart, startOfDay} from '../Calendar/Calendar.utils';
 import {IconTrash} from '../../icons/icons/IconTrash';
 import {IconCheckmark} from '../../icons/icons/IconCheckmark';
 import {IconToDo} from '../../icons/icons/IconToDo';
@@ -111,7 +112,7 @@ function buildMail(count: number): MailItem[] {
 }
 
 function demoCalendarTasks(anchor = new Date()): CalendarBoardTask[] {
-	const weekStart = startOfWeek(anchor, 1);
+	const weekStart = getWeekStart(anchor, 1);
 	return [
 		{
 			id: 'vacation',
@@ -210,7 +211,7 @@ export const InboxVirtualSwipe: Story<Record<string, never>> = {
 							</p>
 						</div>
 						<Chip
-							as='tag'
+							mode='tag'
 							variant='tinted'
 							size='sm'
 						>
@@ -223,21 +224,21 @@ export const InboxVirtualSwipe: Story<Record<string, never>> = {
 					<ControlRow gap='sm'>
 						<Chip
 							variant={filter === 'all' ? 'tinted' : 'secondary'}
-							as={filter === 'all' ? 'toggle' : 'chip'}
+							mode={filter === 'all' ? 'toggle' : 'chip'}
 							onClick={() => setFilter('all')}
 						>
 							Все
 						</Chip>
 						<Chip
 							variant={filter === 'unread' ? 'tinted' : 'secondary'}
-							as={filter === 'unread' ? 'toggle' : 'chip'}
+							mode={filter === 'unread' ? 'toggle' : 'chip'}
 							onClick={() => setFilter('unread')}
 						>
 							Непрочитанные
 						</Chip>
 						<Chip
 							variant={filter === 'starred' ? 'tinted' : 'secondary'}
-							as={filter === 'starred' ? 'toggle' : 'chip'}
+							mode={filter === 'starred' ? 'toggle' : 'chip'}
 							onClick={() => setFilter('starred')}
 						>
 							Избранные
@@ -399,7 +400,7 @@ export const CalendarPlanning: Story<Record<string, never>> = {
 						CalendarBoard + ControlRow фильтры + Sheet с деталями задачи. Клик по событию открывает панель.
 					</p>
 					<ControlRow gap='sm'>
-						<Chip variant='tinted' as='toggle'>
+						<Chip variant='tinted' mode='toggle'>
 							Моя команда
 						</Chip>
 						<Chip variant='secondary'>
@@ -408,7 +409,7 @@ export const CalendarPlanning: Story<Record<string, never>> = {
 						<Button
 							variant='tinted'
 							size='sm'
-							iconStart={<IconPlus size={16} />}
+							prefix={<IconPlus size={16} />}
 						>
 							Событие
 						</Button>
@@ -463,17 +464,16 @@ export const CalendarPlanning: Story<Record<string, never>> = {
 					onOpenChange={setDrawerOpen}
 					mode='sidebar'
 					direction='end'
-					backdrop
 				>
 					<Sheet.Header showClose>
-						<Sheet.Title>
+						<Title level={3}>
 							{selected?.title ?? 'Задача'}
-						</Sheet.Title>
+						</Title>
 					</Sheet.Header>
 					<Sheet.Body>
 						{selected ? (
 							<Stack gap='md'>
-								<Chip as='tag' variant='tinted'>
+								<Chip mode='tag' variant='tinted'>
 									{selected.allDay ? 'Весь день' : 'По времени'}
 								</Chip>
 								<Text size='sm'>
@@ -646,7 +646,7 @@ export const SettingsStudio: Story<Record<string, never>> = {
 								Пуш
 							</Chip>
 							<Chip
-								as='tag'
+								mode='tag'
 								variant='secondary'
 								size='sm'
 							>
@@ -661,7 +661,7 @@ export const SettingsStudio: Story<Record<string, never>> = {
 	parameters: storyNote('Fieldset + FieldLabel + Switch/Select/SegmentedControl + подвал ControlRow.'),
 };
 
-/* ---------- 4. Форма в Modal + семейство CustomSelect ---------- */
+/* ---------- 4. Форма в Modal + поля выбора ---------- */
 
 export const FormComposerModal: Story<Record<string, never>> = {
 	name: 'Форма в модалке',
@@ -675,8 +675,8 @@ export const FormComposerModal: Story<Record<string, never>> = {
 		return (
 			<div className={styles.shell}>
 				<p className={styles.subtitle}>
-					Канон: actions в Modal.FormFooter снаружи Body (sticky, не скроллятся с контентом).
-					Stack/ControlRow + TextField + SuggestField + CustomSelect.
+					Канон: actions в Modal.Footer снаружи Body (sticky, не скроллятся с контентом).
+					Stack/ControlRow + TextField + SuggestField + Select.
 				</p>
 				<Button variant='primary' onClick={() => setOpen(true)}>
 					Открыть форму
@@ -684,9 +684,9 @@ export const FormComposerModal: Story<Record<string, never>> = {
 
 				<Modal open={open} onOpenChange={setOpen}>
 					<Modal.Header>
-						<Modal.Title>
+						<Title level={3}>
 							Новая задача
-						</Modal.Title>
+						</Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Stack gap='md'>
@@ -744,8 +744,7 @@ export const FormComposerModal: Story<Record<string, never>> = {
 								width='full'
 								filterable
 							/>
-							<Select
-								selectionMode='multiple'
+							<MultiSelect
 								options={[
 									{
 										label: 'Дизайн',
@@ -765,32 +764,43 @@ export const FormComposerModal: Story<Record<string, never>> = {
 									},
 								]}
 								value={labels}
-								onChange={(value) => { if (Array.isArray(value)) setLabels(value); }}
+								onChange={setLabels}
 								label='Метки'
 								width='full'
 							/>
 						</Stack>
 					</Modal.Body>
-					<Modal.FormFooter
-						message={title ? undefined : 'Заполните название'}
-					>
-						<Button
-							type='button'
-							variant='secondary'
-							size='sm'
-							onClick={() => setOpen(false)}
-						>
-							Отмена
-						</Button>
-						<Button
-							type='button'
-							variant='primary'
-							size='sm'
-							onClick={() => setOpen(false)}
-						>
-							Создать
-						</Button>
-					</Modal.FormFooter>
+					<Modal.Footer>
+						<ControlRow justify={title ? 'end' : 'between'}>
+							{title ? null : (
+								<Text
+									size='sm'
+									color='muted'
+									role='status'
+								>
+									Заполните название
+								</Text>
+							)}
+							<ControlRow>
+								<Button
+									type='button'
+									variant='secondary'
+									size='sm'
+									onClick={() => setOpen(false)}
+								>
+									Отмена
+								</Button>
+								<Button
+									type='button'
+									variant='primary'
+									size='sm'
+									onClick={() => setOpen(false)}
+								>
+									Создать
+								</Button>
+							</ControlRow>
+						</ControlRow>
+					</Modal.Footer>
 				</Modal>
 			</div>
 		);
@@ -899,7 +909,7 @@ export const CommandWorkspace: Story<Record<string, never>> = {
 						</Inline>
 					</Split>
 					<Chip
-						as='tag'
+						mode='tag'
 						variant='secondary'
 						size='sm'
 					>
@@ -914,16 +924,17 @@ export const CommandWorkspace: Story<Record<string, never>> = {
 					value={tab}
 					onChange={setTab}
 				>
-					<Tabs.List>
-						<Tabs.Trigger value='inbox'>
-							Обзор
-						</Tabs.Trigger>
-						<Tabs.Trigger value='tasks'>
-							Задачи (
-							{todos.filter((item) => !item.done).length}
-							)
-						</Tabs.Trigger>
-					</Tabs.List>
+					<Tabs.List items={[
+						{
+							value: 'inbox',
+							label: 'Обзор'
+						},
+						{
+							value: 'tasks',
+							label: `Задачи (${todos.filter((item) => !item.done).length})`,
+						},
+					]}
+					/>
 					<Tabs.Panel value='inbox'>
 						<div className={styles.panel}>
 							<Text size='sm'>
@@ -958,7 +969,7 @@ export const CommandWorkspace: Story<Record<string, never>> = {
 									</span>
 									{todo.done && (
 										<Chip
-											as='tag'
+											mode='tag'
 											variant='success'
 											size='sm'
 										>
@@ -1004,7 +1015,7 @@ export const FormHarmony: Story<Record<string, never>> = {
 						Гармония формы
 					</Title>
 					<p className={styles.subtitle}>
-						Button + Field + Select + Segmented на одном `--altum-control-height-*`; helperText под полем.
+						Button + Field + Select + Segmented на одном `--altum-control-height-*`; description под полем.
 					</p>
 				</header>
 
@@ -1014,7 +1025,7 @@ export const FormHarmony: Story<Record<string, never>> = {
 						size='sm'
 						weight='semibold'
 					>
-						Тулбар (labelPlacement none)
+						Тулбар
 					</Text>
 					<ControlRow
 						gap='sm'
@@ -1022,8 +1033,7 @@ export const FormHarmony: Story<Record<string, never>> = {
 						className={styles.harmonyRow}
 					>
 						<TextField
-							label='Поиск'
-							labelPlacement='none'
+							aria-label='Поиск'
 							placeholder='Фильтр…'
 							value={query}
 							onChange={(event) => setQuery(event.target.value)}
@@ -1044,8 +1054,7 @@ export const FormHarmony: Story<Record<string, never>> = {
 							]}
 							value={status}
 							onChange={(value) => { if (!Array.isArray(value)) setStatus(value); }}
-							label='Статус'
-							labelPlacement='none'
+							aria-label='Статус'
 							placeholder='Статус'
 							width='md'
 							size='md'
@@ -1083,13 +1092,12 @@ export const FormHarmony: Story<Record<string, never>> = {
 						size='sm'
 						weight='semibold'
 					>
-						Ряд формы (outside + helperText)
+						Ряд формы
 					</Text>
 					<Stack gap='md'>
 						<TextField
 							label='Эл. почта'
-							labelPlacement='outside'
-							helperText='Рабочий адрес для уведомлений'
+							description='Рабочий адрес для уведомлений'
 							placeholder='name@company.com'
 							width='full'
 							size='md'
@@ -1101,7 +1109,6 @@ export const FormHarmony: Story<Record<string, never>> = {
 						>
 							<TextField
 								label='Имя'
-								labelPlacement='outside'
 								width='md'
 								size='md'
 							/>
@@ -1119,7 +1126,6 @@ export const FormHarmony: Story<Record<string, never>> = {
 								value={role}
 								onChange={(value) => { if (!Array.isArray(value)) setRole(value); }}
 								label='Роль'
-								labelPlacement='outside'
 								width='md'
 								size='md'
 							/>
@@ -1130,14 +1136,14 @@ export const FormHarmony: Story<Record<string, never>> = {
 						<Inline gap='md'>
 							<Chip
 								size='sm'
-								as='tag'
+								mode='tag'
 								variant='info'
 							>
 								sm тег
 							</Chip>
 							<Chip
 								size='sm'
-								as='tag'
+								mode='tag'
 								variant='success'
 								onRemove={() => undefined}
 							>
@@ -1145,7 +1151,7 @@ export const FormHarmony: Story<Record<string, never>> = {
 							</Chip>
 							<Chip
 								size='md'
-								as='toggle'
+								mode='toggle'
 								onClick={() => undefined}
 							>
 								md чип
@@ -1163,18 +1169,17 @@ export const FormHarmony: Story<Record<string, never>> = {
 					</Button>
 					<Modal open={modalOpen} onOpenChange={setModalOpen}>
 						<Modal.Header>
-							<Modal.Title>
+							<Title level={3}>
 								Новый участник
-							</Modal.Title>
+							</Title>
 						</Modal.Header>
 						<Modal.Body>
 							<Stack gap='md'>
 								<TextField
 									label='Имя'
-									labelPlacement='outside'
 									value={name}
 									onChange={(event) => setName(event.target.value)}
-									helperText='Отображается в списке команды'
+									description='Отображается в списке команды'
 									width='full'
 								/>
 								<Select
@@ -1195,29 +1200,30 @@ export const FormHarmony: Story<Record<string, never>> = {
 									value={role}
 									onChange={(value) => { if (!Array.isArray(value)) setRole(value); }}
 									label='Роль'
-									labelPlacement='outside'
 									width='full'
 								/>
 							</Stack>
 						</Modal.Body>
-						<Modal.FormFooter>
-							<Button
-								type='button'
-								variant='secondary'
-								size='md'
-								onClick={() => setModalOpen(false)}
-							>
-								Отмена
-							</Button>
-							<Button
-								type='button'
-								variant='primary'
-								size='md'
-								onClick={() => setModalOpen(false)}
-							>
-								Добавить
-							</Button>
-						</Modal.FormFooter>
+						<Modal.Footer>
+							<ControlRow justify='end'>
+								<Button
+									type='button'
+									variant='secondary'
+									size='md'
+									onClick={() => setModalOpen(false)}
+								>
+									Отмена
+								</Button>
+								<Button
+									type='button'
+									variant='primary'
+									size='md'
+									onClick={() => setModalOpen(false)}
+								>
+									Добавить
+								</Button>
+							</ControlRow>
+						</Modal.Footer>
 					</Modal>
 				</section>
 			</div>

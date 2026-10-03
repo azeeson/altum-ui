@@ -1,6 +1,6 @@
 {
 	"name": "altum",
-	"version": "0.0.4",
+	"version": "0.0.11",
 	"description": "Библиотека React + TypeScript UI-компонентов: CSS Modules, токены ThemeProvider, адаптация overlay/sheet.",
 	"license": "MIT",
 	"author": "Alexander <azeeson@gmail.com>",
@@ -40,6 +40,11 @@
 			"import": "./dist/entries/icons.js",
 			"default": "./dist/entries/icons.js"
 		},
+		"./locales": {
+			"types": "./types/entries/locales.d.ts",
+			"import": "./dist/entries/locales.js",
+			"default": "./dist/entries/locales.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"files": [
@@ -57,6 +62,8 @@
 		"prepublishOnly": "npm run lint && npm run lint:css && npm run lint:css-ownership && npm run typecheck && npm run build && npm run pack:check",
 		"pack:check": "node scripts/pack-check.mjs",
 		"release": "npm test && npm publish",
+		"demo": "vite --config demo/vite.config.ts",
+		"demo:build": "vite build --config demo/vite.config.ts",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build -o dist-storybook",
 		"test": "npm run build-storybook && playwright test",
@@ -68,7 +75,8 @@
 		"lint:css": "stylelint \"src/**/*.css\"",
 		"lint:css:fix": "stylelint \"src/**/*.css\" --fix && node scripts/fix-css-brace-format.mjs && stylelint \"src/**/*.css\" --fix",
 		"lint:css-ownership": "node scripts/audit-css-ownership.mjs",
-		"scaffold": "node scripts/scaffold-component.mjs"
+		"scaffold": "node scripts/scaffold-component.mjs",
+		"catalog": "node scripts/component-catalog.mjs"
 	},
 	"browserslist": [
 		"chrome >= 100",
@@ -97,6 +105,7 @@
 		"@stylistic/stylelint-plugin": "^5.2.1",
 		"@types/react": "^18.3.31",
 		"@types/react-dom": "^18.3.7",
+		"@vitejs/plugin-react": "^4.7.0",
 		"autoprefixer": "^10.5.4",
 		"css-loader": "^6.8.1",
 		"esbuild": "^0.25.9",
@@ -119,6 +128,7 @@
 		"ts-loader": "^9.4.3",
 		"typescript": "^5.1.3",
 		"typescript-eslint": "^8.62.1",
+		"vite": "^6.4.3",
 		"webpack": "^5.109.2"
 	},
 	"overrides": {

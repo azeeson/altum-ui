@@ -3,7 +3,7 @@ import React, {useMemo, useState} from 'react';
 import {ActionList} from './ActionList';
 import type {ActionListGroup, ActionListItem, ActionListProps} from './ActionList.types';
 import {Box} from '../Box/Box';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Kbd} from '../Kbd/Kbd';
 import {Text} from '../Text/Text';
 import {IconInbox} from '../../icons/icons/IconInbox';
@@ -73,7 +73,6 @@ function ListFrame({
 	return (
 		<Box
 			variant='outlined'
-			padding='none'
 			radius='md'
 			style={{
 				maxWidth: 420,
@@ -138,9 +137,9 @@ export const Playground: Story<ActionListProps> = {
 					footer={(
 						<Box
 							variant='muted'
-							padding='sm'
 							radius='none'
 							border={false}
+							style={{padding: 'var(--altum-g-space-2)'}}
 						>
 							<Text size='xs' color='muted'>
 								Выбрано:
@@ -176,9 +175,9 @@ export const WithStaticList: Story<ActionListProps> = {
 				footer={(
 					<Box
 						variant='muted'
-						padding='sm'
 						radius='none'
 						border={false}
+						style={{padding: 'var(--altum-g-space-2)'}}
 					>
 						<Text size='xs' color='muted'>
 							Выбрано:

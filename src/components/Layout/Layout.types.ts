@@ -1,4 +1,15 @@
-import type {ComponentPropsWithoutRef, ElementType, ReactNode} from 'react';
+import type {ComponentPropsWithoutRef, ElementType, ReactNode, Ref} from 'react';
+
+/**
+ * Корень layout-узла.
+ * Союз рефов нужен, потому что `Ref<HTMLDivElement>` не присваивается `Ref<HTMLElement>`.
+ */
+type LayoutNodeRef = Ref<HTMLElement>
+	| Ref<HTMLDivElement>
+	| Ref<HTMLSpanElement>
+	| Ref<HTMLUListElement>
+	| Ref<HTMLOListElement>
+	| Ref<HTMLLIElement>;
 
 /** Шкала отступов layout-компонентов → CSS variables 8pt grid. */
 export type LayoutGap = 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -13,13 +24,24 @@ export type LayoutJustify =
 	| 'around'
 	| 'evenly';
 
+/** Шаг `padding` и `gap` у `Layout`: `sm` 12px, `md` 16px, `lg` 24px. */
+export type LayoutSpacing = 'sm' | 'md' | 'lg';
+
 export interface LayoutRootProps extends ComponentPropsWithoutRef<'div'> {
 	children?: ReactNode;
+	/** DOM-узел корня. */
+	rootRef?: LayoutNodeRef;
 	as?: ElementType;
+	/** Отступ панели. На секциях, не на scrollport — при скролле контент не вылезает к краям. */
+	padding?: LayoutSpacing;
+	/** Промежуток между `Header`, `Content` и `Footer`. */
+	gap?: LayoutSpacing;
 }
 
 export interface LayoutHeaderProps extends ComponentPropsWithoutRef<'header'> {
 	children?: ReactNode;
+	/** DOM-узел шапки. */
+	rootRef?: LayoutNodeRef;
 	/** Закрепить у верхнего края scrollport `Layout` (`position: sticky; top: 0`). Без пропа шапка уезжает со скроллом. */
 	sticky?: boolean;
 	as?: ElementType;
@@ -27,6 +49,8 @@ export interface LayoutHeaderProps extends ComponentPropsWithoutRef<'header'> {
 
 export interface LayoutContentProps extends ComponentPropsWithoutRef<'div'> {
 	children?: ReactNode;
+	/** DOM-узел середины. */
+	rootRef?: LayoutNodeRef;
 	as?: ElementType;
 }
 
@@ -35,6 +59,8 @@ export type LayoutFooterAlign = 'start' | 'center' | 'end' | 'space-between';
 
 export interface LayoutFooterProps extends Omit<ComponentPropsWithoutRef<'footer'>, 'align'> {
 	children?: ReactNode;
+	/** DOM-узел подвала. */
+	rootRef?: LayoutNodeRef;
 	/** Закрепить у нижнего края scrollport `Layout` (`position: sticky; bottom: 0`). Без пропа футер уезжает со скроллом. */
 	sticky?: boolean;
 	/**
@@ -47,6 +73,8 @@ export interface LayoutFooterProps extends Omit<ComponentPropsWithoutRef<'footer
 
 export interface StackProps extends ComponentPropsWithoutRef<'div'> {
 	children?: ReactNode;
+	/** DOM-узел стека. */
+	rootRef?: LayoutNodeRef;
 	/** Вертикальный промежуток (8pt-токены). @default 'md' */
 	gap?: LayoutGap;
 	/** Выравнивание по поперечной оси. @default 'stretch' */
@@ -58,6 +86,8 @@ export interface StackProps extends ComponentPropsWithoutRef<'div'> {
 
 export interface InlineProps extends ComponentPropsWithoutRef<'div'> {
 	children?: ReactNode;
+	/** DOM-узел ряда. */
+	rootRef?: LayoutNodeRef;
 	/** Горизонтальный промежуток. @default 'sm' */
 	gap?: LayoutGap;
 	/** Выравнивание по поперечной оси. @default 'center' */
@@ -71,6 +101,8 @@ export interface InlineProps extends ComponentPropsWithoutRef<'div'> {
 
 export interface SplitProps extends ComponentPropsWithoutRef<'div'> {
 	children?: ReactNode;
+	/** DOM-узел ряда. */
+	rootRef?: LayoutNodeRef;
 	/** Промежуток между блоками. @default 'md' */
 	gap?: LayoutGap;
 	/** Выравнивание по поперечной оси. @default 'center' */
@@ -79,6 +111,8 @@ export interface SplitProps extends ComponentPropsWithoutRef<'div'> {
 
 export interface LayoutItemProps extends ComponentPropsWithoutRef<'div'> {
 	children?: ReactNode;
+	/** DOM-узел ячейки. */
+	rootRef?: LayoutNodeRef;
 	/**
 	 * Занять оставшееся место по главной оси (`flex: 1`).
 	 * Типично для поля поиска в тулбаре или основного блока рядом с кнопкой.
@@ -95,6 +129,8 @@ export interface LayoutItemProps extends ComponentPropsWithoutRef<'div'> {
 
 export interface ControlRowProps extends ComponentPropsWithoutRef<'div'> {
 	children?: ReactNode;
+	/** DOM-узел ряда. */
+	rootRef?: LayoutNodeRef;
 	/** Промежуток между контролами. @default 'sm' */
 	gap?: LayoutGap;
 	/**

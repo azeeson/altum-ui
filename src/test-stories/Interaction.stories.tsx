@@ -4,6 +4,7 @@ import {Modal} from '../components/Modal/Modal';
 import {Button} from '../components/Button/Button';
 import {Checkbox} from '../components/Checkbox/Checkbox';
 import {Text} from '../components/Text/Text';
+import {Title} from '../components/Title/Title';
 
 const meta = {
 	title: 'altum/Test/Interaction',
@@ -45,9 +46,9 @@ export const ModalBlocksBackground: Story = {
 				</div>
 				<Modal open={open} onOpenChange={setOpen}>
 					<Modal.Header>
-						<Modal.Title>
+						<Title level={3}>
 							Тестовая модалка
-						</Modal.Title>
+						</Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Text>

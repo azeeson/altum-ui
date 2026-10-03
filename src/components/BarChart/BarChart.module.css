@@ -1,6 +1,29 @@
-.value {
-  font-size: var(--altum-g-font-size-3xs);
-  font-weight: var(--altum-g-font-weight-semibold);
+.root {
+  & .bar {
+    cursor: pointer;
 
-  fill: var(--altum-color-muted);
+    transition: opacity 0.2s ease-in-out, filter 0.2s ease-in-out;
+  }
+
+  & [data-dimmed] {
+    opacity: 0.35;
+  }
+
+  & [data-active] {
+    opacity: 1;
+    filter: brightness(1.05);
+  }
+
+  & .value {
+    font-size: var(--altum-g-font-size-3xs);
+    font-weight: var(--altum-g-font-weight-semibold);
+
+    fill: var(--altum-color-muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    & .bar {
+      transition: none;
+    }
+  }
 }

@@ -4,13 +4,17 @@
   overflow: hidden;
 
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: var(--altum-media-ratio, 1.7778);
 
   background-color: var(--altum-color-option-hover);
-}
 
-.rounded {
-  border-radius: var(--altum-g-radius-md);
+  &[data-rounded] {
+    border-radius: var(--altum-g-radius-md);
+  }
+
+  &[data-fit='contain'] .el {
+    object-fit: contain;
+  }
 }
 
 .el {
@@ -21,12 +25,5 @@
 
   width: 100%;
   height: 100%;
-}
-
-.cover {
   object-fit: cover;
-}
-
-.contain {
-  object-fit: contain;
 }

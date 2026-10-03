@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {type Ref} from 'react';
 
 /**
  * Действие, раскрываемое свайпом (только touch).
@@ -36,6 +36,8 @@ export interface SwipeToActionProps extends Omit<React.HTMLAttributes<HTMLDivEle
 	swipeToTriggerThreshold?: number;
 	/** Ширина одной кнопки действия, px. @default 76 */
 	actionWidth?: number;
+	/** DOM-узел корня. */
+	rootRef?: Ref<HTMLDivElement>;
 }
 
 export interface TouchState {

@@ -1,11 +1,11 @@
-import type {
-	ComponentPropsWithoutRef,
-} from 'react';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
 
 /**
  * Свойства `RelativeTime`.
  */
 export interface RelativeTimeProps extends Omit<ComponentPropsWithoutRef<'time'>, 'dateTime'> {
+	/** DOM-узел `<time>`. */
+	rootRef?: Ref<HTMLTimeElement>;
 	/** Дата события */
 	date: Date | string | number;
 	/** Локаль. @default runtime */

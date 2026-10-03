@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 /**
@@ -14,6 +15,8 @@ export interface PullToRefreshProps extends Omit<ComponentPropsWithoutRef<'div'>
 	threshold?: number;
 	/** Отключить. @default false */
 	disabled?: boolean;
+	/** Прокручиваемый корень. */
+	rootRef?: Ref<HTMLDivElement>;
 	/** Подпись в состоянии pull */
 	pullLabel?: string;
 	releaseLabel?: string;

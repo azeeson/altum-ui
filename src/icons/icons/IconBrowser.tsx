@@ -1,3 +1,3 @@
-import {createIcon} from '../createIcon';
-
-export const IconBrowser = createIcon('M88,9H4c-2.2,0-4,1.8-4,4v66c0,2.2,1.8,4,4,4h84c2.2,0,4-1.8,4-4V13C92,10.8,90.2,9,88,9z M84,26H56v-9h28 V26z M24,26v-9h10v9H24z M40,17h10v9H40V17z M18,17v9H8v-9H18z M8,75V33h76v42H8z');
+import {IconBase, type IconProps} from '../IconBase';
+import {ICON_PATHS} from '../registry';
+export const IconBrowser = (p: IconProps) => <IconBase d={ICON_PATHS.browser} {...p} />;

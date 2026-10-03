@@ -7,9 +7,9 @@ export type {
 	KbdGroupProps,
 } from './Kbd.types';
 
-import {forwardRef} from 'react';
 import styles from './Kbd.module.css';
-import {cn} from '../../utils/cn';
+import utilities from '../../styles/utilities.module.css';
+import {cn} from '../../core/utils/cn';
 
 /**
  * Отображает клавишу или сочетание ввода с клавиатуры.
@@ -19,27 +19,24 @@ import {cn} from '../../utils/cn';
  * <Kbd>⌘</Kbd>
  * <Kbd symbol>↑</Kbd>
  */
-export const Kbd = forwardRef<HTMLElement, KbdProps>(function Kbd(
-	{
-		children,
-		symbol,
-		className,
-		...rest
-	},
-	ref,
-) {
+export const Kbd = ({
+	children,
+	symbol,
+	className,
+	rootRef,
+	...rest
+}: KbdProps) => {
 	return (
 		<kbd
-			ref={ref}
-			className={cn(styles.kbd, symbol && styles.kbdSymbol, className)}
+			ref={rootRef}
+			className={cn(utilities.fCenter, styles.kbd, className)}
+			data-symbol={symbol ? '' : undefined}
 			{...rest}
 		>
 			{children}
 		</kbd>
 	);
-});
-
-Kbd.displayName = 'Kbd';
+};
 
 /**
  * Группа клавиш / комбинация (⌘ ⇧ ⌥ или Ctrl + B).
@@ -52,13 +49,15 @@ Kbd.displayName = 'Kbd';
  *   <Kbd>B</Kbd>
  * </KbdGroup>
  */
-export const KbdGroup = forwardRef<HTMLSpanElement, KbdGroupProps>(function KbdGroup(
-	{children, className, ...rest},
-	ref,
-) {
+export const KbdGroup = ({
+	children,
+	className,
+	rootRef,
+	...rest
+}: KbdGroupProps) => {
 	return (
 		<span
-			ref={ref}
+			ref={rootRef}
 			className={cn(styles.kbdGroup, className)}
 			{...rest}
 			role='group'
@@ -66,6 +65,4 @@ export const KbdGroup = forwardRef<HTMLSpanElement, KbdGroupProps>(function KbdG
 			{children}
 		</span>
 	);
-});
-
-KbdGroup.displayName = 'KbdGroup';
+};

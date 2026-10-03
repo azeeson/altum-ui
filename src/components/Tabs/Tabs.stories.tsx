@@ -2,7 +2,7 @@ import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {Tabs, TabsProps} from './Tabs';
 import {Text} from '../Text/Text';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Card} from '../Card/Card';
 import {Button} from '../Button/Button';
 import {TextField} from '../TextField/TextField';
@@ -10,17 +10,22 @@ import {componentParameters, story, Story} from '../../storybook/meta';
 
 const TabExample: React.FC<Pick<TabsProps, 'variant' | 'orientation' | 'defaultValue'>> = (props) => (
 	<Tabs defaultValue='profile' {...props}>
-		<Tabs.List>
-			<Tabs.Trigger value='profile'>
-				Профиль
-			</Tabs.Trigger>
-			<Tabs.Trigger value='application'>
-				Приложение
-			</Tabs.Trigger>
-			<Tabs.Trigger value='notifications' badge={3}>
-				Уведомления
-			</Tabs.Trigger>
-		</Tabs.List>
+		<Tabs.List items={[
+			{
+				value: 'profile',
+				label: 'Профиль'
+			},
+			{
+				value: 'application',
+				label: 'Приложение'
+			},
+			{
+				value: 'notifications',
+				label: 'Уведомления',
+				badge: 3
+			},
+		]}
+		/>
 		<Tabs.Panel value='profile'>
 			<Text size='md'>
 				Контент вкладки профиля
@@ -107,17 +112,22 @@ export const Vertical: Story<TabsProps> = {
 export const DisabledTab: Story<TabsProps> = {
 	render: () => (
 		<Tabs defaultValue='profile'>
-			<Tabs.List>
-				<Tabs.Trigger value='profile'>
-					Профиль
-				</Tabs.Trigger>
-				<Tabs.Trigger value='billing' disabled>
-					Оплата
-				</Tabs.Trigger>
-				<Tabs.Trigger value='team'>
-					Команда
-				</Tabs.Trigger>
-			</Tabs.List>
+			<Tabs.List items={[
+				{
+					value: 'profile',
+					label: 'Профиль'
+				},
+				{
+					value: 'billing',
+					label: 'Оплата',
+					disabled: true
+				},
+				{
+					value: 'team',
+					label: 'Команда'
+				},
+			]}
+			/>
 			<Tabs.Panel value='profile'>
 				<Text size='sm'>
 					Доступный раздел
@@ -141,17 +151,19 @@ export const DisabledTab: Story<TabsProps> = {
 export const BadgeDot: Story<TabsProps> = {
 	render: () => (
 		<Tabs defaultValue='inbox'>
-			<Tabs.List>
-				<Tabs.Trigger value='inbox' badgeDot>
-					Входящие
-				</Tabs.Trigger>
-				<Tabs.Trigger
-					value='sent'
-					badge={12}
-				>
-					Отправленные
-				</Tabs.Trigger>
-			</Tabs.List>
+			<Tabs.List items={[
+				{
+					value: 'inbox',
+					label: 'Входящие',
+					badgeDot: true
+				},
+				{
+					value: 'sent',
+					label: 'Отправленные',
+					badge: 12
+				},
+			]}
+			/>
 			<Tabs.Panel value='inbox'>
 				<Text size='sm'>
 					Новые письма
@@ -164,26 +176,24 @@ export const BadgeDot: Story<TabsProps> = {
 			</Tabs.Panel>
 		</Tabs>
 	),
-	parameters: story('`badgeDot` и слот `badge` на триггере.'),
+	parameters: story('`badgeDot` и `badge` на пункте списка.'),
 };
 
 export const OverflowTabs: Story<TabsProps> = {
 	render: () => (
 		<div style={{maxWidth: 280}}>
 			<Tabs defaultValue='one'>
-				<Tabs.List>
-					{[
-						'Обзор',
-						'Настройки безопасности',
-						'Интеграции и API',
-						'Журнал аудита',
-						'Биллинг',
-					].map((label, index) => (
-						<Tabs.Trigger key={label} value={String(index)}>
-							{label}
-						</Tabs.Trigger>
-					))}
-				</Tabs.List>
+				<Tabs.List items={[
+					'Обзор',
+					'Настройки безопасности',
+					'Интеграции и API',
+					'Журнал аудита',
+					'Биллинг',
+				].map((label, index) => ({
+					value: String(index),
+					label,
+				}))}
+				/>
 				<Tabs.Panel value='0'>
 					<Text size='sm'>
 						Первая вкладка
@@ -203,14 +213,17 @@ export const Interaction: Story<TabsProps> = {
 				value={value}
 				onChange={setValue}
 			>
-				<Tabs.List>
-					<Tabs.Trigger value='profile'>
-						Профиль
-					</Tabs.Trigger>
-					<Tabs.Trigger value='app'>
-						Приложение
-					</Tabs.Trigger>
-				</Tabs.List>
+				<Tabs.List items={[
+					{
+						value: 'profile',
+						label: 'Профиль'
+					},
+					{
+						value: 'app',
+						label: 'Приложение'
+					},
+				]}
+				/>
 				<Tabs.Panel value='profile'>
 					<Text size='sm'>
 						Профиль
@@ -251,14 +264,17 @@ export const UsageExample: Story<TabsProps> = {
 						onChange={setTab}
 						variant='pill'
 					>
-						<Tabs.List>
-							<Tabs.Trigger value='profile'>
-								Профиль
-							</Tabs.Trigger>
-							<Tabs.Trigger value='notify'>
-								Уведомления
-							</Tabs.Trigger>
-						</Tabs.List>
+						<Tabs.List items={[
+							{
+								value: 'profile',
+								label: 'Профиль'
+							},
+							{
+								value: 'notify',
+								label: 'Уведомления'
+							},
+						]}
+						/>
 						<Tabs.Panel value='profile'>
 							<Stack gap='sm'>
 								<TextField

@@ -1,12 +1,10 @@
-/* Панель: Header / Content / Footer.
- * Scrollport — `.root`; Content не скроллится сам.
- * `sticky` на Header/Footer закрепляет их к краям scrollport. */
-
 .root {
+  --altum-layout-pad: 0;
+  --altum-layout-gap: 0;
+
   display: flex;
   box-sizing: border-box;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden auto;
 
   flex: 1 1 auto;
   flex-direction: column;
@@ -15,36 +13,126 @@
   min-width: 0;
   height: 100%;
   min-height: 0;
-}
 
-.header {
-  flex-shrink: 0;
-}
+  /* Не padding scrollport: при скролле контент заезжает в поле и вылезает мимо sticky. */
+  &[data-padding='sm'] {
+    --altum-layout-pad: var(--altum-g-space-3);
+  }
 
-.content {
-  /* Растягивается при коротком контенте; при длинном растёт вместе с ним (скролл у .root). */
-  flex: 1 0 auto;
+  &[data-padding='md'] {
+    --altum-layout-pad: var(--altum-g-space-4);
+  }
 
-  min-width: 0;
-}
+  &[data-padding='lg'] {
+    --altum-layout-pad: var(--altum-g-space-6);
+  }
 
-.footer {
-  display: flex;
+  &[data-gap='sm'] {
+    --altum-layout-gap: var(--altum-g-space-3);
+  }
 
-  flex-shrink: 0;
-  align-items: center;
-  gap: var(--altum-g-space-3);
-}
+  &[data-gap='md'] {
+    --altum-layout-gap: var(--altum-g-space-4);
+  }
 
-.sticky {
-  position: sticky;
-  z-index: var(--altum-g-z-raised, 1);
-}
+  &[data-gap='lg'] {
+    --altum-layout-gap: var(--altum-g-space-6);
+  }
 
-.header.sticky {
-  top: 0;
-}
+  &[data-gap] {
+    gap: var(--altum-layout-gap);
+  }
 
-.footer.sticky {
-  bottom: 0;
+  &[data-padding] > :is(.header, .content, .footer) {
+    box-sizing: border-box;
+
+    padding-inline: var(--altum-layout-pad);
+  }
+
+  &[data-padding] > :is(.header, .footer:first-child, .content:first-child) {
+    padding-block-start: var(--altum-layout-pad);
+  }
+
+  &[data-padding] > :is(.footer, .header:last-child, .content:last-child) {
+    padding-block-end: var(--altum-layout-pad);
+  }
+
+  & .header,
+  & .footer {
+    flex-shrink: 0;
+  }
+
+  & .content {
+    flex: 1 0 auto;
+
+    min-width: 0;
+  }
+
+  & .footer {
+    display: flex;
+
+    justify-content: flex-start;
+    align-items: center;
+    gap: var(--altum-g-space-3);
+
+    &[data-align='center'] {
+      justify-content: center;
+    }
+
+    &[data-align='end'] {
+      justify-content: flex-end;
+    }
+
+    &[data-align='space-between'] {
+      justify-content: space-between;
+    }
+  }
+
+  & .header[data-sticky],
+  & .footer[data-sticky] {
+    position: sticky;
+    z-index: var(--altum-g-z-raised);
+  }
+
+  & .header[data-sticky] {
+    top: 0;
+
+    &::after {
+      position: absolute;
+      top: 100%;
+      right: calc(-1 * var(--altum-layout-pad));
+      left: calc(-1 * var(--altum-layout-pad));
+
+      content: '';
+
+      height: var(--altum-layout-gap);
+
+      margin-top: 1px;
+
+      background-color: inherit;
+
+      pointer-events: none;
+    }
+  }
+
+  & .footer[data-sticky] {
+    bottom: 0;
+
+    &::before {
+      position: absolute;
+      right: calc(-1 * var(--altum-layout-pad));
+      bottom: 100%;
+      left: calc(-1 * var(--altum-layout-pad));
+
+      content: '';
+
+      height: var(--altum-layout-gap);
+
+      margin-bottom: 1px;
+
+      background-color: inherit;
+
+      pointer-events: none;
+    }
+  }
 }

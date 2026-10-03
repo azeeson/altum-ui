@@ -1,5 +1,5 @@
 import type {ChartSeries} from '../../base/ChartBase';
-import type {ComponentPropsWithoutRef} from 'react';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
 
 export type BarChartDataset = ChartSeries;
 
@@ -7,6 +7,8 @@ export type BarChartDataset = ChartSeries;
  * Свойства `BarChart`.
  */
 export interface BarChartProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
+	/** DOM-узел графика. */
+	rootRef?: Ref<HTMLDivElement>;
 	categories: string[];
 	datasets: BarChartDataset[];
 	height?: number;

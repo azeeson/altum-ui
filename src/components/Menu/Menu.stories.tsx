@@ -1,16 +1,16 @@
 import type {Meta} from '@storybook/react';
 import React, {useMemo, useState} from 'react';
+import type {ActionListItem} from '../ActionList/ActionList.types';
 import {Menu, type MenuProps} from './Menu';
-import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
 import {Button} from '../Button/Button';
+import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
 import {Card} from '../Card/Card';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {IconMenu} from '../../icons/icons/IconMenu';
-import type {ActionListGroup, ActionListItem} from '../ActionList/ActionList.types';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
-const BASE_GROUPS: ActionListGroup[] = [
+const BASE_GROUPS = [
 	{
 		id: 'edit',
 		label: 'Правка'
@@ -39,7 +39,6 @@ const BASE_ITEMS: ActionListItem[] = [
 		groupId: 'edit',
 		label: 'Удалить',
 		shortcut: '⌫',
-		disabled: false,
 	},
 	{
 		id: 'copy-link',
@@ -50,49 +49,6 @@ const BASE_ITEMS: ActionListItem[] = [
 		id: 'export',
 		groupId: 'share',
 		label: 'Экспорт'
-	},
-];
-
-const FILTERABLE_GROUPS: ActionListGroup[] = [
-	{
-		id: 'actions',
-		label: 'Действия'
-	},
-];
-
-const FILTERABLE_ITEMS: ActionListItem[] = [
-	{
-		id: 'inbox',
-		groupId: 'actions',
-		label: 'Входящие',
-		keywords: ['mail', 'email'],
-		shortcut: 'G I',
-	},
-	{
-		id: 'today',
-		groupId: 'actions',
-		label: 'Сегодня',
-		keywords: ['calendar', 'day'],
-		shortcut: 'G T',
-	},
-	{
-		id: 'search',
-		groupId: 'actions',
-		label: 'Поиск',
-		keywords: ['find', 'query'],
-		shortcut: '⌘K',
-	},
-	{
-		id: 'archive',
-		groupId: 'actions',
-		label: 'Архив',
-		keywords: ['storage', 'old'],
-	},
-	{
-		id: 'settings',
-		groupId: 'actions',
-		label: 'Настройки',
-		keywords: ['preferences', 'config'],
 	},
 ];
 
@@ -122,12 +78,6 @@ export default {
 				options: ['trigger', 'content', 'trigger-fit'],
 			},
 		},
-		filterable: {
-			control: 'boolean',
-		},
-		filterPlaceholder: {
-			control: 'text',
-		},
 		emptyText: {
 			control: 'text',
 		},
@@ -143,22 +93,21 @@ export default {
 export const Playground: Story<MenuProps> = {
 	render: function PlaygroundRender(args) {
 		const [last, setLast] = useState('—');
-		const items = useMemo(() => BASE_ITEMS, []);
 
 		return (
 			<Inline gap='md' align='center'>
 				<Menu
 					trigger={(
 						<ButtonIcon
+							variant='ghost'
 							aria-label='Меню действий'
-							icon={<IconMenu size={18} />}
+							icon={<IconMenu size={18}/>}
 						/>
 					)}
-					items={items}
+					items={BASE_ITEMS}
 					groups={BASE_GROUPS}
 					align={args.align}
 					widthMode={args.widthMode}
-					filterable={args.filterable}
 					onAction={(item) => setLast(String(item.label))}
 				/>
 				<Text size='sm' color='secondary'>
@@ -172,7 +121,6 @@ export const Playground: Story<MenuProps> = {
 	args: {
 		align: 'right',
 		widthMode: 'content',
-		filterable: false,
 	},
 	parameters: story('Меню по клику на иконку.'),
 };
@@ -215,35 +163,38 @@ export const Context: Story<MenuProps> = {
 	parameters: story('`trigger="context"` — меню у курсора по ПКМ.'),
 };
 
-export const ContextFilterable: Story<MenuProps> = {
-	render: function FilterableRender() {
-		const [last, setLast] = useState('—');
-
-		return (
-			<div style={{maxWidth: 360}}>
-				<Menu
-					trigger='context'
-					items={FILTERABLE_ITEMS}
-					groups={FILTERABLE_GROUPS}
-					filterable
-					emptyText='Ничего не найдено'
-					onAction={(item) => setLast(String(item.label))}
-				>
-					<Card>
-						<Text>
-							Правый клик по этой области откроет контекстное меню.
-						</Text>
-						<Text size='sm' color='secondary'>
-							Выбрано:
-							{' '}
-							{last}
-						</Text>
-					</Card>
-				</Menu>
-			</div>
-		);
-	},
-	parameters: story('`filterable` — поиск по label и keywords в ActionList.'),
+export const Separators: Story<MenuProps> = {
+	render: () => (
+		<Menu
+			trigger={(
+				<Button size='sm' variant='secondary'>
+					Действия
+				</Button>
+			)}
+			items={[
+				{
+					id: 'rename',
+					label: 'Переименовать',
+				},
+				{
+					type: 'separator',
+				},
+				{
+					id: 'duplicate',
+					label: 'Дублировать',
+				},
+				{
+					type: 'separator',
+					id: 'before-danger',
+				},
+				{
+					id: 'delete',
+					label: 'Удалить',
+				},
+			]}
+		/>
+	),
+	parameters: story('Линия `{ type: "separator" }` между пунктами, как в Listbox.'),
 };
 
 export const DisabledItem: Story<MenuProps> = {
@@ -258,8 +209,9 @@ export const DisabledItem: Story<MenuProps> = {
 			<Menu
 				trigger={(
 					<ButtonIcon
+						variant='ghost'
 						aria-label='Меню действий'
-						icon={<IconMenu size={18} />}
+						icon={<IconMenu size={18}/>}
 					/>
 				)}
 				items={items}
@@ -275,13 +227,13 @@ export const Empty: Story<MenuProps> = {
 		<Menu
 			trigger={(
 				<ButtonIcon
+					variant='ghost'
 					aria-label='Меню действий'
-					icon={<IconMenu size={18} />}
+					icon={<IconMenu size={18}/>}
 				/>
 			)}
 			items={[]}
 			emptyText='Нет действий'
-			filterable
 		/>
 	),
 	parameters: story('Пустой список действий.'),
@@ -341,9 +293,9 @@ export const UsageExample: Story<MenuProps> = {
 						<Menu
 							trigger={(
 								<ButtonIcon
-									aria-label='Меню действий'
-									icon={<IconMenu size={18} />}
 									variant='ghost'
+									aria-label='Меню действий'
+									icon={<IconMenu size={18}/>}
 									size='sm'
 								/>
 							)}

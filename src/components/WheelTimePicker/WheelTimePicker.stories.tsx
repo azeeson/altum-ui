@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {WheelTimePicker, type TimeValue, type WheelTimePickerProps} from './WheelTimePicker';
 import {Card} from '../Card/Card';
 import {Button} from '../Button/Button';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 

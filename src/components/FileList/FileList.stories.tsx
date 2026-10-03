@@ -1,7 +1,7 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {FileList, type FileListItemProps} from './FileList';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Card} from '../Card/Card';
 import {Text} from '../Text/Text';
 import {Button} from '../Button/Button';

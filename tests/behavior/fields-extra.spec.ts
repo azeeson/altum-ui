@@ -32,12 +32,51 @@ test.describe('NumberField', () => {
 test.describe('PinInput', () => {
 	test('принимает цифры по ячейкам', async ({page}) => {
 		await visitStory(page, 'altum-components-formfield-pininput--playground');
-		const cells = page.locator('input');
+		const cells = page.locator('input:not([type="hidden"])');
 		await expect(cells.first()).toBeVisible();
 		expect(await cells.count()).toBeGreaterThanOrEqual(4);
 		await cells.first().click();
 		await page.keyboard.type('1234');
 		await expect(cells.first()).toHaveValue('1');
+		await expect(cells.nth(1)).toHaveValue('2');
+	});
+
+	test('ошибка на ячейке, delete и края фокуса', async ({page}) => {
+		await visitStory(page, 'altum-components-formfield-pininput--states');
+		const invalid = page.getByRole('textbox', {name: /Цифра|Digit/}).first();
+		await expect(invalid).toHaveAttribute('aria-invalid', 'true');
+		await expect(page.getByText('Неверный код')).toHaveCount(1);
+
+		await visitStory(page, 'altum-components-formfield-pininput--playground');
+		const cells = page.locator('input:not([type="hidden"])');
+		await cells.first().click();
+		await page.keyboard.type('12');
+		await cells.nth(1).focus();
+		await page.keyboard.press('Delete');
+		await expect(cells.nth(1)).toHaveValue('');
+		await page.keyboard.press('Home');
+		await expect(cells.first()).toBeFocused();
+		await page.keyboard.press('End');
+		await expect(cells.nth(5)).toBeFocused();
+	});
+
+	test('вставка ставит фокус после хвоста, цифра по центру', async ({page}) => {
+		await visitStory(page, 'altum-components-formfield-pininput--playground');
+		const cells = page.locator('input:not([type="hidden"])');
+		await cells.first().evaluate((input) => {
+			const data = new DataTransfer();
+			data.setData('text/plain', '12');
+			input.dispatchEvent(new ClipboardEvent('paste', {
+				bubbles: true,
+				cancelable: true,
+				clipboardData: data,
+			}));
+		});
+		await expect(cells.nth(0)).toHaveValue('1');
+		await expect(cells.nth(1)).toHaveValue('2');
+		await expect(cells.nth(2)).toBeFocused();
+		await expect(cells.first()).toHaveCSS('text-align', 'center');
+		await expect(cells.first()).toHaveAttribute('maxlength', '1');
 	});
 });
 

@@ -1,21 +1,11 @@
-import type {
-	FormMessageProps,
-} from './FormMessage.types';
+import type {FormMessageProps} from './FormMessage.types';
 export type {
 	FormMessageVariant,
 	FormMessageProps,
 } from './FormMessage.types';
 
-import {forwardRef} from 'react';
-import {Text} from '../Text/Text';
 import fieldMessage from '../../styles/fieldMessage.module.css';
-import {cn} from '../../utils/cn';
-
-const COLOR = {
-	hint: 'muted',
-	error: 'error',
-	success: 'success',
-} as const;
+import {cn} from '../../core/utils/cn';
 
 /**
  * Inline-сообщение под полем или над формой: подсказка, ошибка, успех.
@@ -24,26 +14,23 @@ const COLOR = {
  * @example
  * <FormMessage variant="error">{errors.email}</FormMessage>
  */
-export const FormMessage = forwardRef<HTMLParagraphElement, FormMessageProps>(function FormMessage(
-	{
-		variant = 'hint',
-		className,
-		role,
-		...rest
-	},
-	ref,
-) {
+export function FormMessage({
+	variant = 'hint',
+	className,
+	role,
+	children,
+	rootRef,
+	...rest
+}: FormMessageProps) {
 	return (
-		<Text
-			ref={ref}
-			as='p'
-			size='xs'
+		<p
 			{...rest}
-			color={COLOR[variant]}
+			ref={rootRef}
 			className={cn(fieldMessage.message, className)}
+			data-variant={variant}
 			role={role ?? (variant === 'error' ? 'alert' : undefined)}
-		/>
+		>
+			{children}
+		</p>
 	);
-});
-
-FormMessage.displayName = 'FormMessage';
+}

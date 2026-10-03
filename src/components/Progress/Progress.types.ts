@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 import type {ControlSize} from '../../types';
@@ -22,6 +23,8 @@ export interface ProgressProps extends Omit<ComponentPropsWithoutRef<'div'>, 'ch
 	size?: ControlSize;
 	/** @default 'auto' */
 	variant?: ProgressVariant;
+	/** Корень индикатора. */
+	rootRef?: Ref<HTMLDivElement>;
 }
 
 /**

@@ -2,7 +2,7 @@ import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {Rating, RatingProps} from './Rating';
 import {Card} from '../Card/Card';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Title} from '../Title/Title';
 import {Avatar} from '../Avatar/Avatar';

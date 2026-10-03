@@ -4,7 +4,7 @@ import {Popover, type PopoverProps} from './Popover';
 import {Button} from '../Button/Button';
 import {Text} from '../Text/Text';
 import {TextField} from '../TextField/TextField';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 const centerPad: React.CSSProperties = {
@@ -19,28 +19,21 @@ export default {
 	tags: ['autodocs'],
 	parameters: {
 		...componentParameters(
-			'Плавающий слой: click по умолчанию; hover — для превью по наведению. Якорь — renderTrigger.',
+			'Немодальная панель: клик по кнопке через popovertarget, закрытие — браузер. Якорь — trigger.',
 		),
 		controls: {
 			exclude: [
 				'children',
-				'onOpenChange',
-				'open',
-				'renderTrigger'
+				'onToggle',
+				'trigger',
+				'panelRef',
 			]
 		},
 	},
 	argTypes: {
-		trigger: {
-			control: {
-				type: 'select',
-				options: ['click', 'hover', 'manual'],
-			},
-			description: 'Способ открытия',
-		},
 		defaultOpen: {
 			control: 'boolean',
-			description: 'Открыт по умолчанию (неконтролируемый режим)',
+			description: 'Показать панель после монтирования',
 		},
 		side: {
 			control: 'select',
@@ -57,20 +50,10 @@ export default {
 		},
 		variant: {
 			control: 'select',
-			options: ['panel', 'tooltip', 'plain'],
+			options: ['panel', 'plain'],
 		},
-		arrow: {control: 'boolean'},
 		disabled: {control: 'boolean'},
-		dismiss: {
-			control: 'select',
-			options: [
-				'all',
-				'outside',
-				'escape',
-				'none'
-			],
-		},
-		onOpenChange: {action: 'onOpenChange'},
+		onToggle: {action: 'onToggle'},
 	},
 } satisfies Meta<typeof Popover>;
 
@@ -78,19 +61,16 @@ export const Playground: Story<PopoverProps> = {
 	render: (args) => (
 		<div style={centerPad}>
 			<Popover
-				trigger={args.trigger}
 				defaultOpen={args.defaultOpen}
 				side={args.side}
 				align={args.align}
 				variant={args.variant}
-				arrow={args.arrow}
 				disabled={args.disabled}
-				dismiss={args.dismiss}
-				renderTrigger={(props, ref) => (
+				trigger={(props, ref) => (
 					<Button
 						variant='secondary'
 						{...props}
-						ref={ref}
+						rootRef={ref}
 					>
 						Открыть popover
 					</Button>
@@ -105,38 +85,11 @@ export const Playground: Story<PopoverProps> = {
 	args: {
 		side: 'bottom',
 		align: 'center',
-		trigger: 'click',
 		defaultOpen: false,
 		variant: 'panel',
-		arrow: true,
 		disabled: false,
 	},
-	parameters: story('Якорь — renderTrigger + Button. Настройте side / align / trigger в Controls.'),
-};
-
-export const WithHoverTrigger: Story<PopoverProps> = {
-	render: () => (
-		<div style={centerPad}>
-			<Popover
-				trigger='hover'
-				openDelay={150}
-				closeDelay={100}
-				side='top'
-				renderTrigger={(props, ref) => (
-					<Button
-						variant='ghost'
-						{...props}
-						ref={ref}
-					>
-						Наведи
-					</Button>
-				)}
-			>
-				Превью по наведению
-			</Popover>
-		</div>
-	),
-	parameters: story('Режим hover: превью по наведению.'),
+	parameters: story('Якорь — элемент Button. Настройте side / align в Controls. Наведение — Tooltip.'),
 };
 
 export const Sides: Story<PopoverProps> = {
@@ -160,12 +113,11 @@ export const Sides: Story<PopoverProps> = {
 					key={side}
 					side={side}
 					align='center'
-					arrow
-					renderTrigger={(props, ref) => (
+					trigger={(props, ref) => (
 						<Button
 							variant='secondary'
 							{...props}
-							ref={ref}
+							rootRef={ref}
 						>
 							{side}
 						</Button>
@@ -188,13 +140,12 @@ export const Opened: Story<PopoverProps> = {
 		<div style={centerPad}>
 			<Popover
 				defaultOpen
-				arrow
 				side='bottom'
-				renderTrigger={(props, ref) => (
+				trigger={(props, ref) => (
 					<Button
 						variant='secondary'
 						{...props}
-						ref={ref}
+						rootRef={ref}
 					>
 						Открыт
 					</Button>
@@ -214,13 +165,12 @@ export const Disabled: Story<PopoverProps> = {
 		<div style={centerPad}>
 			<Popover
 				disabled
-				wrap
-				renderTrigger={(props, ref) => (
+				trigger={(props, ref) => (
 					<Button
 						variant='secondary'
 						disabled
 						{...props}
-						ref={ref}
+						rootRef={ref}
 					>
 						Недоступно
 					</Button>
@@ -232,7 +182,7 @@ export const Disabled: Story<PopoverProps> = {
 			</Popover>
 		</div>
 	),
-	parameters: story('`disabled` + `wrap` — слот на span вокруг disabled-кнопки.'),
+	parameters: story('`disabled` — панель не открывается.'),
 };
 
 export const OverflowText: Story<PopoverProps> = {
@@ -240,13 +190,12 @@ export const OverflowText: Story<PopoverProps> = {
 		<div style={centerPad}>
 			<Popover
 				defaultOpen
-				arrow
 				side='bottom'
-				renderTrigger={(props, ref) => (
+				trigger={(props, ref) => (
 					<Button
 						variant='secondary'
 						{...props}
-						ref={ref}
+						rootRef={ref}
 					>
 						Подсказка
 					</Button>
@@ -267,14 +216,13 @@ export const UsageExample: Story<PopoverProps> = {
 		return (
 			<div style={centerPad}>
 				<Popover
-					arrow
 					side='bottom'
 					align='start'
-					renderTrigger={(props, ref) => (
+					trigger={(props, ref) => (
 						<Button
 							variant='secondary'
 							{...props}
-							ref={ref}
+							rootRef={ref}
 						>
 							Добавить заметку
 						</Button>
@@ -306,16 +254,130 @@ export const UsageExample: Story<PopoverProps> = {
 	parameters: story('Форма заметки внутри popover.'),
 };
 
+const rowStyle: React.CSSProperties = {
+	display: 'flex',
+	flexWrap: 'wrap',
+	gap: 'var(--altum-g-space-3)',
+	padding: 'var(--altum-g-space-8)',
+	justifyContent: 'center',
+};
+
+export const Placement: Story<PopoverProps> = {
+	render: () => (
+		<div style={rowStyle}>
+			<Popover
+				side='bottom'
+				align='start'
+				trigger={(props, ref) => (
+					<Button
+						variant='secondary'
+						{...props}
+						rootRef={ref}
+					>
+						Низ / start
+					</Button>
+				)}
+			>
+				<Text>
+					Панель снизу, по началу якоря.
+				</Text>
+			</Popover>
+			<Popover
+				side='bottom'
+				align='end'
+				trigger={(props, ref) => (
+					<Button
+						variant='secondary'
+						{...props}
+						rootRef={ref}
+					>
+						Низ / end
+					</Button>
+				)}
+			>
+				<Text>
+					Панель снизу, по концу якоря.
+				</Text>
+			</Popover>
+			<Popover
+				side='top'
+				align='center'
+				trigger={(props, ref) => (
+					<Button
+						variant='secondary'
+						{...props}
+						rootRef={ref}
+					>
+						Верх / center
+					</Button>
+				)}
+			>
+				<Text>
+					Панель сверху, по центру якоря.
+				</Text>
+			</Popover>
+			<Popover
+				side='right'
+				align='start'
+				trigger={(props, ref) => (
+					<Button
+						variant='secondary'
+						{...props}
+						rootRef={ref}
+					>
+						Справа / start
+					</Button>
+				)}
+			>
+				<Text>
+					Панель справа, по началу якоря.
+				</Text>
+			</Popover>
+		</div>
+	),
+	parameters: story('Сторона и выравнивание панели относительно якоря.'),
+};
+
+export const Width: Story<PopoverProps> = {
+	render: () => (
+		<div style={rowStyle}>
+			{(['trigger-fit', 'trigger', 'content'] as const).map((widthMode) => (
+				<Popover
+					key={widthMode}
+					variant='plain'
+					widthMode={widthMode}
+					side={widthMode === 'content' ? 'top' : 'bottom'}
+					trigger={(props, ref) => (
+						<Button
+							variant='secondary'
+							{...props}
+							rootRef={ref}
+						>
+							{widthMode}
+						</Button>
+					)}
+				>
+					<Text>
+						Ширина (
+						{widthMode}
+						)
+					</Text>
+				</Popover>
+			))}
+		</div>
+	),
+	parameters: story('`widthMode`: ширина относительно якоря и масштаб от стороны.'),
+};
+
 export const Interaction: Story<PopoverProps> = {
 	render: () => (
 		<div style={centerPad}>
 			<Popover
-				arrow
-				renderTrigger={(props, ref) => (
+				trigger={(props, ref) => (
 					<Button
 						variant='secondary'
 						{...props}
-						ref={ref}
+						rootRef={ref}
 					>
 						Открыть popover
 					</Button>

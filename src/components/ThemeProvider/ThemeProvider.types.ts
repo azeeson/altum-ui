@@ -1,5 +1,5 @@
 import type React from 'react';
-import type {ComponentPropsWithoutRef} from 'react';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
 
 /** Активная цветовая схема приложения: светлая или тёмная. */
 export type Theme = 'light' | 'dark';
@@ -24,9 +24,11 @@ export interface ThemeProviderProps extends Omit<ComponentPropsWithoutRef<'div'>
 	/**
 	 * Куда применять классы темы и `data-theme`.
 	 * - `'wrapper'` (по умолчанию) — только на обёртку провайдера;
-	 * - `'document'` — на `document.documentElement`, `document.body` и обёртку (legacy, порталы на `body`).
+	 * - `'document'` — только на `document.documentElement` и `document.body` (порталы на `body`). Обёртка классы темы не получает, чтобы токены с `body` доходили до детей.
 	 * @default 'wrapper'
 	 */
 	applyTo?: ThemeApplyTarget;
 	children: React.ReactNode;
+	/** DOM-узел обёртки. */
+	rootRef?: Ref<HTMLDivElement>;
 }

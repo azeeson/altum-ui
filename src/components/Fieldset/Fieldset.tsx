@@ -1,18 +1,17 @@
 import type {FieldsetProps} from './Fieldset.types';
 export type {FieldsetVariant, FieldsetProps} from './Fieldset.types';
 
-import {forwardRef, type CSSProperties} from 'react';
-import {Box} from '../Box/Box';
-import {Flex} from '../../base/Flex';
-import {Type} from '../../base/Type';
+import type {CSSProperties} from 'react';
 import {useFallbackId} from '../../hooks/useFallbackId';
-import {cn} from '../../utils/cn';
-import {resolveSpacingCss} from '../../utils/spacing';
+import {cn} from '../../core/utils/cn';
+import {spacingCss} from '../../core/utils/spacing';
 import toggleGroup from '../../styles/toggleGroup.module.css';
 import styles from './Fieldset.module.css';
 
 /**
  * Группа полей формы: заголовок, описание и поля на корневых пропах.
+ * Корень — `<div data-variant>`; футер снаружи `<fieldset>`, чтобы `disabled`
+ * не блокировал кнопки футера.
  *
  * @component
  * @example
@@ -24,47 +23,40 @@ import styles from './Fieldset.module.css';
  *   <TextField label="Телефон" />
  * </Fieldset>
  */
-export const Fieldset = forwardRef<HTMLDivElement, FieldsetProps>(function Fieldset(
-	{
-		variant = 'default',
-		disabled = false,
-		className,
-		style,
-		id: providedId,
-		children,
-		legend,
-		description,
-		hint,
-		footer,
-		gap = 'var(--altum-g-space-4)',
-		...rest
-	},
-	ref,
-) {
+export function Fieldset({
+	variant = 'default',
+	disabled = false,
+	className,
+	style,
+	id: providedId,
+	children,
+	legend,
+	description,
+	hint,
+	footer,
+	gap = 'var(--altum-g-space-4)',
+	rootRef,
+	...rest
+}: FieldsetProps) {
 	const id = useFallbackId(providedId);
 	const descriptionId = description ? `${id}-description` : undefined;
 	const hintId = hint ? `${id}-hint` : undefined;
-	const plain = variant === 'plain';
 
 	return (
-		<Box
-			ref={ref}
-			variant={plain ? 'plain' : 'outlined'}
-			padding={plain ? 'none' : 'lg'}
-			className={cn(
-				styles.root,
-				plain && styles.plain,
-				disabled && styles.disabled,
-				className,
-			)}
-			style={style}
+		<div
 			{...rest}
+			ref={rootRef}
+			className={cn(styles.root, className)}
+			style={style}
+			data-variant={variant !== 'default' ? variant : undefined}
+			data-disabled={disabled ? '' : undefined}
 		>
 			<fieldset
 				id={id}
-				className={toggleGroup.fieldset}
+				className={cn(toggleGroup.fieldset, styles.fieldset)}
 				disabled={disabled || undefined}
 				aria-describedby={cn(descriptionId, hintId) || undefined}
+				style={{'--altum-fieldset-gap': spacingCss(gap)} as CSSProperties}
 			>
 				{legend ? (
 					<legend className={toggleGroup.legend}>
@@ -72,44 +64,28 @@ export const Fieldset = forwardRef<HTMLDivElement, FieldsetProps>(function Field
 					</legend>
 				) : null}
 				{description ? (
-					<Type
-						as='p'
-						size='sm'
+					<p
 						id={descriptionId}
-						className={styles.lede}
+						className={cn(styles.lede, styles.description)}
 					>
 						{description}
-					</Type>
+					</p>
 				) : null}
 				{hint ? (
-					<Type
-						as='p'
-						size='xs'
+					<p
 						id={hintId}
-						className={styles.lede}
+						className={cn(styles.lede, styles.hint)}
 					>
 						{hint}
-					</Type>
+					</p>
 				) : null}
-				<Flex
-					direction='column'
-					wrap={false}
-					style={{'--altum-flex-gap': resolveSpacingCss(gap)} as CSSProperties}
-				>
-					{children}
-				</Flex>
+				{children}
 			</fieldset>
 			{footer ? (
-				<Flex
-					align='center'
-					gap='sm'
-					className={styles.footer}
-				>
+				<footer className={styles.footer}>
 					{footer}
-				</Flex>
+				</footer>
 			) : null}
-		</Box>
+		</div>
 	);
-});
-
-Fieldset.displayName = 'Fieldset';
+}

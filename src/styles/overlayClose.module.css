@@ -1,4 +1,4 @@
-/* Chrome кнопки закрытия overlay (Modal / Sheet / ButtonIcon diskClose). */
+/* Chrome кнопки закрытия overlay (Modal / Sheet / Button data-appearance=diskClose). */
 
 .close.close {
   --altum-btn-border: transparent;
@@ -36,18 +36,13 @@
   }
 
   & svg {
+    display: block;
+
+    flex-shrink: 0;
+
     width: var(--altum-overlay-close-icon-size);
     height: var(--altum-overlay-close-icon-size);
+
+    transform: translate(0, 0.5px);
   }
-}
-
-.icon {
-  display: block;
-
-  flex-shrink: 0;
-
-  width: var(--altum-overlay-close-icon-size);
-  height: var(--altum-overlay-close-icon-size);
-
-  transform: translate(0, 0.5px);
 }

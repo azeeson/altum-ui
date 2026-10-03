@@ -2,7 +2,7 @@ import type {Meta} from '@storybook/react';
 import React from 'react';
 import {AspectRatio, AspectRatioProps} from './AspectRatio';
 import {Card} from '../Card/Card';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Title} from '../Title/Title';
 import {demoImage} from '../../storybook/demoImages';

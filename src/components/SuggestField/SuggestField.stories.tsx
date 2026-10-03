@@ -4,7 +4,7 @@ import {SuggestField, SuggestFieldProps} from './SuggestField';
 import {Button} from '../Button/Button';
 import {Fieldset} from '../Fieldset/Fieldset';
 import {TextField} from '../TextField/TextField';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {Text} from '../Text/Text';
 import {
 	componentParameters,
@@ -63,21 +63,15 @@ export default {
 	component: SuggestField,
 	tags: ['autodocs'],
 	parameters: componentParameters(
-		'Поле с подсказками: произвольный ввод или только значения из options.',
+		'Поле с подсказками: ввод фильтрует список, значение — только из options (blur match/restore). Freestyle — AutocompleteField.',
 	),
 	args: {
 		label: 'Город',
-		allowCustom: true,
 		size: 'md',
 		width: 'md',
-		labelPlacement: 'inline',
 	},
 	argTypes: {
 		...fieldArgTypes,
-		allowCustom: {
-			control: 'boolean',
-			description: 'Разрешить значение вне options',
-		},
 		noOptionsText: {
 			control: 'text',
 			description: 'Текст пустого списка',
@@ -110,9 +104,8 @@ export const Playground: Story<SuggestFieldProps> = {
 	},
 	args: {
 		label: 'Город',
-		allowCustom: true,
 	},
-	parameters: story('Введите текст или выберите из списка. Controls — режим allowCustom.'),
+	parameters: story('Ввод фильтрует список; onChange при выборе. На blur — матч или откат.'),
 };
 
 export const Sizes: Story<SuggestFieldProps> = {
@@ -137,22 +130,6 @@ export const Sizes: Story<SuggestFieldProps> = {
 	parameters: story('Размеры `sm`–`lg`.'),
 };
 
-export const AllowCustom: Story<SuggestFieldProps> = {
-	render: function AllowCustomRender() {
-		const [value, setValue] = useState('');
-		return (
-			<SuggestField
-				label='Тег или своё значение'
-				options={CITY_OPTIONS}
-				value={value}
-				onChange={setValue}
-				allowCustom
-			/>
-		);
-	},
-	parameters: story('Произвольный ввод; выбор из списка подставляет option.value.'),
-};
-
 export const OptionsOnly: Story<SuggestFieldProps> = {
 	render: function OptionsOnlyRender() {
 		const [value, setValue] = useState('moscow');
@@ -163,7 +140,6 @@ export const OptionsOnly: Story<SuggestFieldProps> = {
 					options={CITY_OPTIONS}
 					value={value}
 					onChange={setValue}
-					allowCustom={false}
 				/>
 				<Text size='sm' color='muted'>
 					value:
@@ -222,41 +198,29 @@ export const WithClear: Story<SuggestFieldProps> = {
 
 export const LabelPlacement: Story<SuggestFieldProps> = {
 	render: function LabelPlacementRender() {
-		const [inline, setInline] = useState('');
-		const [outside, setOutside] = useState('');
-		const [none, setNone] = useState('');
+		const [withLabel, setWithLabel] = useState('');
+		const [withoutLabel, setWithoutLabel] = useState('');
 		return (
 			<Stack gap='md' style={{maxWidth: 360}}>
 				<SuggestField
-					label='Город (inline)'
-					options={CITY_OPTIONS}
-					value={inline}
-					onChange={setInline}
-					labelPlacement='inline'
-					width='full'
-				/>
-				<SuggestField
-					label='Город (outside)'
-					options={CITY_OPTIONS}
-					value={outside}
-					onChange={setOutside}
-					labelPlacement='outside'
-					placeholder='Начните вводить'
-					width='full'
-				/>
-				<SuggestField
 					label='Город'
 					options={CITY_OPTIONS}
-					value={none}
-					onChange={setNone}
-					labelPlacement='none'
-					placeholder='Без лейбла'
+					value={withLabel}
+					onChange={setWithLabel}
+					width='full'
+				/>
+				<SuggestField
+					aria-label='Город'
+					options={CITY_OPTIONS}
+					value={withoutLabel}
+					onChange={setWithoutLabel}
+					placeholder='Начните вводить'
 					width='full'
 				/>
 			</Stack>
 		);
 	},
-	parameters: story('`labelPlacement` + видимый placeholder вне `inline`.'),
+	parameters: story('С `label` — floating-лейбл; без `label` виден placeholder.'),
 };
 
 export const Disabled: Story<SuggestFieldProps> = {
@@ -286,7 +250,7 @@ export const Empty: Story<SuggestFieldProps> = {
 			<SuggestField
 				label='Город'
 				options={CITY_OPTIONS}
-				helperText='Начните вводить название'
+				description='Начните вводить название'
 				width='full'
 			/>
 		</div>
@@ -357,12 +321,12 @@ export const Interaction: Story<SuggestFieldProps> = {
 export const UsageExample: Story<SuggestFieldProps> = {
 	render: function UsageExampleRender() {
 		const [org, setOrg] = useState('');
-		const [city, setCity] = useState('');
+		const [city, setCity] = useState('moscow');
 		return (
 			<div style={{maxWidth: 420}}>
 				<Fieldset
 					legend='Компания'
-					description='Город можно выбрать или ввести свой.'
+					description='Город выбирается из справочника.'
 					footer={(
 						<Inline gap='sm' justify='end'>
 							<Button variant='primary'>
@@ -382,7 +346,6 @@ export const UsageExample: Story<SuggestFieldProps> = {
 						options={CITY_OPTIONS}
 						value={city}
 						onChange={setCity}
-						allowCustom
 						width='full'
 						onClear={() => setCity('')}
 					/>

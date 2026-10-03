@@ -1,7 +1,7 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {Switch, SwitchProps} from './Switch';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Card} from '../Card/Card';
 import {Button} from '../Button/Button';

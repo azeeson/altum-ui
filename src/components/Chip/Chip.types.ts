@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 import type {ControlSize, GroupGap} from '../../types';
 
@@ -22,14 +23,9 @@ export type ChipVariant =
 export type ChipMode = 'chip' | 'tag' | 'toggle';
 
 /**
- * @deprecated Используйте {@link ChipMode}.
- */
-export type ChipAs = ChipMode;
-
-/**
  * Свойства `Chip`.
  */
-export interface ChipProps extends Omit<ComponentPropsWithoutRef<'span'>, 'onClick' | 'as'> {
+export interface ChipProps extends Omit<ComponentPropsWithoutRef<'span'>, 'onClick'> {
 	variant?: ChipVariant;
 	/** Размер. @default 'md' */
 	size?: ControlSize;
@@ -40,10 +36,6 @@ export interface ChipProps extends Omit<ComponentPropsWithoutRef<'span'>, 'onCli
 	 * @default 'chip'
 	 */
 	mode?: ChipMode;
-	/**
-	 * @deprecated Используйте `mode`.
-	 */
-	as?: ChipMode;
 	children: React.ReactNode;
 	onRemove?: () => void;
 	onClick?: React.MouseEventHandler<HTMLButtonElement | HTMLSpanElement>;
@@ -52,6 +44,10 @@ export interface ChipProps extends Omit<ComponentPropsWithoutRef<'span'>, 'onCli
 	icon?: React.ReactNode;
 	className?: string;
 	removeLabel?: string;
+	/** Корень: `<button>`, если чип только кликабельный, иначе `<span>`. */
+	rootRef?: Ref<HTMLButtonElement | HTMLSpanElement>;
+	/** Значение для делегирования клика с группы (`data-value`). */
+	value?: string;
 }
 
 /**
@@ -60,19 +56,9 @@ export interface ChipProps extends Omit<ComponentPropsWithoutRef<'span'>, 'onCli
 export type ChipGroupGap = GroupGap;
 
 /**
- * Раскладка группы чипов.
- * - `wrap` — перенос строк (по умолчанию)
- * - `scrollX` — одна строка с горизонтальным скроллом
- */
-export type ChipGroupLayout = 'wrap' | 'scrollX';
-
-/** Визуальная подсказка, что ряд чипов можно прокрутить. */
-export type ChipGroupOverflowAffordance = 'fade' | 'none';
-
-/**
  * Свойства `ChipGroup`.
  */
-export interface ChipGroupProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
+export interface ChipGroupProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'onSelect'> {
 	children: React.ReactNode;
 	/** Подпись группы для screen readers */
 	'aria-label'?: string;
@@ -83,23 +69,15 @@ export interface ChipGroupProps extends Omit<ComponentPropsWithoutRef<'div'>, 'c
 	 */
 	gap?: ChipGroupGap;
 	/**
-	 * `wrap` — flex-wrap; `scrollX` — одна строка + overflow-x.
-	 * @default 'wrap'
-	 */
-	layout?: ChipGroupLayout;
-	/**
-	 * Edge fade при `layout="scrollX"`.
-	 * @default 'fade' для scrollX, иначе игнорируется
-	 */
-	overflowAffordance?: ChipGroupOverflowAffordance;
-	/**
 	 * `tag` — группа статичных меток (дефолтный `aria-label` «Теги»).
 	 * @default 'chip'
 	 */
 	mode?: Exclude<ChipMode, 'toggle'>;
 	/**
-	 * @deprecated Используйте `mode`.
+	 * Делегированный выбор: клик по чипу с `value` / `data-value`.
+	 * Per-chip `onClick` по-прежнему работает.
 	 */
-	as?: Exclude<ChipMode, 'toggle'>;
+	onSelect?: (value: string) => void;
 	className?: string;
+	rootRef?: Ref<HTMLDivElement>;
 }

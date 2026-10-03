@@ -1,8 +1,7 @@
 export {ButtonGroup} from './ButtonGroup';
 export type {
-	ButtonGroupMode,
+	ButtonGroupOrientation,
 	ButtonGroupItemFit,
 	ButtonGroupVariant,
 	ButtonGroupRootProps,
-	ButtonGroupItemProps,
 } from './ButtonGroup.types';

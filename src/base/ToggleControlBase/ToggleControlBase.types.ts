@@ -2,6 +2,7 @@ import type {
 	ComponentPropsWithoutRef,
 	CSSProperties,
 	ReactNode,
+	Ref,
 } from 'react';
 import type {ControlSize, LabelSide} from '../../types';
 
@@ -28,4 +29,11 @@ export interface ToggleControlBaseProps extends Omit<ComponentPropsWithoutRef<'i
 	boxClassName?: string;
 	inputClassName?: string;
 	labelClassName?: string;
+	/** Нативный `<input>`. */
+	inputRef?: Ref<HTMLInputElement>;
+	/** Атрибуты на `<label>` (data-*, tabIndex, aria-disabled для SelectionGroup). */
+	labelProps?: Omit<
+		ComponentPropsWithoutRef<'label'>,
+		'htmlFor' | 'className' | 'style' | 'children'
+	> & Record<`data-${string}`, string | number | boolean | undefined>;
 }

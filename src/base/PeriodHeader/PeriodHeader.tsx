@@ -1,7 +1,8 @@
-import type {ReactNode} from 'react';
-import {ChevronButton} from '../ChevronButton';
-import {cn} from '../../utils/cn';
-import unstyled from '../../styles/unstyledControl.module.css';
+import type {ReactNode, Ref} from 'react';
+import {ButtonIcon} from '../../components/ButtonIcon/ButtonIcon';
+import {Title} from '../../components/Title/Title';
+import {IconChevronLeft} from '../../icons/icons/IconChevronLeft';
+import {IconChevronRight} from '../../icons/icons/IconChevronRight';
 import chrome from '../../styles/calendarChrome.module.css';
 
 export interface PeriodHeaderProps {
@@ -13,6 +14,8 @@ export interface PeriodHeaderProps {
 	onNext: () => void;
 	prevLabel: string;
 	nextLabel: string;
+	/** Корень шапки периода. */
+	rootRef?: Ref<HTMLDivElement>;
 }
 
 /**
@@ -31,32 +34,37 @@ export function PeriodHeader({
 	onNext,
 	prevLabel,
 	nextLabel,
+	rootRef,
 }: PeriodHeaderProps) {
 	if (!showTitle && !showNav) return null;
 
-	const navClass = cn(unstyled.control, chrome.navBtn);
-
 	return (
-		<div className={chrome.header}>
+		<div ref={rootRef} className={chrome.header}>
 			{showNav && (
-				<ChevronButton
-					direction='prev'
-					className={navClass}
+				<ButtonIcon
+					variant='ghost'
+					size='sm'
+					icon={<IconChevronLeft size={16} aria-hidden />}
 					aria-label={prevLabel}
 					onClick={onPrev}
 				/>
 			)}
 			{showTitle ? (
-				<div id={titleId} className={chrome.title}>
+				<Title
+					level={4}
+					id={titleId}
+					className={chrome.title}
+				>
 					{title}
-				</div>
+				</Title>
 			) : (
 				<span className={chrome.titleSpacer} />
 			)}
 			{showNav && (
-				<ChevronButton
-					direction='next'
-					className={navClass}
+				<ButtonIcon
+					variant='ghost'
+					size='sm'
+					icon={<IconChevronRight size={16} aria-hidden />}
 					aria-label={nextLabel}
 					onClick={onNext}
 				/>

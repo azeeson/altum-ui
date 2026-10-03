@@ -1,84 +1,87 @@
+import {useRef, type ChangeEvent, type FocusEvent} from 'react';
 import type {NumberFieldProps} from './NumberField.types';
 export type {NumberFieldProps} from './NumberField.types';
 
-import {forwardRef, useState, type ChangeEvent, type FocusEvent} from 'react';
 import styles from './NumberField.module.css';
-import {TextField} from '../TextField/TextField';
-import {FieldBaseButton} from '../../base/FieldBase';
+import {TextField, FieldBaseButton} from '../TextField/TextField';
 import {IconMinus} from '../../icons/icons/IconMinus';
 import {IconPlus} from '../../icons/icons/IconPlus';
-import {getFormControlState} from '../../utils/formControl';
-import {clamp} from '../../utils/clamp';
-import {cn} from '../../utils/cn';
+import {clamp} from '../../core/utils/math';
+import {uRef} from '../../core/utils/bundle';
+import {cn} from '../../core/utils/cn';
 import {useLocale} from '../../locales/localeContext';
+import {ruSlice as ru_numberField} from '../../locales/slices/numberField.ru';
 
-const DRAFT = /^(?:|-|\.|-\.)$/;
+const localeFallback = {
+	numberField: ru_numberField,
+};
 
 /**
  * Числовое поле с кнопками ± и clamp по min/max.
+ * Отдельного черновика строки нет: в `onChange` уходит только число (`valueAsNumber`).
  *
  * @component
  * @example
  * <NumberField label="Количество" value={qty} min={1} max={99} onChange={setQty} />
  */
-export const NumberField = forwardRef<HTMLInputElement, NumberFieldProps>(function NumberField(
-	{
-		value,
-		min,
-		max,
-		step = 1,
-		onChange,
-		onClear,
-		onBlur,
-		clearLabel,
-		postfix: iconEnd,
-		disabled,
-		readOnly,
-		className,
-		...props
-	},
-	ref,
-) {
-	const {t} = useLocale();
-	const [draft, setDraft] = useState<string | null>(null);
+export function NumberField({
+	value,
+	min,
+	max,
+	step = 1,
+	onChange,
+	onClear,
+	onBlur,
+	clearLabel,
+	postfix: iconEnd,
+	disabled,
+	readOnly,
+	className,
+	inputRef,
+	...props
+}: NumberFieldProps) {
+	const {t} = useLocale(localeFallback);
+	const fieldRef = useRef<HTMLInputElement>(null);
+	const locked = !!readOnly || !!disabled;
 	const limit = (n: number) => clamp(n, min ?? -Infinity, max ?? Infinity);
-	const displayValue = value !== undefined ? limit(value) : undefined;
-	const shown = draft !== null ? draft : (displayValue !== undefined ? String(displayValue) : '');
-	const currentVal = displayValue ?? min ?? 0;
-	const {isReadOnly} = getFormControlState({
-		disabled,
-		readOnly
-	});
-	const atMin = displayValue !== undefined && min !== undefined && currentVal <= min;
-	const atMax = displayValue !== undefined && max !== undefined && currentVal >= max;
-	const locked = isReadOnly || disabled;
+	const currentVal = value ?? min ?? 0;
+	const atMin = value !== undefined && min !== undefined && currentVal <= min;
+	const atMax = value !== undefined && max !== undefined && currentVal >= max;
 
-	const stepBy = (dir: 1 | -1) => {
-		if (locked || (dir > 0 ? atMax : atMin)) return;
-		onChange?.(limit(
-			displayValue === undefined
-				? (dir > 0 ? (min ?? step) : (min ?? 0))
-				: displayValue + dir * step,
-		));
+	const nudge = (dir: 1 | -1) => {
+		const node = fieldRef.current;
+		if (!node || locked || (dir > 0 ? atMax : atMin)) return;
+		if (dir > 0) node.stepUp();
+		else node.stepDown();
+		const parsed = node.valueAsNumber;
+		onChange?.(Number.isNaN(parsed) ? undefined : parsed);
+	};
+	const decrement = () => nudge(-1);
+	const increment = () => nudge(1);
+	const clearValue = () => {
+		onChange?.(undefined);
+		onClear?.();
 	};
 
-	const commit = (raw: string, fromBlur = false) => {
+	const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
 		if (locked) return;
-		const trimmed = raw.trim();
-		if (DRAFT.test(trimmed)) {
-			if (!fromBlur) onChange?.(undefined);
+		const raw = event.target.value;
+		if (raw === '') {
+			onChange?.(undefined);
 			return;
 		}
-		if (!fromBlur && (raw.endsWith('.') || raw.endsWith('-'))) return;
-		const parsed = parseFloat(raw);
-		if (Number.isNaN(parsed)) return;
-		const next = limit(parsed);
-		if (!fromBlur || next !== value) onChange?.(next);
+		const parsed = event.target.valueAsNumber;
+		if (!Number.isNaN(parsed)) onChange?.(limit(parsed));
+	};
+
+	const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
+		if (!locked && value !== undefined) onChange?.(limit(value));
+		onBlur?.(event);
 	};
 
 	return (
 		<TextField
-			ref={ref}
+			inputRef={uRef(inputRef, fieldRef)}
 			{...props}
 			type='number'
 			className={cn(styles.numberInput, className)}
@@ -87,39 +90,27 @@ export const NumberField = forwardRef<HTMLInputElement, NumberFieldProps>(functi
 			step={step}
 			disabled={disabled}
 			readOnly={readOnly}
-			value={shown}
-			onChange={(event: ChangeEvent<HTMLInputElement>) => {
-				setDraft(event.target.value);
-				commit(event.target.value);
-			}}
-			onBlur={(event: FocusEvent<HTMLInputElement>) => {
-				setDraft(null);
-				commit(event.target.value, true);
-				onBlur?.(event);
-			}}
-			onClear={onClear ? () => {
-				onChange?.(undefined);
-				onClear();
-			} : undefined}
+			value={value}
+			onChange={handleChange}
+			onBlur={handleBlur}
+			onClear={onClear ? clearValue : undefined}
 			clearLabel={clearLabel}
 			postfix={iconEnd || (!locked ? (
 				<>
 					<FieldBaseButton
 						aria-label={t('numberField.decrement')}
 						disabled={atMin}
-						onClick={() => stepBy(-1)}
+						onClick={decrement}
 						icon={<IconMinus />}
 					/>
 					<FieldBaseButton
 						aria-label={t('numberField.increment')}
 						disabled={atMax}
-						onClick={() => stepBy(1)}
+						onClick={increment}
 						icon={<IconPlus />}
 					/>
 				</>
 			) : undefined)}
 		/>
 	);
-});
-
-NumberField.displayName = 'NumberField';
+}

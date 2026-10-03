@@ -1,7 +1,4 @@
 .gallery {
-  --altum-image-gallery-chrome-in: opacity 0.32s cubic-bezier(0.4, 0, 0.2, 1);
-  --altum-image-gallery-chrome-out: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-
   display: flex;
 
   flex-direction: column;
@@ -11,7 +8,12 @@
 
   font-family: var(--altum-g-font-family-ui);
 
-  &.empty {
+  &:focus-visible {
+    outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+    outline-offset: var(--altum-focus-ring-offset);
+  }
+
+  &[data-empty] {
     justify-content: center;
     align-items: center;
 
@@ -60,23 +62,28 @@
     animation: galleryFade 0.32s ease;
   }
 
-  & .navBtn {
-    /* !important: перекрывает ButtonIcon `position: relative` */
-    position: absolute !important;
+  /* Три класса: токены должны перебить `.btn.ghost` независимо от порядка CSS. */
+  & .mainArea .navBtn {
+
+    --altum-btn-bg: var(--altum-image-gallery-nav-bg, var(--altum-color-surface));
+    --altum-btn-bg-hover: var(--altum-btn-bg);
+    --altum-btn-bg-active: var(--altum-btn-bg);
+    --altum-btn-border: var(--altum-image-gallery-nav-border, var(--altum-color-border));
+    --altum-btn-text: var(--altum-image-gallery-nav-color, inherit);
+    --altum-btn-text-hover: var(--altum-btn-text);
+    --altum-btn-shadow: var(--altum-shadow-surface);
+
+    --_o: 1;
+    position: absolute;
     top: 50%;
     z-index: var(--altum-g-z-raised-above);
 
-    border: 1px solid var(--altum-image-gallery-nav-border, var(--altum-color-border)) !important;
+    opacity: var(--_o);
 
-    color: var(--altum-image-gallery-nav-color, inherit);
-    background-color: var(--altum-image-gallery-nav-bg, var(--altum-color-surface)) !important;
-    box-shadow: var(--altum-shadow-surface);
-
-    /* Не `transform`: ButtonIcon `:active` задаёт `scale(0.95)` и затирал бы translateY. */
     translate: 0 -50%;
 
     &:disabled {
-      opacity: 0.35;
+      --_o: 0.35;
 
       pointer-events: none;
     }
@@ -91,28 +98,24 @@
   }
 
   @media (hover: hover) and (pointer: fine) {
-    & .navBtn {
-      opacity: 0;
+    & .mainArea .navBtn,
+    & .mainArea .navBtn:disabled {
+      --_o: 0;
 
       pointer-events: none;
 
-      transition: var(--altum-image-gallery-chrome-out);
-
-      &:disabled {
-        opacity: 0;
-      }
+      transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    & .mainArea:hover .navBtn,
-    & .mainArea:focus-within .navBtn {
-      opacity: 1;
+    & .mainArea:is(:hover, :focus-within) .navBtn {
+      --_o: 1;
 
       pointer-events: auto;
 
-      transition: var(--altum-image-gallery-chrome-in);
+      transition-duration: 0.32s;
 
       &:disabled {
-        opacity: 0.35;
+        --_o: 0.35;
 
         pointer-events: none;
       }
@@ -122,14 +125,15 @@
   & .thumbnails {
     display: flex;
     overflow-x: auto;
+    overflow-y: hidden;
 
     gap: var(--altum-g-space-2);
+
+    height: auto;
 
     padding: var(--altum-g-space-1) var(--altum-g-space-1) var(--altum-g-space-2);
 
     scroll-behavior: smooth;
-
-    scrollbar-width: thin;
   }
 
   & .thumbnailBtn {
@@ -156,7 +160,7 @@
       opacity: 0.9;
     }
 
-    &.active {
+    &[data-active] {
       border-color: var(--altum-color-brand);
 
       opacity: 1;
@@ -182,20 +186,21 @@
 
     color: var(--altum-image-gallery-counter-color, var(--altum-color-muted));
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    & .mainImage {
+      animation: none;
+    }
+
+    & .mainArea .navBtn,
+    & .mainArea:is(:hover, :focus-within) .navBtn {
+      transition: none;
+    }
+  }
 }
 
 @keyframes galleryFade {
   from {
     opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .gallery .mainImage {
-    animation: none;
-  }
-
-  .gallery .navBtn {
-    transition: none;
   }
 }

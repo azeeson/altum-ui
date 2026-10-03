@@ -1,12 +1,8 @@
-import type {
-	RelativeTimeProps,
-} from './RelativeTime.types';
-export type {
-	RelativeTimeProps,
-} from './RelativeTime.types';
+import type {RelativeTimeProps} from './RelativeTime.types';
+export type {RelativeTimeProps} from './RelativeTime.types';
 
-import {forwardRef} from 'react';
 import {useLocale} from '../../locales/localeContext';
+import {localeToBcp47} from '../../core/utils/locale';
 import {useNow} from '../../hooks/useNow';
 
 const UNITS = [
@@ -44,40 +40,37 @@ export function formatRelativeTime(
 
 /**
  * Относительное время для лент и таблиц («2 ч назад»).
+ * Текст наследует размер родителя: `<time>` не задаёт свою типографику.
  *
  * @component
  * @example
  * <RelativeTime date={row.updatedAt} />
  */
-export const RelativeTime = forwardRef<HTMLTimeElement, RelativeTimeProps>(function RelativeTime(
-	{
-		date,
-		locale,
-		updateInterval = 30_000,
-		showAbsoluteTitle = true,
-		className,
-		title,
-		...rest
-	},
-	ref,
-) {
+export const RelativeTime = ({
+	date,
+	locale,
+	updateInterval = 30_000,
+	showAbsoluteTitle = true,
+	className,
+	title,
+	rootRef,
+	...rest
+}: RelativeTimeProps) => {
 	const {locale: localeCode} = useLocale();
-	const resolvedLocale = locale ?? (localeCode === 'en' ? 'en-US' : 'ru-RU');
+	const resolvedLocale = locale ?? localeToBcp47(localeCode);
 	const resolved = toDate(date);
 	const now = useNow(resolved ? updateInterval : 0);
 	const label = resolved ? formatRelativeTime(resolved, resolvedLocale, now) : '—';
 
 	return (
 		<time
-			ref={ref}
+			ref={rootRef}
+			{...rest}
 			className={className}
 			dateTime={resolved?.toISOString()}
 			title={resolved && showAbsoluteTitle ? resolved.toLocaleString(resolvedLocale) : title}
-			{...rest}
 		>
 			{label}
 		</time>
 	);
-});
-
-RelativeTime.displayName = 'RelativeTime';
+};

@@ -1,5 +1,7 @@
 .item {
   --altum-item-media: var(--altum-g-space-8);
+  --altum-item-row-gap: var(--altum-g-space-3);
+  --altum-item-body-gap: var(--altum-control-inset);
 
   position: relative;
 
@@ -14,35 +16,10 @@
 
   transition: var(--altum-transition-smooth);
 
-  &:is(button) {
-    cursor: pointer;
-    appearance: none;
-  }
-
-  & .media {
-    width: var(--altum-item-media);
-    height: var(--altum-item-media);
-  }
-
-  & .title {
-    font-size: var(--altum-g-font-size-base);
-    line-height: var(--altum-g-line-height-2xs);
-  }
-
-  & .description {
-    font-size: var(--altum-g-font-size-2xs);
-    line-height: var(--altum-g-line-height-2xs);
-
-    color: var(--altum-color-ink-muted);
-  }
-
-  & .body,
-  & .actions {
-    width: auto;
-  }
-
-  &.sm {
+  &[data-size='sm'] {
     --altum-item-media: var(--altum-g-space-6);
+    --altum-item-row-gap: var(--altum-g-space-2);
+    --altum-item-body-gap: 0;
 
     padding: var(--altum-g-space-1) var(--altum-g-space-2);
 
@@ -56,8 +33,10 @@
     }
   }
 
-  &.lg {
+  &[data-size='lg'] {
     --altum-item-media: calc(var(--altum-g-space-8) + var(--altum-g-space-2));
+    --altum-item-row-gap: var(--altum-g-space-3);
+    --altum-item-body-gap: var(--altum-control-inset);
 
     padding: var(--altum-g-space-2) var(--altum-g-space-3);
 
@@ -71,58 +50,105 @@
       line-height: var(--altum-g-line-height-sm);
     }
   }
-}
 
-.interactive {
-  cursor: pointer;
+  &[data-interactive] {
+    cursor: pointer;
 
-  /* Тонкий оверлей: не затирает заливку Box (glass / tinted / …) */
-  &::after {
-    position: absolute;
-    inset: 0;
-
-    content: '';
-
-    border-radius: inherit;
-
-    background: transparent;
-
-    pointer-events: none;
-
-    transition: background 0.2s ease-in-out;
-  }
-
-  &:hover:not(:disabled)::after {
-    background: color-mix(in srgb, var(--altum-color-text-secondary) 6%, transparent);
-  }
-
-  &:active:not(:disabled)::after {
-    background: color-mix(in srgb, var(--altum-color-text-secondary) 10%, transparent);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
+    /* Тонкий оверлей: не затирает заливку Box (glass / tinted / …) */
     &::after {
-      transition: none;
+      position: absolute;
+      inset: 0;
+
+      content: '';
+
+      border-radius: inherit;
+
+      background: transparent;
+
+      pointer-events: none;
+
+      transition: background 0.2s ease-in-out;
+    }
+
+    &:hover:not(:disabled)::after {
+      background: color-mix(in srgb, var(--altum-color-text-secondary) 6%, transparent);
+    }
+
+    &:active:not(:disabled)::after {
+      background: color-mix(in srgb, var(--altum-color-text-secondary) 10%, transparent);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &::after {
+        transition: none;
+      }
     }
   }
-}
 
-.media_icon {
-  border-radius: var(--altum-g-radius-sm);
+  & .rowLayout {
+    display: flex;
+    box-sizing: border-box;
 
-  color: var(--altum-color-brand-tint-text);
-  background: var(--altum-color-brand-tint);
-}
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: var(--altum-item-row-gap);
 
-.media_image,
-.media_avatar {
-  background: var(--altum-color-surface-active);
-}
+    width: 100%;
+    min-width: 0;
+  }
 
-.media_image {
-  border-radius: var(--altum-g-radius-sm);
-}
+  & .body {
+    flex-wrap: nowrap;
+    gap: var(--altum-item-body-gap);
 
-.media_avatar {
-  border-radius: 50%;
+    width: auto;
+    min-width: 0;
+  }
+
+  & .actions {
+    display: flex;
+
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: var(--altum-g-space-1);
+
+    width: auto;
+  }
+
+  & .media {
+    width: var(--altum-item-media);
+    height: var(--altum-item-media);
+
+    &[data-media-variant='icon'] {
+      border-radius: var(--altum-g-radius-sm);
+
+      color: var(--altum-color-brand-tint-text);
+      background: var(--altum-color-brand-tint);
+    }
+
+    &[data-media-variant='image'],
+    &[data-media-variant='avatar'] {
+      background: var(--altum-color-surface-active);
+    }
+
+    &[data-media-variant='image'] {
+      border-radius: var(--altum-g-radius-sm);
+    }
+
+    &[data-media-variant='avatar'] {
+      border-radius: 50%;
+    }
+  }
+
+  & .title {
+    font-size: var(--altum-g-font-size-base);
+    line-height: var(--altum-g-line-height-2xs);
+  }
+
+  & .description {
+    font-size: var(--altum-g-font-size-2xs);
+    line-height: var(--altum-g-line-height-2xs);
+
+    color: var(--altum-color-ink-muted);
+  }
 }

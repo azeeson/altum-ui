@@ -1,11 +1,11 @@
-import React, {
+import {
 	createContext,
 	useCallback,
 	useMemo,
 	useState,
 	useSyncExternalStore,
 } from 'react';
-import {useRequiredContext} from '../../hooks/useRequiredContext';
+import {getCtx} from '../../core/utils/bundle';
 import {useControlledStateWithCallback} from '../../hooks/useControlledState';
 import {startOfDay} from '../Calendar/Calendar.utils';
 import {
@@ -28,19 +28,19 @@ export type {
 	CalendarBoardProviderProps,
 } from './CalendarBoard.types';
 
-const CalendarBoardContext = createContext<CalendarBoardContextValue | null>(null);
+const CalendarBoardContext = createContext<CalendarBoardContextValue | undefined>(undefined);
 
-const CalendarBoardHoverStoreContext = createContext<CalendarBoardHoverStore | null>(null);
+const CalendarBoardHoverStoreContext = createContext<CalendarBoardHoverStore | undefined>(undefined);
 
 export function useCalendarBoard(component: string): CalendarBoardContextValue {
-	return useRequiredContext(
+	return getCtx(
 		CalendarBoardContext,
 		`${component} должен использоваться внутри CalendarBoard.Provider`,
 	);
 }
 
-function useCalendarBoardHoverStore(component: string): CalendarBoardHoverStore {
-	return useRequiredContext(
+export function useCalendarBoardHoverStore(component: string): CalendarBoardHoverStore {
+	return getCtx(
 		CalendarBoardHoverStoreContext,
 		`${component} должен использоваться внутри CalendarBoard.Provider`,
 	);
@@ -88,7 +88,7 @@ export function useCalendarBoardContext(): CalendarBoardContextValue {
 	return useCalendarBoard('useCalendarBoardContext');
 }
 
-export const CalendarBoardProvider: React.FC<CalendarBoardProviderProps> = ({
+export const CalendarBoardProvider = ({
 	children,
 	view: controlledView,
 	defaultView = 'month',
@@ -107,8 +107,8 @@ export const CalendarBoardProvider: React.FC<CalendarBoardProviderProps> = ({
 	renderTask,
 	renderDayCell,
 	renderYearMonth,
-}) => {
-	const [hoverStore] = useState(() => createCalendarBoardHoverStore());
+}: CalendarBoardProviderProps) => {
+	const [hoverStore] = useState(createCalendarBoardHoverStore);
 	const [view, setView] = useControlledStateWithCallback(
 		controlledView,
 		defaultView,
@@ -177,4 +177,12 @@ export const CalendarBoardProvider: React.FC<CalendarBoardProviderProps> = ({
 	);
 };
 
-CalendarBoardProvider.displayName = 'CalendarBoard';
+export function hoverTaskFromPointer(
+	store: CalendarBoardHoverStore,
+	event: {target: EventTarget | null},
+) {
+	const node = event.target instanceof Element
+		? event.target.closest('[data-task-id]')
+		: null;
+	store.setHovered(node instanceof HTMLElement ? (node.dataset.taskId ?? null) : null);
+}

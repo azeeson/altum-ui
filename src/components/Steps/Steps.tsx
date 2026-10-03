@@ -9,11 +9,20 @@ export type {
 	StepsProps,
 } from './Steps.types';
 
-import {forwardRef} from 'react';
+import {useRef, type MouseEvent} from 'react';
 import styles from './Steps.module.css';
 import unstyled from '../../styles/unstyledControl.module.css';
-import {cn} from '../../utils/cn';
+import utilities from '../../styles/utilities.module.css';
+import {cn} from '../../core/utils/cn';
 import {useLocale} from '../../locales/localeContext';
+import {ruSlice as ru_steps} from '../../locales/slices/steps.ru';
+
+const localeFallback = {
+	steps: ru_steps,
+};
+
+
+
 
 function resolveStatus(item: StepItem, index: number, currentStep: number): StepStatus {
 	if (item.status) return item.status;
@@ -37,32 +46,39 @@ function resolveStatus(item: StepItem, index: number, currentStep: number): Step
  *   ]}
  * />
  */
-export const Steps = forwardRef<HTMLOListElement, StepsProps>(function Steps(
-	{
-		currentStep,
-		items,
-		orientation = 'horizontal',
-		onStepClick,
-		size = 'md',
-		showConnectors = true,
-		className,
-		'aria-label': ariaLabel,
-		...rest
-	},
-	ref,
-) {
-	const {t} = useLocale();
+export const Steps = ({
+	currentStep,
+	items,
+	orientation = 'horizontal',
+	onStepClick,
+	size = 'md',
+	showConnectors = true,
+	className,
+	'aria-label': ariaLabel,
+	rootRef,
+	...rest
+}: StepsProps) => {
+	const {t} = useLocale(localeFallback);
+	const onStepClickRef = useRef(onStepClick);
+	onStepClickRef.current = onStepClick;
+
+	const handleListClick = (event: MouseEvent<HTMLOListElement>) => {
+		const target = (event.target as HTMLElement).closest('[data-index]');
+		if (!target || target.hasAttribute('disabled')) return;
+
+		const stepIndex = Number(target.getAttribute('data-index'));
+		onStepClickRef.current?.(stepIndex);
+	};
+
 	return (
 		<ol
-			ref={ref}
-			className={cn(
-				styles.steps,
-				styles[orientation],
-				size !== 'md' && styles[size],
-				!showConnectors && styles.noConnectors,
-				className,
-			)}
+			ref={rootRef}
+			className={cn(styles.steps, className)}
 			aria-label={ariaLabel ?? t('steps.ariaLabel')}
+			data-orientation={orientation}
+			data-size={size !== 'md' ? size : undefined}
+			data-connectors={showConnectors ? undefined : 'false'}
+			onClick={onStepClick ? handleListClick : undefined}
 			{...rest}
 		>
 			{items.map((item, index) => {
@@ -73,7 +89,7 @@ export const Steps = forwardRef<HTMLOListElement, StepsProps>(function Steps(
 				);
 				const body = (
 					<>
-						<span className={styles.circle} aria-hidden>
+						<span className={cn(utilities.fCenter, styles.circle)} aria-hidden>
 							{mark}
 						</span>
 						<span className={styles.stepLabel}>
@@ -90,7 +106,8 @@ export const Steps = forwardRef<HTMLOListElement, StepsProps>(function Steps(
 				return (
 					<li
 						key={index}
-						className={cn(styles.stepItem, styles[status])}
+						className={styles.stepItem}
+						data-status={status}
 						aria-current={status === 'current' ? 'step' : undefined}
 					>
 						{clickable ? (
@@ -98,7 +115,7 @@ export const Steps = forwardRef<HTMLOListElement, StepsProps>(function Steps(
 								type='button'
 								className={cn(unstyled.control, styles.body)}
 								disabled={item.disabled}
-								onClick={() => onStepClick(index)}
+								data-index={index}
 							>
 								{body}
 							</button>
@@ -112,6 +129,4 @@ export const Steps = forwardRef<HTMLOListElement, StepsProps>(function Steps(
 			})}
 		</ol>
 	);
-});
-
-Steps.displayName = 'Steps';
+};

@@ -1,15 +1,31 @@
-import React, {forwardRef, useCallback, useMemo, useRef, useState} from 'react';
+import {useMemo, useRef, type FormEvent, type MouseEvent, type PointerEvent} from 'react';
 import styles from './Table.module.css';
-import scroll from '../../styles/scroll.module.css';
+import scroll from '../../styles/scrollable.module.css';
 import unstyled from '../../styles/unstyledControl.module.css';
-import {cn} from '../../utils/cn';
-import {mergeStyles} from '../../utils/mergeStyles';
-import {toggleSet} from '../../utils/toggleSet';
+import {cn} from '../../core/utils/cn';
+import {uRef} from '../../core/utils/bundle';
+import {toggleSet} from '../../core/utils/toggleSet';
 import {useControlledState, useControlledStateWithCallback} from '../../hooks/useControlledState';
 import {useLocale} from '../../locales/localeContext';
 import {Checkbox} from '../Checkbox/Checkbox';
+import {VirtualList} from '../VirtualList/VirtualList';
 import {TableRow} from './TableRow';
 import type {TableSortDirection, TableViewProps} from './Table.types';
+import {
+	declaredColWidth,
+	tableColCellStyle,
+	tableColLeftVar,
+	tableColRatio,
+	tableColWidthVar,
+	tableControlStickyStyle,
+} from './Table.utils';
+import {ruSlice as ru_table} from '../../locales/slices/table.ru';
+
+const localeFallback = {
+	table: ru_table,
+};
+
+const DEFAULT_ESTIMATE_ROW = 49;
 
 /**
  * Разметка `<table>`: сортировка, выбор, expand, sticky columns, density и resize.
@@ -23,28 +39,45 @@ interface SortState {
 	direction: TableSortDirection;
 }
 
-const TableViewInner = forwardRef(function TableView<T extends object>(
-	{
-		effectiveColumns: columns,
-		data,
-		stickyHeader = false,
-		rowKey,
-		selectedKeys,
-		onSelectionChange,
-		density = 'default',
-		sortKey: controlledSortKey,
-		sortDirection: controlledSortDirection,
-		onSortChange,
-		expandedKeys: controlledExpanded,
-		onExpandedChange,
-		renderExpandedRow,
-		className,
-		'aria-label': ariaLabel,
-		...rest
-	}: TableViewProps<T>,
-	ref: React.ForwardedRef<HTMLTableElement>,
-) {
-	const {t} = useLocale();
+interface ResizeSession {
+	key: string;
+	startX: number;
+	startW: number;
+	widths: Map<string, number>;
+}
+
+function stickyAttrs(sticky: 'left' | 'right' | undefined, isEdge: boolean) {
+	if (!sticky) return undefined;
+	return {
+		'data-sticky': sticky,
+		'data-sticky-edge': isEdge ? sticky : undefined,
+	};
+}
+
+export function TableView<T extends object>({
+	effectiveColumns: columns,
+	data,
+	stickyHeader = false,
+	rowKey,
+	selectedKeys,
+	onSelectionChange,
+	density = 'default',
+	sortKey: controlledSortKey,
+	sortDirection: controlledSortDirection,
+	onSortChange,
+	expandedKeys: controlledExpanded,
+	onExpandedChange,
+	renderExpandedRow,
+	virtualized = false,
+	estimateRowSize = DEFAULT_ESTIMATE_ROW,
+	className,
+	'aria-label': ariaLabel,
+	tableRef,
+	...rest
+}: TableViewProps<T>) {
+	const {t} = useLocale(localeFallback);
+	const frameRef = useRef<HTMLDivElement>(null);
+	const innerTableRef = useRef<HTMLTableElement>(null);
 	const [sort, setSort] = useControlledState<SortState>(
 		onSortChange != null
 			? {
@@ -62,17 +95,7 @@ const TableViewInner = forwardRef(function TableView<T extends object>(
 		new Set<string | number>(),
 		onExpandedChange,
 	);
-	const [colWidths, setColWidths] = useState<Record<string, number>>({});
-	const resizeRef = useRef<{
-		key: string;
-		startX: number;
-		startW: number;
-	} | null>(null);
-	const pendingResizeRef = useRef<{
-		key: string;
-		width: number;
-	} | null>(null);
-	const resizeRafRef = useRef(0);
+	const resizeRef = useRef<ResizeSession | null>(null);
 
 	const {key: sortKey, direction: sortDirection} = sort;
 	const canExpand = !!renderExpandedRow;
@@ -111,7 +134,7 @@ const TableViewInner = forwardRef(function TableView<T extends object>(
 		data,
 		isSortControlled,
 		sortDirection,
-		sortKey
+		sortKey,
 	]);
 
 	const isAllSelected = selectedKeys && data.length > 0 && selectedKeys.size === data.length;
@@ -145,221 +168,295 @@ const TableViewInner = forwardRef(function TableView<T extends object>(
 		columns.forEach((col) => {
 			if (col.sticky === 'left') {
 				offsets[String(col.key)] = left;
-				const w = colWidths[String(col.key)]
-					?? (typeof col.width === 'number' ? col.width : 120);
-				left += w;
+				left += declaredColWidth(col.width);
 			}
 		});
 		return offsets;
-	}, [
-		canExpand,
-		colWidths,
-		columns,
-		onSelectionChange
-	]);
+	}, [canExpand, columns, onSelectionChange,]);
+
+	const totalColPx = useMemo(() => {
+		let total = 0;
+		if (canExpand) total += 40;
+		if (onSelectionChange) total += 40;
+		columns.forEach((col) => {
+			total += declaredColWidth(col.width);
+		});
+		return Math.max(total, 1);
+	}, [canExpand, columns, onSelectionChange]);
 	const controlSticky = columns.some((col) => col.sticky === 'left');
 	const selectStickyLeft = canExpand ? 40 : 0;
 	const stickyLeftEdgeKey = [...columns].reverse().find((col) => col.sticky === 'left');
 	const stickyLeftEdgeKeyId = stickyLeftEdgeKey ? String(stickyLeftEdgeKey.key) : undefined;
 
-	const flushPendingResize = useCallback(() => {
-		const pending = pendingResizeRef.current;
-		if (!pending) return;
-		setColWidths((prev) => {
-			if (prev[pending.key] === pending.width) return prev;
-			return {
-				...prev,
-				[pending.key]: pending.width,
-			};
+	const syncStickyLeft = (host: HTMLElement, widths: Map<string, number>) => {
+		let left = 0;
+		if (canExpand) left += 40;
+		if (onSelectionChange) left += 40;
+		columns.forEach((col) => {
+			if (col.sticky !== 'left') return;
+			const key = String(col.key);
+			host.style.setProperty(tableColLeftVar(key), `${left}px`);
+			left += widths.get(key) ?? declaredColWidth(col.width);
 		});
-	}, []);
+	};
 
-	const scheduleResizeFlush = useCallback(() => {
-		if (resizeRafRef.current) return;
-		resizeRafRef.current = requestAnimationFrame(() => {
-			resizeRafRef.current = 0;
-			flushPendingResize();
-		});
-	}, [flushPendingResize]);
+	const varHost = () => (virtualized ? frameRef.current : innerTableRef.current);
 
-	const onResizeStart = (key: string, event: React.PointerEvent, currentWidth: number) => {
+	const onResizeStart = (key: string, event: PointerEvent<HTMLElement>, currentWidth: number) => {
 		event.preventDefault();
 		event.stopPropagation();
+		const table = innerTableRef.current;
+		const widths = new Map<string, number>();
+		columns.forEach((col) => {
+			if (col.sticky !== 'left') return;
+			const colKey = String(col.key);
+			const cell = table?.querySelector(`[data-col="${CSS.escape(colKey)}"]`);
+			const measured = cell?.getBoundingClientRect().width;
+			widths.set(
+				colKey,
+				measured != null && measured > 0 ? measured : declaredColWidth(col.width),
+			);
+		});
+		if (widths.has(key)) widths.set(key, currentWidth);
 		resizeRef.current = {
 			key,
 			startX: event.clientX,
 			startW: currentWidth,
+			widths,
 		};
 		(event.target as HTMLElement).setPointerCapture?.(event.pointerId);
 	};
 
-	const onResizeMove = (event: React.PointerEvent, minWidth = 60) => {
+	const onResizeMove = (event: PointerEvent<HTMLElement>, minWidth = 60) => {
 		const state = resizeRef.current;
-		if (!state) return;
-		const next = Math.max(minWidth, state.startW + (event.clientX - state.startX));
-		pendingResizeRef.current = {
-			key: state.key,
-			width: next,
-		};
-		scheduleResizeFlush();
+		const host = varHost();
+		if (!state || !host) return;
+		const nextWidth = Math.max(minWidth, state.startW + (event.clientX - state.startX));
+		const hostW = host.clientWidth || 1;
+		host.style.setProperty(tableColWidthVar(state.key), String(tableColRatio(nextWidth, hostW)));
+		if (state.widths.has(state.key)) {
+			state.widths.set(state.key, nextWidth);
+			syncStickyLeft(host, state.widths);
+		}
 	};
 
-	const onResizeEnd = (event: React.PointerEvent) => {
-		if (resizeRafRef.current) {
-			cancelAnimationFrame(resizeRafRef.current);
-			resizeRafRef.current = 0;
-		}
-		flushPendingResize();
+	const onResizeEnd = (event: PointerEvent<HTMLElement>) => {
 		resizeRef.current = null;
-		pendingResizeRef.current = null;
 		(event.target as HTMLElement).releasePointerCapture?.(event.pointerId);
+	};
+
+	const onHeadClick = (event: MouseEvent<HTMLTableSectionElement>) => {
+		const button = (event.target as HTMLElement).closest<HTMLElement>('button[data-sort-key]');
+		if (!button || !event.currentTarget.contains(button)) return;
+		const key = button.getAttribute('data-sort-key');
+		if (key) handleSort(key);
 	};
 
 	const colCount = columns.length
 		+ (onSelectionChange ? 1 : 0)
 		+ (canExpand ? 1 : 0);
 
+	const onBodyClick = (event: MouseEvent<HTMLElement>) => {
+		const action = (event.target as HTMLElement).closest<HTMLElement>('[data-row-action="expand"]');
+		if (!action || !event.currentTarget.contains(action)) return;
+		const key = action.closest('[data-row-key]')?.getAttribute('data-row-key');
+		if (key != null) toggleExpand(key);
+	};
+
+	const onBodyChange = (event: FormEvent<HTMLElement>) => {
+		const target = event.target as HTMLInputElement;
+		if (target.type !== 'checkbox') return;
+		const key = target.closest('[data-row-key]')?.getAttribute('data-row-key');
+		if (key != null) handleSelectRow(key);
+	};
+
+	const renderRow = (row: T) => {
+		const rKey = rowKey(row);
+		return (
+			<TableRow
+				key={rKey}
+				row={row}
+				rowKey={rKey}
+				columns={columns}
+				canExpand={canExpand}
+				isExpanded={expandedKeys.has(rKey)}
+				isRowSelected={selectedKeys?.has(rKey) ?? false}
+				onSelectionChange={onSelectionChange}
+				stickyLeftOffsets={stickyLeftOffsets}
+				totalColPx={totalColPx}
+				controlSticky={controlSticky}
+				selectStickyLeft={selectStickyLeft}
+				stickyLeftEdgeKeyId={stickyLeftEdgeKeyId}
+				colCount={colCount}
+				renderExpandedRow={renderExpandedRow}
+				t={t}
+			/>
+		);
+	};
+
+	const head = (
+		<thead onClick={onHeadClick}>
+			<tr>
+				{canExpand && (
+					<th
+						scope='col'
+						className={styles.controlCol}
+						{...stickyAttrs(controlSticky ? 'left' : undefined, false)}
+						aria-label={t('table.expandColumn')}
+					/>
+				)}
+				{onSelectionChange && (
+					<th
+						scope='col'
+						className={styles.controlCol}
+						{...stickyAttrs(controlSticky ? 'left' : undefined, false)}
+						style={controlSticky ? tableControlStickyStyle(selectStickyLeft) : undefined}
+					>
+						<Checkbox
+							size='sm'
+							labelVisibility='hidden'
+							checked={isAllSelected || false}
+							indeterminate={isSomeSelected}
+							aria-label={t('table.selectAll')}
+							onChange={handleSelectAll}
+						/>
+					</th>
+				)}
+				{columns.map((col) => {
+					const key = String(col.key);
+					const isColSorted = sortKey === key;
+					const isLeftEdge = key === stickyLeftEdgeKeyId;
+
+					return (
+						<th
+							key={key}
+							data-col={key}
+							scope='col'
+							data-sortable={col.sortable ? '' : undefined}
+							{...stickyAttrs(
+								col.sticky,
+								col.sticky === 'left' ? isLeftEdge : col.sticky === 'right',
+							)}
+							style={tableColCellStyle(key, {
+								width: col.width,
+								minWidth: col.minWidth,
+								sticky: col.sticky,
+								stickyLeft: stickyLeftOffsets[key] ?? 0,
+								totalPx: totalColPx,
+							})}
+							aria-sort={
+								col.sortable && isColSorted
+									? sortDirection === 'asc' ? 'ascending' : 'descending'
+									: col.sortable ? 'none' : undefined
+							}
+						>
+							{col.sortable ? (
+								<button
+									type='button'
+									className={cn(unstyled.control, styles.sortButton)}
+									data-sort-key={key}
+								>
+									<span>
+										{col.header}
+									</span>
+									{isColSorted && (
+										<span aria-hidden>
+											{sortDirection === 'asc' ? '▲' : '▼'}
+										</span>
+									)}
+								</button>
+							) : (
+								<span className={styles.headerText}>
+									{col.header}
+								</span>
+							)}
+							{col.resizable && (
+								<span
+									className={styles.resizeHandle}
+									role='separator'
+									tabIndex={0}
+									aria-orientation='vertical'
+									aria-label={t('table.resizeColumn', {header: col.header})}
+									data-resize-key={key}
+									data-min-width={col.minWidth ?? 60}
+									onPointerDown={(event) => {
+										const el = event.currentTarget.parentElement;
+										const w = el?.getBoundingClientRect().width
+											?? declaredColWidth(col.width);
+										onResizeStart(key, event, w);
+									}}
+									onPointerMove={(event) => onResizeMove(event, col.minWidth ?? 60)}
+									onPointerUp={onResizeEnd}
+									onPointerCancel={onResizeEnd}
+								/>
+							)}
+						</th>
+					);
+				})}
+			</tr>
+		</thead>
+	);
+
+	const tableClass = styles.table;
+	const tableDataAttrs = {
+		'data-density': density === 'compact' ? 'compact' as const : undefined,
+		'data-sticky-header': stickyHeader ? '' : undefined,
+	};
+
+	if (virtualized) {
+		return (
+			<div
+				ref={frameRef}
+				className={cn(scroll.area, styles.frame, className)}
+				onClick={onBodyClick}
+				onChange={onBodyChange}
+			>
+				<table
+					ref={uRef(tableRef, innerTableRef)}
+					className={tableClass}
+					aria-label={ariaLabel}
+					{...tableDataAttrs}
+					{...rest}
+				>
+					{head}
+				</table>
+				<VirtualList
+					items={sortedData}
+					estimateSize={estimateRowSize}
+					scrollElement={frameRef}
+					getItemKey={(row) => rowKey(row)}
+					aria-label={ariaLabel}
+					className={styles.virtualList}
+					itemWrapper
+					renderItem={({item: row}) => (
+						<table className={cn(tableClass, styles.virtualRowTable)}>
+							<tbody>
+								{renderRow(row)}
+							</tbody>
+						</table>
+					)}
+				/>
+			</div>
+		);
+	}
+
 	return (
 		<div className={cn(scroll.area, styles.frame, className)}>
 			<table
-				ref={ref}
-				className={cn(
-					styles.table,
-					stickyHeader && styles.stickyHeader,
-					density === 'compact' && styles.compact,
-				)}
+				ref={uRef(tableRef, innerTableRef)}
+				className={tableClass}
 				aria-label={ariaLabel}
+				{...tableDataAttrs}
 				{...rest}
 			>
-				<thead>
-					<tr>
-						{canExpand && (
-							<th
-								scope='col'
-								className={cn(styles.controlCol, controlSticky && styles.stickyLeft)}
-								style={controlSticky ? {left: 0} : undefined}
-								aria-label={t('table.expandColumn')}
-							/>
-						)}
-						{onSelectionChange && (
-							<th
-								scope='col'
-								className={cn(styles.controlCol, controlSticky && styles.stickyLeft)}
-								style={controlSticky ? {left: selectStickyLeft} : undefined}
-							>
-								<Checkbox
-									size='sm'
-									labelVisibility='hidden'
-									checked={isAllSelected || false}
-									indeterminate={isSomeSelected}
-									aria-label={t('table.selectAll')}
-									onChange={handleSelectAll}
-								/>
-							</th>
-						)}
-						{columns.map((col) => {
-							const key = String(col.key);
-							const isColSorted = sortKey === key;
-							const width = colWidths[key]
-								?? (typeof col.width === 'number' ? col.width : col.width);
-							const stickyClass = col.sticky === 'left'
-								? cn(styles.stickyLeft, key === stickyLeftEdgeKeyId && styles.stickyLeftEdge)
-								: col.sticky === 'right'
-									? cn(styles.stickyRight, styles.stickyRightEdge)
-									: '';
-
-							return (
-								<th
-									key={key}
-									scope='col'
-									className={cn(col.sortable && styles.sortable, stickyClass)}
-									style={mergeStyles({
-										width: width ?? undefined,
-										minWidth: col.minWidth,
-										left: col.sticky === 'left' ? stickyLeftOffsets[key] : undefined,
-									})}
-									aria-sort={
-										col.sortable && isColSorted
-											? sortDirection === 'asc' ? 'ascending' : 'descending'
-											: col.sortable ? 'none' : undefined
-									}
-								>
-									{col.sortable ? (
-										<button
-											type='button'
-											className={cn(unstyled.control, styles.sortButton)}
-											onClick={() => handleSort(key)}
-										>
-											<span>
-												{col.header}
-											</span>
-											{isColSorted && (
-												<span aria-hidden>
-													{sortDirection === 'asc' ? '▲' : '▼'}
-												</span>
-											)}
-										</button>
-									) : (
-										<span className={styles.headerText}>
-											{col.header}
-										</span>
-									)}
-									{col.resizable && (
-										<span
-											className={styles.resizeHandle}
-											role='separator'
-											aria-orientation='vertical'
-											aria-label={t('table.resizeColumn', {header: col.header})}
-											onPointerDown={(event) => {
-												const el = event.currentTarget.parentElement;
-												const w = el?.getBoundingClientRect().width
-													?? (typeof width === 'number' ? width : 120);
-												onResizeStart(key, event, w);
-											}}
-											onPointerMove={(event) => onResizeMove(event, col.minWidth ?? 60)}
-											onPointerUp={onResizeEnd}
-											onPointerCancel={onResizeEnd}
-										/>
-									)}
-								</th>
-							);
-						})}
-					</tr>
-				</thead>
-				<tbody>
-					{sortedData.map((row) => {
-						const rKey = rowKey(row);
-						return (
-							<TableRow
-								key={rKey}
-								row={row}
-								rowKey={rKey}
-								columns={columns}
-								canExpand={canExpand}
-								isExpanded={expandedKeys.has(rKey)}
-								isRowSelected={selectedKeys?.has(rKey) ?? false}
-								onSelectionChange={onSelectionChange}
-								stickyLeftOffsets={stickyLeftOffsets}
-								controlSticky={controlSticky}
-								selectStickyLeft={selectStickyLeft}
-								stickyLeftEdgeKeyId={stickyLeftEdgeKeyId}
-								colWidths={colWidths}
-								colCount={colCount}
-								renderExpandedRow={renderExpandedRow}
-								onToggleExpand={toggleExpand}
-								onSelectRow={handleSelectRow}
-								t={t}
-							/>
-						);
-					})}
+				{head}
+				<tbody
+					onClick={onBodyClick}
+					onChange={onBodyChange}
+				>
+					{sortedData.map((row) => renderRow(row))}
 				</tbody>
 			</table>
 		</div>
 	);
-});
-
-TableViewInner.displayName = 'Table.View';
-
-export const TableView = TableViewInner as <T extends object>(
-	props: TableViewProps<T> & {ref?: React.Ref<HTMLTableElement>}
-) => React.ReactElement;
+}

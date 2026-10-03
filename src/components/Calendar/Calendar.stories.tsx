@@ -4,7 +4,7 @@ import {Calendar} from './Calendar';
 import type {CalendarProviderProps, DateRangeValue} from './Calendar.types';
 import {addDays} from './Calendar.utils';
 import {Card} from '../Card/Card';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Button} from '../Button/Button';
 import {componentParameters, story, Story} from '../../storybook/meta';

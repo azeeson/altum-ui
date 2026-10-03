@@ -4,7 +4,7 @@ import {Select} from './Select';
 import {Button} from '../Button/Button';
 import {Fieldset} from '../Fieldset/Fieldset';
 import {TextField} from '../TextField/TextField';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {
 	componentParameters,
 	fieldArgTypes,
@@ -41,12 +41,11 @@ export default {
 	title: 'altum/Components/FormField/Select',
 	component: Select,
 	tags: ['autodocs'],
-	parameters: componentParameters('Select с FieldBase-триггером на CustomSelect.'),
+	parameters: componentParameters('Select с полем и выпадающим списком.'),
 	args: {
 		label: 'Город',
 		size: 'md',
 		width: 'md',
-		labelPlacement: 'inline',
 		filterable: false,
 	},
 	argTypes: {
@@ -123,25 +122,18 @@ export const LabelPlacement: Story<Record<string, never>> = {
 		<Stack gap='sm' style={{maxWidth: 320}}>
 			<Select
 				options={options}
-				label='Встроенный'
-				width='full'
-			/>
-			<Select
-				options={options}
-				label='Снаружи'
-				labelPlacement='outside'
-				width='full'
-			/>
-			<Select
-				options={options}
 				label='Город'
-				labelPlacement='none'
+				width='full'
+			/>
+			<Select
+				options={options}
+				aria-label='Город'
 				placeholder='Выберите город'
 				width='full'
 			/>
 		</Stack>
 	),
-	parameters: story('`labelPlacement` inline / outside / none.'),
+	parameters: story('С `label` — floating-лейбл; без `label` — placeholder и `aria-label`.'),
 };
 
 export const Multiple: Story<Record<string, never>> = {
@@ -161,7 +153,9 @@ export const Multiple: Story<Record<string, never>> = {
 			/>
 		);
 	},
-	parameters: story('`selectionMode="multiple"` рисует chips выбранных значений в триггере.'),
+	parameters: story(
+		'`selectionMode="multiple"` — подписи через запятую. Chips — у `MultiSelect`.',
+	),
 };
 
 const GROUPED_OPTIONS = [
@@ -247,7 +241,7 @@ export const Empty: Story<Record<string, never>> = {
 			<Select
 				options={options}
 				label='Город'
-				helperText='Можно начать вводить в фильтре'
+				description='Можно начать вводить в фильтре'
 				filterable
 				width='full'
 			/>

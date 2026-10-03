@@ -20,14 +20,14 @@
     }
   }
 
-  &.stacked .row {
+  &[data-layout='stacked'] .row {
     display: flex;
 
     flex-direction: column;
     gap: var(--altum-control-inset);
   }
 
-  &.inline .row {
+  &[data-layout='inline'] .row {
     display: grid;
 
     align-items: baseline;
@@ -63,7 +63,7 @@
     grid-template-columns: 1fr;
   }
 
-  .list.inline .row {
+  .list[data-layout='inline'] .row {
     grid-template-columns: 1fr;
   }
 }

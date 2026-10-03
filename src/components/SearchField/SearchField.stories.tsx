@@ -3,12 +3,11 @@ import React, {useState} from 'react';
 import {SearchField, SearchFieldProps} from './SearchField';
 import {Button} from '../Button/Button';
 import {Card} from '../Card/Card';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {Text} from '../Text/Text';
 import {
 	componentParameters,
 	fieldArgTypes,
-	STORY_OVERFLOW_LABEL,
 	STORY_OVERFLOW_VALUE,
 	story,
 	Story,
@@ -20,14 +19,12 @@ export default {
 	component: SearchField,
 	tags: ['autodocs'],
 	parameters: componentParameters(
-		'Поле поиска с иконкой лупы; по умолчанию `labelPlacement="none"`.',
+		'Поле поиска с иконкой лупы. Без `label` — вид для тулбара.',
 	),
 	args: {
-		label: 'Поиск задач',
 		placeholder: 'Поиск…',
 		size: 'md',
 		width: 'md',
-		labelPlacement: 'none',
 	},
 	argTypes: fieldArgTypes,
 } satisfies Meta<typeof SearchField>;
@@ -48,10 +45,9 @@ export const Playground: Story<SearchFieldProps> = {
 		);
 	},
 	args: {
-		label: 'Поиск задач',
 		placeholder: 'Поиск…',
 	},
-	parameters: story('Используйте панель Controls для настройки. Default: `labelPlacement="none"`.'),
+	parameters: story('Используйте панель Controls для настройки. Без `label` — тулбарный вид.'),
 };
 
 export const Sizes: Story<SearchFieldProps> = {
@@ -66,7 +62,6 @@ export const Sizes: Story<SearchFieldProps> = {
 						align='center'
 					>
 						<SearchField
-							label='Поиск'
 							size={size}
 							value={val}
 							onChange={(e) => setVal(e.target.value)}
@@ -86,38 +81,38 @@ export const Sizes: Story<SearchFieldProps> = {
 
 export const LabelPlacement: Story<SearchFieldProps> = {
 	render: function LabelPlacementRender() {
-		const [val, setVal] = useState('');
+		const [withLabel, setWithLabel] = useState('');
+		const [withoutLabel, setWithoutLabel] = useState('');
 		return (
 			<Stack gap='md' style={{maxWidth: 320}}>
-				{(['none', 'outside', 'inline'] as const).map((placement) => (
-					<SearchField
-						key={placement}
-						label={`Поиск (${placement})`}
-						labelPlacement={placement}
-						value={val}
-						onChange={(e) => setVal(e.target.value)}
-						placeholder='Введите запрос'
-						width='full'
-					/>
-				))}
+				<SearchField
+					label='Поиск'
+					value={withLabel}
+					onChange={(e) => setWithLabel(e.target.value)}
+					width='full'
+				/>
+				<SearchField
+					placeholder='Введите запрос'
+					value={withoutLabel}
+					onChange={(e) => setWithoutLabel(e.target.value)}
+					width='full'
+				/>
 			</Stack>
 		);
 	},
-	parameters: story('По умолчанию — `none`; можно переключить на outside / inline.'),
+	parameters: story('С `label` — floating-лейбл; без `label` — тулбарный вид с placeholder.'),
 };
 
 export const Disabled: Story<SearchFieldProps> = {
 	render: () => (
 		<Stack gap='md' style={{maxWidth: 360}}>
 			<SearchField
-				label='Поиск'
 				disabled
 				value='дизайн-система'
 				placeholder='Поиск…'
 				width='full'
 			/>
 			<SearchField
-				label='Поиск'
 				error='Ничего не найдено по запросу'
 				value='xyz'
 				width='full'
@@ -129,7 +124,6 @@ export const Disabled: Story<SearchFieldProps> = {
 
 export const Empty: Story<SearchFieldProps> = {
 	args: {
-		label: 'Поиск',
 		placeholder: 'Поиск…',
 		width: 'full',
 	},
@@ -142,8 +136,6 @@ export const OverflowText: Story<SearchFieldProps> = {
 		return (
 			<div style={{maxWidth: 280}}>
 				<SearchField
-					label={STORY_OVERFLOW_LABEL}
-					labelPlacement='outside'
 					value={val}
 					onChange={(e) => setVal(e.target.value)}
 					width='full'
@@ -156,7 +148,6 @@ export const OverflowText: Story<SearchFieldProps> = {
 
 export const FullWidth: Story<SearchFieldProps> = {
 	args: {
-		label: 'Поиск',
 		width: 'full',
 		placeholder: 'Поиск…',
 	},
@@ -169,7 +160,6 @@ export const WithClear: Story<SearchFieldProps> = {
 		return (
 			<div style={{maxWidth: 360}}>
 				<SearchField
-					label='Поиск'
 					value={val}
 					onChange={(e) => setVal(e.target.value)}
 					onClear={() => setVal('')}
@@ -186,7 +176,6 @@ export const Focused: Story<SearchFieldProps> = {
 	render: () => (
 		<div style={{maxWidth: 360}}>
 			<SearchField
-				label='Поиск'
 				defaultValue='задачи'
 				placeholder='Поиск…'
 				width='full'
@@ -205,7 +194,6 @@ export const Interaction: Story<SearchFieldProps> = {
 		return (
 			<div style={{maxWidth: 360}}>
 				<SearchField
-					label='Поиск'
 					value={val}
 					onChange={(e) => setVal(e.target.value)}
 					onClear={() => setVal('')}
@@ -232,7 +220,6 @@ export const UsageExample: Story<SearchFieldProps> = {
 				<Stack gap='md'>
 					<Inline gap='sm' align='center'>
 						<SearchField
-							label='Поиск задач'
 							value={query}
 							onChange={(e) => setQuery(e.target.value)}
 							onClear={() => setQuery('')}

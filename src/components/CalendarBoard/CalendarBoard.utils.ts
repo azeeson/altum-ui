@@ -2,7 +2,7 @@ import {
 	addDays,
 	buildDayStrip,
 	startOfDay,
-	startOfWeek,
+	getWeekStart,
 } from '../Calendar/Calendar.utils';
 
 /**
@@ -18,8 +18,8 @@ export function buildMonthWeeks(viewDate: Date, weekStartsOn: 0 | 1 = 1): Date[]
 	const month = viewDate.getMonth();
 	const first = startOfDay(new Date(year, month, 1));
 	const last = startOfDay(new Date(year, month + 1, 0));
-	let cursor = startOfWeek(first, weekStartsOn);
-	const lastWeekStart = startOfWeek(last, weekStartsOn);
+	let cursor = getWeekStart(first, weekStartsOn);
+	const lastWeekStart = getWeekStart(last, weekStartsOn);
 	const weeks: Date[][] = [];
 
 	while (cursor.getTime() <= lastWeekStart.getTime()) {

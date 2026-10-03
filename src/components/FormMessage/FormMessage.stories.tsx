@@ -2,7 +2,7 @@ import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {FormMessage, FormMessageProps} from './FormMessage';
 import {TextField} from '../TextField/TextField';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Card} from '../Card/Card';
 import {Button} from '../Button/Button';
 import {Text} from '../Text/Text';

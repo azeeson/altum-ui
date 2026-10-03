@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {Alert, type AlertProps} from './Alert';
 import {Button} from '../Button/Button';
 import {Card} from '../Card/Card';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {TextField} from '../TextField/TextField';
 import {componentParameters, story, Story} from '../../storybook/meta';

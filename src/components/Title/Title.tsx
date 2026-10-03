@@ -5,17 +5,9 @@ export type {
 	TitleProps,
 } from './Title.types';
 
-import {forwardRef} from 'react';
-import {Type} from '../../base/Type';
+import {Typography} from '../../base/Typography';
 import styles from './Title.module.css';
-import {cn} from '../../utils/cn';
-
-const AS = {
-	1: 'h1',
-	2: 'h2',
-	3: 'h3',
-	4: 'h4',
-} as const;
+import {cn} from '../../core/utils/cn';
 
 /**
  * Заголовок страницы или секции с семантическим уровнем h1–h4.
@@ -25,24 +17,19 @@ const AS = {
  * @example
  * <Title level={1} id="page-heading">Настройки аккаунта</Title>
  */
-export const Title = forwardRef<HTMLHeadingElement, TitleProps>(function Title(
-	{
-		level = 2,
-		weight = 'bold',
-		className,
-		...rest
-	},
-	ref,
-) {
-	return (
-		<Type
-			ref={ref}
-			as={AS[level]}
-			weight={weight}
-			className={cn(styles[`h${level}`], className)}
-			{...rest}
-		/>
-	);
-});
-
-Title.displayName = 'Title';
+export const Title = ({
+	level = 2,
+	weight = 'bold',
+	className,
+	rootRef,
+	...rest
+}: TitleProps) => (
+	<Typography
+		as={`h${level}`}
+		rootRef={rootRef}
+		className={cn(styles.title, className)}
+		data-level={level !== 2 ? level : undefined}
+		data-weight={weight !== 'bold' ? weight : undefined}
+		{...rest}
+	/>
+);

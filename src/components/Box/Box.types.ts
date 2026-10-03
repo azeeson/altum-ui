@@ -1,5 +1,6 @@
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 /**
@@ -36,14 +37,11 @@ export type BoxShadow = 'none' | 'sm' | 'md' | 'lg';
 /** Стиль рамки при `border`. */
 export type BoxBorderStyle = 'solid' | 'dashed';
 
-/** Отступ внутри блока. */
-export type BoxPadding = 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-
 /** Радиус скругления. */
 export type BoxRadius = 'none' | 'sm' | 'md' | 'lg';
 
 /** HTML-элемент корня. */
-export type BoxAs = 'div' | 'section' | 'article' | 'aside' | 'button' | 'a' | 'li';
+export type BoxAs = 'div' | 'section' | 'article' | 'aside' | 'main' | 'nav' | 'button' | 'a' | 'li' | 'ul' | 'ol' | 'dl' | 'span';
 
 /**
  * Свойства `Box`.
@@ -68,8 +66,19 @@ export interface BoxProps extends ComponentPropsWithoutRef<'div'> {
 	shadow?: BoxShadow;
 	/** @default 'div' */
 	as?: BoxAs;
-	/** @default 'none' */
-	padding?: BoxPadding;
 	/** @default 'md' */
 	radius?: BoxRadius;
+	/**
+	 * Корень выбранного `as`.
+	 * Союз рефов нужен, потому что `Ref<HTMLDivElement>` не присваивается `Ref<HTMLElement>`.
+	 */
+	rootRef?: Ref<HTMLElement>
+		| Ref<HTMLDivElement>
+		| Ref<HTMLSpanElement>
+		| Ref<HTMLButtonElement>
+		| Ref<HTMLAnchorElement>
+		| Ref<HTMLUListElement>
+		| Ref<HTMLOListElement>
+		| Ref<HTMLLIElement>
+		| Ref<HTMLDListElement>;
 }

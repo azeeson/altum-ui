@@ -5,9 +5,9 @@ export type {
 	VisuallyHiddenProps,
 } from './VisuallyHidden.types';
 
-import {forwardRef} from 'react';
-import srOnly from '../../styles/srOnly.module.css';
-import {cn} from '../../utils/cn';
+import type {ElementType} from 'react';
+import styles from '../../styles/visuallyHidden.module.css';
+import {cn} from '../../core/utils/cn';
 
 /**
  * Контент скрыт визуально, но доступен скринридерам.
@@ -19,24 +19,21 @@ import {cn} from '../../utils/cn';
  *   <VisuallyHidden>Закрыть</VisuallyHidden>
  * </button>
  */
-export const VisuallyHidden = forwardRef<HTMLElement, VisuallyHiddenProps>(function VisuallyHidden(
-	{
-		children,
-		as: Component = 'span',
-		className,
-		...rest
-	},
-	ref,
-) {
+export const VisuallyHidden = ({
+	children,
+	as: Component = 'span',
+	className,
+	rootRef,
+	...rest
+}: VisuallyHiddenProps) => {
+	const Element = Component as ElementType;
 	return (
-		<Component
-			ref={ref as never}
-			className={cn(srOnly.srOnly, className)}
+		<Element
+			ref={rootRef}
+			className={cn(styles.root, className)}
 			{...rest}
 		>
 			{children}
-		</Component>
+		</Element>
 	);
-});
-
-VisuallyHidden.displayName = 'VisuallyHidden';
+};

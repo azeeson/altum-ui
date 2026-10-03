@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 import {type BoxAs, type BoxRadius, type BoxVariant} from '../Box/Box';
 
@@ -29,4 +30,6 @@ export interface CardProps extends ComponentPropsWithoutRef<'div'> {
 	 * @default `onClick` без `as` и без `role` → `'button'`, иначе `'div'`
 	 */
 	as?: BoxAs;
+	/** Корень поверхности. */
+	rootRef?: Ref<HTMLElement>;
 }

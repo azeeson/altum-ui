@@ -1,7 +1,7 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {Radio, RadioGroup, RadioProps} from './Radio';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Card} from '../Card/Card';
 import {Text} from '../Text/Text';
 import {Button} from '../Button/Button';

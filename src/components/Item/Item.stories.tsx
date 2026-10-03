@@ -4,7 +4,7 @@ import {Item, ItemProps} from './Item';
 import {Button} from '../Button/Button';
 import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
 import {Card} from '../Card/Card';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Avatar} from '../Avatar/Avatar';
 import {IconGear} from '../../icons/icons/IconGear';
@@ -55,6 +55,10 @@ export default {
 			control: 'boolean',
 			description: 'Интерактивная строка (hover / курсор)',
 		},
+		wrap: {
+			control: 'boolean',
+			description: 'Перенос title и description вместо ellipsis',
+		},
 		mediaVariant: {
 			control: {
 				type: 'select',
@@ -94,6 +98,7 @@ export const Playground: Story<ItemProps> = {
 		size: 'md',
 		variant: 'ghost',
 		interactive: false,
+		wrap: false,
 		title: 'Настройки',
 		description: 'Профиль, уведомления и предпочтения',
 	},
@@ -222,7 +227,7 @@ export const Interactive: Story<ItemProps> = {
 
 export const OverflowText: Story<ItemProps> = {
 	render: () => (
-		<div style={{maxWidth: 280}}>
+		<Stack gap='md' style={{maxWidth: 280}}>
 			<Item
 				variant='outlined'
 				media={<IconFolder size={20} />}
@@ -232,14 +237,29 @@ export const OverflowText: Story<ItemProps> = {
 					<ButtonIcon
 						variant='ghost'
 						size='sm'
-						icon={<IconTrash />}
+						icon={<IconTrash/>}
 						aria-label='Удалить'
 					/>
 				)}
 			/>
-		</div>
+			<Item
+				wrap
+				variant='outlined'
+				media={<IconFolder size={20} />}
+				title={LONG_TITLE}
+				description={LONG_DESCRIPTION}
+				actions={(
+					<ButtonIcon
+						variant='ghost'
+						size='sm'
+						icon={<IconTrash/>}
+						aria-label='Удалить'
+					/>
+				)}
+			/>
+		</Stack>
 	),
-	parameters: story('Длинный title / description в узкой колонке.'),
+	parameters: story('Длинный title / description: ellipsis по умолчанию и перенос с `wrap`.'),
 };
 
 export const TitleOnly: Story<ItemProps> = {

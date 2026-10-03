@@ -54,6 +54,9 @@ export default tseslint.config(
 			// ==========================================
 			...reactPlugin.configs.recommended.rules,
 			...reactHooksPlugin.configs.recommended.rules,
+			// Запись в ref во время рендера и в ref-проп — снимок для стабильных колбэков и popupRef.
+			'react-hooks/refs': 'off',
+			'react-hooks/immutability': 'off',
 			'react/react-in-jsx-scope': 'off', // Не нужен импорт React в React 17+
 			'react/prop-types': 'off', // Типы задаются через TypeScript
             "react/jsx-wrap-multilines": ["error", {
@@ -62,19 +65,20 @@ export default tseslint.config(
             }],
 			'prefer-const': 'error',           // Требовать const, если переменная не меняется
 			'no-console': ['warn', { allow: ['warn', 'error'] }], // Запрет console.log
-			'@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+			'@typescript-eslint/no-unused-vars': ['error', {
+				argsIgnorePattern: '^_',
+				varsIgnorePattern: '^_',
+				caughtErrorsIgnorePattern: '^_',
+			}],
 			'@typescript-eslint/no-explicit-any': 'error',
 			'no-restricted-imports': ['error', {
 				patterns: [{
 					group: [
 						'**/base/*/*',
-						'../ButtonBase/*',
-						'../DialogBase/*',
-						'../FieldBase/*',
 						'../ChartBase/*',
 						'../ToggleControlBase/*',
 					],
-					message: 'Import from the folder barrel (e.g. ../../base/ButtonBase), not a nested file.',
+					message: 'Import from the folder barrel (e.g. ../../base/ChartBase), not a nested file.',
 				}],
 			}],
 

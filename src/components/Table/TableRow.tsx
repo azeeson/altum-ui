@@ -1,18 +1,29 @@
-import React, {memo} from 'react';
+import {Fragment, memo, type ReactElement, type ReactNode} from 'react';
 import styles from './Table.module.css';
 import unstyled from '../../styles/unstyledControl.module.css';
-import {cn} from '../../utils/cn';
+import {cn} from '../../core/utils/cn';
 import {Checkbox} from '../Checkbox/Checkbox';
 import type {TableRowComponentProps} from './Table.types';
+import {tableColCellStyle, tableControlStickyStyle} from './Table.utils';
 
-function renderCellValue<T extends object>(row: T, key: string): React.ReactNode {
+const noopChange = () => {};
+
+function renderCellValue<T extends object>(row: T, key: string): ReactNode {
 	const value = (row as Record<string, unknown>)[key];
 	if (value == null) return null;
 	if (typeof value === 'string' || typeof value === 'number') return value;
 	return String(value);
 }
 
-const TableRowInner = memo(function TableRow<T extends object>({
+function stickyAttrs(sticky: 'left' | 'right' | undefined, isEdge: boolean) {
+	if (!sticky) return undefined;
+	return {
+		'data-sticky': sticky,
+		'data-sticky-edge': isEdge ? sticky : undefined,
+	};
+}
+
+function TableRowImpl<T extends object>({
 	row,
 	rowKey: rKey,
 	columns,
@@ -21,26 +32,25 @@ const TableRowInner = memo(function TableRow<T extends object>({
 	isRowSelected,
 	onSelectionChange,
 	stickyLeftOffsets,
+	totalColPx,
 	controlSticky = false,
 	selectStickyLeft = 0,
 	stickyLeftEdgeKeyId,
-	colWidths,
 	colCount,
 	renderExpandedRow,
-	onToggleExpand,
-	onSelectRow,
 	t,
 }: TableRowComponentProps<T>) {
 	return (
-		<React.Fragment>
+		<Fragment>
 			<tr
+				data-row-key={rKey}
 				className={isExpanded ? styles.rowExpanded : undefined}
 				aria-selected={onSelectionChange ? isRowSelected : undefined}
 			>
 				{canExpand && (
 					<td
-						className={cn(styles.controlCol, controlSticky && styles.stickyLeft)}
-						style={controlSticky ? {left: 0} : undefined}
+						className={styles.controlCol}
+						{...stickyAttrs(controlSticky ? 'left' : undefined, false)}
 					>
 						<button
 							type='button'
@@ -51,7 +61,7 @@ const TableRowInner = memo(function TableRow<T extends object>({
 							)}
 							aria-expanded={isExpanded}
 							aria-label={isExpanded ? t('common.collapse') : t('table.expandColumn')}
-							onClick={() => onToggleExpand(rKey)}
+							data-row-action='expand'
 						>
 							▶
 						</button>
@@ -59,35 +69,37 @@ const TableRowInner = memo(function TableRow<T extends object>({
 				)}
 				{onSelectionChange && (
 					<td
-						className={cn(styles.controlCol, controlSticky && styles.stickyLeft)}
-						style={controlSticky ? {left: selectStickyLeft} : undefined}
+						className={styles.controlCol}
+						{...stickyAttrs(controlSticky ? 'left' : undefined, false)}
+						style={controlSticky ? tableControlStickyStyle(selectStickyLeft) : undefined}
 					>
 						<Checkbox
 							size='sm'
 							labelVisibility='hidden'
 							checked={isRowSelected || false}
 							aria-label={t('table.selectRow', {id: rKey})}
-							onChange={() => onSelectRow(rKey)}
+							data-row-action='select'
+							onChange={noopChange}
 						/>
 					</td>
 				)}
 				{columns.map((col) => {
 					const key = String(col.key);
-					const stickyClass = col.sticky === 'left'
-						? cn(styles.stickyLeft, key === stickyLeftEdgeKeyId && styles.stickyLeftEdge)
-						: col.sticky === 'right'
-							? cn(styles.stickyRight, styles.stickyRightEdge)
-							: '';
+					const isLeftEdge = key === stickyLeftEdgeKeyId;
 					return (
 						<td
 							key={key}
-							className={stickyClass}
-							style={{
-								left: col.sticky === 'left'
-									? stickyLeftOffsets[key]
-									: undefined,
-								width: colWidths[key],
-							}}
+							data-col={key}
+							{...stickyAttrs(
+								col.sticky,
+								col.sticky === 'left' ? isLeftEdge : col.sticky === 'right',
+							)}
+							style={tableColCellStyle(key, {
+								width: col.width,
+								sticky: col.sticky,
+								stickyLeft: stickyLeftOffsets[key] ?? 0,
+								totalPx: totalColPx,
+							})}
 						>
 							{col.render ? col.render(row) : renderCellValue(row, key)}
 						</td>
@@ -101,12 +113,10 @@ const TableRowInner = memo(function TableRow<T extends object>({
 					</td>
 				</tr>
 			)}
-		</React.Fragment>
+		</Fragment>
 	);
-});
+}
 
-TableRowInner.displayName = 'Table.Row';
-
-export const TableRow = TableRowInner as <T extends object>(
+export const TableRow = memo(TableRowImpl) as <T extends object>(
 	props: TableRowComponentProps<T>
-) => React.ReactElement;
+) => ReactElement;

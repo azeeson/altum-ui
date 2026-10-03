@@ -1,303 +1,86 @@
 /**
  * Встроенный словарь русского языка (эталон для типа {@link Messages}).
  */
+import {ruSlice as common} from './slices/common.ru';
+import {ruSlice as calendar} from './slices/calendar.ru';
+import {ruSlice as calendarBoard} from './slices/calendarBoard.ru';
+import {ruSlice as dayStrip} from './slices/dayStrip.ru';
+import {ruSlice as timeField} from './slices/timeField.ru';
+import {ruSlice as dateRangeField} from './slices/dateRangeField.ru';
+import {ruSlice as select} from './slices/select.ru';
+import {ruSlice as customSelect} from './slices/customSelect.ru';
+import {ruSlice as listbox} from './slices/listbox.ru';
+import {ruSlice as suggestField} from './slices/suggestField.ru';
+import {ruSlice as sheet} from './slices/sheet.ru';
+import {ruSlice as modal} from './slices/modal.ru';
+import {ruSlice as confirmDialog} from './slices/confirmDialog.ru';
+import {ruSlice as table} from './slices/table.ru';
+import {ruSlice as pagination} from './slices/pagination.ru';
+import {ruSlice as sortable} from './slices/sortable.ru';
+import {ruSlice as upload} from './slices/upload.ru';
+import {ruSlice as imageCrop} from './slices/imageCrop.ru';
+import {ruSlice as imageGallery} from './slices/imageGallery.ru';
+import {ruSlice as imageLightbox} from './slices/imageLightbox.ru';
+import {ruSlice as sidebar} from './slices/sidebar.ru';
+import {ruSlice as password} from './slices/password.ru';
+import {ruSlice as numberField} from './slices/numberField.ru';
+import {ruSlice as pinInput} from './slices/pinInput.ru';
+import {ruSlice as searchField} from './slices/searchField.ru';
+import {ruSlice as slider} from './slices/slider.ru';
+import {ruSlice as rating} from './slices/rating.ru';
+import {ruSlice as actionList} from './slices/actionList.ru';
+import {ruSlice as commandPalette} from './slices/commandPalette.ru';
+import {ruSlice as pullToRefresh} from './slices/pullToRefresh.ru';
+import {ruSlice as spinner} from './slices/spinner.ru';
+import {ruSlice as steps} from './slices/steps.ru';
+import {ruSlice as bubble} from './slices/bubble.ru';
+import {ruSlice as chip} from './slices/chip.ru';
+import {ruSlice as fileList} from './slices/fileList.ru';
+import {ruSlice as virtualList} from './slices/virtualList.ru';
+import {ruSlice as skipLink} from './slices/skipLink.ru';
+import {ruSlice as overflow} from './slices/overflow.ru';
+import {ruSlice as buttonGroup} from './slices/buttonGroup.ru';
+import {ruSlice as menu} from './slices/menu.ru';
+
 export const ru = {
-	common: {
-		close: 'Закрыть',
-		clear: 'Очистить',
-		collapse: 'Свернуть',
-	},
-
-	calendar: {
-		months: [
-			'Январь',
-			'Февраль',
-			'Март',
-			'Апрель',
-			'Май',
-			'Июнь',
-			'Июль',
-			'Август',
-			'Сентябрь',
-			'Октябрь',
-			'Ноябрь',
-			'Декабрь',
-		],
-		monthsShort: [
-			'Янв',
-			'Фев',
-			'Мар',
-			'Апр',
-			'Май',
-			'Июн',
-			'Июл',
-			'Авг',
-			'Сен',
-			'Окт',
-			'Ноя',
-			'Дек',
-		],
-		weekdaysShort: [
-			'Пн',
-			'Вт',
-			'Ср',
-			'Чт',
-			'Пт',
-			'Сб',
-			'Вс'
-		],
-		prevMonth: 'Предыдущий месяц',
-		nextMonth: 'Следующий месяц',
-		prevYear: 'Предыдущий год',
-		nextYear: 'Следующий год',
-		prevYears: 'Предыдущие годы',
-		nextYears: 'Следующие годы',
-		selectYear: 'Выбрать год, сейчас {year}',
-		selectMonth: 'Выбрать месяц, сейчас {month}',
-		monthsOfYear: 'Месяцы {year}',
-		yearsRange: 'Годы {start}–{end}',
-	},
-
-	calendarBoard: {
-		ariaLabel: 'Календарная доска',
-		prevPeriod: 'Предыдущий период',
-		nextPeriod: 'Следующий период',
-		viewSwitchAria: 'Представление календаря',
-		views: {
-			month: 'Месяц',
-			week: 'Неделя',
-			day: 'День',
-			year: 'Год',
-		},
-		scheduleAria: 'Расписание',
-		allDay: 'События на весь день',
-		allDayShort: 'весь день',
-		dayWithTasks: '{day} {month}, задач: {count}',
-		dayWithoutTasks: '{day} {month}',
-		moreTasks: 'ещё {count}',
-	},
-
-	dayStrip: {
-		ariaLabel: 'Навигация по дням',
-		prev: 'Предыдущий день',
-		next: 'Следующий день',
-		days: 'Дни',
-	},
-
-	timeField: {
-		hours: 'Часы',
-		minutes: 'Минуты',
-	},
-
-	dateRangeField: {
-		label: 'Период',
-		start: 'С',
-		end: 'По',
-	},
-
-	select: {
-		removeItem: 'Удалить {label}',
-	},
-
-	customSelect: {
-		filterPlaceholder: 'Поиск...',
-		noOptions: 'Ничего не найдено',
-	},
-
-	listbox: {
-		noOptions: 'Ничего не найдено',
-	},
-
-	suggestField: {
-		noOptions: 'Ничего не найдено',
-	},
-
-	sheet: {
-		ariaLabel: 'Панель',
-	},
-
-	modal: {
-		ariaLabel: 'Диалог',
-	},
-
-	confirmDialog: {
-		confirm: 'Подтвердить',
-		cancel: 'Отмена',
-	},
-
-	table: {
-		expandColumn: 'Развернуть',
-		selectAll: 'Выбрать все строки',
-		selectRow: 'Выбрать строку {id}',
-		resizeColumn: 'Изменить ширину: {header}',
-		emptyTitle: 'Нет данных',
-		rowActions: 'Действия строки',
-	},
-
-	pagination: {
-		ariaLabel: 'Пагинация',
-		prev: 'Предыдущая страница',
-		next: 'Следующая страница',
-		page: 'Страница {page}',
-		summary: '{start}–{end} из {total}',
-		pageSizeLabel: 'На странице',
-		pageSizeAria: 'Размер страницы',
-	},
-
-	sortable: {
-		moveUp: 'Переместить вверх',
-		moveDown: 'Переместить вниз',
-		moved: 'Позиция {position} из {total}: элемент перемещён',
-		dragItem: 'Перетащить элемент',
-	},
-
-	upload: {
-		dropHint: 'Перетащите файлы сюда или',
-		choose: 'выберите',
-		selectedCount: 'Выбрано файлов: {count}',
-		release: 'Отпустите файл для загрузки',
-	},
-
-	imageCrop: {
-		title: 'Обрезка изображения',
-		confirm: 'Применить',
-		cancel: 'Отмена',
-		choose: 'Выберите изображение',
-		hint: 'Перетащите изображение или измените масштаб за углы',
-		loadError: 'Не удалось загрузить изображение',
-		cropError: 'Не удалось обрезать изображение',
-		exportError: 'Не удалось экспортировать изображение',
-		scaleHandle: 'Масштаб {corner}',
-	},
-
-	imageGallery: {
-		empty: 'Нет изображений',
-		prev: 'Предыдущее изображение',
-		next: 'Следующее изображение',
-		imageN: 'Изображение {index}',
-	},
-
-	imageLightbox: {
-		close: 'Закрыть галерею',
-		ariaLabel: 'Галерея изображений',
-	},
-
-	sidebar: {
-		ariaLabel: 'Навигация сайдбара',
-		openMenu: 'Открыть меню',
-		expand: 'Развернуть',
-		collapse: 'Свернуть',
-		expandSidebar: 'Развернуть сайдбар',
-		collapseSidebar: 'Свернуть сайдбар',
-	},
-
-	password: {
-		reveal: 'Показать пароль',
-		hide: 'Скрыть пароль',
-		strength: {
-			weak: 'Слабый',
-			fair: 'Средний',
-			good: 'Хороший',
-			strong: 'Надёжный',
-		},
-	},
-
-	numberField: {
-		group: 'Изменить значение',
-		decrement: 'Уменьшить',
-		increment: 'Увеличить',
-	},
-
-	pinInput: {
-		ariaLabel: 'Код подтверждения',
-		digit: 'Цифра {index}',
-	},
-
-	searchField: {
-		label: 'Поиск',
-	},
-
-	slider: {
-		ariaLabel: 'Ползунок',
-		from: 'От',
-		to: 'До',
-	},
-
-	rating: {
-		ariaLabel: 'Рейтинг',
-	},
-
-	actionList: {
-		filterPlaceholder: 'Фильтр…',
-		empty: 'Ничего не найдено',
-		ariaLabel: 'Список действий',
-	},
-
-	commandPalette: {
-		placeholder: 'Поиск команд…',
-		title: 'Командная палитра',
-	},
-
-	pullToRefresh: {
-		pull: 'Потяните для обновления',
-		release: 'Отпустите',
-		refreshing: 'Обновление…',
-	},
-
-	spinner: {
-		typing: 'Печатает',
-		loading: 'Загрузка',
-	},
-
-	steps: {
-		ariaLabel: 'Шаги',
-	},
-
-	segmentedControl: {
-		ariaLabel: 'Сегментированный контроль',
-	},
-
-	bubble: {
-		expand: 'Ещё',
-		collapse: 'Свернуть',
-		reactions: 'Реакции',
-	},
-
-	chip: {
-		remove: 'Удалить',
-		groupChips: 'Чипы',
-		groupTags: 'Теги',
-	},
-
-	fileList: {
-		remove: 'Удалить',
-		retry: 'Повторить',
-	},
-
-	virtualList: {
-		ariaLabel: 'Список',
-	},
-
-	skipLink: {
-		label: 'Перейти к содержимому',
-	},
-
-	overflow: {
-		title: 'Действия',
-		ariaLabel: 'Действия',
-		more: 'Ещё действия',
-		groupTitle: 'Ещё',
-		groupAriaLabel: 'Группа',
-		groupMore: 'Показать ещё',
-	},
-
-	buttonGroup: {
-		ariaLabel: 'Группа кнопок',
-	},
-
-	menu: {
-		mobileTitle: 'Меню',
-		ariaLabel: 'Меню',
-		contextAriaLabel: 'Контекстное меню',
-	},
+	common,
+	calendar,
+	calendarBoard,
+	dayStrip,
+	timeField,
+	dateRangeField,
+	select,
+	customSelect,
+	listbox,
+	suggestField,
+	sheet,
+	modal,
+	confirmDialog,
+	table,
+	pagination,
+	sortable,
+	upload,
+	imageCrop,
+	imageGallery,
+	imageLightbox,
+	sidebar,
+	password,
+	numberField,
+	pinInput,
+	searchField,
+	slider,
+	rating,
+	actionList,
+	commandPalette,
+	pullToRefresh,
+	spinner,
+	steps,
+	bubble,
+	chip,
+	fileList,
+	virtualList,
+	skipLink,
+	overflow,
+	buttonGroup,
+	menu,
 } as const;

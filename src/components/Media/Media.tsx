@@ -5,10 +5,10 @@ export type {
 	MediaProps,
 } from './Media.types';
 
-import {forwardRef} from 'react';
+import type React from 'react';
+import type {CSSProperties} from 'react';
 import styles from './Media.module.css';
-import {cn} from '../../utils/cn';
-import {mergeStyles} from '../../utils/mergeStyles';
+import {cn} from '../../core/utils/cn';
 
 /**
  * Медиа-превью с фиксированным `aspect-ratio` (img / video).
@@ -17,34 +17,42 @@ import {mergeStyles} from '../../utils/mergeStyles';
  * @example
  * <Media src="/cover.jpg" alt="Обложка" ratio={1} />
  */
-export const Media = forwardRef<HTMLDivElement, MediaProps>(function Media(
-	{
-		src,
-		alt = '',
-		as = 'img',
-		poster,
-		fit = 'cover',
-		rounded = true,
-		ratio = 16 / 9,
-		className,
-		style,
-		...rest
-	},
-	ref,
-) {
+export const Media = ({
+	src,
+	alt = '',
+	as = 'img',
+	poster,
+	fit = 'cover',
+	rounded = true,
+	ratio = 16 / 9,
+	className,
+	style,
+	rootRef,
+	onError,
+	...rest
+}: MediaProps) => {
 	const isVideo = as === 'video';
 	const Tag = isVideo ? 'video' : 'img';
 
 	return (
 		<div
-			ref={ref}
-			className={cn(styles.media, rounded && styles.rounded, className)}
-			style={mergeStyles({aspectRatio: ratio}, style)}
+			ref={rootRef}
+			className={cn(styles.media, className)}
+			style={{
+				'--altum-media-ratio': String(ratio),
+				...style,
+			} as CSSProperties}
+			data-rounded={rounded ? '' : undefined}
+			data-fit={fit !== 'cover' ? fit : undefined}
 			{...rest}
 		>
 			<Tag
 				src={src}
-				className={cn(styles.el, styles[fit])}
+				className={styles.el}
+				onError={onError as (
+					React.ReactEventHandler<HTMLImageElement>
+					& React.ReactEventHandler<HTMLVideoElement>
+				) | undefined}
 				{...(isVideo
 					? {
 						poster,
@@ -61,6 +69,4 @@ export const Media = forwardRef<HTMLDivElement, MediaProps>(function Media(
 			/>
 		</div>
 	);
-});
-
-Media.displayName = 'Media';
+};

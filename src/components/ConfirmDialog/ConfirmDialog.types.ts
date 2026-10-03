@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 import {ButtonProps} from '../Button/Button';
 
@@ -29,4 +30,6 @@ export interface ConfirmDialogProps extends Omit<ComponentPropsWithoutRef<'div'>
 	onConfirm: () => void;
 	onOpenChange: (open: boolean) => void;
 	loading?: boolean;
+	/** DOM-узел поверхности диалога. */
+	rootRef?: Ref<HTMLElement>;
 }

@@ -1,30 +1,58 @@
-import type {TooltipTriggerProps, TooltipProps} from './Tooltip.types';
+import type {TooltipProps, TooltipTriggerProps} from './Tooltip.types';
 export type {
-	TooltipPosition,
 	TooltipSide,
 	TooltipTriggerProps,
 	TooltipProps,
 } from './Tooltip.types';
 
-import React, {forwardRef, isValidElement} from 'react';
-import {composeRefs} from '../../utils/composeRefs';
-import {Popover} from '../Popover/Popover';
+import {
+	useId,
+	type CSSProperties,
+	type ReactNode,
+	type Ref,
+	type RefCallback,
+} from 'react';
+import {cn} from '../../core/utils/cn';
+import {anchorNameFor, popoverDomId, positionArea} from '../../core/utils/popover';
 import styles from './Tooltip.module.css';
-import {renderChildren} from '../../utils/renderChildren';
 
-function isDisabledElement(node: React.ReactNode): boolean {
-	if (!isValidElement(node)) return false;
-	const props = node.props as {
-		disabled?: boolean;
-		'aria-disabled'?: boolean | 'true' | 'false';
-	};
-	return !!(props.disabled || props['aria-disabled'] === true || props['aria-disabled'] === 'true');
+function assignRef(ref: Ref<HTMLElement> | undefined, node: HTMLElement | null) {
+	if (typeof ref === 'function') {
+		(ref as RefCallback<HTMLElement | null>)(node);
+		return;
+	}
+	if (ref != null) {
+		(ref as {current: HTMLElement | null}).current = node;
+	}
+}
+
+function renderTrigger(
+	children: TooltipProps['children'],
+	props: TooltipTriggerProps,
+	contentRef: Ref<HTMLElement> | undefined,
+	fallback: 'span' | 'fragment',
+): ReactNode {
+	if (typeof children === 'function') {
+		const refCallback: RefCallback<HTMLElement> = (node) => {
+			assignRef(contentRef, node);
+		};
+		return children(props, refCallback);
+	}
+
+	if (fallback === 'fragment') return (<>
+		{children}
+	</>);
+	return (<span {...props}>
+		{children}
+	</span>);
 }
 
 /**
- * Контекстная подсказка при наведении или фокусе — на базе `Popover` (`variant="tooltip"`).
+ * Текстовая подсказка при наведении или фокусе.
+ * Показ — CSS `:hover` / `:focus-within` на общем хосте. Позиция — CSS Anchor Positioning.
+ * JS не ставит таймеры и не слушает pointer.
  *
- * Триггер: единственный элемент (slot) или render-prop `(props, ref) => …`.
+ * Триггер: render-prop `(props, ref) => …` или любой children (оборачивается в `span`).
  *
  * @component
  * @example
@@ -36,73 +64,60 @@ function isDisabledElement(node: React.ReactNode): boolean {
  *   {(props, ref) => <button type="button" {...props} ref={ref}>?</button>}
  * </Tooltip>
  * @example
- * <Tooltip content="Недоступно" wrap>
+ * <Tooltip content="Недоступно">
  *   <Button disabled>Действие</Button>
  * </Tooltip>
  */
-export const Tooltip = forwardRef<HTMLElement, TooltipProps>(function Tooltip(
-	{
-		content,
-		side,
-		position = 'top',
-		children,
-		className,
-		open,
-		defaultOpen = false,
-		onOpenChange,
-		openDelay = 200,
-		closeDelay = 100,
-		disabled = false,
-		wrap,
-		arrow = true,
-	},
-	ref,
-) {
-	const isSlot = isValidElement(children);
-	const shouldWrap = wrap ?? (isSlot && isDisabledElement(children));
-	const triggerChildren = isSlot && shouldWrap
-		? (
-			<span className={styles.wrap}>
-				{children}
-			</span>
-		)
-		: children;
+export const Tooltip = ({
+	content,
+	side = 'top',
+	children,
+	className,
+	disabled,
+	open,
+	defaultOpen,
+	openDelay = 200,
+	closeDelay = 100,
+	wrap: _wrap,
+	rootRef,
+}: TooltipProps) => {
+	const tipId = popoverDomId(useId());
+	const anchorName = anchorNameFor(tipId);
+	const hidden = disabled || content == null || content === '';
 
-	const renderAnchor = (
-		slotProps: TooltipTriggerProps,
-		slotRef: React.RefCallback<HTMLElement>,
-	) => renderChildren({
-		children: triggerChildren,
-		props: slotProps,
-		contentRef: composeRefs(ref, slotRef),
-	});
-
-	const resolvedSide = side ?? position;
-
-	if (content == null || content === '') {
-		return renderAnchor({}, () => undefined);
+	if (hidden) {
+		return renderTrigger(children, {}, rootRef, 'fragment');
 	}
 
-	return (
-		<Popover
-			trigger='hover'
-			open={open}
-			defaultOpen={defaultOpen}
-			onOpenChange={onOpenChange}
-			disabled={disabled}
-			wrap={false}
-			variant='tooltip'
-			arrow={arrow}
-			panelClassName={className}
-			side={resolvedSide}
-			openDelay={openDelay}
-			closeDelay={closeDelay}
-			dismiss='escape'
-			renderTrigger={renderAnchor}
-		>
-			{content}
-		</Popover>
-	);
-});
+	const hostStyle = {
+		anchorName,
+		'--altum-tooltip-anchor': anchorName,
+		'--altum-tooltip-area': positionArea(side, 'center'),
+		'--altum-tooltip-open-delay': `${openDelay}ms`,
+		'--altum-tooltip-close-delay': `${closeDelay}ms`,
+	} as CSSProperties;
 
-Tooltip.displayName = 'Tooltip';
+	return (
+		<span
+			ref={rootRef}
+			className={styles.host}
+			style={hostStyle}
+			data-open={open || defaultOpen ? '' : undefined}
+		>
+			{renderTrigger(
+				children,
+				{'aria-describedby': tipId},
+				undefined,
+				'span',
+			)}
+			<span
+				id={tipId}
+				role='tooltip'
+				className={cn(styles.bubble, className)}
+				data-side={side}
+			>
+				{content}
+			</span>
+		</span>
+	);
+};

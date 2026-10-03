@@ -4,7 +4,7 @@ import {Tooltip} from './Tooltip';
 import {Button} from '../Button/Button';
 import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
 import {Card} from '../Card/Card';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {TextField} from '../TextField/TextField';
 import {IconHome} from '../../icons/icons/IconHome';
@@ -36,10 +36,6 @@ export default {
 			},
 			description: 'Сторона подсказки',
 		},
-		arrow: {
-			control: 'boolean',
-			description: 'Треугольник к триггеру',
-		},
 		disabled: {
 			control: 'boolean',
 			description: 'Не показывать подсказку',
@@ -55,9 +51,6 @@ export default {
 		closeDelay: {
 			control: 'number',
 			description: 'Задержка закрытия, мс',
-		},
-		onOpenChange: {
-			action: 'openChange',
 		},
 	},
 } satisfies Meta<typeof Tooltip>;
@@ -75,7 +68,6 @@ export const Playground: TooltipStory = {
 			<Tooltip
 				content={args.content}
 				side={args.side}
-				arrow={args.arrow}
 				disabled={args.disabled}
 				openDelay={args.openDelay}
 				closeDelay={args.closeDelay}
@@ -89,7 +81,6 @@ export const Playground: TooltipStory = {
 	args: {
 		content: 'Полезная подсказка сверху',
 		side: 'top',
-		arrow: true,
 		disabled: false,
 		openDelay: 200,
 		closeDelay: 100,
@@ -264,7 +255,7 @@ export const InsideOverflowCard: TooltipStory = {
 			</Tooltip>
 		</div>
 	),
-	parameters: story('Tooltip в portal; `.anchorTooltip { overflow: visible }`.'),
+	parameters: story('Tooltip в portal, свой визуал поверх plain-панели.'),
 };
 
 /** Не больше одной подсказки при наведении на плотный вертикальный стек иконок. */
@@ -292,7 +283,7 @@ export const IconStackMutex: TooltipStory = {
 					<ButtonIcon
 						variant='ghost'
 						size='sm'
-						icon={<Icon size={18} />}
+						icon={<Icon size={18}/>}
 						aria-label={label}
 					/>
 				</Tooltip>
@@ -349,7 +340,7 @@ export const UsageExample: TooltipStory = {
 							<ButtonIcon
 								variant='ghost'
 								size='sm'
-								icon={<IconHelp size={16} />}
+								icon={<IconHelp size={16}/>}
 								aria-label='Подсказка про API-ключ'
 							/>
 						</Tooltip>

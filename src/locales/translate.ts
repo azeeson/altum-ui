@@ -1,4 +1,12 @@
-import type {DeepPartialMessages, Messages, TranslationParams} from './types';
+import {plural} from '../core/utils/plural';
+import type {
+	DeepPartialMessages,
+	LocaleCode,
+	Messages,
+	MessageTree,
+	PluralMessage,
+	TranslationParams,
+} from './types';
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
 	return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -34,7 +42,7 @@ export function deepMergeMessages(
 	return deepMergeUnknown(base, override) as Messages;
 }
 
-function getByPath(messages: Messages, path: string): unknown {
+function getByPath(messages: MessageTree, path: string): unknown {
 	const parts = path.split('.');
 	let current: unknown = messages;
 
@@ -46,6 +54,25 @@ function getByPath(messages: Messages, path: string): unknown {
 	}
 
 	return current;
+}
+
+const PLURAL_KEYS = ['one', 'few', 'many'] as const;
+
+function isPluralMessage(value: unknown): value is PluralMessage {
+	if (!isPlainObject(value)) return false;
+	const keys = Object.keys(value);
+	return keys.length === PLURAL_KEYS.length
+		&& PLURAL_KEYS.every((key) => typeof value[key] === 'string');
+}
+
+function pluralCount(params?: TranslationParams): number {
+	const raw = params?.count;
+	if (typeof raw === 'number' && Number.isFinite(raw)) return raw;
+	if (typeof raw === 'string' && raw.trim() !== '') {
+		const parsed = Number(raw);
+		if (Number.isFinite(parsed)) return parsed;
+	}
+	return 0;
 }
 
 /** Подстановка `{name}` в шаблон. */
@@ -65,14 +92,23 @@ function interpolate(
 
 /**
  * Перевод по точечному ключу (`common.close`, `pagination.summary`).
+ * Строка — шаблон с `{name}`. Объект `{one, few, many}` — склонение по `params.count` и локали.
  * Массивы (месяцы и т.п.) берите из `messages`, не через `t`.
  */
 export function translate(
-	messages: Messages,
+	messages: MessageTree,
 	key: string,
 	params?: TranslationParams,
+	locale: LocaleCode = 'ru',
 ): string {
 	const value = getByPath(messages, key);
+
+	if (isPluralMessage(value)) {
+		if ((params?.count === undefined || params.count === null) && process.env.NODE_ENV !== 'production') {
+			console.warn(`[altum] Для склонения «${key}» нужен params.count`);
+		}
+		return interpolate(plural(locale, pluralCount(params), value), params);
+	}
 
 	if (typeof value !== 'string') {
 		if (process.env.NODE_ENV !== 'production') {

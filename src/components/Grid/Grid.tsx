@@ -3,118 +3,132 @@ import type {
 	GridItemProps,
 } from './Grid.types';
 export type {
-	AdaptiveValue,
 	GridGapToken,
 	GridMode,
 	GridProps,
 	GridItemProps,
 } from './Grid.types';
 
-import {forwardRef, type CSSProperties} from 'react';
-import {As} from '../../base/As';
+import {type CSSProperties} from 'react';
 import styles from './Grid.module.css';
-import {cn} from '../../utils/cn';
-import {mergeStyles} from '../../utils/mergeStyles';
-import {
-	resolveAutoColumnsTemplate,
-	resolveColumnsTemplate,
-	resolveGapCss,
-	resolveGridRowValue,
-	setGridItemColumnVars,
-	setResponsive,
-} from './Grid.utils';
-export {GRID_BREAKPOINTS} from './Grid.utils';
+import {cn} from '../../core/utils/cn';
+import {spacingCss} from '../../core/utils/spacing';
+import {toCssSize} from '../../core/utils/cssSize';
+
+function resolveColumnsTemplate(value: number | string): string {
+	if (typeof value === 'number') {
+		return `repeat(${value}, minmax(0, 1fr))`;
+	}
+	return value;
+}
+
+function resolveAutoColumnsTemplate(
+	mode: 'autoFit' | 'autoFill',
+	minColumnWidth: number | string,
+): string {
+	const autoFn = mode === 'autoFit' ? 'auto-fit' : 'auto-fill';
+	return `repeat(${autoFn}, minmax(${toCssSize(minColumnWidth)}, 1fr))`;
+}
+
+function resolveGridColumnValue(
+	span?: number,
+	colStart?: number,
+	colEnd?: number,
+): string | undefined {
+	if (colStart !== undefined && colEnd !== undefined) {
+		return `${colStart} / ${colEnd}`;
+	}
+	if (colStart !== undefined && span !== undefined) {
+		return `${colStart} / span ${span}`;
+	}
+	if (span !== undefined) {
+		return `span ${span}`;
+	}
+	if (colStart !== undefined) {
+		return String(colStart);
+	}
+	return undefined;
+}
 
 /**
- * CSS Grid-контейнер с адаптивными колонками и отступами через breakpoints.
+ * CSS Grid-контейнер с колонками и отступами через CSS-переменные.
  *
  * @component
  * @example
- * <Grid columns={{ xs: 2, md: 4, xl: 6 }} gap="md">
+ * <Grid columns={4} gap="md">
  *   {cards.map((card) => <GridItem key={card.id}>{card.title}</GridItem>)}
  * </Grid>
  */
-export const Grid = forwardRef<HTMLElement, GridProps>(function Grid(
-	{
-		columns = 1,
-		gap = 'md',
-		mode = 'fixed',
-		minColumnWidth = 240,
-		className,
-		style,
-		as = 'div',
-		...rest
-	},
-	ref,
-) {
-	const vars: Record<string, string | number | undefined> = {};
-	const colsFallback = 'repeat(1, minmax(0, 1fr))';
-
-	if (mode === 'autoFit' || mode === 'autoFill') {
-		setResponsive(
-			vars,
-			'--altum-grid-cols',
-			resolveAutoColumnsTemplate(mode, minColumnWidth),
-			(value) => value,
-			colsFallback,
-		);
-	} else {
-		setResponsive<number | string>(vars, '--altum-grid-cols', columns, resolveColumnsTemplate, colsFallback);
-	}
-
-	setResponsive<number | string>(vars, '--altum-grid-gap', gap, resolveGapCss, 'var(--altum-g-space-3)');
+export function Grid({
+	columns = 1,
+	gap = 'md',
+	mode = 'fixed',
+	minColumnWidth = 240,
+	className,
+	style,
+	as: Comp = 'div',
+	rootRef,
+	...rest
+}: GridProps) {
+	const vars: Record<string, string | number | undefined> = {
+		'--altum-grid-gap': spacingCss(gap),
+		'--altum-grid-cols': mode === 'autoFit' || mode === 'autoFill'
+			? resolveAutoColumnsTemplate(mode, minColumnWidth)
+			: resolveColumnsTemplate(columns),
+	};
 
 	return (
-		<As
-			ref={ref}
-			as={as}
+		<Comp
+			{...(rest as Record<string, unknown>)}
+			ref={rootRef as never}
 			className={cn(styles.grid, className)}
-			style={mergeStyles(vars as CSSProperties, style)}
-			{...rest}
+			style={{
+				...vars,
+				...style
+			} as CSSProperties}
 		/>
 	);
-});
+}
 
 /**
- * Ячейка CSS Grid с адаптивным span и позиционированием по колонкам/строкам.
+ * Ячейка CSS Grid со span и позиционированием по колонкам/строкам.
  *
  * @component
  * @example
  * <Grid columns={12} gap="md">
- *   <GridItem span={{ xs: 12, lg: 3 }}>Боковая панель</GridItem>
- *   <GridItem span={{ xs: 12, lg: 9 }}>Основное</GridItem>
+ *   <GridItem span={3}>Боковая панель</GridItem>
+ *   <GridItem span={9}>Основное</GridItem>
  * </Grid>
  */
-export const GridItem = forwardRef<HTMLElement, GridItemProps>(function GridItem(
-	{
-		span,
-		colStart,
-		colEnd,
-		rowSpan,
-		className,
-		style,
-		as = 'div',
-		...rest
-	},
-	ref,
-) {
+export function GridItem({
+	span,
+	colStart,
+	colEnd,
+	rowSpan,
+	className,
+	style,
+	as: Comp = 'div',
+	rootRef,
+	...rest
+}: GridItemProps) {
 	const vars: Record<string, string | number | undefined> = {};
-
-	setGridItemColumnVars(vars, span, colStart, colEnd);
+	const col = resolveGridColumnValue(span, colStart, colEnd);
+	if (col !== undefined) {
+		vars['--altum-grid-item-col'] = col;
+	}
 	if (rowSpan !== undefined) {
-		setResponsive<number>(vars, '--altum-grid-item-row', rowSpan, resolveGridRowValue, 'auto');
+		vars['--altum-grid-item-row'] = `span ${rowSpan}`;
 	}
 
 	return (
-		<As
-			ref={ref}
-			as={as}
+		<Comp
+			{...(rest as Record<string, unknown>)}
+			ref={rootRef as never}
 			className={cn(styles.gridItem, className)}
-			style={mergeStyles(vars as CSSProperties, style)}
-			{...rest}
+			style={{
+				...vars,
+				...style
+			} as CSSProperties}
 		/>
 	);
-});
-
-Grid.displayName = 'Grid';
-GridItem.displayName = 'GridItem';
+}

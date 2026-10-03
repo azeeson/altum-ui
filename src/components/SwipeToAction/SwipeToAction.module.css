@@ -118,7 +118,8 @@
       padding 0.22s ease;
   }
 
-  & .actionButtonExpanded {
+  &[data-full-swipe-active='left'] .actionContainerLeft .actionButton[data-swipe-trigger],
+  &[data-full-swipe-active='right'] .actionContainerRight .actionButton[data-swipe-trigger] {
     flex: 1 1 auto !important;
 
     min-width: 100% !important;
@@ -130,7 +131,8 @@
     }
   }
 
-  & .actionButtonCollapsed {
+  &[data-full-swipe-active='left'] .actionContainerLeft .actionButton:not([data-swipe-trigger]),
+  &[data-full-swipe-active='right'] .actionContainerRight .actionButton:not([data-swipe-trigger]) {
     flex: 0 0 0 !important;
 
     min-width: 0 !important;

@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {ActionSheetTrigger, type ActionSheetTriggerProps} from './ActionSheetTrigger';
 import {Overflow} from '../Overflow/Overflow';
 import {Item} from '../Item/Item';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Card} from '../Card/Card';
 import {IconCopy} from '../../icons/icons/IconCopy';

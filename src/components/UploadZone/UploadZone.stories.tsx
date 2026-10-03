@@ -6,7 +6,7 @@ import {Button} from '../Button/Button';
 import {Avatar} from '../Avatar/Avatar';
 import {Card} from '../Card/Card';
 import {FileList} from '../FileList/FileList';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Title} from '../Title/Title';
 import {componentParameters, story, Story} from '../../storybook/meta';

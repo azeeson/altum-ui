@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {Collapse, CollapseProps} from './Collapse';
 import {Button} from '../Button/Button';
 import {Card} from '../Card/Card';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Box} from '../Box/Box';
 import {componentParameters, story, Story} from '../../storybook/meta';
@@ -20,10 +20,6 @@ export default {
 			control: 'boolean',
 			description: 'Состояние раскрытия',
 		},
-		reducedMotion: {
-			control: 'boolean',
-			description: 'Отключить анимацию высоты',
-		},
 		children: {
 			control: 'text',
 			description: 'Содержимое блока',
@@ -33,7 +29,6 @@ export default {
 
 function CollapseDemo({
 	open: openArg,
-	reducedMotion,
 	children,
 }: CollapseProps) {
 	const [open, setOpen] = useState(openArg);
@@ -46,14 +41,11 @@ function CollapseDemo({
 			>
 				{open ? 'Скрыть спойлер' : 'Показать спойлер'}
 			</Button>
-			<Collapse
-				open={open}
-				reducedMotion={reducedMotion}
-			>
+			<Collapse open={open}>
 				<Box
 					variant='muted'
-					padding='md'
 					radius='md'
+					style={{padding: 'var(--altum-g-space-3)'}}
 				>
 					<Text size='sm'>
 						{children}
@@ -67,7 +59,6 @@ function CollapseDemo({
 export const Playground: Story<CollapseProps> = {
 	args: {
 		open: false,
-		reducedMotion: false,
 		children: 'Плавный раскрывающийся текст под спойлером!',
 	},
 	render: (args) => (
@@ -76,7 +67,7 @@ export const Playground: Story<CollapseProps> = {
 			{...args}
 		/>
 	),
-	parameters: story('Controls: `open`, `reducedMotion`, текст содержимого.'),
+	parameters: story('Controls: `open`, текст содержимого.'),
 };
 
 export const Open: Story<CollapseProps> = {
@@ -85,8 +76,8 @@ export const Open: Story<CollapseProps> = {
 			<Collapse open>
 				<Box
 					variant='outlined'
-					padding='md'
 					border
+					style={{padding: 'var(--altum-g-space-3)'}}
 				>
 					<Text size='sm'>
 						Контент виден сразу при `open` без анимации переключения.
@@ -104,8 +95,8 @@ export const Closed: Story<CollapseProps> = {
 			<Collapse open={false}>
 				<Box
 					variant='outlined'
-					padding='md'
 					border
+					style={{padding: 'var(--altum-g-space-3)'}}
 				>
 					<Text size='sm'>
 						Этот текст скрыт (`aria-hidden` + `inert`).
@@ -118,18 +109,6 @@ export const Closed: Story<CollapseProps> = {
 		</div>
 	),
 	parameters: story('Свёрнутое состояние: контент в DOM, но недоступен.'),
-};
-
-export const ReducedMotion: Story<CollapseProps> = {
-	render: () => (
-		<CollapseDemo
-			open
-			reducedMotion
-		>
-			Мгновенное раскрытие без анимации высоты.
-		</CollapseDemo>
-	),
-	parameters: story('`reducedMotion` отключает CSS-анимацию.'),
 };
 
 export const OverflowText: Story<CollapseProps> = {

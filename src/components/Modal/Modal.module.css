@@ -1,28 +1,22 @@
 .modalContent {
-  position: relative;
+  --local-width: var(--altum-dialog-max-width-md);
 
-  width: 90%;
-  max-width: var(--altum-dialog-max-width-md);
-  max-height: var(--altum-dialog-max-height);
+  width: min(var(--local-width), calc(100dvw - 2 * var(--altum-g-space-4)));
+
+  margin-inline: auto;
 
   font-family: var(--altum-g-font-family-ui);
+
+  &[data-size='sm'] {
+    --local-width: var(--altum-dialog-max-width-sm);
+  }
+
+  &[data-size='lg'] {
+    --local-width: var(--altum-dialog-max-width-lg);
+  }
 }
 
-.formFooter {
-  width: 100%;
-
-  & .formFooterStatus {
-    font-size: var(--altum-g-font-size-sm);
-    line-height: 1.4;
-
-    color: var(--altum-color-muted);
-  }
-
-  & .formFooterActions {
-    display: flex;
-
-    flex-shrink: 0;
-    align-items: center;
-    gap: var(--altum-g-space-3);
-  }
+.body {
+  font-size: var(--altum-dialog-body-size);
+  line-height: 1.5;
 }

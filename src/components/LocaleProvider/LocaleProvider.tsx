@@ -17,13 +17,12 @@ import {
 } from '../../locales/translate';
 import {
 	LocaleContext,
-	defaultLocaleContext,
 	type LocaleContextValue,
 } from '../../locales/localeContext';
 
 /**
  * Провайдер локали и переводов встроенных строк библиотеки.
- * Без провайдера компоненты используют русский словарь по умолчанию.
+ * Без провайдера компоненты берут русский текст из своего среза словаря.
  *
  * @component
  * @example
@@ -46,13 +45,13 @@ export const LocaleProvider: React.FC<LocaleProviderProps> = ({
 }) => {
 	const value = useMemo<LocaleContextValue>(() => {
 		const merged = deepMergeMessages(
-			builtInMessages[locale] ?? defaultLocaleContext.messages,
+			builtInMessages[locale] ?? builtInMessages.ru,
 			messagesOverride,
 		);
 		return {
 			locale,
 			messages: merged,
-			t: (key, params) => translate(merged, key, params),
+			t: (key, params) => translate(merged, key, params, locale),
 		};
 	}, [locale, messagesOverride]);
 
@@ -62,5 +61,3 @@ export const LocaleProvider: React.FC<LocaleProviderProps> = ({
 		</LocaleContext.Provider>
 	);
 };
-
-LocaleProvider.displayName = 'LocaleProvider';

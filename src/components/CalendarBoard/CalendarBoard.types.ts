@@ -89,6 +89,7 @@ export interface CalendarBoardTaskChipProps extends Omit<React.ComponentPropsWit
 	timeLabel?: string;
 	/** Принудительная подсветка (иначе — из hover-store по task.id). */
 	highlighted?: boolean;
+	rootRef?: React.Ref<HTMLElement>;
 }
 
 export interface CalendarBoardEventProps extends Omit<
@@ -96,13 +97,15 @@ export interface CalendarBoardEventProps extends Omit<
 	'children' | 'onClick' | 'title' | 'onMouseEnter' | 'onMouseLeave'
 > {
 	title: string;
+	/** Цвет события пишется в `--altum-calendar-board-event-color`. */
 	color?: string;
+	rootRef?: React.Ref<HTMLElement>;
 	layout?: 'bar' | 'timed';
 	timeLabel?: string;
 	continuesBefore?: boolean;
 	continuesAfter?: boolean;
 	highlighted?: boolean;
-	onClick?: () => void;
+	onClick?: React.MouseEventHandler<HTMLElement>;
 	onMouseEnter?: React.MouseEventHandler<HTMLElement>;
 	onMouseLeave?: React.MouseEventHandler<HTMLElement>;
 }
@@ -112,21 +115,27 @@ export type CalendarBoardTimedEventProps = CalendarBoardEventProps;
 
 export interface CalendarBoardMonthProps extends React.ComponentPropsWithoutRef<'div'> {
 	maxChipsPerDay?: number;
+	rootRef?: React.Ref<HTMLDivElement>;
 }
 
 export interface CalendarBoardWeekProps extends React.ComponentPropsWithoutRef<'div'> {
 	showScheduleHeader?: boolean;
 	showScheduleNav?: boolean;
+	rootRef?: React.Ref<HTMLDivElement>;
 }
 
 export interface CalendarBoardDayProps extends React.ComponentPropsWithoutRef<'div'> {
 	showScheduleHeader?: boolean;
 	showScheduleNav?: boolean;
+	rootRef?: React.Ref<HTMLDivElement>;
 }
 
-export type CalendarBoardYearProps = React.ComponentPropsWithoutRef<'div'>;
+export type CalendarBoardYearProps = React.ComponentPropsWithoutRef<'div'> & {
+	rootRef?: React.Ref<HTMLDivElement>;
+};
 
 export interface CalendarBoardBodyProps extends React.ComponentPropsWithoutRef<'div'> {
+	rootRef?: React.Ref<HTMLDivElement>;
 	monthProps?: CalendarBoardMonthProps;
 	weekProps?: CalendarBoardWeekProps;
 	dayProps?: CalendarBoardDayProps;
@@ -136,15 +145,24 @@ export interface CalendarBoardBodyProps extends React.ComponentPropsWithoutRef<'
 export interface CalendarBoardViewSwitchProps extends React.ComponentPropsWithoutRef<'div'> {
 	variant?: 'primary' | 'tinted' | 'secondary';
 	size?: 'sm' | 'md' | 'lg';
+	rootRef?: React.Ref<HTMLDivElement>;
 }
 
-export type CalendarBoardRootProps = React.ComponentPropsWithoutRef<'div'>;
+export type CalendarBoardRootProps = React.ComponentPropsWithoutRef<'div'> & {
+	rootRef?: React.Ref<HTMLDivElement>;
+};
 
-export type CalendarBoardHeaderProps = React.ComponentPropsWithoutRef<'div'>;
+export type CalendarBoardHeaderProps = React.ComponentPropsWithoutRef<'div'> & {
+	rootRef?: React.Ref<HTMLDivElement>;
+};
 
-export type CalendarBoardTitleProps = React.ComponentPropsWithoutRef<'div'>;
+export type CalendarBoardTitleProps = Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> & {
+	rootRef?: React.Ref<HTMLDivElement>;
+};
 
-export type CalendarBoardNavProps = React.ComponentPropsWithoutRef<'div'>;
+export type CalendarBoardNavProps = React.ComponentPropsWithoutRef<'div'> & {
+	rootRef?: React.Ref<HTMLDivElement>;
+};
 
 export interface CalendarScheduleSpanRenderProps {
 	event: CalendarScheduleEvent;
@@ -167,7 +185,7 @@ export interface CalendarScheduleTimedRenderProps {
 export interface CalendarScheduleProps extends React.ComponentPropsWithoutRef<'div'> {
 	/**
 	 * Опорная дата окна.
-	 * Для недели — любая дата внутри недели; окно строится от `startOfWeek`.
+	 * Для недели — любая дата внутри недели; окно строится от `getWeekStart`.
 	 * Для дня (`daysCount={1}`) — сам день.
 	 */
 	viewDate?: Date;
@@ -189,4 +207,5 @@ export interface CalendarScheduleProps extends React.ComponentPropsWithoutRef<'d
 	showNav?: boolean;
 	renderSpanEvent?: (props: CalendarScheduleSpanRenderProps) => React.ReactNode;
 	renderTimedEvent?: (props: CalendarScheduleTimedRenderProps) => React.ReactNode;
+	rootRef?: React.Ref<HTMLDivElement>;
 }

@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {ImageLightbox, ImageLightboxProps} from './ImageLightbox';
 import {Button} from '../Button/Button';
 import {Card} from '../Card/Card';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Media} from '../Media/Media';
 import {Text} from '../Text/Text';
 import {demoGalleryItem} from '../../storybook/demoImages';

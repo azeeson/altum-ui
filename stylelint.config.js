@@ -27,6 +27,9 @@ const propertyGroups = [
 		groupName: 'positioning',
 		properties: [
 			'position',
+			'position-anchor',
+			'position-area',
+			'position-try-fallbacks',
 			'inset',
 			'inset-block',
 			'inset-block-start',
@@ -405,13 +408,18 @@ export default {
 				'property-no-unknown': [
 					true,
 					{
-						ignoreProperties: ['composes'],
+						ignoreProperties: [
+							'composes',
+							'position-anchor',
+							'position-area',
+							'position-try-fallbacks',
+						],
 					},
 				],
 				'selector-pseudo-class-no-unknown': [
 					true,
 					{
-						ignorePseudoClasses: ['global', 'local', 'export'],
+						ignorePseudoClasses: ['global', 'local', 'export', 'popover-open'],
 					},
 				],
 			},

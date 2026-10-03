@@ -1,27 +1,21 @@
 .listbox {
-  display: flex;
-
-  flex-direction: column;
   gap: var(--altum-g-space-1);
 
   margin: 0;
   padding: var(--altum-g-space-1);
 
-  &.listboxGrouped {
-    gap: var(--altum-g-space-2);
-  }
-
+  /* Скролл — `scroll.area`; height:auto отменяет height:100% утилиты. */
   &.listboxVirtualized {
-    overflow: auto;
-
+    height: auto;
     max-height: min(320px, 50vh);
   }
 
   & .group {
-    display: flex;
-
-    flex-direction: column;
     gap: var(--altum-g-space-1);
+  }
+
+  & .group + .group {
+    margin-top: var(--altum-g-space-1);
   }
 
   & .groupLabel {
@@ -43,10 +37,6 @@
     color: var(--altum-field-label);
   }
 
-  & .optionWithCheck {
-    gap: var(--altum-g-space-2);
-  }
-
   & .optionCheck {
     display: inline-flex;
 
@@ -60,75 +50,60 @@
     line-height: 1;
   }
 
-  & .virtualList {
-    width: 100%;
+  & .option {
+    display: flex;
+
+    align-items: center;
+    gap: var(--altum-g-space-2);
+
+    width: max-content;
+    min-width: 100%;
+
+    padding: var(--altum-option-padding-y) var(--altum-option-padding-x);
+
+    border-radius: var(--altum-g-radius-sm);
+
+    text-align: left;
+
+    color: var(--altum-color-control-text-color);
+
+    transition: var(--altum-transition-smooth);
+
+    &:disabled {
+      opacity: var(--altum-opacity-disabled);
+    }
+
+    &:hover:not(:disabled),
+    &:focus-visible:not(:disabled),
+    &[data-highlighted]:not(:disabled) {
+      background-color: var(--altum-listbox-option-hover, var(--altum-color-option-hover));
+    }
+
+    &[aria-selected='true'] {
+      --altum-listbox-option-hover: var(--altum-color-selection-fill-emphasis);
+
+      color: var(--altum-color-selection-fill-fg);
+      background-color: var(--altum-color-selection-fill);
+    }
   }
-}
 
-.option {
-  display: flex;
+  & .label {
+    overflow: hidden;
 
-  align-items: center;
+    min-width: 0;
 
-  width: max-content;
-  min-width: 100%;
-
-  padding: var(--altum-option-padding-y) var(--altum-option-padding-x);
-
-  border-radius: var(--altum-g-radius-sm);
-
-  text-align: left;
-
-  color: var(--altum-color-control-text-color);
-
-  transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  &:disabled {
-    opacity: var(--altum-opacity-disabled);
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  &:hover:not(:disabled) {
-    background-color: var(--altum-color-option-hover);
+  & .labelMultiline {
+    display: flex;
+    overflow: visible;
+
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--altum-g-space-2);
+
+    white-space: normal;
   }
-
-  &:focus-visible:not(:disabled) {
-    outline-offset: calc(var(--altum-focus-ring-offset) * -1);
-
-    background-color: var(--altum-color-option-hover);
-  }
-}
-
-.highlighted {
-  background-color: var(--altum-color-option-hover);
-}
-
-.selected {
-  color: var(--altum-color-selection-fill-fg);
-  background-color: var(--altum-color-selection-fill);
-  &:hover:not(:disabled),
-  &:focus-visible:not(:disabled),
-  &.highlighted:not(:disabled) {
-    color: var(--altum-color-selection-fill-fg);
-    background-color: var(--altum-color-selection-fill-emphasis);
-  }
-}
-
-.label {
-  overflow: hidden;
-
-  min-width: 0;
-
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.labelMultiline {
-  display: flex;
-  overflow: visible;
-
-  flex: 1 1 auto;
-  align-items: center;
-  gap: var(--altum-g-space-2);
-
-  text-overflow: unset;
-  white-space: normal;
 }

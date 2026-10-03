@@ -1,16 +1,11 @@
-import type React from 'react';
-import type {ComponentPropsWithoutRef} from 'react';
-import {type ButtonVariant, type ButtonStatus} from '../../base/ButtonBase';
+import type {ComponentPropsWithoutRef, ReactNode, Ref} from 'react';
+import {type ButtonVariant} from '../Button/Button.types';
 import type {ControlSize} from '../../types';
 
 /**
- * Режим группы.
- *
- * - `button` — независимые кнопки; выбранность только через `active` на Item
- * - `toggle` — один выбранный Item (`value: string`)
- * - `multi_toggle` — несколько выбранных (`value: string[]`)
+ * Ось группы: `horizontal` — ряд, `vertical` — колонка.
  */
-export type ButtonGroupMode = 'button' | 'toggle' | 'multi_toggle';
+export type ButtonGroupOrientation = 'horizontal' | 'vertical';
 
 /**
  * Ширина пунктов при растянутой группе:
@@ -19,37 +14,26 @@ export type ButtonGroupMode = 'button' | 'toggle' | 'multi_toggle';
  */
 export type ButtonGroupItemFit = 'equal' | 'content';
 
-/** Заливка трека: варианты кнопки плюс `plain` (как SegmentedControl). */
-export type ButtonGroupVariant = ButtonVariant | 'plain';
+/** Заливка трека: те же варианты, что у `Button`, кроме `link`; `pill` — алиас скруглённого `secondary`. */
+export type ButtonGroupVariant = Exclude<ButtonVariant, 'link'> | 'pill';
 
 /**
  * Свойства корня `ButtonGroup`.
+ * Группа только склеивает независимые кнопки: выбор — у `SelectionGroup`.
  */
 export interface ButtonGroupRootProps extends Omit<
 	ComponentPropsWithoutRef<'div'>,
-	'children' | 'onChange' | 'defaultValue'
+	'children'
 > {
-	children: React.ReactNode;
-	/**
-	 * @default 'button'
-	 */
-	mode?: ButtonGroupMode;
+	children: ReactNode;
 	/** @default 'secondary' */
 	variant?: ButtonGroupVariant;
-	/** @default 'default' */
-	status?: ButtonStatus;
 	/** @default 'md' */
 	size?: ControlSize;
 	disabled?: boolean;
-	readOnly?: boolean;
-	/**
-	 * Без рамки у трека (для `secondary` / `ghost` / `tinted` / `link`).
-	 * @default false
-	 */
-	borderless?: boolean;
 	/**
 	 * Roving tabindex внутри группы (по умолчанию true).
-	 * `false` — кнопки не в tab-порядке.
+	 * `false` — кнопки не в tab-порядке; так делает `SegmentedControl`, у него свой roving.
 	 */
 	focusable?: boolean;
 	/**
@@ -58,40 +42,16 @@ export interface ButtonGroupRootProps extends Omit<
 	 */
 	width?: 'auto' | 'full';
 	/**
-	 * Ширина пунктов. Имеет смысл при `width="full"` (и у SegmentedControl).
+	 * Ширина пунктов. Имеет смысл при `width="full"`.
 	 * @default 'equal'
 	 */
 	itemFit?: ButtonGroupItemFit;
 	/**
-	 * Выбранное значение: строка для `toggle`, массив для `multi_toggle`.
+	 * Ряд или колонка.
+	 * @default 'horizontal'
 	 */
-	value?: string | readonly string[];
-	defaultValue?: string | readonly string[];
-	onChange?: (value: string | string[]) => void;
-	/**
-	 * В `toggle` менять выбор при навигации стрелками (как SegmentedControl).
-	 * @default true
-	 */
-	activateOnFocus?: boolean;
+	orientation?: ButtonGroupOrientation;
 	'aria-label'?: string;
-}
-
-/**
- * Свойства `ButtonGroup.Item`.
- * Стили (`variant` / `status` / `size`) задаются на Root.
- * Для `toggle` / `multi_toggle` передайте `value`.
- */
-export interface ButtonGroupItemProps
-	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'value'> {
-	/** Идентификатор пункта. Обязателен в `toggle` / `multi_toggle`. */
-	value?: string;
-	/**
-	 * Toggle-состояние в режиме `button`.
-	 * В `toggle` / `multi_toggle` выводится из `value` группы.
-	 */
-	active?: boolean;
-	/** Иконка слева от текста. */
-	icon?: React.ReactNode;
-	children?: React.ReactNode;
-	className?: string;
+	/** Корень группы. */
+	rootRef?: Ref<HTMLDivElement>;
 }

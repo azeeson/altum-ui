@@ -52,7 +52,7 @@ npx playwright install chromium
 ### Открытые состояния (`open-states.spec.ts`)
 
 - **Статические stories** (`src/test-stories/VisualOpenStates.stories.tsx`) — Modal, ConfirmDialog, Sheet, ImageLightbox, Dropdown, Tooltip уже открыты
-- **Интерактивные сценарии** — клик/hover перед скриншотом для Select, CustomSelect, DateField, TimeField и playground-оверлеев
+- **Интерактивные сценарии** — клик/hover перед скриншотом для Select, DateField, TimeField и playground-оверлеев
 - Скриншот **всего viewport** (`page`), т.к. оверлеи рендерятся в портал вне `#storybook-root`
 
 Снапшоты: `all-stories.spec.ts-snapshots/` и `open-states.spec.ts-snapshots/` (Chromium / darwin). Файлы хранятся в git.
@@ -61,20 +61,20 @@ npx playwright install chromium
 
 Покрывают типовые сценарии:
 
-- **Dropdown / Select / CustomSelect** — открытие, позиция, выбор
+- **Dropdown / Select** — открытие, позиция, выбор
 - **Checkbox / Switch / Radio** — переключение и controlled state
 - **Modal / Backdrop** — блокировка кликов под оверлеем
 - **SortableList** — перестановка перетаскиванием
 - **Tabs / Accordion / SegmentedControl** — смена активного раздела
 - **TextField / TextareaField / Fieldset / FieldLabel** — базовый ввод и разметка
 - **MaskedField** — маска, caret, paste, clear; harness — `altum/Test/MaskedField`
-- **actions-extra** — ButtonIcon, ButtonGroup, Overflow, Link, SkipLink, Steps
+- **actions-extra** — Button (icon-only), ButtonGroup, Overflow, Link, SkipLink, Steps
 - **media-calendar** — галерея, lightbox, crop, upload, FileList, Rating, ColorSwatchGroup, Calendar, DateRangeField, DayStrip, CalendarBoard, TimeField
 - **content-charts** — SwipeToAction, PullToRefresh, Timeline, ScrollArea, Item, Card, Bubble, Alert, FocusTrap, charts
-- **content-primitives** — Avatar, Badge, Box, Container/Page, Grid, Layout (Stack/Inline/Split/ControlRow), Skeleton/Spinner, FormMessage, EmptyState, Text, Title, Separator, VisuallyHidden, RelativeTime, Kbd, Marker, Media, AspectRatio, Attachment, DescriptionList, StatBadge, SafeArea
+- **content-primitives** — Avatar, Badge, Box, Container/Page, Grid, Layout (Stack/Inline/Split/ControlRow), Skeleton/Spinner, FormMessage, EmptyState, Text, Title, Separator, VisuallyHidden, LiveRegion, RelativeTime, Kbd, Marker, Media, AspectRatio, Attachment, DescriptionList, StatBadge, SafeArea
 - **hooks** — `useForm` (валидация) и константа `MOBILE_MEDIA_QUERY`
 - **fields-extra** — PasswordField, SearchField, NumberField, PinInput, Slider, DateField, TimeField, SuggestField, Switch
-- **base** — семейные базы из `src/base/` через стенд `altum/Test/Base` (FieldBase Clear, ButtonBase, ToggleControlBase, DialogBase, ChartBase)
+- **base** — семейные базы из `src/base/` через стенд `altum/Test/Base` (TextField Clear, ToggleControlBase, ChartBase)
 
 `visitStory` падает, если iframe показывает оверлей ошибки Storybook или `pageerror`. Визуальные снапшоты всех stories (`all-stories`) поэтому тоже проверяют, что компонент монтируется. Семейные базы `{Family}Base` живут в `src/base/` без каталожных stories: поведение — `tests/behavior/base.spec.ts`, визуально — `Test/Base` и публичные обёртки.
 

@@ -4,7 +4,7 @@ altum использует **CSS custom properties** для всех дизай�
 
 ## Быстрый старт
 
-Оберните приложение в `ThemeProvider` (установка — [README](../README.md)). Стили инжектятся из JS — отдельный `styles.css` не нужен. По умолчанию `applyTo="wrapper"`. Для порталов (`Modal`, `Sheet`, выпадающие панели, `Notification`) используйте **`applyTo="document"`**, чтобы классы и `data-theme` попали на `html` / `body`. Синхронизация идёт в **`useLayoutEffect`**, чтобы первый кадр совпадал с `initialTheme` / контролируемой `theme`.
+Оберните приложение в `ThemeProvider` (установка — [README](../README.md)). Стили инжектятся из JS — отдельный `styles.css` не нужен. По умолчанию `applyTo="wrapper"`. Для порталов (`Modal`, `Sheet`, выпадающие панели, `Notification`) используйте **`applyTo="document"`**, чтобы классы и `data-theme` попали на `html` / `body` и не дублировались на обёртке. Тогда переопределение токенов на `body` доходит до детей. Синхронизация идёт в **`useLayoutEffect`**, чтобы первый кадр совпадал с `initialTheme` / контролируемой `theme`.
 
 ### Контролируемая тема и хранилище
 
@@ -72,7 +72,7 @@ return (
 | `--altum-field-width-default` | Макс. ширина поля при `width="md"` (320px) |
 | `--altum-badge-size-sm` / `md` / `--altum-badge-font-size` / `--altum-badge-font-size-sm` | Компактный chrome счётчика (Badge / Tabs); sm-кегль для числового standalone |
 | `--altum-g-space-1` … `--altum-g-space-9` | Шкала отступов (4px … 36px) |
-| `--altum-shadow-sm` / `--altum-shadow-md` / `--altum-shadow-lg` | Лестница теней (алиасы `--altum-shadow-surface` / `--altum-shadow-dropdown` / deep) |
+| `--altum-shadow-surface` / `--altum-shadow-dropdown` / `--altum-shadow-lg` | Тени карточки, выпадающего слоя и глубокого возвышения |
 
 ### Типографика
 
@@ -97,15 +97,9 @@ return (
 
 | Переменная | По умолчанию | Назначение |
 |------------|--------------|------------|
-| `--altum-dialog-header-padding` | асимметричный `--altum-g-space-4` / `--altum-g-space-3` | Шапка Modal / Sheet |
-| `--altum-dialog-body-padding` | `--altum-g-space-4` | Тело Modal / Sheet |
-| `--altum-dialog-footer-padding` | асимметричный футер | Футер Modal / Sheet |
-| `--altum-dialog-title-size` | `--altum-g-font-size-lg` | Заголовок диалога |
-| `--altum-dialog-title-weight` | `--altum-g-font-weight-semibold` | Начертание заголовка |
 | `--altum-dialog-body-size` | `--altum-g-font-size-base` | Текст тела диалога |
-| `--altum-dialog-max-width-sm` / `md` / `lg` | 420 / 500 / 600 | Modal / Sheet |
+| `--altum-dialog-max-width-sm` / `md` / `lg` | 460 / 620 / 760 | Modal `size`; `lg` ещё потолок Sheet |
 | `--altum-dialog-max-height` | 85vh | Максимальная высота Modal |
-| `--altum-list-max-height` | 280px | Область скролла выпадающего списка |
 | `--altum-option-padding-y` / `--altum-option-padding-x` | `--altum-g-space-2` / `--altum-g-space-3` | Внутренние отступы опции списка |
 
 ### Тоггл / фокус / chrome оверлея
@@ -123,23 +117,22 @@ return (
 | `--altum-toggle-radio-dot*` | sm/md/lg | Размер внутренней точки Radio |
 | `--altum-toggle-align-nudge` | `0.15em` | Оптическое выравнивание бокса тоггла относительно лейбла |
 | `--altum-rating-size-sm` / `md` / `lg` | 16 / 22 / 28 | Размер звезды Rating |
-| `--altum-command-palette-max-width` / `height` | 560 / 520 | Ограничение панели CommandPalette |
-| `--altum-button-group-item-min-sm` / `md` / `lg` | space-6 / 7 / 8 | Мин. ширина ButtonGroup.Item |
+| `--altum-command-palette-max-width` / `height` | как `--altum-dialog-max-width-md` / 520 | Ширина палитры как Modal `md` |
+| `--altum-button-group-item-min-sm` / `md` / `lg` | space-6 / 7 / 8 | Мин. ширина кнопки внутри ButtonGroup |
 | `--altum-focus-ring-width` | 2px | Толщина outline-фокуса (навигация / тогглы / выбор) |
 | `--altum-focus-ring-offset` | light 1px / dark 2px | Смещение outline-фокуса (согласовано с зазором кольца кнопки) |
 | `--altum-focus-ring-color` | light → `--altum-color-input-border-focus`; dark `rgba(248,250,252,0.55)` | Общий цвет outline-фокуса (в dark — светлая hairline, не заливка CTA) |
 | `--altum-button-focus-inner` / `--altum-button-focus-outer` | light 1px / 3px; dark 2px / 4px | Ширины двойного кольца кнопки |
 | `--altum-opacity-disabled` | 0.5 | Отключённые контролы; **Button** — та же заливка × opacity |
 | `--altum-field-disabled-opacity` | 0.8 | Chrome отключённого поля (текст остаётся читаемым) |
-| `--altum-field-label-gap` / `--altum-field-message-gap` | `--altum-g-space-1` | Зазор внешнего лейбла / helper+ошибка |
+| `--altum-field-message-gap` | `--altum-g-space-1` | Зазор helper и ошибки |
 | `--altum-form-helper-indent` | `--altum-g-space-1` | Левый отступ helper / ошибки |
 | `--altum-field-placeholder` / `--altum-color-input-placeholder` | `color-mix(… label 88%, transparent)` | Текст плейсхолдера |
 | `--altum-switch-track-width/height/thumb-size-*` | sm/md/lg | Геометрия Switch (из toggle-box + inset) |
 | `--altum-switch-track-off` | смесь ink на ctrl-bg | Заливка трека выключенного Switch |
 | `--altum-overlay-close-size` | 28px | Хит-зона закрытия Overlay / Alert / Notification |
 | `--altum-overlay-close-icon-size` | 16px | Кегль × в overlay-close |
-| `--altum-overlay-close-fg` / `--altum-overlay-close-fg-hover` / `--altum-overlay-close-bg` / `--altum-overlay-close-bg-hover` | тема | Голый крестик overlay (Modal / Sheet, `ButtonIcon` `diskClose`); chrome только на hover |
-| `--altum-overlay-arrow-size` | 8px | Стрелка Popover / tooltip |
+| `--altum-overlay-close-fg` / `--altum-overlay-close-fg-hover` / `--altum-overlay-close-bg` / `--altum-overlay-close-bg-hover` | тема | Голый крестик overlay (Modal / Sheet, `Button` `data-appearance="diskClose"`); chrome только на hover |
 | `--altum-badge-overhang` | `space-1` + `control-inset` (6px) | Запас раскладки + смещение overlay-бейджа |
 | `--altum-badge-digit-nudge` | `0.5px` | Сдвиг цифры в круглом **Badge** вниз (оптический центр) |
 | `--altum-slider-track-height` | `3px` | Высота трека **Slider** |
@@ -175,31 +168,15 @@ return (
 | Переменная | По умолчанию | Кто использует |
 |------------|--------------|----------------|
 | `--altum-g-z-below` | `-1` | Линия-коннектор Steps |
-| `--altum-g-z-raised` | `1` | Слайдер ButtonGroup / SegmentedControl |
+| `--altum-g-z-raised` | `1` | Бегунок SegmentedControl |
 | `--altum-g-z-raised-above` | `2` | Контент кнопки, контролы NumberField |
 | `--altum-g-z-control` | `5` | Бегунок Slider |
 | `--altum-g-z-local` | `10` | Badge, липкий заголовок таблицы, маска TextField |
 | `--altum-g-z-upload` | `50` | Drag-оверлей UploadZone |
-| `--altum-g-z-overlay` | `1000` | **Sheet** (по умолчанию), портальные панели между chrome и Modal |
-| `--altum-g-z-modal` | `1100` | Modal |
-| `--altum-g-z-tooltip` | `1150` | Tooltip (выше модалки, чтобы подсказки работали в диалогах) |
-| `--altum-g-z-dropdown` | `1200` | Dropdown (выше Modal) |
-| `--altum-g-z-lightbox` | `1250` | ImageLightbox |
-| `--altum-g-z-notification` | `1300` | Тосты Notification; Sheet с `zIndexTier="notification"` |
+| `--altum-g-z-dropdown` | `1200` | PopupSwitch, Tooltip |
+| `--altum-g-z-notification` | `1300` | Тосты Notification |
 
-`Overlay` использует **`purpose`** вместо сырых `zIndex` / `sideOffset`:
-
-| purpose | z-index | sideOffset |
-|---------|---------|------------|
-| `tooltip` | `--altum-g-z-tooltip` | `--altum-overlay-offset-tooltip` (8px) |
-| `popover` | `--altum-g-z-dropdown` | `--altum-overlay-offset-popover` (8px) |
-| `dropdown` | `--altum-g-z-dropdown` | `--altum-overlay-offset-dropdown` (8px) |
-| `modal` | `--altum-g-z-modal` | — |
-| `sheet` | `--altum-g-z-overlay` | — |
-| `lightbox` | `--altum-g-z-lightbox` | — |
-| `notification` | `--altum-g-z-notification` | — |
-
-Переопределение `Sheet`: `zIndexTier` (`overlay` \| `modal` \| `dropdown` \| `lightbox` \| `notification`) или сырой `zIndex`. Меню, открытые внутри приподнятого Sheet, стекаются выше него (`max(--altum-g-z-dropdown, parent + 1)`).
+Modal, Sheet и ImageLightbox не задают z-index: их держит нативный `<dialog>`. Зазор до якоря есть только у **`Popover`** (`--altum-overlay-offset-popover`, 8px): **`Tooltip`** и **`Dropdown`** стоят на нём и отдельного offset не имеют.
 
 ### Акцент (`--altum-color-brand-*`)
 
@@ -240,13 +217,13 @@ return (
 
 ### Опасность / деструктив (`--altum-color-danger-*`)
 
-Действия удаления, состояния ошибки. API кнопки: `status="danger"` вместе с `variant` (`primary` — заливка, `secondary` — контур по поверхности, `tinted` — мягкая смывка).
+Действия удаления, состояния ошибки. API кнопки: `variant="danger"` (заливка) и `variant="danger_tinted"` (мягкая смывка).
 
 | Переменная | Назначение |
 |------------|------------|
 | `--altum-color-danger-bg-solid` | Залитая деструктивная кнопка |
-| `--altum-color-danger-text-secondary` | Текст контурной деструктивной (`variant="secondary"`) |
-| `--altum-color-danger-tint-bg` / `--altum-color-danger-tint-text` | Мягкий tint опасности (`variant="tinted"`) |
+| `--altum-color-danger-text-secondary` | Текст контурной деструктивной |
+| `--altum-color-danger-tint-bg` / `--altum-color-danger-tint-text` | Мягкий tint опасности (`variant="danger_tinted"`) |
 
 ### Контролы формы (`--altum-color-input-*`, `--altum-color-control-*`)
 
@@ -272,10 +249,10 @@ TextField, Checkbox (`mode="task"`), Switch, Radio. Примитивы — ис�
 | Поле | `--altum-color-field-bg`, `--altum-color-field-border`, `--altum-color-border-hover`, `--altum-color-field-text`, `--altum-field-label` |
 | Кнопка (secondary / tinted / ghost) | `--altum-color-button-secondary-bg`, `--altum-color-button-tinted-border`, `--altum-color-button-ghost-text` (muted, не secondary), `--altum-color-button-ghost-hover-bg` |
 | Chip | `--altum-color-chip-secondary-bg`, `--altum-color-chip-tinted-text` |
-| Segmented | `--altum-color-segmented-*`: колодец (`*-track-bg`) + приглушённый thumb (`*-slider-bg`, `--altum-color-segmented-slider-shadow`). Один thumb на secondary / tinted / ghost |
+| Segmented | `--altum-color-segmented-ghost-slider-bg`, `--altum-color-segmented-slider-shadow` |
 | Панель | `--altum-color-panel-bg`, `--altum-color-panel-border`, `--altum-color-panel-bg-hover` |
 | Типографика | `--altum-color-type`, `--altum-color-type-secondary`, `--altum-color-type-tertiary`, `--altum-color-type-muted` (`Title` / `Text`) |
-| Ссылка | `--altum-color-link-color`, `--altum-color-link-secondary`, `--altum-color-link-muted`, `--altum-color-link-danger`, `--altum-color-link-focus-ring` |
+| Ссылка | `--altum-color-link-color`, `--altum-color-link-secondary`, `--altum-color-link-muted`, `--altum-color-link-danger`. Фокус — `--altum-focus-ring-color` |
 | Tooltip | `--altum-color-tooltip-bg` / `--altum-color-tooltip-fg` (инверсия ink, не brand-кнопка) |
 | Индикатор Tabs / Pagination | `--altum-color-tabs-indicator` |
 
@@ -290,7 +267,7 @@ Primary- и danger-кнопки остаются на `--altum-color-brand-*` / 
 | `--altum-color-dropdown-bg` | Modal / Sheet / выпадающие панели (dark: elevated, не overlay полей) |
 | `--altum-color-option-hover` | Фоны при наведении |
 | `--altum-color-selection-fill` / `--altum-color-selection-fill-fg` / `--altum-color-selection-fill-emphasis` | Акцентный выбранный chrome (Segmented primary, Chip primary/tinted active) |
-| `--altum-color-selection-neutral-fill` / `--altum-color-selection-neutral-border` / `--altum-color-selection-neutral-slider` | Мягкий выбранный chrome: Chip secondary active; slider — приподнятый thumb Segmented / ButtonGroup |
+| `--altum-color-selection-neutral-fill` / `--altum-color-selection-neutral-border` / `--altum-color-selection-neutral-slider` | Мягкий выбранный chrome: Chip secondary active; slider — приподнятый thumb SegmentedControl |
 | `--altum-color-empty-icon` | Чернила иллюстрации EmptyState (`--altum-color-text-secondary`) |
 
 ## Тёмная тема

@@ -5,12 +5,14 @@
 
   width: 100%;
   min-width: 0;
-}
+  max-width: var(--altum-scroll-area-max-width, none);
+  max-height: var(--altum-scroll-area-max-height, none);
 
-.y {
-  overflow-x: hidden;
-}
+  &[data-orientation='y'] {
+    overflow-x: hidden;
+  }
 
-.x {
-  overflow-y: hidden;
+  &[data-orientation='x'] {
+    overflow-y: hidden;
+  }
 }

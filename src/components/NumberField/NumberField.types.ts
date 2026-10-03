@@ -1,3 +1,4 @@
+import type {Ref} from 'react';
 import {TextFieldProps} from '../TextField/TextField';
 
 /**
@@ -10,4 +11,6 @@ export interface NumberFieldProps extends Omit<TextFieldProps, 'type' | 'onChang
 	step?: number;
 	/** `undefined` — пустое поле (после очистки или ручного удаления). */
 	onChange?: (val: number | undefined) => void;
+	/** Узел `<input>`. */
+	inputRef?: Ref<HTMLInputElement>;
 }

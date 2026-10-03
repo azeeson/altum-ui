@@ -2,9 +2,9 @@ import type {Meta} from '@storybook/react';
 import React, {useMemo, useState} from 'react';
 import {CalendarBoard} from './CalendarBoard';
 import type {CalendarBoardTask, CalendarBoardProviderProps} from './CalendarBoard.types';
-import {addDays, startOfDay, startOfWeek} from '../Calendar/Calendar.utils';
+import {addDays, getWeekStart, startOfDay} from '../Calendar/Calendar.utils';
 import {Card} from '../Card/Card';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {EmptyState} from '../EmptyState/EmptyState';
 import {componentParameters, story, Story} from '../../storybook/meta';
@@ -12,7 +12,7 @@ import {componentParameters, story, Story} from '../../storybook/meta';
 const STORY_DATE = startOfDay(new Date(2026, 8, 8));
 
 function demoTasks(anchor: Date): CalendarBoardTask[] {
-	const weekStart = startOfWeek(anchor, 1);
+	const weekStart = getWeekStart(anchor, 1);
 	return [
 		{
 			id: 'vacation',
@@ -259,7 +259,7 @@ export const Empty: Story<CalendarBoardProviderProps> = {
 export const OverflowText: Story<CalendarBoardProviderProps> = {
 	render: function OverflowRender() {
 		const tasks = useMemo((): CalendarBoardTask[] => {
-			const weekStart = startOfWeek(STORY_DATE, 1);
+			const weekStart = getWeekStart(STORY_DATE, 1);
 			return [
 				{
 					id: 'long',

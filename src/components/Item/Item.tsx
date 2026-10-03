@@ -1,4 +1,4 @@
-import type {ItemProps, ItemSize} from './Item.types';
+import type {ItemProps} from './Item.types';
 export type {
 	ItemSize,
 	ItemMediaVariant,
@@ -6,27 +6,15 @@ export type {
 	ItemProps,
 } from './Item.types';
 
-import {forwardRef} from 'react';
-import {Flex} from '../../base/Flex';
 import {Box} from '../Box/Box';
+import {Text} from '../Text/Text';
 import flexChild from '../../styles/flexChild.module.css';
 import mediaItem from '../../styles/MediaItem.module.css';
 import styles from './Item.module.css';
-import {cn} from '../../utils/cn';
-import {implicitAs} from '../../utils/implicitAs';
-import type {SpacingValue} from '../../types/spacing';
-
-const ROW_GAP = {
-	sm: 'sm',
-	md: 'md',
-	lg: 'md',
-} as const satisfies Record<ItemSize, SpacingValue>;
-
-const BODY_GAP = {
-	sm: 'none',
-	md: 'var(--altum-control-inset)',
-	lg: 'var(--altum-control-inset)',
-} as const satisfies Record<ItemSize, SpacingValue>;
+import unstyled from '../../styles/unstyledControl.module.css';
+import utilities from '../../styles/utilities.module.css';
+import {cn} from '../../core/utils/cn';
+import {implicitAs} from '../../core/utils/implicitAs';
 
 /**
  * Строка списка: media, title, description, actions.
@@ -41,109 +29,78 @@ const BODY_GAP = {
  *   title="Документы"
  * />
  */
-export const Item = forwardRef<HTMLDivElement, ItemProps>(function Item(
-	{
-		size = 'md',
-		variant = 'ghost',
-		interactive = false,
-		as,
-		media,
-		mediaVariant = 'icon',
-		mediaClassName,
-		title,
-		titleClassName,
-		description,
-		descriptionClassName,
-		actions,
-		actionsClassName,
-		className,
-		onClick,
-		role,
-		...rest
-	},
-	ref,
-) {
+export function Item({
+	size = 'md',
+	variant = 'ghost',
+	interactive = false,
+	wrap = false,
+	as,
+	media,
+	mediaVariant = 'icon',
+	mediaClassName,
+	title,
+	titleClassName,
+	description,
+	descriptionClassName,
+	actions,
+	actionsClassName,
+	className,
+	onClick,
+	role,
+	rootRef,
+	...rest
+}: ItemProps) {
 	const resolvedAs = interactive ? implicitAs(as, onClick, role) : (as ?? 'div');
-
-	if (
-		process.env.NODE_ENV !== 'production'
-		&& interactive
-		&& onClick != null
-		&& resolvedAs !== 'button'
-		&& resolvedAs !== 'a'
-		&& role !== 'button'
-	) {
-		console.warn(
-			'Item: interactive + onClick на корне, который не является кнопкой. '
-			+ 'Передайте as="button" или вложите Button вместо onClick на div.',
-		);
-	}
+	const isButton = resolvedAs === 'button';
 
 	return (
 		<Box
-			ref={ref}
+			rootRef={rootRef}
 			as={resolvedAs}
 			variant={variant}
-			padding='none'
-			className={cn(
-				styles.item,
-				size !== 'md' && styles[size],
-				interactive && styles.interactive,
-				className,
-			)}
+			className={cn(isButton && unstyled.control, styles.item, wrap && mediaItem.wrap, className)}
 			onClick={onClick}
 			role={role}
+			data-size={size !== 'md' ? size : undefined}
+			data-interactive={interactive ? '' : undefined}
 			{...rest}
 		>
-			<Flex
-				align='center'
-				gap={ROW_GAP[size]}
-				wrap={false}
-			>
+			<div className={styles.rowLayout}>
 				{media != null ? (
 					<div
-						className={cn(
-							mediaItem.media,
-							styles.media,
-							styles[`media_${mediaVariant}`],
-							mediaClassName,
-						)}
+						className={cn(utilities.fCenter, mediaItem.media, styles.media, mediaClassName)}
+						data-media-variant={mediaVariant}
 					>
 						{media}
 					</div>
 				) : null}
 				{title != null || description != null ? (
-					<Flex
-						direction='column'
-						gap={BODY_GAP[size]}
-						wrap={false}
-						className={cn(flexChild.grow, styles.body)}
-					>
+					<div className={cn(utilities.fColumn, flexChild.grow, styles.body)}>
 						{title != null ? (
-							<div className={cn(mediaItem.title, styles.title, titleClassName)}>
+							<Text
+								as='div'
+								weight='medium'
+								className={cn(mediaItem.title, styles.title, titleClassName)}
+							>
 								{title}
-							</div>
+							</Text>
 						) : null}
 						{description != null ? (
-							<div className={cn(mediaItem.description, styles.description, descriptionClassName)}>
+							<Text
+								as='div'
+								className={cn(mediaItem.description, styles.description, descriptionClassName)}
+							>
 								{description}
-							</div>
+							</Text>
 						) : null}
-					</Flex>
+					</div>
 				) : null}
 				{actions != null ? (
-					<Flex
-						align='center'
-						gap='xs'
-						wrap={false}
-						className={cn(flexChild.noShrink, styles.actions, actionsClassName)}
-					>
+					<div className={cn(flexChild.noShrink, styles.actions, actionsClassName)}>
 						{actions}
-					</Flex>
+					</div>
 				) : null}
-			</Flex>
+			</div>
 		</Box>
 	);
-});
-
-Item.displayName = 'Item';
+}

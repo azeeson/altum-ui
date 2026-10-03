@@ -2,9 +2,8 @@ import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {Attachment, AttachmentProps} from './Attachment';
 import {Box} from '../Box/Box';
-import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
 import {Card} from '../Card/Card';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Title} from '../Title/Title';
 import {IconDocument} from '../../icons/icons/IconDocument';
@@ -12,13 +11,15 @@ import {IconCross} from '../../icons/icons/IconCross';
 import {IconDownload} from '../../icons/icons/IconDownload';
 import {componentParameters, story, Story} from '../../storybook/meta';
 import {playClick} from '../../storybook/play';
+import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
 
 function RemoveAction({onClick}: {onClick?: () => void}) {
 	return (
 		<ButtonIcon
+			variant='ghost'
 			size='sm'
 			aria-label='Удалить'
-			icon={<IconCross size={14} />}
+			icon={<IconCross size={14}/>}
 			onClick={onClick}
 		/>
 	);
@@ -199,9 +200,10 @@ export const UsageExample: Story<AttachmentProps> = {
 						actions={(
 							<Inline gap='xs'>
 								<ButtonIcon
+									variant='ghost'
 									size='sm'
 									aria-label='Скачать'
-									icon={<IconDownload size={14} />}
+									icon={<IconDownload size={14}/>}
 								/>
 								<RemoveAction />
 							</Inline>
@@ -214,7 +216,7 @@ export const UsageExample: Story<AttachmentProps> = {
 						description='PNG · загрузка…'
 						media={<IconDocument size={18} />}
 					/>
-					<Box variant='muted' padding='sm'>
+					<Box variant='muted' style={{padding: 'var(--altum-g-space-2)'}}>
 						<Text size='xs' color='muted'>
 							Можно перетащить ещё файлы в задачу.
 						</Text>

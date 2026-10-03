@@ -1,5 +1,4 @@
-import {forwardRef} from 'react';
-import {cn} from '../../utils/cn';
+import {cn} from '../../core/utils/cn';
 import styles from './ChartBase.module.css';
 import type {ChartBaseProps} from './ChartBase.types';
 
@@ -8,18 +7,17 @@ import type {ChartBaseProps} from './ChartBase.types';
  *
  * @component
  */
-export const ChartBase = forwardRef<HTMLDivElement, ChartBaseProps>(function ChartBase(
-	{children, className, ...rest},
-	ref,
-) {
-	return (
-		<div
-			ref={ref}
-			className={cn(styles.root, className)}
-			{...rest}
-		>
-			{children}
-		</div>
-	);
-});
-ChartBase.displayName = 'ChartBase';
+export const ChartBase = ({
+	children,
+	className,
+	rootRef,
+	...rest
+}: ChartBaseProps) => (
+	<div
+		ref={rootRef}
+		className={cn(styles.root, className)}
+		{...rest}
+	>
+		{children}
+	</div>
+);

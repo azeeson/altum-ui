@@ -4,7 +4,7 @@ import {CommandPalette, type CommandPaletteProps} from './CommandPalette';
 import type {ActionListGroup, ActionListItem} from '../ActionList/ActionList.types';
 import {Button} from '../Button/Button';
 import {Kbd, KbdGroup} from '../Kbd/Kbd';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
@@ -25,7 +25,7 @@ export default {
 	tags: ['autodocs'],
 	parameters: {
 		...componentParameters(
-			'Командная палитра: поиск + группированный ActionList, FocusTrap, Escape.',
+			'Командная палитра: SearchField + Listbox. Закрытие — Escape у dialog.',
 		),
 		controls: {exclude: ['items', 'groups']},
 	},

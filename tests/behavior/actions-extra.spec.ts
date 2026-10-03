@@ -1,9 +1,9 @@
 import {test, expect} from '@playwright/test';
 import {visitStory} from '../helpers/storybook';
 
-test.describe('ButtonIcon', () => {
+test.describe('Button icon-only', () => {
 	test('рендерит доступную кнопку-иконку', async ({page}) => {
-		await visitStory(page, 'altum-components-buttonicon--playground');
+		await visitStory(page, 'altum-components-button--icon-only');
 		const button = page.getByRole('button', {name: 'Меню'});
 		await expect(button).toBeVisible();
 		await expect(button).toBeEnabled();
@@ -22,7 +22,9 @@ test.describe('ButtonGroup', () => {
 test.describe('Overflow', () => {
 	test('открывает overflow-меню и выполняет скрытое действие', async ({page}) => {
 		await visitStory(page, 'altum-components-overflow--visible-two');
-		await page.getByRole('button', {name: /Ещё|More/i}).click();
+		const more = page.getByRole('button', {name: /Ещё действия|More actions/i});
+		await expect(more).toBeVisible();
+		await more.click();
 		await page.getByRole('option', {name: 'Поделиться'}).click();
 		await expect(page.getByText(/Последнее действие:\s*Поделиться/)).toBeVisible();
 	});
@@ -63,8 +65,8 @@ test.describe('SkipLink', () => {
 
 test.describe('Steps', () => {
 	test('переходит к следующему шагу', async ({page}) => {
-		await visitStory(page, 'altum-components-steps--playground');
+		await visitStory(page, 'altum-components-steps--interactive');
 		await page.getByRole('button', {name: 'Далее'}).click();
-		await expect(page.getByText('Загрузка документов')).toBeVisible();
+		await expect(page.getByRole('button', {name: 'Загрузка документов'})).toBeVisible();
 	});
 });

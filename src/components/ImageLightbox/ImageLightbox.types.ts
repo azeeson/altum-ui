@@ -1,4 +1,4 @@
-import type {ComponentPropsWithoutRef} from 'react';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
 import {ImageGalleryItem} from '../ImageGallery/ImageGallery';
 
 /**
@@ -11,4 +11,6 @@ export interface ImageLightboxProps extends Omit<ComponentPropsWithoutRef<'div'>
 	index?: number;
 	defaultIndex?: number;
 	onIndexChange?: (index: number) => void;
+	/** DOM-узел сцены. */
+	rootRef?: Ref<HTMLDivElement>;
 }

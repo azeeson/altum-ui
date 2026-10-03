@@ -1,174 +1,181 @@
+import type {KeyboardEvent, MouseEvent, MutableRefObject, ReactElement} from 'react';
 import type {MenuProps} from './Menu.types';
 export type {MenuProps, MenuTrigger} from './Menu.types';
 
-import React, {forwardRef, useCallback, useState} from 'react';
-import {Dropdown} from '../Dropdown/Dropdown';
+import {useCallback, useRef} from 'react';
 import {ActionList} from '../ActionList/ActionList';
-import type {ActionListItem} from '../ActionList/ActionList.types';
+import {Dropdown, type DropdownPopup} from '../Dropdown/Dropdown';
 import styles from './Menu.module.css';
-import {cn} from '../../utils/cn';
-import {composeEventHandlers} from '../../utils/composeEvents';
-import {useControlledStateWithCallback} from '../../hooks/useControlledState';
+import {cn} from '../../core/utils/cn';
 import {useLocale} from '../../locales/localeContext';
-import {renderChildren} from '../../utils/renderChildren';
+import {popoverFromInvoker, showPopover} from '../../core/utils/popover';
+import {renderChildren} from '../../core/utils/renderChildren';
+import {ruSlice as ru_menu} from '../../locales/slices/menu.ru';
+
+const localeFallback = {
+	menu: ru_menu,
+};
 
 /**
  * Меню действий: клик по триггеру (`Dropdown` + `ActionList`) или ПКМ / Shift+F10 (`trigger="context"`).
  *
  * @component
  * @example
- * <Menu trigger={<ButtonIcon aria-label="Меню" icon={<IconMenu />} />} items={items} onAction={…} />
+ * <Menu trigger={<ButtonIcon variant='ghost' aria-label="Меню" icon={<IconMenu/>} />} items={items} onAction={…} />
  * @example
  * <Menu trigger="context" items={items}>
  *   <Card>ПКМ здесь</Card>
  * </Menu>
  */
-export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
-	{
-		trigger,
-		children,
-		items,
-		groups,
-		open: controlledOpen,
-		onOpenChange,
-		align = 'right',
-		widthMode = 'content',
-		mobileTitle,
-		filterable = false,
-		filterPlaceholder,
-		emptyText,
-		onAction,
-		className,
-		tabIndex,
-		'aria-label': ariaLabel,
-		onContextMenu,
-		onKeyDown,
-		...rest
-	},
-	ref,
-) {
-	const {t} = useLocale();
-	const isContext = trigger === 'context';
-	const listAria = ariaLabel ?? (isContext ? t('menu.contextAriaLabel') : t('menu.ariaLabel'));
-	const resolvedMobileTitle = mobileTitle ?? t('menu.mobileTitle');
+export function Menu({
+	trigger,
+	children,
+	items,
+	groups,
+	onOpenChange,
+	popupRef: popupRefProp,
+	align = 'right',
+	widthMode,
+	mobileTitle,
+	emptyText,
+	onAction,
+	className,
+	tabIndex,
+	'aria-label': ariaLabel,
+	onContextMenu,
+	onKeyDown,
+	rootRef,
+	...rest
+}: MenuProps) {
+	const {t} = useLocale(localeFallback);
+	const context = trigger === 'context';
+	const ownRef = useRef<DropdownPopup | null>(null);
+	const anchorRef = useRef<HTMLSpanElement | null>(null);
+	const bindPopup = useCallback((node: DropdownPopup | null) => {
+		ownRef.current = node;
+		if (typeof popupRefProp === 'function') popupRefProp(node);
+		else if (popupRefProp) (popupRefProp as MutableRefObject<DropdownPopup | null>).current = node;
+	}, [popupRefProp]);
 
-	const [isOpen, setOpen] = useControlledStateWithCallback(controlledOpen, false, onOpenChange);
-	const [coords, setCoords] = useState({
-		top: 0,
-		left: 0,
-	});
-
-	const handleAction = useCallback((item: ActionListItem) => {
-		onAction?.(item);
-		setOpen(false);
-	}, [onAction, setOpen]);
-
-	const openAt = (top: number, left: number) => {
-		setCoords({
-			top,
-			left,
-		});
-		setOpen(true);
+	const positionPanel = (top: number, left: number) => {
+		const panel = popoverFromInvoker(anchorRef.current);
+		if (!panel) return panel;
+		panel.style.setProperty('--altum-menu-x', `${left}px`);
+		panel.style.setProperty('--altum-menu-y', `${top}px`);
+		return panel;
 	};
 
-	const handleContextMenu = composeEventHandlers(onContextMenu, (event: React.MouseEvent<HTMLDivElement>) => {
-		event.preventDefault();
-		let x = event.clientX;
-		let y = event.clientY;
-		if (!x && !y) {
-			const rect = event.currentTarget.getBoundingClientRect();
-			x = rect.left;
-			y = rect.bottom;
+	const openPanel = (panel: HTMLElement | null) => {
+		if (panel) showPopover(panel);
+		else ownRef.current?.show();
+	};
+
+	/**
+	 * ПКМ: Safari шлёт contextmenu на mousedown (кнопка ещё зажата) —
+	 * синхронный / microtask showPopover закрывает `popover=auto` на pointerup.
+	 * Chrome шлёт contextmenu уже после pointerup (`buttons === 0`) — открываем сразу.
+	 */
+	const openAt = (top: number, left: number, buttons = 0) => {
+		const panel = positionPanel(top, left);
+		if (buttons & 2) {
+			const onUp = () => {
+				window.removeEventListener('pointerup', onUp, true);
+				window.removeEventListener('pointercancel', onUp, true);
+				openPanel(panel);
+			};
+			window.addEventListener('pointerup', onUp, true);
+			window.addEventListener('pointercancel', onUp, true);
+			return;
 		}
-		openAt(y, x);
-	});
+		queueMicrotask(() => openPanel(panel));
+	};
 
-	const handleKeyDown = composeEventHandlers(onKeyDown, (event: React.KeyboardEvent<HTMLDivElement>) => {
-		const isContextKey = event.key === 'ContextMenu'
-			|| (event.shiftKey && event.key === 'F10');
-		if (!isContextKey) return;
-		event.preventDefault();
-		const active = document.activeElement;
-		const anchor = active instanceof HTMLElement && event.currentTarget.contains(active)
-			? active
-			: event.currentTarget;
-		const rect = anchor.getBoundingClientRect();
-		openAt(rect.bottom, rect.left);
-	});
-
-	const list = (
-		<ActionList
-			aria-label={listAria}
-			items={items}
-			groups={groups}
-			filterable={filterable}
-			filterPlaceholder={filterPlaceholder}
-			emptyText={emptyText}
-			onAction={handleAction}
-		/>
-	);
-
-	if (isContext) {
-		return (
-			<>
-				<div
-					ref={ref}
-					className={cn(styles.target, className)}
-					{...rest}
-					tabIndex={tabIndex ?? 0}
-					onContextMenu={handleContextMenu}
-					onKeyDown={handleKeyDown}
-				>
-					{children}
-				</div>
-				<Dropdown
-					className={styles.host}
-					open={isOpen}
-					onOpenChange={setOpen}
-					popupRole='none'
-					align='left'
-					widthMode={widthMode}
-					mobileTitle={resolvedMobileTitle}
-					panelClassName={styles.menu}
-					renderTrigger={(props, triggerRef) => (
-						<span
-							{...props}
-							ref={triggerRef}
-							tabIndex={-1}
-							className={styles.anchor}
-							style={{
-								top: coords.top,
-								left: coords.left,
-							}}
-						/>
-					)}
-				>
-					{list}
-				</Dropdown>
-			</>
-		);
-	}
-
-	return (
+	const dropdown = (
 		<Dropdown
-			ref={ref}
-			className={className}
-			open={isOpen}
-			onOpenChange={setOpen}
+			rootRef={context ? undefined : rootRef}
+			className={context ? styles.host : className}
+			popupRef={bindPopup}
+			onOpenChange={onOpenChange}
 			popupRole='none'
-			align={align}
+			align={context ? 'left' : align}
 			widthMode={widthMode}
-			mobileTitle={resolvedMobileTitle}
-			renderTrigger={(props, triggerRef) => renderChildren({
-				children: trigger as React.ReactElement,
-				props,
-				contentRef: triggerRef,
-			})}
-			{...rest}
+			mobileTitle={mobileTitle ?? t('menu.mobileTitle')}
+			panelClassName={context ? styles.menu : undefined}
+			trigger={(props, triggerRef) => {
+				if (!context) {
+					return renderChildren({
+						children: trigger as ReactElement,
+						props,
+						contentRef: triggerRef,
+					});
+				}
+				const {popovertarget} = props;
+				return (
+					<span
+						ref={(node) => {
+							anchorRef.current = node;
+							triggerRef(node);
+						}}
+						tabIndex={-1}
+						className={styles.anchor}
+						aria-hidden
+						popovertarget={popovertarget}
+					/>
+				);
+			}}
+			{...(context ? {} : rest)}
 		>
-			{list}
+			<ActionList
+				aria-label={ariaLabel ?? (context ? t('menu.contextAriaLabel') : t('menu.ariaLabel'))}
+				items={items}
+				groups={groups}
+				emptyText={emptyText}
+				onAction={(item) => {
+					onAction?.(item);
+					ownRef.current?.hide();
+				}}
+			/>
 		</Dropdown>
 	);
-});
 
-Menu.displayName = 'Menu';
+	if (!context) return dropdown;
+
+	return (
+		<>
+			<div
+				ref={rootRef}
+				className={cn(styles.target, className)}
+				{...rest}
+				tabIndex={tabIndex ?? 0}
+				onContextMenu={(event: MouseEvent<HTMLDivElement>) => {
+					onContextMenu?.(event);
+					if (event.defaultPrevented) return;
+					event.preventDefault();
+					let x = event.clientX;
+					let y = event.clientY;
+					if (!x && !y) {
+						const rect = event.currentTarget.getBoundingClientRect();
+						x = rect.left;
+						y = rect.bottom;
+					}
+					openAt(y, x, event.buttons);
+				}}
+				onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {
+					onKeyDown?.(event);
+					if (event.defaultPrevented) return;
+					if (event.key !== 'ContextMenu' && !(event.shiftKey && event.key === 'F10')) return;
+					event.preventDefault();
+					const active = document.activeElement;
+					const node = active instanceof HTMLElement && event.currentTarget.contains(active)
+						? active
+						: event.currentTarget;
+					const rect = node.getBoundingClientRect();
+					openAt(rect.bottom, rect.left, 0);
+				}}
+			>
+				{children}
+			</div>
+			{dropdown}
+		</>
+	);
+}

@@ -1,5 +1,5 @@
 import {test, expect} from '@playwright/test';
-import {parseKeyboardShortcut} from '../../src/utils/keyboardShortcut';
+import {parseKeyboardShortcut} from '../../src/core/utils/keyboardShortcut';
 
 test.describe('parseKeyboardShortcut', () => {
 	test('разбирает аккорды с модификаторами', () => {

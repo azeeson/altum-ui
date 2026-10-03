@@ -2,7 +2,7 @@ import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {Slider, type RangeValue, type SliderProps} from './Slider';
 import {Text} from '../Text/Text';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Card} from '../Card/Card';
 import {Button} from '../Button/Button';
 import {componentParameters, story, Story} from '../../storybook/meta';

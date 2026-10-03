@@ -10,8 +10,49 @@ import {
 import {NotificationProvider, notify} from './toast';
 import {Button} from '../Button/Button';
 import {Text} from '../Text/Text';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {componentParameters, story, Story} from '../../storybook/meta';
+
+/** Карточки разной высоты: одна строка, короткое описание, кнопка, длинный текст. */
+const STACK_HEIGHTS: Array<Omit<NotificationItem, 'id' | 'duration'>> = [
+	{
+		title: 'Сохранено',
+		variant: 'success',
+	},
+	{
+		title: 'Файл загружен',
+		description: 'report-q3.pdf · 2.4 MB',
+		variant: 'info',
+	},
+	{
+		title: 'Нужно внимание',
+		description: 'Проверьте доступ к API и срок действия ключа.',
+		variant: 'warning',
+		actions: [
+			{
+				label: 'Открыть',
+				variant: 'secondary',
+				onClick: () => undefined,
+			},
+		],
+	},
+	{
+		title: 'Не удалось синхронизировать очень длинное название производственного регламента',
+		description: 'Проверьте подключение к сети, права доступа к архиву и повторите попытку через несколько минут. Черновик сохранён локально и не потеряется.',
+		variant: 'error',
+		actions: [
+			{
+				label: 'Повторить',
+				onClick: () => undefined,
+			},
+			{
+				label: 'Отмена',
+				variant: 'secondary',
+				onClick: () => undefined,
+			},
+		],
+	},
+];
 
 const POSITIONS: NotificationPosition[] = [
 	'top-left',
@@ -211,8 +252,7 @@ export const ImperativeNotify: Story<Record<string, never>> = {
 					</Button>
 					<Button
 						size='sm'
-						variant='primary'
-						status='danger'
+						variant='danger'
 						onClick={() => notify.error('Ошибка')}
 					>
 						error
@@ -227,61 +267,29 @@ export const ImperativeNotify: Story<Record<string, never>> = {
 export const Stacked: Story<Record<string, never>> = {
 	render: function StackedRender() {
 		const [list, setList] = useState<NotificationItem[]>([]);
-		const [position, setPosition] = useState<NotificationPosition>('bottom-right');
+		const [position, setPosition] = useState<NotificationPosition>('top-right');
 
 		const pushMany = () => {
 			const base = Date.now();
-			setList([
-				{
-					id: `${base}-1`,
-					title: 'Событие создано',
-					description: 'Воскресенье, 3 декабря 2023, 9:00',
-					variant: 'info',
-					duration: 0,
-					actions: [
-						{
-							label: 'Отменить',
-							variant: 'secondary',
-							onClick: () => undefined
-						}
-					],
-				},
-				{
-					id: `${base}-2`,
-					title: 'Файл загружен',
-					description: 'report-q3.pdf · 2.4 MB',
-					variant: 'success',
-					duration: 0,
-				},
-				{
-					id: `${base}-3`,
-					title: 'Нужно внимание',
-					description: 'Проверьте доступ к API',
-					variant: 'warning',
-					duration: 0,
-				},
-				{
-					id: `${base}-4`,
-					title: 'Синхронизация',
-					description: 'Фоновый процесс…',
-					variant: 'info',
-					duration: 0,
-				},
-			]);
+			setList(STACK_HEIGHTS.map((item, index) => ({
+				...item,
+				id: `${base}-${index}`,
+				duration: 0,
+			})));
 		};
 
 		const pushNew = () => {
-			const id = Date.now().toString();
-			setList((prev) => [
-				...prev,
-				{
-					id,
-					title: 'Новое уведомление',
-					description: 'Всегда сверху стопки',
-					variant: 'success',
-					duration: 0,
-				},
-			]);
+			setList((prev) => {
+				const item = STACK_HEIGHTS[prev.length % STACK_HEIGHTS.length];
+				return [
+					...prev,
+					{
+						...item,
+						id: Date.now().toString(),
+						duration: 0,
+					},
+				];
+			});
 		};
 
 		return (
@@ -333,7 +341,7 @@ export const Stacked: Story<Record<string, never>> = {
 			</div>
 		);
 	},
-	parameters: story('Стопка с анимацией раскрытия; `position` — угол или центр сверху/снизу.'),
+	parameters: story('Стопка карточек разной высоты; `position` — угол или центр сверху/снизу.'),
 };
 
 export const OverflowText: Story<NotificationProps> = {

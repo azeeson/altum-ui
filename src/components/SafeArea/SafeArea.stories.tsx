@@ -1,7 +1,7 @@
 import type {Meta} from '@storybook/react';
 import React from 'react';
 import {SafeArea, SafeAreaProps} from './SafeArea';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 

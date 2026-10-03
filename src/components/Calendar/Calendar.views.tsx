@@ -1,82 +1,80 @@
-import React, {forwardRef, useRef} from 'react';
-import {
-	isDateInRange,
-	isSameDay,
-	isToday,
-	selectNextRange,
-} from './Calendar.utils';
-import {focusElement, getGridIndex} from '../../utils/a11y';
-import {cn} from '../../utils/cn';
-import {useLocale} from '../../locales/localeContext';
+import type {ComponentPropsWithoutRef, MouseEvent, ReactNode, Ref} from 'react';
+import {isDateInRange, isSameDay, selectNextRange} from './Calendar.utils';
+import {formatLocalDate, parseLocalDate} from '../../core/utils/date';
+import {cn} from '../../core/utils/cn';
+import {handleGridFocusKeyDown} from '../../core/utils/keyboard';
 import {useCalendarContext} from './Calendar.context';
-import {
-	type CalendarDayCellRenderProps,
-	YEARS_PER_PAGE,
-} from './Calendar.types';
+import {type CalendarDayCellRenderProps, YEARS_PER_PAGE} from './Calendar.types';
 import unstyled from '../../styles/unstyledControl.module.css';
 import chrome from '../../styles/calendarChrome.module.css';
 import styles from './Calendar.module.css';
 
+const DAY_COLUMNS = 7;
+
 type PeriodItem = {
 	key: string | number;
-	label: React.ReactNode;
+	label: string | number;
 	ariaLabel: string;
 	selected: boolean;
 	current: boolean;
-	onSelect: () => void;
+	year?: number;
+	monthIndex?: number;
 };
 
-const PeriodGrid = forwardRef<HTMLDivElement, {
+const PeriodGrid = ({
+	className,
+	label,
+	columnsClass,
+	items,
+	rootRef,
+	onClick,
+	...rest
+}: {
 	className?: string;
 	label: string;
 	columnsClass: string;
 	items: PeriodItem[];
-} & React.ComponentPropsWithoutRef<'div'>>(function PeriodGrid(
-	{className, label, columnsClass, items, ...rest},
-	ref,
-) {
-	return (
-		<div
-			ref={ref}
-			className={cn(styles.calendarPeriodGrid, columnsClass, className)}
-			role='grid'
-			aria-label={label}
-			{...rest}
-		>
-			{items.map((item) => (
-				<button
-					key={item.key}
-					type='button'
-					role='gridcell'
-					className={cn(
-						unstyled.control,
-						chrome.cell,
-						styles.periodCell,
-						item.selected ? chrome.selected : '',
-						item.current && !item.selected ? chrome.today : '',
-					)}
-					aria-selected={item.selected}
-					aria-label={item.ariaLabel}
-					onClick={item.onSelect}
-				>
-					{item.label}
-				</button>
-			))}
-		</div>
-	);
-});
+	rootRef?: Ref<HTMLDivElement>;
+} & ComponentPropsWithoutRef<'div'>) => (
+	<div
+		ref={rootRef}
+		{...rest}
+		className={cn(styles.calendarPeriodGrid, columnsClass, className)}
+		role='grid'
+		aria-label={label}
+		onClick={onClick}
+	>
+		{items.map((item) => (
+			<button
+				key={item.key}
+				type='button'
+				role='gridcell'
+				className={cn(unstyled.control, styles.periodCell)}
+				data-selected={item.selected ? '' : undefined}
+				data-today={item.current ? '' : undefined}
+				data-year={item.year}
+				data-index={item.monthIndex}
+				aria-selected={item.selected}
+				aria-label={item.ariaLabel}
+			>
+				{item.label}
+			</button>
+		))}
+	</div>
+);
 
-export const CalendarDaysPanel = forwardRef<HTMLDivElement, {
+export const CalendarDaysPanel = ({
+	className,
+	renderDayCell,
+	rootRef,
+	...rest
+}: {
 	className?: string;
-	renderDayCell?: (props: CalendarDayCellRenderProps) => React.ReactNode;
-} & React.ComponentPropsWithoutRef<'div'>>(function CalendarDaysPanel(
-	{className, renderDayCell, ...rest},
-	ref,
-) {
-	const {messages} = useLocale();
-	const months = messages.calendar.months;
-	const weekdays = messages.calendar.weekdaysShort;
+	renderDayCell?: (props: CalendarDayCellRenderProps) => ReactNode;
+	rootRef?: Ref<HTMLDivElement>;
+} & ComponentPropsWithoutRef<'div'>) => {
 	const {
+		calendar,
 		selectionMode,
 		value,
 		onChange,
@@ -84,179 +82,183 @@ export const CalendarDaysPanel = forwardRef<HTMLDivElement, {
 		onRangeChange,
 		year,
 		month,
-		days,
 		shiftView,
 	} = useCalendarContext('Calendar.Body');
-	const gridRef = useRef<HTMLDivElement>(null);
 	const isRange = selectionMode === 'range';
 	const focusAnchor = isRange ? (rangeValue.end ?? rangeValue.start) : value;
+	const lead = (new Date(year, month, 1).getDay() + 6) % 7;
+	const count = new Date(year, month + 1, 0).getDate();
+	const today = new Date();
+	const monthName = calendar.months[month] ?? '';
+	const openFirst = !focusAnchor;
+
+	const handleClick = (event: MouseEvent<HTMLDivElement>) => {
+		const target = event.target;
+		if (!(target instanceof Element)) return;
+		const cell = target.closest('[role="gridcell"]');
+		if (!cell || !event.currentTarget.contains(cell)) return;
+		const dateStr = cell.getAttribute('data-date');
+		if (!dateStr) return;
+		const date = parseLocalDate(dateStr);
+		if (!date) return;
+		if (isRange) onRangeChange?.(selectNextRange(rangeValue, date));
+		else onChange(date);
+	};
 
 	return (
 		<div
-			ref={ref}
-			className={cn(styles.calendarBody, className)}
+			ref={rootRef}
+			className={className}
 			{...rest}
 		>
 			<div className={cn(chrome.weekGrid, styles.calendarWeekdays)} aria-hidden='true'>
-				{weekdays.map((name) => (
+				{calendar.weekdaysShort.map((name) => (
 					<div key={name}>
 						{name}
 					</div>
 				))}
 			</div>
 			<div
-				ref={gridRef}
 				className={chrome.weekGrid}
 				role='grid'
-				aria-label={`${months[month] ?? ''} ${year}`}
+				aria-label={`${monthName} ${year}`}
+				onClick={handleClick}
 				onKeyDown={(event) => {
 					if (event.key === 'PageUp' || event.key === 'PageDown') {
 						event.preventDefault();
 						shiftView(event.key === 'PageUp' ? -1 : 1);
 						return;
 					}
-					const buttons = Array.from(
-						gridRef.current?.querySelectorAll<HTMLButtonElement>('button') ?? [],
-					);
-					const next = getGridIndex(
-						buttons.indexOf(document.activeElement as HTMLButtonElement),
-						buttons.length,
-						event.key,
-						7,
-					);
-					if (next === null) return;
-					event.preventDefault();
-					focusElement(buttons[next]);
+					handleGridFocusKeyDown(event, DAY_COLUMNS);
 				}}
 			>
-				{days.map((dayItem, index) => {
-					if (dayItem.isEmpty || !dayItem.date) {
-						return (
-							<div
-								key={`empty-${index}`}
-								className={styles.dayEmpty}
-								role='presentation'
-							/>
-						);
-					}
-
-					const isRangeStart = !!(isRange && rangeValue.start && isSameDay(rangeValue.start, dayItem.date));
-					const isRangeEnd = !!(isRange && rangeValue.end && isSameDay(rangeValue.end, dayItem.date));
-					const inRange = !!(isRange && isDateInRange(dayItem.date, rangeValue.start, rangeValue.end));
+				{Array.from({length: lead}, (_, index) => (
+					<div
+						key={`empty-${index}`}
+						className={styles.dayEmpty}
+						role='presentation'
+					/>
+				))}
+				{Array.from({length: count}, (_, index) => {
+					const day = index + 1;
+					const date = new Date(year, month, day);
+					const isRangeStart = !!(isRange && rangeValue.start && isSameDay(rangeValue.start, date));
+					const isRangeEnd = !!(isRange && rangeValue.end && isSameDay(rangeValue.end, date));
+					const inRange = !!(isRange && isDateInRange(date, rangeValue.start, rangeValue.end));
 					const isSelected = isRange
 						? (isRangeStart || isRangeEnd)
-						: (value ? isSameDay(value, dayItem.date) : false);
-					const today = isToday(dayItem.date);
-					const isFocusedDay = isSelected || (!focusAnchor && days.findIndex((item) => !item.isEmpty && item.date) === index);
+						: (value ? isSameDay(value, date) : false);
+					const todayCell = isSameDay(date, today);
 
 					return (
 						<button
-							key={`day-${dayItem.day}-${dayItem.date.getTime()}`}
+							key={`day-${day}`}
 							type='button'
 							role='gridcell'
-							tabIndex={isFocusedDay ? 0 : -1}
-							className={cn(
-								unstyled.control,
-								chrome.cell,
-								styles.dayCell,
-								isSelected ? chrome.selected : '',
-								inRange ? styles.dayInRange : '',
-								isRangeStart ? styles.dayRangeStart : '',
-								isRangeEnd ? styles.dayRangeEnd : '',
-								today ? chrome.today : '',
-							)}
+							tabIndex={isSelected || (openFirst && day === 1) ? 0 : -1}
+							className={cn(unstyled.control, styles.dayCell)}
+							data-date={formatLocalDate(date)}
+							data-selected={isSelected ? '' : undefined}
+							data-today={todayCell ? '' : undefined}
+							data-in-range={inRange ? '' : undefined}
+							data-range-start={isRangeStart ? '' : undefined}
+							data-range-end={isRangeEnd ? '' : undefined}
 							aria-selected={isSelected || inRange}
-							aria-current={today ? 'date' : undefined}
-							aria-label={`${dayItem.day} ${months[month] ?? ''} ${year}`}
-							onClick={() => {
-								if (isRange) {
-									onRangeChange?.(selectNextRange(rangeValue, dayItem.date!));
-								} else {
-									onChange(dayItem.date!);
-								}
-							}}
+							aria-current={todayCell ? 'date' : undefined}
+							aria-label={`${day} ${monthName} ${year}`}
 						>
 							{renderDayCell
 								? renderDayCell({
-									date: dayItem.date,
-									day: dayItem.day,
+									date,
+									day,
 									isSelected,
-									isToday: today,
+									isToday: todayCell,
 									rangeStart: isRangeStart,
 									rangeEnd: isRangeEnd,
 									inRange,
 								})
-								: dayItem.day}
+								: day}
 						</button>
 					);
 				})}
 			</div>
 		</div>
 	);
-});
+};
 
-export const CalendarMonthsPanel = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<'div'>>(
-	function CalendarMonthsPanel({className, ...rest}, ref) {
-		const {messages, t} = useLocale();
-		const months = messages.calendar.months;
-		const monthsShort = messages.calendar.monthsShort;
-		const {value, year, month, selectMonth} = useCalendarContext('Calendar.Body');
-		const selectedMonth = value && value.getFullYear() === year ? value.getMonth() : null;
-		const today = new Date();
-		const isCurrentYear = today.getFullYear() === year;
+export const CalendarPeriodPanel = ({
+	className,
+	rootRef,
+	onClick,
+	...rest
+}: {
+	rootRef?: Ref<HTMLDivElement>;
+} & ComponentPropsWithoutRef<'div'>) => {
+	const {
+		calendar,
+		t,
+		value,
+		year,
+		month,
+		yearPageStart,
+		view,
+		selectMonth,
+		selectYear,
+	} = useCalendarContext('Calendar.Body');
+	const today = new Date();
+	const isYears = view === 'years';
+	const selectedMonth = value && value.getFullYear() === year ? value.getMonth() : null;
 
-		return (
-			<PeriodGrid
-				ref={ref}
-				className={className}
-				label={t('calendar.monthsOfYear', {year})}
-				columnsClass={styles.calendarMonths}
-				items={monthsShort.map((name, index) => {
-					const selected = selectedMonth === index || (!value && month === index);
-					return {
-						key: name,
-						label: name,
-						ariaLabel: `${months[index] ?? ''} ${year}`,
-						selected,
-						current: isCurrentYear && today.getMonth() === index,
-						onSelect: () => selectMonth(index),
-					};
-				})}
-				{...rest}
-			/>
-		);
-	},
-);
+	const handleClick = (event: MouseEvent<HTMLDivElement>) => {
+		const target = event.target;
+		if (!(target instanceof Element)) return;
+		const cell = target.closest('[role="gridcell"]');
+		if (!cell || !event.currentTarget.contains(cell)) return;
+		const yearAttr = cell.getAttribute('data-year');
+		if (yearAttr != null) {
+			selectYear(Number(yearAttr));
+			return;
+		}
+		const indexAttr = cell.getAttribute('data-index');
+		if (indexAttr != null) selectMonth(Number(indexAttr));
+	};
 
-export const CalendarYearsPanel = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<'div'>>(
-	function CalendarYearsPanel({className, ...rest}, ref) {
-		const {t} = useLocale();
-		const {value, year, yearPageStart, selectYear} = useCalendarContext('Calendar.Body');
-		const todayYear = new Date().getFullYear();
-
-		return (
-			<PeriodGrid
-				ref={ref}
-				className={className}
-				label={t('calendar.yearsRange', {
+	return (
+		<PeriodGrid
+			rootRef={rootRef}
+			className={className}
+			label={isYears
+				? t('calendar.yearsRange', {
 					start: yearPageStart,
 					end: yearPageStart + YEARS_PER_PAGE - 1,
-				})}
-				columnsClass={styles.calendarYears}
-				items={Array.from({length: YEARS_PER_PAGE}, (_, index) => {
+				})
+				: t('calendar.monthsOfYear', {year})}
+			columnsClass={isYears ? styles.calendarYears : styles.calendarMonths}
+			onClick={(event) => {
+				onClick?.(event);
+				if (!event.defaultPrevented) handleClick(event);
+			}}
+			items={isYears
+				? Array.from({length: YEARS_PER_PAGE}, (_, index) => {
 					const itemYear = yearPageStart + index;
-					const selected = (value?.getFullYear() ?? year) === itemYear;
 					return {
 						key: itemYear,
 						label: itemYear,
 						ariaLabel: `${itemYear}`,
-						selected,
-						current: todayYear === itemYear,
-						onSelect: () => selectYear(itemYear),
+						selected: (value?.getFullYear() ?? year) === itemYear,
+						current: today.getFullYear() === itemYear,
+						year: itemYear,
 					};
-				})}
-				{...rest}
-			/>
-		);
-	},
-);
+				})
+				: calendar.monthsShort.map((name, index) => ({
+					key: name,
+					label: name,
+					ariaLabel: `${calendar.months[index] ?? ''} ${year}`,
+					selected: selectedMonth === index || (!value && month === index),
+					current: today.getFullYear() === year && today.getMonth() === index,
+					monthIndex: index,
+				}))}
+			{...rest}
+		/>
+	);
+};

@@ -5,7 +5,7 @@ import {componentParameters, story, Story} from '../../storybook/meta';
 import {Button} from '../Button/Button';
 import {Card} from '../Card/Card';
 import {Text} from '../Text/Text';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {SearchField} from '../SearchField/SearchField';
 
 const OPTIONS = [
@@ -91,7 +91,7 @@ export default {
 	component: Listbox,
 	tags: ['autodocs'],
 	parameters: componentParameters(
-		'Список опций с клавиатурной навигацией и группами. Используется в Select, CustomSelect, SuggestField, ActionList.',
+		'Список опций с клавиатурной навигацией и группами. Используется в Select, SuggestField, ActionList.',
 	),
 	argTypes: {
 		multiple: {control: 'boolean'},
@@ -105,7 +105,6 @@ export default {
 		},
 		noOptionsText: {control: 'text'},
 		onSelect: {action: 'onSelect'},
-		onHighlightChange: {action: 'onHighlightChange'},
 	},
 } satisfies Meta<typeof Listbox>;
 
@@ -266,11 +265,108 @@ export const Groups: Story<ListboxProps> = {
 	parameters: story('Группы: плоский `options` + `groups` + `groupId`; навигация по flat-индексу.'),
 };
 
+export const Separators: Story<ListboxProps> = {
+	render: function SeparatorsRender() {
+		const [value, setValue] = useState<string[]>(['dev']);
+		return (
+			<Stack gap='md'>
+				<div style={frameStyle}>
+					<Listbox
+						aria-label='Роль'
+						options={[
+							{
+								type: 'separator',
+								id: 'start'
+							},
+							{
+								value: 'design',
+								label: 'Дизайн'
+							},
+							{type: 'separator'},
+							{
+								value: 'dev',
+								label: 'Разработка'
+							},
+							{
+								value: 'qa',
+								label: 'Тестирование'
+							},
+							{
+								type: 'separator',
+								id: 'end'
+							},
+						]}
+						value={value}
+						onSelect={(optionValue) => setValue([optionValue])}
+					/>
+				</div>
+				<div style={{
+					...frameStyle,
+					maxWidth: 300,
+				}}
+				>
+					<Listbox
+						aria-label='Стек'
+						options={[
+							{
+								value: 'react',
+								label: 'React',
+								groupId: 'frontend'
+							},
+							{
+								type: 'separator',
+								groupId: 'frontend'
+							},
+							{
+								value: 'vue',
+								label: 'Vue',
+								groupId: 'frontend'
+							},
+							{
+								value: 'node',
+								label: 'Node.js',
+								groupId: 'backend'
+							},
+						]}
+						groups={[
+							{
+								id: 'frontend',
+								label: 'Фронтенд'
+							},
+							{
+								id: 'backend',
+								label: 'Бэкенд'
+							},
+						]}
+						value={['react']}
+					/>
+				</div>
+			</Stack>
+		);
+	},
+	parameters: story('Линия в начале, между пунктами и в конце; внутри группы — по `groupId`.'),
+};
+
 export const HighlightNavigation: Story<ListboxProps> = {
 	render: function HighlightRender() {
-		const listRef = useRef<ListboxHandle>(null);
+		const listRef = useRef<ListboxHandle | null>(null);
+		const listboxId = 'listbox-highlight-demo';
 		const [value, setValue] = useState<string[]>([]);
 		const [activeId, setActiveId] = useState<string | undefined>();
+
+		const move = (step: 1 | -1) => {
+			const root = document.getElementById(listboxId);
+			const options = Array.from(root?.querySelectorAll<HTMLElement>('[role="option"]:not([disabled])') ?? []);
+			if (options.length === 0) return;
+			const current = activeId ? options.findIndex((option) => option.id === activeId) : -1;
+			const index = current < 0
+				? (step > 0 ? 0 : options.length - 1)
+				: (current + step + options.length) % options.length;
+			const next = options[index];
+			if (!next?.id) return;
+			setActiveId(next.id);
+			listRef.current?.scrollToId(next.id);
+		};
 
 		return (
 			<div style={{
@@ -287,27 +383,24 @@ export const HighlightNavigation: Story<ListboxProps> = {
 					<Button
 						size='sm'
 						variant='secondary'
-						onClick={() => {
-							listRef.current?.highlightPrev();
-							setActiveId(listRef.current?.getActiveDescendantId());
-						}}
+						onClick={() => move(-1)}
 					>
 						↑
 					</Button>
 					<Button
 						size='sm'
 						variant='secondary'
-						onClick={() => {
-							listRef.current?.highlightNext();
-							setActiveId(listRef.current?.getActiveDescendantId());
-						}}
+						onClick={() => move(1)}
 					>
 						↓
 					</Button>
 					<Button
 						size='sm'
 						variant='primary'
-						onClick={() => listRef.current?.selectHighlighted()}
+						onClick={() => {
+							if (!activeId) return;
+							document.getElementById(activeId)?.click();
+						}}
 					>
 						Выбрать
 					</Button>
@@ -323,22 +416,19 @@ export const HighlightNavigation: Story<ListboxProps> = {
 				</span>
 				<div style={frameStyle}>
 					<Listbox
-						ref={listRef}
+						controlRef={listRef}
+						id={listboxId}
 						aria-label='Опции'
 						options={OPTIONS}
 						value={value}
 						navigation='highlight'
-						defaultHighlightedIndex={0}
-						onHighlightChange={() => {
-							setActiveId(listRef.current?.getActiveDescendantId());
-						}}
 						onSelect={(optionValue) => setValue([optionValue])}
 					/>
 				</div>
 			</div>
 		);
 	},
-	parameters: story('Режим highlight + imperative handle (как у SuggestField).'),
+	parameters: story('Режим highlight: подсветка через controlRef.scrollToId, фокус остаётся снаружи.'),
 };
 
 export const Empty: Story<ListboxProps> = {

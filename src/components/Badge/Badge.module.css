@@ -1,99 +1,139 @@
 .wrap {
+  --altum-badge-outset: var(--altum-badge-overhang);
+
   position: relative;
 
   display: inline-flex;
-  overflow: visible;
 
-  margin-top: calc(var(--altum-badge-overhang) * -1);
-  margin-right: calc(var(--altum-badge-overhang) * -1);
-  padding-top: var(--altum-badge-overhang);
-  padding-right: var(--altum-badge-overhang);
+  margin: calc(var(--altum-badge-outset) * -1) calc(var(--altum-badge-outset) * -1) 0 0;
+  padding: var(--altum-badge-outset) var(--altum-badge-outset) 0 0;
 }
 
 .badge {
-  z-index: var(--altum-g-z-local);
+  --altum-badge-box: var(--altum-badge-size-md);
+  --altum-badge-pad: var(--altum-g-space-1);
+  /* default variant = error */
+  --altum-status-fill: var(--altum-color-status-error);
+  --altum-status-strong: var(--altum-color-danger-text-secondary);
+  --altum-status-fg: var(--altum-status-fill);
 
-  display: inline-flex;
+  display: inline-grid;
   box-sizing: border-box;
 
-  justify-content: center;
-  align-items: center;
+  place-items: center;
+
+  min-width: var(--altum-badge-box);
+  height: var(--altum-badge-box);
+
+  padding: 0 var(--altum-badge-pad);
 
   border: 2px solid var(--altum-color-surface);
   border-radius: var(--altum-g-radius-pill);
 
-  font-family: inherit;
   font-size: var(--altum-badge-font-size);
   font-weight: var(--altum-g-font-weight-bold);
   line-height: 1;
+  vertical-align: middle;
+
+  color: var(--altum-color-brand-text);
+  background-color: var(--altum-status-fill);
 
   translate: 0 var(--altum-badge-digit-nudge);
 
-  &.overlay {
+  &[data-position='overlay'] {
     position: absolute;
-    top: var(--altum-badge-overhang);
-    right: var(--altum-badge-overhang);
+    top: var(--altum-badge-outset);
+    right: var(--altum-badge-outset);
+    z-index: var(--altum-g-z-local);
 
     transform: translate(40%, -40%);
+  }
 
-    &.sm {
+  &[data-size='sm'] {
+    --altum-badge-box: var(--altum-badge-size-sm);
+    --altum-badge-pad: var(--altum-control-inset);
+
+    border-width: 1px;
+
+    font-size: var(--altum-badge-font-size-sm, var(--altum-badge-font-size));
+
+    &[data-position='overlay'] {
       max-width: calc(var(--altum-badge-size-sm) + var(--altum-g-space-2));
-
-      padding-inline: var(--altum-control-inset);
 
       transform: translate(25%, -25%);
     }
   }
 
-  &.standalone {
-    position: static;
+  &[data-dot] {
+    --altum-badge-box: var(--altum-g-space-2);
 
-    vertical-align: middle;
-
-    transform: none;
-  }
-
-  &.md {
-    min-width: var(--altum-badge-size-md);
-    height: var(--altum-badge-size-md);
-
-    padding: 0 var(--altum-g-space-1);
-  }
-
-  &.sm {
-    min-width: var(--altum-badge-size-sm);
-    height: var(--altum-badge-size-sm);
-
-    padding: 0 var(--altum-control-inset);
-
-    border-width: 1px;
-
-    font-size: var(--altum-badge-font-size-sm, var(--altum-badge-font-size));
-  }
-
-  &.primary {
-    color: var(--altum-color-brand-text);
-    background-color: var(--altum-color-brand);
-  }
-
-  &.secondary {
-    color: var(--altum-color-surface);
-    background-color: var(--altum-color-text-secondary);
-  }
-
-  &.dot {
-    width: var(--altum-g-space-2);
-    min-width: var(--altum-g-space-2);
-    height: var(--altum-g-space-2);
+    width: var(--altum-badge-box);
 
     padding: 0;
 
     translate: none;
+
+    &[data-size='sm'] {
+      --altum-badge-box: calc(var(--altum-g-space-1) + var(--altum-control-inset));
+    }
   }
 
-  &.dot.sm {
-    width: calc(var(--altum-g-space-1) + var(--altum-control-inset));
-    min-width: calc(var(--altum-g-space-1) + var(--altum-control-inset));
-    height: calc(var(--altum-g-space-1) + var(--altum-control-inset));
+  &[data-variant='primary'] {
+    color: var(--altum-color-brand-text);
+    background-color: var(--altum-color-brand);
+  }
+
+  &[data-variant='secondary'] {
+    color: var(--altum-color-surface);
+    background-color: var(--altum-color-text-secondary);
+  }
+
+  &:is(
+    [data-variant='success'],
+    [data-variant='info'],
+    [data-variant='warning'],
+    [data-variant='error']
+  ) {
+    --altum-status-bg: color-mix(in srgb, var(--altum-status-fill) var(--altum-status-bg-amt, 11%), var(--altum-status-bg-base, transparent));
+    --altum-status-border: color-mix(in srgb, var(--altum-status-fill) var(--altum-status-border-amt, 34%), transparent);
+  }
+
+  &[data-variant='success'] {
+    --altum-status-fill: var(--altum-color-status-success);
+    --altum-status-strong: var(--altum-color-status-success-strong);
+    --altum-status-fg: var(--altum-status-strong);
+  }
+
+  &[data-variant='info'] {
+    --altum-status-fill: var(--altum-color-status-info);
+    --altum-status-strong: var(--altum-color-status-info);
+    --altum-status-fg: var(--altum-status-fill);
+  }
+
+  &[data-variant='warning'] {
+    --altum-status-fill: var(--altum-color-status-warning);
+    --altum-status-strong: var(--altum-color-status-warning-strong);
+    --altum-status-fg: var(--altum-status-strong);
+    --altum-status-bg-amt: var(--altum-status-warning-bg-amt, 12%);
+    --altum-status-border-amt: var(--altum-status-warning-border-amt, 36%);
+  }
+
+  &[data-variant='error'] {
+    --altum-status-fill: var(--altum-color-status-error);
+    --altum-status-strong: var(--altum-color-danger-text-secondary);
+    --altum-status-fg: var(--altum-status-fill);
+  }
+
+  &:is([data-variant='error'], [data-variant='success'], [data-variant='info']),
+  &[data-variant='warning'][data-dot] {
+    color: var(--altum-color-brand-text);
+    background-color: var(--altum-status-fill);
+  }
+
+  &[data-variant='warning']:not([data-dot]) {
+    border-color: var(--altum-status-border);
+
+    color: var(--altum-status-fg);
+    background-color: var(--altum-status-bg);
   }
 }

@@ -1,7 +1,5 @@
 import type React from 'react';
-import type {
-	ComponentPropsWithoutRef,
-} from 'react';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
 import type {SpacingToken} from '../../types';
 
 /**
@@ -18,6 +16,8 @@ export type SeparatorSpace = SpacingToken | number | string;
  * Свойства `Separator` (также бывший `Spacer`).
  */
 export interface SeparatorProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
+	/** DOM-узел разделителя. */
+	rootRef?: Ref<HTMLDivElement>;
 	/** Направление. @default 'horizontal' */
 	orientation?: SeparatorOrientation;
 	/**

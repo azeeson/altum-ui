@@ -2,7 +2,7 @@ import type {Meta} from '@storybook/react';
 import React, {useMemo, useState} from 'react';
 import {Pagination, PaginationProps} from './Pagination';
 import {Card} from '../Card/Card';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Table} from '../Table/Table';
 import {componentParameters, story, Story} from '../../storybook/meta';

@@ -1,3 +1,6 @@
+export const NON_DIGITS = /\D/g;
+const DIGIT = /\d/;
+
 /**
  * Цифры литералов маски до первого слота `9` (например `7` в `+7 (999)…`).
  */
@@ -5,7 +8,7 @@ export const getStaticDigitsPrefix = (mask: string): string => {
 	let prefix = '';
 	for (let i = 0; i < mask.length; i++) {
 		if (mask[i] === '9') break;
-		if (/\d/.test(mask[i])) {
+		if (DIGIT.test(mask[i])) {
 			prefix += mask[i];
 		}
 	}
@@ -16,7 +19,7 @@ export const getStaticDigitsPrefix = (mask: string): string => {
  * Форматирует чистые цифры пользователя по маске (слот `9` = цифра).
  */
 export const getFormattedValue = (inputValue: string, mask: string): string => {
-	const cleanVal = inputValue.replace(/\D/g, '');
+	const cleanVal = inputValue.replace(NON_DIGITS, '');
 	let result = '';
 	let cleanIndex = 0;
 

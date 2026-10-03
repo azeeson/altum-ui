@@ -9,6 +9,7 @@ import {Tooltip} from '../components/Tooltip/Tooltip';
 import {Button} from '../components/Button/Button';
 import {ButtonIcon} from '../components/ButtonIcon/ButtonIcon';
 import {Text} from '../components/Text/Text';
+import {Title} from '../components/Title/Title';
 import {demoGalleryItem} from '../storybook/demoImages';
 
 const meta = {
@@ -34,9 +35,9 @@ export const ModalOpen: Story = {
 			onOpenChange={noop}
 		>
 			<Modal.Header>
-				<Modal.Title>
+				<Title level={3}>
 					Системное оповещение
-				</Modal.Title>
+				</Title>
 			</Modal.Header>
 			<Modal.Body>
 				<Text size='md'>
@@ -94,12 +95,11 @@ export const SheetSidebarOpen: Story = {
 			mode='sidebar'
 			direction='end'
 			width={320}
-			backdrop
 		>
 			<Sheet.Header showClose>
-				<Sheet.Title>
+				<Title level={3}>
 					Навигация
-				</Sheet.Title>
+				</Title>
 			</Sheet.Header>
 			<Sheet.Body>
 				<ul style={{
@@ -140,16 +140,12 @@ export const ImageLightboxOpen: Story = {
 export const DropdownOpen: Story = {
 	render: () => (
 		<Dropdown
-			open
+			defaultOpen
 			onOpenChange={noop}
 			widthMode='content'
 			mobileTitle='Меню'
-			renderTrigger={(props, ref) => (
-				<Button
-					variant='primary'
-					{...props}
-					ref={ref}
-				>
+			trigger={(
+				<Button variant='primary'>
 					Открыто ▼
 				</Button>
 			)}
@@ -173,7 +169,7 @@ export const TooltipVisible: Story = {
 		>
 			<Tooltip
 				content='Полезная подсказка сверху'
-				position='top'
+				side='top'
 				open
 			>
 				<Button variant='secondary'>
@@ -190,7 +186,6 @@ export const SheetOpen: Story = {
 			open
 			onOpenChange={noop}
 			mode='sheet'
-			backdrop={false}
 		>
 			<Sheet.Header
 				leftControls={(
@@ -213,13 +208,13 @@ export const SheetOpen: Story = {
 					</ButtonIcon>
 				)}
 			>
-				<Sheet.Title>
+				<Title level={3}>
 					Действия
-				</Sheet.Title>
+				</Title>
 			</Sheet.Header>
 			<Sheet.Body>
 				<Text size='md'>
-					Нижняя панель без backdrop. Контент страницы остаётся видимым.
+					Нижняя панель. Контент страницы остаётся видимым.
 				</Text>
 			</Sheet.Body>
 		</Sheet>

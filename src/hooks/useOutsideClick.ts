@@ -1,37 +1,37 @@
 import {useEffect, useRef, type RefObject} from 'react';
-import {shouldIgnoreOverlayDismiss} from '../utils/overlayDismiss';
 
 /**
  * Опции хука `useOutsideClick`.
  */
 export interface UseOutsideClickOptions {
-	/** Подписываться только пока `true` (`true` по умолчанию) */
+	/** Слушать клики только пока `true` (`true` по умолчанию) */
 	enabled?: boolean;
 }
 
 type OutsideClickTarget = RefObject<HTMLElement | null>;
 
+const isRefList = (
+	refs: OutsideClickTarget | readonly OutsideClickTarget[],
+): refs is readonly OutsideClickTarget[] => Array.isArray(refs);
+
 const normalizeRefs = (
-	refs: OutsideClickTarget | OutsideClickTarget[],
-): OutsideClickTarget[] => (Array.isArray(refs) ? refs : [refs]);
+	refs: OutsideClickTarget | readonly OutsideClickTarget[],
+): readonly OutsideClickTarget[] => (isRefList(refs) ? refs : [refs]);
 
 /**
- * Вызывает callback при mousedown/touchstart вне одного или нескольких ref.
- * Игнорирует клики, пока активен «suppress overlay dismiss» (см. `overlayDismiss`).
+ * Вызывает callback при `mousedown` / `touchstart` вне одного или нескольких ref.
  * Подписка снимается при `enabled: false` и при размонтировании.
  *
- * @param refs - Контейнер(ы), клик внутри которых не считается «снаружи».
+ * @param refs - Контейнер(ы), клик внутри которых не считается внешним.
  * @param callback - Обработчик внешнего клика.
- * @param options.enabled - Выключить слушатели без размонтирования.
- *
- * @returns Ничего — подписка на mousedown/touchstart вне ref.
+ * @param options - `enabled` выключает слушатели без размонтирования.
  *
  * @example
  * const panelRef = useRef<HTMLDivElement>(null);
  * useOutsideClick(panelRef, () => setOpen(false), {enabled: open});
  */
 export function useOutsideClick(
-	refs: OutsideClickTarget | OutsideClickTarget[],
+	refs: OutsideClickTarget | readonly OutsideClickTarget[],
 	callback: (event: MouseEvent | TouchEvent) => void,
 	options: UseOutsideClickOptions = {},
 ): void {
@@ -48,10 +48,6 @@ export function useOutsideClick(
 		if (!enabled) return;
 
 		const handler = (event: MouseEvent | TouchEvent) => {
-			if (shouldIgnoreOverlayDismiss()) {
-				return;
-			}
-
 			const isClickInsideAny = savedRefs.current.some((ref) => {
 				const element = ref.current;
 				return element?.contains(event.target as Node);

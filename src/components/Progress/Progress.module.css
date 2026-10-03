@@ -1,21 +1,24 @@
-.tone_primary {
-  --altum-progress-fill: var(--altum-color-brand);
-}
+.root,
+.circleRoot {
+  &[data-tone='primary'] {
+    --altum-progress-fill: var(--altum-color-brand);
+  }
 
-.tone_success {
-  --altum-progress-fill: var(--altum-color-status-success);
-}
+  &[data-tone='success'] {
+    --altum-progress-fill: var(--altum-color-status-success);
+  }
 
-.tone_warning {
-  --altum-progress-fill: var(--altum-color-status-warning);
-}
+  &[data-tone='warning'] {
+    --altum-progress-fill: var(--altum-color-status-warning);
+  }
 
-.tone_error {
-  --altum-progress-fill: var(--altum-color-status-error);
-}
+  &[data-tone='error'] {
+    --altum-progress-fill: var(--altum-color-status-error);
+  }
 
-.tone_info {
-  --altum-progress-fill: var(--altum-color-status-info);
+  &[data-tone='info'] {
+    --altum-progress-fill: var(--altum-color-status-info);
+  }
 }
 
 .root {
@@ -57,15 +60,15 @@
 
     background-color: var(--altum-color-panel-border);
 
-    &.sm {
+    &[data-size='sm'] {
       height: var(--altum-g-space-1);
     }
 
-    &.lg {
+    &[data-size='lg'] {
       height: var(--altum-g-space-3);
     }
 
-    &.indeterminate .progressBar {
+    &[data-indeterminate] .progressBar {
       width: 40%;
 
       animation: progressIndeterminate 1.2s ease-in-out infinite;
@@ -73,7 +76,7 @@
   }
 
   & .progressBar {
-    width: calc(var(--altum-progress, 0) * 1%);
+    width: calc(var(--local-ratio, 0) * 100%);
     height: 100%;
 
     border-radius: var(--altum-g-radius-sm);
@@ -96,15 +99,13 @@
 .circleRoot {
   display: inline-flex;
 
-  flex-direction: column;
-  align-items: center;
   gap: var(--altum-g-space-2);
 
   & .progressCircle {
     transform: rotate(-90deg);
   }
 
-  & .circleIndeterminate {
+  &[data-indeterminate] .progressCircle {
     animation: progressSpin 0.9s linear infinite;
   }
 
@@ -120,20 +121,16 @@
     stroke-width: 4;
     stroke-linecap: round;
     stroke-dasharray: 100;
-    stroke-dashoffset: calc(100 - var(--altum-progress, 0));
+    stroke-dashoffset: calc(100 * (1 - var(--local-ratio, 0)));
 
     transition: stroke-dashoffset 0.3s ease;
   }
 
-  & .circleIndeterminate .progressCircleBar {
+  &[data-indeterminate] .progressCircleBar {
     stroke-dashoffset: 75;
   }
 
   & .circleMeta {
-    display: flex;
-
-    flex-direction: column;
-    align-items: center;
     gap: var(--altum-g-space-1);
 
     text-align: center;
@@ -161,12 +158,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .root .indeterminate .progressBar,
-  .circleRoot .circleIndeterminate {
+  .root [data-indeterminate] .progressBar,
+  .circleRoot[data-indeterminate] .progressCircle {
     animation: none;
   }
 
-  .root .indeterminate .progressBar {
+  .root [data-indeterminate] .progressBar {
     width: 50%;
 
     opacity: 0.7;

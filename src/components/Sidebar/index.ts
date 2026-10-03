@@ -3,7 +3,6 @@ export type {
 	SidebarProps,
 	SidebarHeaderProps,
 	SidebarTitleProps,
-	SidebarCollapseProps,
 	SidebarContentProps,
 	SidebarGroupProps,
 	SidebarGroupLabelProps,

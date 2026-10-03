@@ -1,24 +1,22 @@
-import type {
-	PasswordStrength,
-	PasswordFieldProps,
-} from './PasswordField.types';
-export type {
-	PasswordStrength,
-	PasswordFieldProps,
-} from './PasswordField.types';
+import type {PasswordFieldProps, PasswordStrength} from './PasswordField.types';
+export type {PasswordStrength, PasswordFieldProps} from './PasswordField.types';
 
-import {forwardRef, useId, useState} from 'react';
-import {TextField} from '../TextField/TextField';
-import {FieldBaseButton} from '../../base/FieldBase';
+import {useState} from 'react';
+import {TextField, FieldBaseButton} from '../TextField/TextField';
 import {IconPreview} from '../../icons/icons/IconPreview';
 import {IconPreviewOff} from '../../icons/icons/IconPreviewOff';
 import {Text} from '../Text/Text';
+import {FormMessage} from '../FormMessage/FormMessage';
 import fieldMessage from '../../styles/fieldMessage.module.css';
 import styles from './PasswordField.module.css';
-import {cn} from '../../utils/cn';
-import {composeEventHandlers} from '../../utils/composeEvents';
-import {useControlledStateWithCallback} from '../../hooks/useControlledState';
+import {cn} from '../../core/utils/cn';
 import {useLocale} from '../../locales/localeContext';
+import {useFallbackId} from '../../hooks/useFallbackId';
+import {ruSlice as ru_password} from '../../locales/slices/password.ru';
+
+const localeFallback = {
+	password: ru_password,
+};
 
 const STRENGTH_NOW = {
 	weak: 1,
@@ -55,34 +53,30 @@ export function getPasswordStrength(password: string): PasswordStrength {
  * @example
  * <PasswordField label="Пароль" value={password} onChange={(e) => setPassword(e.target.value)} showStrength />
  */
-export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(function PasswordField(
-	{
-		defaultVisible = false,
-		visible: controlledVisible,
-		onVisibleChange,
-		showPasswordLabel,
-		hidePasswordLabel,
-		showStrength = false,
-		strengthLabels,
-		value,
-		defaultValue,
-		onChange,
-		'aria-describedby': ariaDescribedBy,
-		...props
-	},
-	ref,
-) {
-	const {t} = useLocale();
-	const strengthId = useId();
-	const [visible, setVisible] = useControlledStateWithCallback(
-		controlledVisible,
-		defaultVisible,
-		onVisibleChange,
-	);
-	const [uncontrolled, setUncontrolled] = useState(
-		() => String(defaultValue ?? ''),
-	);
-	const password = value !== undefined ? String(value) : uncontrolled;
+export function PasswordField({
+	defaultVisible = false,
+	visible: controlledVisible,
+	onVisibleChange,
+	showPasswordLabel,
+	hidePasswordLabel,
+	showStrength = false,
+	strengthLabels,
+	value,
+	defaultValue,
+	onChange,
+	description,
+	'aria-describedby': ariaDescribedBy,
+	id: providedId,
+	inputRef,
+	...props
+}: PasswordFieldProps) {
+	const {t} = useLocale(localeFallback);
+	const id = useFallbackId(providedId);
+	const strengthId = `${id}-strength`;
+	const [localVisible, setLocalVisible] = useState(defaultVisible);
+	const isControlledVisible = controlledVisible !== undefined;
+	const visible = isControlledVisible ? controlledVisible : localVisible;
+	const password = String(value ?? defaultValue ?? '');
 	const strength = getPasswordStrength(password);
 	const labels = {
 		weak: t('password.strength.weak'),
@@ -91,54 +85,74 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(fu
 		strong: t('password.strength.strong'),
 		...strengthLabels,
 	};
-	const describedBy = [ariaDescribedBy, showStrength && strength !== 'empty' ? strengthId : undefined]
+
+	const toggleVisible = () => {
+		const next = !visible;
+		if (!isControlledVisible) setLocalVisible(next);
+		onVisibleChange?.(next);
+	};
+
+	const strengthMeter = showStrength && strength !== 'empty' ? (
+		<div
+			id={strengthId}
+			className={cn(fieldMessage.message, styles.strength)}
+			data-strength={strength}
+			role='meter'
+			aria-valuemin={1}
+			aria-valuemax={4}
+			aria-valuenow={STRENGTH_NOW[strength]}
+			aria-label={labels[strength]}
+		>
+			<div className={styles.strengthTrack} aria-hidden>
+				{Array.from({length: 4}, (_, i) => (
+					<span key={i} className={styles.strengthSeg} />
+				))}
+			</div>
+			<Text
+				as='span'
+				size='xs'
+				color={strength === 'weak' ? 'error' : strength === 'strong' ? 'success' : 'muted'}
+				className={styles.strengthLabel}
+			>
+				{labels[strength]}
+			</Text>
+		</div>
+	) : null;
+	const describedBy = [ariaDescribedBy, strengthMeter ? strengthId : undefined]
 		.filter(Boolean)
 		.join(' ') || undefined;
 
 	return (
 		<TextField
-			ref={ref}
+			inputRef={inputRef}
+			id={id}
 			{...props}
 			type={visible ? 'text' : 'password'}
 			value={value}
 			defaultValue={defaultValue}
 			autoComplete={props.autoComplete ?? 'current-password'}
 			aria-describedby={describedBy}
-			onChange={composeEventHandlers(onChange, (event) => {
-				if (value === undefined) setUncontrolled(event.target.value);
-			})}
+			description={(
+				<>
+					{description ? (
+						<FormMessage>
+							{description}
+						</FormMessage>
+					) : null}
+					{strengthMeter}
+				</>
+			)}
+			onChange={onChange}
 			postfix={(
 				<FieldBaseButton
-					aria-label={visible ? hidePasswordLabel ?? t('password.hide') : showPasswordLabel ?? t('password.reveal')}
+					aria-label={visible
+						? hidePasswordLabel ?? t('password.hide')
+						: showPasswordLabel ?? t('password.reveal')}
 					aria-pressed={visible}
-					onClick={() => setVisible(!visible)}
+					onClick={toggleVisible}
 					icon={visible ? <IconPreviewOff size={16} /> : <IconPreview size={16} />}
 				/>
 			)}
-			footer={showStrength && strength !== 'empty' ? (
-				<div
-					id={strengthId}
-					className={cn(fieldMessage.message, styles.strength)}
-					data-strength={strength}
-					role='meter'
-					aria-valuemin={1}
-					aria-valuemax={4}
-					aria-valuenow={STRENGTH_NOW[strength]}
-					aria-label={labels[strength]}
-				>
-					<div className={styles.strengthTrack} aria-hidden />
-					<Text
-						as='span'
-						size='xs'
-						color={strength === 'weak' ? 'error' : strength === 'strong' ? 'success' : 'muted'}
-						className={styles.strengthLabel}
-					>
-						{labels[strength]}
-					</Text>
-				</div>
-			) : undefined}
 		/>
 	);
-});
-
-PasswordField.displayName = 'PasswordField';
+}

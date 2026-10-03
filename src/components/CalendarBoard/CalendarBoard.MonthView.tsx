@@ -1,4 +1,4 @@
-import React, {forwardRef, useMemo} from 'react';
+import {useMemo, type CSSProperties, type MouseEvent, type PointerEvent} from 'react';
 import {
 	isSameDay,
 	isToday,
@@ -11,7 +11,9 @@ import {
 	segmentSpanByWeeks,
 } from './calendar.schedule';
 import {
+	hoverTaskFromPointer,
 	useCalendarBoard,
+	useCalendarBoardHoverStore,
 	type CalendarBoardDayCellRenderProps,
 	type CalendarBoardTask,
 } from './CalendarBoard.context';
@@ -19,18 +21,30 @@ import {CalendarBoardTaskChip} from './CalendarBoard.TaskChip';
 import {buildMonthWeeks, calendarDateKey, isMultiDayTask} from './CalendarBoard.utils';
 import styles from './CalendarBoard.module.css';
 import unstyled from '../../styles/unstyledControl.module.css';
-import {cn} from '../../utils/cn';
+import {cn} from '../../core/utils/cn';
 import {useLocale} from '../../locales/localeContext';
 
 import type {CalendarBoardMonthProps} from './CalendarBoard.types';
+import {ruSlice as ru_calendar} from '../../locales/slices/calendar.ru';
+import {ruSlice as ru_calendarBoard} from '../../locales/slices/calendarBoard.ru';
+
+const localeFallback = {
+	calendar: ru_calendar,
+	calendarBoard: ru_calendarBoard,
+};
+
+
+
 
 export type {CalendarBoardMonthProps} from './CalendarBoard.types';
 
-export const CalendarBoardMonth = forwardRef<HTMLDivElement, CalendarBoardMonthProps>(function CalendarBoardMonth(
-	{className, maxChipsPerDay = 3, ...rest},
-	ref,
-) {
-	const {messages, t} = useLocale();
+export const CalendarBoardMonth = ({
+	className,
+	maxChipsPerDay = 3,
+	rootRef,
+	...rest
+}: CalendarBoardMonthProps) => {
+	const {messages, t} = useLocale(localeFallback);
 	const {months, weekdaysShort} = messages.calendar;
 	const {
 		viewDate,
@@ -41,7 +55,9 @@ export const CalendarBoardMonth = forwardRef<HTMLDivElement, CalendarBoardMonthP
 		tasks,
 		weekStartsOn,
 		renderDayCell,
+		onTaskClick,
 	} = useCalendarBoard('CalendarBoard.Month');
+	const hoverStore = useCalendarBoardHoverStore('CalendarBoard.Month');
 
 	const weeks = useMemo(
 		() => buildMonthWeeks(viewDate, weekStartsOn),
@@ -92,11 +108,43 @@ export const CalendarBoardMonth = forwardRef<HTMLDivElement, CalendarBoardMonthP
 
 	const laneHeight = 22;
 
+	const hoverTask = (event: PointerEvent<HTMLDivElement>) => {
+		hoverTaskFromPointer(hoverStore, event);
+	};
+
+	const activate = (event: MouseEvent<HTMLDivElement>) => {
+		const taskNode = (event.target as HTMLElement).closest('[data-task-id]');
+		if (taskNode instanceof HTMLElement && taskNode.dataset.taskId) {
+			const task = tasks.find((item) => item.id === taskNode.dataset.taskId);
+			if (task) onTaskClick?.(task);
+			return;
+		}
+		const button = (event.target as HTMLElement).closest('button[data-date]');
+		if (!(button instanceof HTMLButtonElement) || !button.dataset.date) return;
+		const date = new Date(button.dataset.date);
+		if (Number.isNaN(date.getTime())) return;
+		setSelectedDate(date);
+		setViewDate(date);
+	};
+
+	const openDay = (event: MouseEvent<HTMLDivElement>) => {
+		const button = (event.target as HTMLElement).closest('button[data-date]');
+		if (!(button instanceof HTMLButtonElement) || !button.dataset.date) return;
+		const date = new Date(button.dataset.date);
+		if (Number.isNaN(date.getTime())) return;
+		setSelectedDate(date);
+		setViewDate(date);
+		setView('day');
+	};
+
 	return (
 		<div
-			ref={ref}
-			className={cn(styles.month, className)}
 			{...rest}
+			ref={rootRef}
+			className={cn(styles.month, className)}
+			onClick={activate}
+			onDoubleClick={openDay}
+			onPointerOver={hoverTask}
 		>
 			<div className={styles.weekdayRow} role='row'>
 				{weekdayRow.map((label) => (
@@ -120,7 +168,7 @@ export const CalendarBoardMonth = forwardRef<HTMLDivElement, CalendarBoardMonthP
 						<div
 							key={week[0]!.toISOString()}
 							className={styles.weekRow}
-							style={{'--altum-calendar-board-span-height': `${trackHeight}px`} as React.CSSProperties}
+							style={{'--altum-calendar-board-span-height': `${trackHeight}px`} as CSSProperties}
 						>
 							<div className={styles.weekDays}>
 								{week.map((date) => {
@@ -152,28 +200,17 @@ export const CalendarBoardMonth = forwardRef<HTMLDivElement, CalendarBoardMonthP
 										<div
 											key={date.toISOString()}
 											role='gridcell'
-											className={cn(
-												styles.dayCell,
-												styles.dayCellSurface,
-												!inMonth ? styles.dayOutside : '',
-												selected ? styles.daySelected : '',
-												today && !selected ? styles.dayToday : '',
-											)}
+											className={cn(styles.dayCell, styles.dayCellSurface)}
+											data-outside={!inMonth ? '' : undefined}
+											data-selected={selected ? '' : undefined}
+											data-today={today && !selected ? '' : undefined}
 											aria-current={today ? 'date' : undefined}
 											aria-selected={selected}
 										>
 											<button
 												type='button'
 												className={cn(unstyled.control, styles.dayNumberBtn)}
-												onClick={() => {
-													setSelectedDate(date);
-													setViewDate(date);
-												}}
-												onDoubleClick={() => {
-													setSelectedDate(date);
-													setViewDate(date);
-													setView('day');
-												}}
+												data-date={date.toISOString()}
 												aria-label={t('calendarBoard.dayWithoutTasks', {
 													day: date.getDate(),
 													month: months[date.getMonth()] ?? '',
@@ -216,10 +253,10 @@ export const CalendarBoardMonth = forwardRef<HTMLDivElement, CalendarBoardMonthP
 														}
 														className={styles.spanSlot}
 														style={{
-															gridColumn: `${segment.startIndex + 1} / ${
+															'--local-span-column': `${segment.startIndex + 1} / ${
 																segment.endIndex + 2
 															}`,
-														}}
+														} as CSSProperties}
 														data-task-id={item.id}
 													>
 														<CalendarBoardTaskChip
@@ -240,6 +277,4 @@ export const CalendarBoardMonth = forwardRef<HTMLDivElement, CalendarBoardMonthP
 			</div>
 		</div>
 	);
-});
-
-CalendarBoardMonth.displayName = 'CalendarBoard.Month';
+};

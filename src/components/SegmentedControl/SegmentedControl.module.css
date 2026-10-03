@@ -1,0 +1,30 @@
+.track {
+  --altum-button-group-gap: var(--altum-control-inset);
+
+  &[data-variant='plain'] {
+    padding: 0;
+
+    border-color: transparent;
+
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  /* Вкладки: роль tab, не radio. Заливка та же, что у выбранной кнопки группы. */
+  & button[aria-selected='true'],
+  & button[aria-selected='true']:hover:not(:disabled) {
+    color: var(--altum-fg-item-on);
+    background-color: var(--altum-bg-thumb);
+    box-shadow: var(--altum-bg-thumb-shadow);
+  }
+
+  & button:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track button:active:not(:disabled) {
+    transform: none;
+  }
+}

@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {Bubble, BubbleProps} from './Bubble';
 import {Avatar} from '../Avatar/Avatar';
 import {Card} from '../Card/Card';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 import {playClick} from '../../storybook/play';

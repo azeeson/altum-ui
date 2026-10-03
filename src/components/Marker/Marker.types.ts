@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 /**
@@ -25,4 +26,6 @@ export interface MarkerProps extends ComponentPropsWithoutRef<'div'> {
 	 * @default 'default'
 	 */
 	variant?: MarkerVariant;
+	/** DOM-узел корня. */
+	rootRef?: Ref<HTMLDivElement>;
 }

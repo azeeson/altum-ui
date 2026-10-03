@@ -1,37 +1,26 @@
 import type React from 'react';
-import type {FieldBaseProps} from '../../base/FieldBase';
-import {type CustomSelectOption} from '../CustomSelect/CustomSelect';
-import {type ListboxFilterFn} from '../../utils/listboxOptions';
+import type {Ref} from 'react';
+import type {FieldBaseProps} from '../TextField/TextField.types';
+import type {SelectOption} from '../Select/Select';
+import {type ListboxFilterFn} from '../../core/utils/listboxOptions';
 
 /**
  * Публичный тип `SuggestFieldOption`.
  */
-export type SuggestFieldOption = CustomSelectOption;
+export type SuggestFieldOption = SelectOption;
 
 /**
- * Свойства `SuggestField`.
- * База поля наследуется от `FieldBaseProps`.
+ * Свойства `SuggestField` — прокси над `Select` с печатным триггером (`inputProps`).
+ * Ввод фильтрует список; freestyle — у `AutocompleteField`.
  */
-export interface SuggestFieldProps
-	extends FieldBaseProps,
-	Omit<
-		React.HTMLAttributes<HTMLDivElement>,
-		'className' | 'onChange' | 'prefix' | 'onFocus' | 'onBlur' | 'onClick' | 'onKeyDown' | keyof FieldBaseProps
-	> {
+export interface SuggestFieldProps extends FieldBaseProps {
 	options: SuggestFieldOption[];
 	value?: string;
 	defaultValue?: string;
-	/** Placeholder при `labelPlacement` `outside` / `none`; в `inline` скрыт. */
 	placeholder?: string;
 	className?: string;
 	name?: string;
 	required?: boolean;
-	/**
-	 * Разрешить значение, которого нет в `options`.
-	 * `false` — только выбор из списка (ввод используется как фильтр).
-	 * @default true
-	 */
-	allowCustom?: boolean;
 	filterFn?: ListboxFilterFn<SuggestFieldOption>;
 	noOptionsText?: string;
 	onChange?: (value: string) => void;
@@ -39,4 +28,8 @@ export interface SuggestFieldProps
 	onBlur?: React.FocusEventHandler<HTMLInputElement>;
 	onClick?: React.MouseEventHandler<HTMLInputElement>;
 	onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
+	/** DOM-узел поля ввода. */
+	inputRef?: Ref<HTMLInputElement>;
+	id?: string;
+	'aria-label'?: string;
 }

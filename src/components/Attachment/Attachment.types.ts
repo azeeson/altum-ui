@@ -1,3 +1,4 @@
+import type {Ref} from 'react';
 import type {ItemProps} from '../Item/Item.types';
 
 /**
@@ -21,4 +22,6 @@ export interface AttachmentProps extends Omit<ItemProps, 'size' | 'variant'> {
 	 * @default 'idle'
 	 */
 	status?: AttachmentStatus;
+	/** DOM-узел корня (`Item`). */
+	rootRef?: Ref<HTMLDivElement>;
 }

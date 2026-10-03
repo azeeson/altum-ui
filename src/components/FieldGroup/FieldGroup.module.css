@@ -1,0 +1,81 @@
+.root {
+  /* Одна обводка на весь ряд. Тень кнопки иначе ложится на соседнее поле. */
+  --altum-field-group-stroke: var(--altum-color-field-border);
+  --altum-field-group-shadow: 0 0 0 0 transparent;
+
+  display: inline-flex;
+
+  align-items: flex-start;
+
+  max-width: 100%;
+
+  vertical-align: middle;
+
+  &[data-width='full'] {
+    display: flex;
+
+    width: 100%;
+  }
+
+  & > * + * {
+    margin-inline-start: -1px;
+  }
+
+  & > :not(:first-child) {
+    --altum-field-group-radius-start: 0;
+  }
+
+  & > :not(:last-child) {
+    --altum-field-group-radius-end: 0;
+  }
+
+  & > :hover {
+    position: relative;
+    z-index: var(--altum-g-z-raised);
+  }
+
+  & > :focus-within {
+    position: relative;
+    z-index: var(--altum-g-z-raised-above);
+  }
+
+  /* Кнопки внутри поля (степпер, очистка) остаются со своей рамкой. */
+  & :global([data-field]) {
+    --altum-field-group-stroke: initial;
+    --altum-field-group-shadow: initial;
+  }
+
+  /* Прямое поле держит обычную ширину и не выше chrome. */
+  & > :global([data-field]) {
+    flex: 1 1 auto;
+
+    width: var(--altum-field-width-default);
+    min-width: 0;
+    max-width: 100%;
+    min-height: 0;
+  }
+
+  /* Оболочка вокруг поля (Select) сжимается по видимой рамке. */
+  & > :has(:global([data-field])):not(:global([data-field])) {
+    flex: 0 1 auto;
+
+    width: max-content;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 0;
+  }
+
+  &[data-width='full'] > :global([data-field]),
+  &[data-width='full'] > :has(:global([data-field])) {
+    flex: 1 1 0;
+
+    width: auto;
+    max-width: none;
+  }
+
+  /* В full рамка поля доходит до шва, а не остаётся max-content внутри оболочки. */
+  &[data-width='full'] > :has(:global([data-field])) :global([data-field]) {
+    width: 100%;
+    max-width: none;
+  }
+}

@@ -1,14 +1,15 @@
+import type {ChangeEvent, KeyboardEvent, MouseEvent} from 'react';
 import type {MaskedFieldProps} from './MaskedField.types';
 export type {MaskedFieldProps} from './MaskedField.types';
 
-import {forwardRef} from 'react';
-import {TextField} from '../TextField/TextField';
+import {TextField, fieldOverlayClassName} from '../TextField/TextField';
 import styles from './MaskedField.module.css';
-import {composeEventHandlers} from '../../utils/composeEvents';
-import {composeRefs} from '../../utils/composeRefs';
-import {fieldOverlayClassName} from '../../base/FieldBase';
-import {useDigitMask} from '../../hooks/useDigitMask';
-import {getRemainingGuides} from './MaskedField.utils';
+import {
+	NON_DIGITS,
+	getFormattedValue,
+	getRemainingGuides,
+	getStaticDigitsPrefix,
+} from './MaskedField.utils';
 
 export {
 	getFormattedValue,
@@ -23,64 +24,111 @@ export {
  * @example
  * <MaskedField label="Телефон" mask="+7 (999) 999-99-99" value={phone} onChange={setPhone} />
  */
-export const MaskedField = forwardRef<HTMLInputElement, MaskedFieldProps>(function MaskedField(
-	{
-		mask,
-		value,
-		onChange,
-		onClear,
-		clearLabel,
-		onKeyDown,
-		disabled,
-		readOnly,
-		maskAsPlaceholder = false,
-		placeholder: placeholderProp,
-		onClick,
-		...props
-	},
-	ref,
-) {
-	const maskInput = useDigitMask({
-		mask,
-		value,
-		disabled,
-		readOnly,
-		onChange,
-	});
+export function MaskedField({
+	mask,
+	value,
+	onChange,
+	onClear,
+	clearLabel,
+	onKeyDown,
+	disabled,
+	readOnly,
+	maskAsPlaceholder = false,
+	placeholder: placeholderProp,
+	onClick,
+	inputRef,
+	...props
+}: MaskedFieldProps) {
+	const locked = !!disabled || !!readOnly;
+	const storedDigits = value.replace(NON_DIGITS, '');
+	const display = storedDigits ? getFormattedValue(value, mask) : '';
+	const guides = getRemainingGuides(display, mask);
+	const slots = mask.split('9').length - 1;
+
+	const commit = (
+		input: HTMLInputElement,
+		digits: string,
+		caret: number,
+		formatted = getFormattedValue(digits, mask),
+	) => {
+		onChange(digits);
+		input.value = digits ? formatted : '';
+		input.setSelectionRange(caret, caret);
+	};
+
+	const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+		if (locked) return;
+		const input = event.target;
+		const start = input.selectionStart || 0;
+		const raw = input.value;
+		let clean = raw.replace(NON_DIGITS, '');
+		const prefix = getStaticDigitsPrefix(mask);
+		if (prefix && clean.startsWith(prefix)) clean = clean.slice(prefix.length);
+		const digits = clean.slice(0, slots);
+		const formatted = getFormattedValue(digits, mask);
+		commit(input, digits, start >= raw.length - 1 ? formatted.length : start, formatted);
+	};
+
+	const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+		onKeyDown?.(event);
+		if (locked || event.defaultPrevented) return;
+		const input = event.currentTarget;
+		const start = input.selectionStart;
+		const end = input.selectionEnd;
+		if (start === null || start !== end) return;
+
+		const dir = event.key === 'Backspace' ? -1 : event.key === 'Delete' ? 1 : 0;
+		if (!dir || (dir < 0 && start === 0) || (dir > 0 && start >= mask.length)) return;
+
+		let index = dir < 0 ? start - 1 : start;
+		while (index >= 0 && index < mask.length && mask[index] !== '9') index += dir;
+		if (dir < 0) event.preventDefault();
+		if (index < 0 || index >= mask.length) return;
+		if (dir > 0) event.preventDefault();
+
+		let count = 0;
+		for (let i = 0; i < index; i += 1) if (mask[i] === '9') count += 1;
+		const next = storedDigits.slice(0, count) + storedDigits.slice(count + 1);
+		commit(input, next, getFormattedValue(next.slice(0, count), mask).length);
+	};
+
+	const handleClick = (event: MouseEvent<HTMLInputElement>) => {
+		onClick?.(event);
+		if (event.defaultPrevented) return;
+		const input = event.currentTarget;
+		if (input.selectionStart !== null && input.selectionStart > display.length) {
+			input.setSelectionRange(display.length, display.length);
+		}
+	};
 
 	return (
 		<TextField
 			{...props}
-			ref={composeRefs(ref, maskInput.inputRef)}
+			inputRef={inputRef}
 			type='text'
-			value={maskInput.displayVal}
+			value={display}
 			disabled={disabled}
 			readOnly={readOnly}
-			onChange={maskInput.handleChange}
-			onKeyDown={composeEventHandlers(onKeyDown, maskInput.handleKeyDown)}
-			onClick={composeEventHandlers(onClick, maskInput.handleClick)}
+			onChange={handleChange}
+			onKeyDown={handleKeyDown}
+			onClick={handleClick}
 			placeholder={maskAsPlaceholder ? getRemainingGuides('', mask) : placeholderProp}
 			onClear={onClear ? () => {
 				onChange('');
 				onClear();
 			} : undefined}
 			clearLabel={clearLabel}
-			controlOverlay={maskInput.remainingGuides.length > 0 ? (
+			controlOverlay={guides.length > 0 ? (
 				<div
 					className={fieldOverlayClassName()}
 					aria-hidden='true'
 					data-testid='masked-overlay'
 				>
-					<span className={styles.maskOffset}>
-						{maskInput.displayVal}
-					</span>
-					<span className={styles.guideChar}>
-						{maskInput.remainingGuides}
+					<span className={styles.guide} data-fill={display}>
+						{guides}
 					</span>
 				</div>
 			) : null}
 		/>
 	);
-});
-
-MaskedField.displayName = 'MaskedField';
+}

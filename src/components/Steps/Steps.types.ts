@@ -1,4 +1,5 @@
 import type React from 'react';
+import type {Ref} from 'react';
 
 export type StepStatus = 'pending' | 'current' | 'complete' | 'error';
 
@@ -26,4 +27,6 @@ export interface StepsProps extends Omit<React.ComponentPropsWithoutRef<'ol'>, '
 	size?: 'sm' | 'md' | 'lg';
 	/** Показать соединители. @default true */
 	showConnectors?: boolean;
+	/** DOM-узел списка. */
+	rootRef?: Ref<HTMLOListElement>;
 }

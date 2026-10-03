@@ -1,4 +1,4 @@
-import type {ComponentPropsWithoutRef} from 'react';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
 import {type ImageCropShape} from './ImageCrop.utils';
 
 export type {ImageCropShape};
@@ -31,4 +31,6 @@ export interface ImageCropProps extends Omit<ComponentPropsWithoutRef<'div'>, 'c
 	confirmLabel?: string;
 	cancelLabel?: string;
 	onCrop?: (result: ImageCropResult) => void;
+	/** DOM-узел поверхности (`DialogLayout`). */
+	rootRef?: Ref<HTMLElement>;
 }

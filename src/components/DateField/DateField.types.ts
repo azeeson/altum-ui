@@ -1,3 +1,4 @@
+import type {Ref} from 'react';
 import type {MaskedFieldProps} from '../MaskedField/MaskedField';
 
 /**
@@ -8,4 +9,6 @@ export interface DateFieldProps
 	extends Omit<MaskedFieldProps, 'mask' | 'value' | 'onChange' | 'active'> {
 	value: Date | undefined;
 	onChange: (date: Date | undefined) => void;
+	/** DOM-узел поля ввода. */
+	inputRef?: Ref<HTMLInputElement>;
 }

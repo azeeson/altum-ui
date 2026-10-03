@@ -1,0 +1,374 @@
+.page {
+  display: flex;
+  
+  flex-direction: column;
+  gap: var(--altum-g-space-8);
+  
+  max-width: 920px;
+  
+  margin: 0 auto;
+}
+
+.lead {
+  display: flex;
+
+  flex-direction: column;
+  gap: var(--altum-g-space-2);
+
+  max-width: 640px;
+}
+
+.section {
+  display: flex;
+
+  flex-direction: column;
+  gap: var(--altum-g-space-4);
+}
+
+.swatches {
+  display: grid;
+
+  gap: var(--altum-g-space-4) var(--altum-g-space-3);
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+.swatchItem {
+  display: flex;
+
+  flex-direction: column;
+  gap: var(--altum-g-space-2);
+
+  min-width: 0;
+}
+
+.swatch {
+  height: 56px;
+
+  border: 1px solid var(--altum-color-border);
+  border-radius: var(--altum-g-radius-md);
+
+  background-color: var(--altum-color-surface);
+}
+
+.bg {
+  background-color: var(--altum-color-bg);
+}
+
+.surface {
+  background-color: var(--altum-color-surface);
+}
+
+.elevated {
+  background-color: var(--altum-color-surface-elevated);
+}
+
+.text {
+  background-color: var(--altum-color-text);
+}
+
+.secondary {
+  background-color: var(--altum-color-text-secondary);
+}
+
+.muted {
+  background-color: var(--altum-color-muted);
+}
+
+.border {
+  background-color: var(--altum-color-border);
+}
+
+.brand {
+  background-color: var(--altum-color-brand);
+}
+
+.brandHover {
+  background-color: var(--altum-color-brand-hover);
+}
+
+.brandText {
+  background-color: var(--altum-color-brand-text);
+}
+
+.tint {
+  background-color: var(--altum-color-brand-tint);
+}
+
+.danger {
+  background-color: var(--altum-color-danger-bg-solid);
+}
+
+.dangerTint {
+  background-color: var(--altum-color-danger-tint-bg);
+}
+
+.success {
+  background-color: var(--altum-color-status-success);
+}
+
+.warning {
+  background-color: var(--altum-color-status-warning);
+}
+
+.info {
+  background-color: var(--altum-color-status-info);
+}
+
+.error {
+  background-color: var(--altum-color-status-error);
+}
+
+.statusBg {
+  background-color: var(--altum-status-bg);
+}
+
+.input {
+  background-color: var(--altum-color-input-bg);
+}
+
+.link {
+  background-color: var(--altum-color-link-color);
+}
+
+.tooltip {
+  background-color: var(--altum-color-tooltip-bg);
+}
+
+.chart4 {
+  background-color: var(--altum-color-chart-4);
+}
+
+.chart5 {
+  background-color: var(--altum-color-chart-5);
+}
+
+.caption {
+  display: flex;
+
+  flex-direction: column;
+  gap: var(--altum-g-space-1);
+}
+
+.typeList {
+  display: flex;
+
+  flex-direction: column;
+}
+
+.typeRow {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--altum-g-space-4);
+
+  padding-block: var(--altum-g-space-2);
+
+  border-bottom: 1px solid var(--altum-color-border);
+}
+
+.typeRow:last-child {
+  padding-bottom: 0;
+
+  border-bottom: none;
+}
+
+.sample {
+  min-width: 0;
+
+  margin: 0;
+
+  font-family: var(--altum-g-font-family-ui);
+  font-weight: var(--altum-g-font-weight-medium);
+
+  color: var(--altum-color-text);
+}
+
+.size4xl {
+  font-size: var(--altum-g-font-size-4xl);
+  line-height: 1.25;
+}
+
+.size3xl {
+  font-size: var(--altum-g-font-size-3xl);
+  line-height: 1.25;
+}
+
+.size2xl {
+  font-size: var(--altum-g-font-size-2xl);
+  line-height: 1.25;
+}
+
+.sizeXl {
+  font-size: var(--altum-g-font-size-xl);
+  line-height: var(--altum-g-line-height-xl);
+}
+
+.sizeLg {
+  font-size: var(--altum-g-font-size-lg);
+  line-height: var(--altum-g-line-height-lg);
+}
+
+.sizeMd {
+  font-size: var(--altum-g-font-size-base);
+  line-height: var(--altum-g-line-height-base);
+}
+
+.sizeSm {
+  font-size: var(--altum-g-font-size-sm);
+  line-height: var(--altum-g-line-height-sm);
+}
+
+.sizeXs {
+  font-size: var(--altum-g-font-size-xs);
+  line-height: var(--altum-g-line-height-xs);
+}
+
+.weightRow {
+  display: flex;
+
+  flex-wrap: wrap;
+  gap: var(--altum-g-space-6);
+
+  padding-top: var(--altum-g-space-4);
+}
+
+.weightNormal {
+  font-weight: var(--altum-g-font-weight-normal);
+}
+
+.weightMedium {
+  font-weight: var(--altum-g-font-weight-medium);
+}
+
+.weightSemibold {
+  font-weight: var(--altum-g-font-weight-semibold);
+}
+
+.weightBold {
+  font-weight: var(--altum-g-font-weight-bold);
+}
+
+.mono {
+  font-family: var(--altum-g-font-family-mono);
+}
+
+.scale {
+  display: flex;
+
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--altum-g-space-4);
+}
+
+.scaleItem {
+  display: flex;
+
+  flex-direction: column;
+  align-items: center;
+  gap: var(--altum-g-space-2);
+}
+
+.mark {
+  border-radius: var(--altum-g-radius-sm);
+
+  background-color: var(--altum-color-text);
+}
+
+.space1 {
+  width: var(--altum-g-space-1);
+  height: var(--altum-g-space-1);
+}
+
+.space2 {
+  width: var(--altum-g-space-2);
+  height: var(--altum-g-space-2);
+}
+
+.space3 {
+  width: var(--altum-g-space-3);
+  height: var(--altum-g-space-3);
+}
+
+.space4 {
+  width: var(--altum-g-space-4);
+  height: var(--altum-g-space-4);
+}
+
+.space5 {
+  width: var(--altum-g-space-5);
+  height: var(--altum-g-space-5);
+}
+
+.space6 {
+  width: var(--altum-g-space-6);
+  height: var(--altum-g-space-6);
+}
+
+.space7 {
+  width: var(--altum-g-space-7);
+  height: var(--altum-g-space-7);
+}
+
+.space8 {
+  width: var(--altum-g-space-8);
+  height: var(--altum-g-space-8);
+}
+
+.space9 {
+  width: var(--altum-g-space-9);
+  height: var(--altum-g-space-9);
+}
+
+.controls {
+  display: flex;
+
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--altum-g-space-3);
+}
+
+.radii {
+  display: flex;
+
+  flex-wrap: wrap;
+  gap: var(--altum-g-space-4);
+}
+
+.radius {
+  display: flex;
+
+  flex-direction: column;
+  align-items: center;
+  gap: var(--altum-g-space-2);
+}
+
+.radiusBox {
+  width: var(--altum-g-space-8);
+  height: var(--altum-g-space-8);
+
+  border: 1px solid var(--altum-color-border);
+
+  background-color: var(--altum-color-surface);
+}
+
+.radiusSm {
+  border-radius: var(--altum-g-radius-sm);
+}
+
+.radiusMd {
+  border-radius: var(--altum-g-radius-md);
+}
+
+.radiusLg {
+  border-radius: var(--altum-g-radius-lg);
+}
+
+.radiusPill {
+  border-radius: var(--altum-g-radius-pill);
+}

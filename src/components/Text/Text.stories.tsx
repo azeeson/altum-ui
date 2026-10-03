@@ -2,7 +2,7 @@ import type {Meta} from '@storybook/react';
 import React from 'react';
 import {Text, TextProps} from './Text';
 import {Card} from '../Card/Card';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Title} from '../Title/Title';
 import {Link} from '../Link/Link';
 import {componentParameters, story, Story} from '../../storybook/meta';

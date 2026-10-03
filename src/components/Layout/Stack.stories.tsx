@@ -118,7 +118,7 @@ export const Playground: Story<StackProps> = {
 						Черновик
 					</Chip>
 					<Chip
-						as='tag'
+						mode='tag'
 						variant='secondary'
 						size='sm'
 					>

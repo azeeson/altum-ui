@@ -29,5 +29,23 @@ type DeepPartialMessagesValue<T> = T extends (infer U)[]
 /** Код встроенного языка. */
 export type LocaleCode = 'ru' | 'en';
 
-/** Параметры подстановки в шаблоны `{name}`. */
+/** Формы склонения в словаре. Для `en` используются `one` и `many`. */
+export interface PluralMessage {
+	one: string;
+	few: string;
+	many: string;
+}
+
+/**
+ * Словарь приложения: строка, склонение `{one, few, many}` или вложенная группа.
+ * Массивы строк (месяцы и т.п.) в `t` не переводятся — их читают из объекта напрямую.
+ */
+export interface MessageTree {
+	[key: string]: string | PluralMessage | readonly string[] | MessageTree;
+}
+
+/**
+ * Параметры подстановки в шаблоны `{name}`.
+ * Если значение ключа — формы `{one, few, many}`, число для склонения берётся из `count`.
+ */
 export type TranslationParams = Record<string, string | number>;

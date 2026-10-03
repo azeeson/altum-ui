@@ -1,5 +1,6 @@
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 /**
@@ -10,4 +11,6 @@ export interface StatBadgeProps extends ComponentPropsWithoutRef<'div'> {
 	value: number | string;
 	variant?: 'default' | 'success' | 'warning' | 'error';
 	size?: 'sm' | 'md';
+	/** DOM-узел корня. */
+	rootRef?: Ref<HTMLDivElement>;
 }

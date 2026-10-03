@@ -1,4 +1,4 @@
-import type {ComponentPropsWithoutRef, ReactNode} from 'react';
+import type {ComponentPropsWithoutRef, ReactNode, Ref} from 'react';
 
 export type ChartPadding = {
 	left: number;
@@ -57,6 +57,8 @@ export interface ChartHoverBubbleProps {
 
 export interface ChartBaseProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
 	children: ReactNode;
+	/** Корень контейнера графика. */
+	rootRef?: Ref<HTMLDivElement>;
 }
 
 export type ChartXScale = (
@@ -89,4 +91,6 @@ export interface ChartCartesianProps extends Omit<ComponentPropsWithoutRef<'div'
 	getX: ChartXScale;
 	onPlotLeave?: () => void;
 	children: (plot: CartesianPlot) => ReactNode;
+	/** Корень контейнера графика. */
+	rootRef?: Ref<HTMLDivElement>;
 }

@@ -1,6 +1,6 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
-import {Inline, Split, Stack} from '../Layout/Layout';
+import {Inline, Split, Stack} from '../Layout';
 import {Card} from '../Card/Card';
 import {Title} from '../Title/Title';
 import {Text} from '../Text/Text';
@@ -84,7 +84,7 @@ const TaskAppDemo = () => {
 					<Title level={4}>
 						Мои задачи
 					</Title>
-					<Chip as='tag' variant='secondary'>
+					<Chip mode='tag' variant='secondary'>
 						Работа
 					</Chip>
 				</Inline>
@@ -143,8 +143,7 @@ const TaskAppDemo = () => {
 									задач
 								</Text>
 								<Button
-									variant='secondary'
-									status='danger'
+									variant='danger_tinted'
 									size='sm'
 									onClick={() => setDeleteOpen(true)}
 								>
@@ -176,7 +175,7 @@ const TaskAppDemo = () => {
 								title='Задачи не найдены'
 								description={search ? 'Попробуйте другой запрос' : 'Добавьте задачу…'}
 								action={(
-									<Button size='sm' iconStart={<IconPlus size={14} />}>
+									<Button size='sm' prefix={<IconPlus size={14} />}>
 										Добавить задачу
 									</Button>
 								)}
@@ -236,7 +235,7 @@ const TaskAppDemo = () => {
 									</Text>
 									{i === 1 && (
 										<Chip
-											as='tag'
+											mode='tag'
 											size='sm'
 											variant='info'
 										>
@@ -245,7 +244,7 @@ const TaskAppDemo = () => {
 									)}
 									{i === 3 && (
 										<Chip
-											as='tag'
+											mode='tag'
 											size='sm'
 											variant='error'
 										>
@@ -264,12 +263,11 @@ const TaskAppDemo = () => {
 				onOpenChange={setDrawerOpen}
 				mode='sidebar'
 				direction='start'
-				backdrop
 			>
 				<Sheet.Header showClose>
-					<Sheet.Title>
+					<Title level={3}>
 						Навигация
-					</Sheet.Title>
+					</Title>
 				</Sheet.Header>
 				<Sheet.Body>
 					<Stack gap='sm'>

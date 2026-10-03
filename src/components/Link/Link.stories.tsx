@@ -2,7 +2,7 @@ import type {Meta} from '@storybook/react';
 import React from 'react';
 import {Link, LinkProps} from './Link';
 import {Text} from '../Text/Text';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {Box} from '../Box/Box';
 import {Card} from '../Card/Card';
 import {Button} from '../Button/Button';
@@ -150,8 +150,8 @@ export const OnBox: Story<LinkProps> = {
 					const box = (
 						<Box
 							variant={variant}
-							padding='md'
 							border
+							style={{padding: 'var(--altum-g-space-3)'}}
 						>
 							<Stack gap='xs'>
 								<Text size='sm' weight='bold'>

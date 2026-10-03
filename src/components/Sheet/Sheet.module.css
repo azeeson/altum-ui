@@ -2,152 +2,218 @@
   position: relative;
 
   display: flex;
-  box-sizing: border-box;
 
   flex-direction: column;
 
-  max-height: calc(100dvh - var(--altum-g-space-4));
+  width: 100%;
+  max-width: var(--altum-dialog-max-width-lg);
 
-  font-family: var(--altum-g-font-family-ui);
+  font-family: inherit;
 
-  &.panel_sheet {
-    width: 100%;
-    max-width: var(--altum-dialog-max-width-lg);
-  }
-
-  &.panel_sheet.panel_end {
-    border-bottom: none;
-    border-radius: var(--altum-g-radius) var(--altum-g-radius) 0 0;
-  }
-
-  &.panel_sheet.panel_start {
-    border-top: none;
-    border-radius: 0 0 var(--altum-g-radius) var(--altum-g-radius);
-  }
-
-  &.panel_sidebar {
-    height: 100%;
+  /* Десктоп: auto ведёт себя как боковая панель, пока медиазапрос не перепишет диалог. */
+  &[data-mode='sidebar'],
+  &[data-mode='auto'] {
+    width: var(--altum-sheet-width, 280px);
     max-height: 100dvh;
 
     border-radius: 0;
+
+    &[data-direction='start'] {
+      border-left: none;
+    }
+
+    &[data-direction='end'] {
+      border-right: none;
+    }
   }
 
-  &.panel_sidebar.panel_start {
-    border-left: none;
+  &[data-mode='sheet'] {
+    height: var(--altum-sheet-height, auto);
+
+    &[data-direction='end'] {
+      border-bottom: none;
+      border-radius: var(--altum-g-radius) var(--altum-g-radius) 0 0;
+    }
+
+    &[data-direction='start'] {
+      border-top: none;
+      border-radius: 0 0 var(--altum-g-radius) var(--altum-g-radius);
+    }
   }
 
-  &.panel_sidebar.panel_end {
-    border-right: none;
-  }
+  /* Полоска захвата — псевдоэлемент, без отдельной DOM-ноды */
+  &[data-handle]::before {
+    --local-handle-width: 36px;
+    --local-handle-height: var(--altum-g-space-1);
 
-  &.sheetWithHandle {
-    padding-top: 0;
-  }
-
-  & .grabHandleOverlay {
     position: absolute;
-    top: 0;
+    top: var(--altum-g-space-2);
     left: 50%;
     z-index: var(--altum-g-z-raised-above);
 
-    padding: var(--altum-g-space-2) 0 0;
+    display: block;
+    content: '';
+
+    width: var(--local-handle-width);
+    height: var(--local-handle-height);
+
+    border-radius: var(--altum-g-radius);
+
+    background-color: var(--altum-color-input-border);
 
     pointer-events: none;
 
     transform: translateX(-50%);
   }
 
-  &.panel_sheet.panel_start .grabHandleOverlay {
+  &[data-handle][data-mode='sheet'][data-direction='start']::before {
     top: auto;
-    bottom: 0;
-
-    padding: 0 0 var(--altum-g-space-2);
+    bottom: var(--altum-g-space-2);
   }
 
-  /* Сетка на самом header: обёртка DialogBase (.headerContent) сворачивается через contents. */
-  & .headerChrome {
+  & .headerSlot {
     display: grid;
 
     align-items: center;
     gap: var(--altum-g-space-2);
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  }
 
-  & .headerChrome .headerChromeContent {
-    display: contents;
-  }
+    & .leftSide,
+    & .rightSide {
+      display: flex;
 
-  & .headerPlain {
-    display: flex;
+      align-items: center;
 
-    align-items: center;
-    gap: var(--altum-g-space-3);
-  }
+      min-width: 0;
+      min-height: var(--altum-overlay-close-size, 28px);
+    }
 
-  & .headerPlain .headerPlainInner {
-    display: contents;
-  }
-
-  & .headerPlainContent {
-    display: flex;
-
-    flex: 1 1 auto;
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--altum-g-space-1);
-
-    min-width: 0;
-  }
-
-  & .headerPlainEnd {
-    display: flex;
-
-    flex-shrink: 0;
-    align-items: center;
-    gap: var(--altum-g-space-2);
-  }
-
-  & .headerSide {
-    display: flex;
-
-    align-items: center;
-    gap: var(--altum-g-space-2);
-
-    width: 100%;
-    min-width: 0;
-    min-height: var(--altum-overlay-close-size, 28px);
-
-    &.headerSideStart {
+    & .leftSide {
       justify-content: flex-start;
-      justify-self: stretch;
     }
 
-    &.headerSideEnd {
+    & .rightSide {
       justify-content: flex-end;
-      justify-self: stretch;
+      gap: var(--altum-g-space-2);
     }
-  }
 
-  & .headerCenter {
-    justify-self: center;
+    & .centerSide {
+      justify-self: center;
 
-    min-width: 0;
+      min-width: 0;
+    }
 
-    & h2,
-    & h3,
-    & h4 {
+    & .centerSide :is(h2, h3, h4) {
       text-align: center;
     }
+
+    &[data-variant='plain'] {
+      display: flex;
+
+      align-items: center;
+      gap: var(--altum-g-space-3);
+
+      & .leftSide {
+        display: none;
+      }
+
+      & .centerSide {
+        display: flex;
+
+        flex: 1 1 auto;
+        flex-direction: column;
+        justify-self: stretch;
+        gap: var(--altum-g-space-1);
+
+        min-width: 0;
+      }
+
+      & .rightSide {
+        flex-shrink: 0;
+        gap: var(--altum-g-space-2);
+      }
+    }
+
+    &[data-variant='plain'] .centerSide :is(h2, h3, h4) {
+      text-align: left;
+    }
   }
 
-  & .bodyFollowsHeader:not(:first-child) {
-    padding-top: var(--altum-g-space-2);
-  }
-
-  & .bodyFlush {
-    flex: 1 0 auto;
-
-    min-width: 0;
+  & [data-flush] {
+    --altum-layout-pad: 0;
   }
 }
 
+/* Диалог живёт в портале. :has достаёт его с поверхности data-mode=auto. */
+@media (max-width: 768px) {
+  :global(dialog[data-kind='sheet'][data-side]):has(.sheet[data-mode='auto']) {
+    inset: auto 0 0 0;
+
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: 95dvh;
+
+    translate: 0 100%;
+
+    &[open] {
+      translate: 0 0;
+    }
+  }
+
+  :global(dialog[data-kind='sheet'][data-side]):has(.sheet[data-mode='auto'][data-direction='start']) {
+    inset: 0 0 auto 0;
+
+    translate: 0 -100%;
+
+    &[open] {
+      translate: 0 0;
+    }
+  }
+
+  :global(dialog[data-kind='sheet'] > [data-kind='sheet'][data-side]):has(.sheet[data-mode='auto']),
+  :global(dialog[data-kind='sheet'] > [data-kind='sheet'][data-side]):has(.sheet[data-mode='auto']) > * {
+    width: 100%;
+    height: auto;
+    max-height: inherit;
+  }
+
+  .sheet[data-mode='auto'] {
+    width: 100%;
+    max-width: 100%;
+    height: var(--altum-sheet-height, auto);
+    max-height: 95dvh;
+
+    &[data-handle]::before {
+      top: var(--altum-g-space-2);
+      bottom: auto;
+    }
+  }
+
+  .sheet[data-mode='auto'][data-direction='end'] {
+    border-right: 1px solid var(--altum-box-border-color);
+    border-bottom: none;
+    border-radius: var(--altum-g-radius) var(--altum-g-radius) 0 0;
+  }
+
+  .sheet[data-mode='auto'][data-direction='start'] {
+    border-top: none;
+    border-left: 1px solid var(--altum-box-border-color);
+    border-radius: 0 0 var(--altum-g-radius) var(--altum-g-radius);
+
+    &[data-handle]::before {
+      top: auto;
+      bottom: var(--altum-g-space-2);
+    }
+  }
+
+  @starting-style {
+    :global(dialog[data-kind='sheet'][data-side][open]):has(.sheet[data-mode='auto']) {
+      translate: 0 100%;
+    }
+
+    :global(dialog[data-kind='sheet'][data-side][open]):has(.sheet[data-mode='auto'][data-direction='start']) {
+      translate: 0 -100%;
+    }
+  }
+}

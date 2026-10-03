@@ -1,5 +1,5 @@
 import type React from 'react';
-import type {ComponentPropsWithoutRef} from 'react';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
 
 /** Действие в toast. */
 export interface NotificationAction {
@@ -22,12 +22,17 @@ export interface NotificationItem {
 	title: string;
 	description?: string;
 	variant?: 'info' | 'success' | 'warning' | 'error';
-	/** мс; `0` — без автозакрытия */
+	/** мс; по умолчанию 10000. `0` — без автозакрытия */
 	duration?: number;
 	actions?: NotificationAction[];
-	/** Progress-bar countdown; по умолчанию `true` при duration > 0 */
+	/** Круговой отсчёт на месте крестика; по умолчанию при `duration > 0` */
 	progress?: boolean;
-	/** Пауза таймера при hover; по умолчанию `true` */
+	/**
+	 * Пауза auto-dismiss при hover / focus-within.
+	 * В стопке (`NotificationProvider` / `NotificationContainer`) hover любого toast
+	 * ставит на паузу таймеры всех уведомлений с `pauseOnHover`.
+	 * @default true
+	 */
 	pauseOnHover?: boolean;
 }
 
@@ -54,9 +59,11 @@ export interface NotificationViewportProps extends Omit<ComponentPropsWithoutRef
 	stackDepth?: number;
 	/**
 	 * Позиция контейнера на экране.
-	 * @default 'bottom-right'
+	 * @default 'top-right'
 	 */
 	position?: NotificationPosition;
+	/** Корень портала. */
+	rootRef?: Ref<HTMLDivElement>;
 }
 
 /** Свойства карточки toast. */
@@ -67,12 +74,16 @@ export interface NotificationProps extends Omit<ComponentPropsWithoutRef<'div'>,
 	variant?: NotificationItem['variant'];
 	duration?: number;
 	progress?: boolean;
+	/**
+	 * Пауза auto-dismiss при hover / focus-within.
+	 * В стопке hover любого toast паузит все с `pauseOnHover`.
+	 * @default true
+	 */
 	pauseOnHover?: boolean;
-	onClose?: () => void;
+	onClose?: (id?: string) => void;
+	/** Корень карточки. */
+	rootRef?: Ref<HTMLDivElement>;
 }
-
-/** @deprecated Используйте {@link NotificationProps}. */
-export type NotificationRootProps = NotificationProps;
 
 /** Вход `notify()`: `id` опционален, генерируется, если не передан. */
 export type NotifyInput = Omit<NotificationItem, 'id'> & {
@@ -93,7 +104,7 @@ export interface NotificationProviderProps {
 	stackDepth?: number;
 	/**
 	 * Позиция контейнера на экране.
-	 * @default 'bottom-right'
+	 * @default 'top-right'
 	 */
 	position?: NotificationPosition;
 }

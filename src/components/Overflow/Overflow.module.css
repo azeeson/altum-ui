@@ -1,18 +1,173 @@
 .root {
-  position: relative;
 
+  --altum-ov-slot: var(--altum-control-height-sm);
+  --altum-ov-gap: var(--altum-g-space-1);
+  --altum-ov-more: var(--altum-control-height-sm);
   display: flex;
+  box-sizing: border-box;
+  container-type: inline-size;
 
   flex-wrap: nowrap;
   align-items: center;
+  gap: var(--altum-g-space-2);
 
+  width: 100%;
   min-width: 0;
+
+  &[data-gap='sm'] {
+    gap: var(--altum-g-space-1);
+  }
+
+  &[data-gap='lg'] {
+    gap: var(--altum-g-space-3);
+  }
+
+  /* Group default size=md (без data-size); Actions default=sm — базовые vars выше */
+  &:is(.fitContainer, .fitContent):not([data-size]) {
+    --altum-ov-slot: var(--altum-control-height-md);
+    --altum-ov-more: var(--altum-control-height-md);
+  }
+
+  &[data-size='md'] {
+    --altum-ov-slot: var(--altum-control-height-md);
+    --altum-ov-more: var(--altum-control-height-md);
+  }
+
+  &[data-size='lg'] {
+    --altum-ov-slot: var(--altum-control-height-lg);
+    --altum-ov-more: var(--altum-control-height-lg);
+  }
+
+  &[data-size='sm'] {
+    --altum-ov-slot: var(--altum-control-height-sm);
+    --altum-ov-more: var(--altum-control-height-sm);
+  }
 
   &.actions {
     display: inline-flex;
 
-    flex-wrap: wrap;
-    gap: var(--altum-g-space-1);
+    gap: var(--altum-ov-gap);
+
+    width: auto;
+
+    /*
+      Equal-width CQ auto-fit (`data-ov-fit="cq"`).
+      Hides trailing [data-ov-index] when the container cannot fit N slots + more.
+      Variable-width Measure keeps ResizeObserver + fitCount (see Measure in Overflow.tsx).
+    */
+    &[data-ov-fit='cq'] {
+      width: 100%;
+
+      & .more {
+        display: inline-flex;
+      }
+
+      @container (max-width: calc(var(--altum-ov-slot) * 2 + var(--altum-ov-gap) * 2 + var(--altum-ov-more) - 0.01px)) {
+        & > [data-ov-index]:not([data-ov-index='0']) {
+          display: none;
+        }
+      }
+
+      @container (max-width: calc(var(--altum-ov-slot) * 3 + var(--altum-ov-gap) * 3 + var(--altum-ov-more) - 0.01px)) {
+        & > [data-ov-index]:not([data-ov-index='0']):not([data-ov-index='1']) {
+          display: none;
+        }
+      }
+
+      @container (max-width: calc(var(--altum-ov-slot) * 4 + var(--altum-ov-gap) * 4 + var(--altum-ov-more) - 0.01px)) {
+        & > [data-ov-index]:not([data-ov-index='0']):not([data-ov-index='1']):not([data-ov-index='2']) {
+          display: none;
+        }
+      }
+
+      @container (max-width: calc(var(--altum-ov-slot) * 5 + var(--altum-ov-gap) * 5 + var(--altum-ov-more) - 0.01px)) {
+        & > [data-ov-index]:not([data-ov-index='0']):not([data-ov-index='1']):not([data-ov-index='2']):not([data-ov-index='3']) {
+          display: none;
+        }
+      }
+
+      @container (max-width: calc(var(--altum-ov-slot) * 6 + var(--altum-ov-gap) * 6 + var(--altum-ov-more) - 0.01px)) {
+        & > [data-ov-index]:not([data-ov-index='0']):not([data-ov-index='1']):not([data-ov-index='2']):not([data-ov-index='3']):not([data-ov-index='4']) {
+          display: none;
+        }
+      }
+
+      @container (max-width: calc(var(--altum-ov-slot) * 7 + var(--altum-ov-gap) * 7 + var(--altum-ov-more) - 0.01px)) {
+        & > [data-ov-index]:not([data-ov-index='0']):not([data-ov-index='1']):not([data-ov-index='2']):not([data-ov-index='3']):not([data-ov-index='4']):not([data-ov-index='5']) {
+          display: none;
+        }
+      }
+
+      @container (max-width: calc(var(--altum-ov-slot) * 8 + var(--altum-ov-gap) * 8 + var(--altum-ov-more) - 0.01px)) {
+        & > [data-ov-index]:not([data-ov-index='0']):not([data-ov-index='1']):not([data-ov-index='2']):not([data-ov-index='3']):not([data-ov-index='4']):not([data-ov-index='5']):not([data-ov-index='6']) {
+          display: none;
+        }
+      }
+
+      &[data-count='1'] {
+        @container (min-width: calc(var(--altum-ov-slot) * 1)) {
+          & .more {
+            display: none;
+          }
+        }
+      }
+
+      &[data-count='2'] {
+        @container (min-width: calc(var(--altum-ov-slot) * 2 + var(--altum-ov-gap))) {
+          & .more {
+            display: none;
+          }
+        }
+      }
+
+      &[data-count='3'] {
+        @container (min-width: calc(var(--altum-ov-slot) * 3 + var(--altum-ov-gap) * 2)) {
+          & .more {
+            display: none;
+          }
+        }
+      }
+
+      &[data-count='4'] {
+        @container (min-width: calc(var(--altum-ov-slot) * 4 + var(--altum-ov-gap) * 3)) {
+          & .more {
+            display: none;
+          }
+        }
+      }
+
+      &[data-count='5'] {
+        @container (min-width: calc(var(--altum-ov-slot) * 5 + var(--altum-ov-gap) * 4)) {
+          & .more {
+            display: none;
+          }
+        }
+      }
+
+      &[data-count='6'] {
+        @container (min-width: calc(var(--altum-ov-slot) * 6 + var(--altum-ov-gap) * 5)) {
+          & .more {
+            display: none;
+          }
+        }
+      }
+
+      &[data-count='7'] {
+        @container (min-width: calc(var(--altum-ov-slot) * 7 + var(--altum-ov-gap) * 6)) {
+          & .more {
+            display: none;
+          }
+        }
+      }
+
+      &[data-count='8'] {
+        @container (min-width: calc(var(--altum-ov-slot) * 8 + var(--altum-ov-gap) * 7)) {
+          & .more {
+            display: none;
+          }
+        }
+      }
+    }
   }
 
   &.fitContent {
@@ -21,16 +176,11 @@
   }
 
   &.fitContainer {
+    align-items: stretch;
     align-self: stretch;
 
     width: 100%;
     height: 100%;
-
-    & .row {
-      align-items: stretch;
-
-      height: 100%;
-    }
 
     & .item {
       display: flex;
@@ -38,8 +188,9 @@
       align-items: stretch;
     }
 
-    & .moreSlot {
+    & .moreEnd {
       align-items: stretch;
+      align-self: stretch;
 
       margin-inline-start: auto;
     }
@@ -52,7 +203,7 @@
       aspect-ratio: auto;
 
       border: none;
-      border-radius: calc(var(--altum-g-radius) - 2px);
+      border-radius: calc(var(--altum-g-radius) - var(--altum-control-inset));
 
       opacity: 0.75;
       background-color: transparent;
@@ -69,58 +220,24 @@
     }
   }
 
-  & .row {
-    display: flex;
-
-    flex-wrap: nowrap;
-    align-items: center;
-
-    width: 100%;
-    min-width: 0;
-  }
-
   & .item,
   & .more {
     flex-shrink: 0;
   }
 
-  & .moreMeasure {
-    position: absolute;
-
-    visibility: hidden;
-
-    pointer-events: none;
-  }
-
-  & .moreSlot {
+  & .slot {
     display: flex;
 
     flex-shrink: 0;
     align-items: center;
   }
 
-  & .gapSm {
-    gap: var(--altum-g-space-1);
-  }
-
-  & .gapMd {
-    gap: var(--altum-g-space-2);
-  }
-
-  & .gapLg {
-    gap: var(--altum-g-space-3);
-  }
-
   & .menuPanel {
-    overflow-x: hidden;
-    overflow-y: auto;
-
     max-width: min(20rem, calc(100vw - var(--altum-g-space-8)));
   }
 
   & .menuStack {
     display: flex;
-    overflow-x: hidden;
 
     flex-direction: column;
     align-items: stretch;
@@ -136,20 +253,6 @@
       max-width: 100%;
       height: auto;
       min-height: var(--altum-control-height-sm);
-    }
-  }
-
-  & .srFocus {
-    &:focus-visible {
-      position: static;
-
-      overflow: visible;
-      clip: auto;
-
-      width: auto;
-      height: auto;
-
-      margin: 0;
     }
   }
 }

@@ -1,12 +1,12 @@
-.maskOffset {
-  white-space: pre;
-
-  color: transparent;
-}
-
-.guideChar {
-  white-space: pre;
+.guide {
+  font-variant-numeric: tabular-nums;
 
   color: var(--altum-field-label);
   opacity: 0.6;
+
+  &::before {
+    content: attr(data-fill);
+
+    color: transparent;
+  }
 }

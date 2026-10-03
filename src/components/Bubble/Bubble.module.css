@@ -1,4 +1,6 @@
 .wrap {
+  position: relative;
+
   display: flex;
 
   flex-direction: column;
@@ -10,22 +12,18 @@
 
   font-family: var(--altum-g-font-family-ui);
 
-  &.alignEnd {
-    align-items: flex-end;
-    align-self: flex-end;
-
-    & .group_first {
-      border-bottom-right-radius: var(--altum-g-radius-sm);
-      border-bottom-left-radius: var(--altum-g-radius-lg, 12px);
-    }
-
-    & .group_last {
-      border-top-left-radius: var(--altum-g-radius-lg, 12px);
-      border-top-right-radius: var(--altum-g-radius-sm);
-    }
+  /* Tight stack between consecutive bubbles of one author */
+  &[data-group='first'],
+  &[data-group='middle'] {
+    margin-bottom: var(--altum-g-space-1);
   }
 
-  &.collapsible:not(:has([aria-expanded='true'])) .body {
+  &[data-align='end'] {
+    align-items: flex-end;
+    align-self: flex-end;
+  }
+
+  &[data-collapsible]:not(:has([aria-expanded='true'])) .body {
     display: -webkit-box;
     overflow: hidden;
 
@@ -50,7 +48,7 @@
     padding: var(--altum-g-space-2) var(--altum-g-space-3);
 
     border: 1px solid transparent;
-    border-radius: var(--altum-g-radius-lg, 12px);
+    border-radius: var(--altum-g-radius-lg);
 
     color: var(--altum-color-input-text);
     background-color: var(--altum-color-surface-active);
@@ -58,14 +56,43 @@
     transition: var(--altum-transition-smooth);
   }
 
-  & .outgoing {
+  /* Group chrome: link adjacent corners on the tail side */
+  &[data-align='start'] {
+    &[data-group='first'] .bubble {
+      border-bottom-left-radius: var(--altum-g-radius-sm);
+    }
+
+    &[data-group='middle'] .bubble {
+      border-radius: var(--altum-g-radius-sm);
+    }
+
+    &[data-group='last'] .bubble {
+      border-top-left-radius: var(--altum-g-radius-sm);
+    }
+  }
+
+  &[data-align='end'] {
+    &[data-group='first'] .bubble {
+      border-bottom-right-radius: var(--altum-g-radius-sm);
+    }
+
+    &[data-group='middle'] .bubble {
+      border-radius: var(--altum-g-radius-sm);
+    }
+
+    &[data-group='last'] .bubble {
+      border-top-right-radius: var(--altum-g-radius-sm);
+    }
+  }
+
+  & .bubble[data-variant='outgoing'] {
     border-color: var(--altum-color-brand-tint-border);
 
     color: var(--altum-color-brand-tint-text);
     background-color: var(--altum-color-brand-tint);
   }
 
-  & .system {
+  & .bubble[data-variant='system'] {
     padding: var(--altum-g-space-1) var(--altum-g-space-3);
 
     border-style: dashed;
@@ -77,23 +104,11 @@
     background-color: transparent;
   }
 
-  & .group_first {
-    border-bottom-left-radius: var(--altum-g-radius-sm);
-  }
-
-  & .group_middle {
-    border-radius: var(--altum-g-radius-sm);
-  }
-
-  & .group_last {
-    border-top-left-radius: var(--altum-g-radius-sm);
-  }
-
   & .body {
     margin: 0;
 
     font-size: var(--altum-g-font-size-base);
-    line-height: 1.45;
+    line-height: var(--altum-g-line-height-base);
     white-space: pre-wrap;
     word-break: break-word;
   }
@@ -111,13 +126,32 @@
     }
   }
 
+  /*
+   * Reactions float on the bubble’s bottom edge (half overlap).
+   * padding-bottom reserves the hanging half so the next bubble clears them;
+   * groups without reactions keep only the tight margin-bottom above.
+   */
+  &:has(.reactions) {
+    padding-bottom: calc(var(--altum-g-space-5) / 2);
+  }
+
   & .reactions {
+    position: absolute;
+    bottom: 0;
+    z-index: 1;
+
     display: inline-flex;
 
     flex-wrap: wrap;
     gap: var(--altum-g-space-1);
+  }
 
-    margin-top: var(--altum-control-inset);
+  &[data-align='start'] .reactions {
+    inset-inline-start: var(--altum-g-space-2);
+  }
+
+  &[data-align='end'] .reactions {
+    inset-inline-end: var(--altum-g-space-2);
   }
 
   & .reaction {
@@ -144,16 +178,16 @@
     &:hover:not(:disabled) {
       background: var(--altum-color-panel-bg-hover);
     }
-  }
 
-  & .reactionActive {
-    border-color: var(--altum-color-brand-tint-border);
+    &[data-active] {
+      border-color: var(--altum-color-brand-tint-border);
 
-    color: var(--altum-color-brand-tint-text);
-    background: var(--altum-color-brand-tint);
-
-    & .reactionCount {
       color: var(--altum-color-brand-tint-text);
+      background: var(--altum-color-brand-tint);
+
+      & .reactionCount {
+        color: var(--altum-color-brand-tint-text);
+      }
     }
   }
 

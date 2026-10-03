@@ -1,43 +1,32 @@
 import type {SearchFieldProps} from './SearchField.types';
 export type {SearchFieldProps} from './SearchField.types';
 
-import {forwardRef} from 'react';
-import {TextField} from '../TextField/TextField';
-import {FieldBaseIcon} from '../../base/FieldBase';
+import {FieldBaseIcon, TextField} from '../TextField/TextField';
 import {IconSearch} from '../../icons/icons/IconSearch';
-import {useLocale} from '../../locales/localeContext';
 
 /**
- * Поле поиска с иконкой лупы.
- * По умолчанию `labelPlacement="none"` (toolbar). В формах передавайте `outside`.
+ * Поле поиска с иконкой лупы. Без `label` — тулбарный вид; в формах передайте `label`.
  *
  * @component
  * @example
- * <SearchField label="Поиск" value={query} onChange={(e) => setQuery(e.target.value)} />
+ * <SearchField placeholder="Поиск" value={query} onChange={(e) => setQuery(e.target.value)} />
  */
-export const SearchField = forwardRef<HTMLInputElement, SearchFieldProps>(function SearchField(
-	{
-		label,
-		labelPlacement = 'none',
-		...props
-	},
-	ref,
-) {
-	const {t} = useLocale();
-	return (
-		<TextField
-			{...props}
-			ref={ref}
-			label={label ?? t('searchField.label')}
-			labelPlacement={labelPlacement}
-			type='search'
-			prefix={(
-				<FieldBaseIcon>
-					<IconSearch />
-				</FieldBaseIcon>
-			)}
-		/>
-	);
-});
-
-SearchField.displayName = 'SearchField';
+export const SearchField = ({
+	label,
+	'aria-label': ariaLabel,
+	inputRef,
+	...props
+}: SearchFieldProps) => (
+	<TextField
+		{...props}
+		inputRef={inputRef}
+		label={label}
+		aria-label={ariaLabel ?? (label ? undefined : 'Поиск')}
+		type='search'
+		prefix={(
+			<FieldBaseIcon>
+				<IconSearch />
+			</FieldBaseIcon>
+		)}
+	/>
+);

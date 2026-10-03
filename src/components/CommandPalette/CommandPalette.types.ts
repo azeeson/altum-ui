@@ -1,6 +1,7 @@
 import type {
 	ComponentPropsWithoutRef,
 	ReactNode,
+	Ref,
 } from 'react';
 import type {ActionListGroup, ActionListItem} from '../ActionList/ActionList.types';
 
@@ -21,4 +22,6 @@ export interface CommandPaletteProps extends Omit<
 	footer?: ReactNode;
 	onAction?: (item: ActionListItem) => void;
 	className?: string;
+	/** DOM-узел поверхности (`Box`). */
+	rootRef?: Ref<HTMLElement>;
 }

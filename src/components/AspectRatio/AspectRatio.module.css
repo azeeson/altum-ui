@@ -1,8 +1,9 @@
-.root {
+.root.root {
   display: grid;
   overflow: hidden;
 
   width: 100%;
+  aspect-ratio: var(--altum-aspect-ratio, 1.7778);
 
   border-radius: var(--altum-g-radius-md);
 

@@ -51,17 +51,25 @@ export interface CalendarProviderProps {
 	children: React.ReactNode;
 }
 
-export type CalendarRootProps = React.ComponentPropsWithoutRef<'div'>;
+export type CalendarRootProps = React.ComponentPropsWithoutRef<'div'> & {
+	rootRef?: React.Ref<HTMLDivElement>;
+};
 
-export type CalendarHeaderProps = React.ComponentPropsWithoutRef<'div'>;
+export type CalendarHeaderProps = React.ComponentPropsWithoutRef<'div'> & {
+	rootRef?: React.Ref<HTMLDivElement>;
+};
 
-export type CalendarTitleProps = React.ComponentPropsWithoutRef<'span'>;
+export type CalendarTitleProps = React.ComponentPropsWithoutRef<'span'> & {
+	rootRef?: React.Ref<HTMLSpanElement>;
+};
 
 export interface CalendarNavProps extends Omit<React.ComponentPropsWithoutRef<'button'>, 'direction'> {
 	direction: 'prev' | 'next';
+	rootRef?: React.Ref<HTMLButtonElement>;
 }
 
 export interface CalendarBodyProps extends React.ComponentPropsWithoutRef<'div'> {
+	rootRef?: React.Ref<HTMLDivElement>;
 	renderDayCell?: (props: CalendarDayCellRenderProps) => React.ReactNode;
 }
 
@@ -74,7 +82,6 @@ export type CalendarContextValue = {
 	viewDate: Date;
 	year: number;
 	month: number;
-	days: CalendarDayCell[];
 	view: CalendarViewMode;
 	setView: (mode: CalendarViewMode) => void;
 	yearPageStart: number;
@@ -86,4 +93,3 @@ export type CalendarContextValue = {
 };
 
 export const YEARS_PER_PAGE = 20;
-export const YEARS_COLUMNS = 4;

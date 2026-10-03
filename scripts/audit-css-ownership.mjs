@@ -74,7 +74,7 @@ for (const file of allFiles) {
 	}
 }
 
-// 4) Пространство токенов: CSS компонента может объявлять/использовать только --altum-* (HEX только в ThemeProvider)
+// 4) Пространство токенов: --altum-* публичные, --local-* приватные (HEX только в ThemeProvider)
 const TOKEN_RE = /--[a-zA-Z][a-zA-Z0-9-]*/g;
 const HEX_RE = /#[0-9a-fA-F]{3,8}\b/;
 for (const file of allFiles) {
@@ -89,8 +89,8 @@ for (const file of allFiles) {
 	}
 	const tokens = text.match(TOKEN_RE) ?? [];
 	for (const token of tokens) {
-		if (!token.startsWith('--altum-')) {
-			violations.push(`Токен не --altum-* ${token} в ${rel}`);
+		if (!token.startsWith('--altum-') && !token.startsWith('--local-')) {
+			violations.push(`Токен не --altum-* и не --local-* ${token} в ${rel}`);
 		}
 	}
 }

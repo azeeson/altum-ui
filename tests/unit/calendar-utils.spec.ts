@@ -1,6 +1,6 @@
 import {test, expect} from '@playwright/test';
 import {compareDay, isDateInRange, isSameDay, selectNextRange, weekdayLabels} from '../../src/components/Calendar/Calendar.utils';
-import {getGridIndex} from '../../src/utils/a11y';
+import {getGridIndex} from '../../src/core/utils/a11y';
 
 test.describe('calendar.utils', () => {
 	test('isSameDay игнорирует время', () => {

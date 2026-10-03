@@ -4,7 +4,7 @@ import {TextareaField, TextareaFieldProps} from './TextareaField';
 import {TextField} from '../TextField/TextField';
 import {Button} from '../Button/Button';
 import {Fieldset} from '../Fieldset/Fieldset';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {
 	componentParameters,
 	fieldArgTypes,
@@ -25,7 +25,6 @@ export default {
 		label: 'Описание',
 		size: 'md',
 		width: 'full',
-		labelPlacement: 'inline',
 		autoResize: true,
 		minRows: 1,
 	},
@@ -100,24 +99,27 @@ export const Sizes: Story<TextareaFieldProps> = {
 
 export const LabelPlacement: Story<TextareaFieldProps> = {
 	render: function LabelPlacementRender() {
-		const [value, setValue] = useState('');
+		const [withLabel, setWithLabel] = useState('');
+		const [withoutLabel, setWithoutLabel] = useState('');
 		return (
 			<Stack gap='md' style={{maxWidth: 400}}>
-				{(['inline', 'outside', 'none'] as const).map((placement) => (
-					<TextareaField
-						key={placement}
-						label={`Заметки (${placement})`}
-						labelPlacement={placement}
-						placeholder='Текст заметки'
-						value={value}
-						onChange={(e) => setValue(e.target.value)}
-						width='full'
-					/>
-				))}
+				<TextareaField
+					label='Заметки'
+					value={withLabel}
+					onChange={(e) => setWithLabel(e.target.value)}
+					width='full'
+				/>
+				<TextareaField
+					aria-label='Заметки'
+					placeholder='Текст заметки'
+					value={withoutLabel}
+					onChange={(e) => setWithoutLabel(e.target.value)}
+					width='full'
+				/>
 			</Stack>
 		);
 	},
-	parameters: story('`labelPlacement` inline / outside / none.'),
+	parameters: story('С `label` — floating-лейбл; без `label` виден placeholder.'),
 };
 
 export const Disabled: Story<TextareaFieldProps> = {
@@ -169,7 +171,7 @@ export const WithError: Story<TextareaFieldProps> = {
 export const Empty: Story<TextareaFieldProps> = {
 	args: {
 		label: 'Комментарий',
-		helperText: 'Кратко опишите задачу',
+		description: 'Кратко опишите задачу',
 		width: 'full',
 	},
 	parameters: story('Пустое поле с подсказкой.'),
@@ -317,7 +319,7 @@ export const UsageExample: Story<TextareaFieldProps> = {
 						label='Описание'
 						value={body}
 						onChange={(e) => setBody(e.target.value)}
-						helperText='Можно несколько абзацев'
+						description='Можно несколько абзацев'
 						width='full'
 						maxHeight={160}
 					/>

@@ -1,4 +1,5 @@
-import {addDays, startOfDay} from '../Calendar/Calendar.utils';
+import {addDays, startOfDay} from '../../core/utils/date';
+import {clamp} from '../../core/utils/math';
 import type {CalendarScheduleEvent} from '../Calendar/Calendar.types';
 
 export interface SpanSegment {
@@ -18,16 +19,8 @@ interface TimedEventLayout {
 	end: Date;
 }
 
-function endOfDay(date: Date): Date {
-	return addDays(startOfDay(date), 1);
-}
-
 function minutesFromMidnight(date: Date): number {
 	return date.getHours() * 60 + date.getMinutes() + date.getSeconds() / 60;
-}
-
-function clamp(value: number, min: number, max: number): number {
-	return Math.min(max, Math.max(min, value));
 }
 
 /**
@@ -41,16 +34,6 @@ export function buildHourMarks(dayStartHour: number, dayEndHour: number): number
 	const end = Math.ceil(dayEndHour);
 	if (end <= start) return [];
 	return Array.from({length: end - start}, (_, index) => start + index);
-}
-
-/**
- * Форматирует метку часа для оси времени (`HH:00`).
- *
- * @param hour - Час (может выходить за 0–23, нормализуется по модулю 24).
- */
-export function formatHourLabel(hour: number): string {
-	const h = ((hour % 24) + 24) % 24;
-	return `${String(h).padStart(2, '0')}:00`;
 }
 
 /**
@@ -69,7 +52,7 @@ export function clipEventToDay(
 	end: Date
 } | null {
 	const dayStart = startOfDay(day);
-	const dayEnd = endOfDay(day);
+	const dayEnd = addDays(dayStart, 1);
 	const clippedStart = start > dayStart ? start : dayStart;
 	const clippedEnd = end < dayEnd ? end : dayEnd;
 	if (clippedEnd <= clippedStart) return null;
@@ -119,7 +102,7 @@ export function segmentSpanInColumns(
 
 	const first = columns[0]!;
 	const last = columns[columns.length - 1]!;
-	const windowEnd = endOfDay(last);
+	const windowEnd = addDays(startOfDay(last), 1);
 
 	if (end <= first || start >= windowEnd) return null;
 

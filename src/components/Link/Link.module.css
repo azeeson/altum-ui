@@ -1,5 +1,42 @@
 .link {
-  &.primary {
+  &[data-size='xs'] {
+    font-size: var(--altum-g-font-size-xs);
+    line-height: var(--altum-g-line-height-xs);
+  }
+
+  &[data-size='sm'] {
+    font-size: var(--altum-g-font-size-sm);
+    line-height: var(--altum-g-line-height-sm);
+  }
+
+  &[data-size='md'] {
+    font-size: var(--altum-g-font-size-base);
+    line-height: var(--altum-g-line-height-base);
+  }
+
+  &[data-size='lg'] {
+    font-size: var(--altum-g-font-size-lg);
+    line-height: var(--altum-g-line-height-lg);
+  }
+
+  &[data-size='xl'] {
+    font-size: var(--altum-g-font-size-xl);
+    line-height: var(--altum-g-line-height-xl);
+  }
+
+  &[data-weight='normal'] {
+    font-weight: var(--altum-g-font-weight-normal);
+  }
+
+  &[data-weight='medium'] {
+    font-weight: var(--altum-g-font-weight-medium);
+  }
+
+  &[data-weight='bold'] {
+    font-weight: var(--altum-g-font-weight-bold);
+  }
+
+  &[data-variant='primary'] {
     color: var(--altum-color-link-color);
 
     &:hover:not(:disabled) {
@@ -7,7 +44,7 @@
     }
   }
 
-  &.secondary {
+  &[data-variant='secondary'] {
     color: var(--altum-color-link-secondary);
 
     &:hover:not(:disabled) {
@@ -15,7 +52,7 @@
     }
   }
 
-  &.muted {
+  &[data-variant='muted'] {
     color: var(--altum-color-link-muted);
 
     &:hover:not(:disabled) {
@@ -23,7 +60,7 @@
     }
   }
 
-  &.danger {
+  &[data-status='danger'] {
     color: var(--altum-color-link-danger);
 
     &:hover:not(:disabled) {

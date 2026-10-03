@@ -6,7 +6,7 @@ import {
 } from './Overflow';
 import {Chip} from '../Chip/Chip';
 import {Card} from '../Card/Card';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Button} from '../Button/Button';
 import {IconCopy} from '../../icons/icons/IconCopy';
@@ -115,7 +115,7 @@ function useLog() {
 	};
 }
 
-function ActionItems({on}: {on: (name: string) => () => void}) {
+function actionItems(on: (name: string) => () => void) {
 	return (
 		<>
 			<Overflow.Item
@@ -154,7 +154,7 @@ export const Playground: Story<OverflowProps> = {
 		return (
 			<Stack gap='md'>
 				<Overflow {...args}>
-					<ActionItems on={on} />
+					{actionItems(on)}
 				</Overflow>
 				<Text size='sm' color='muted'>
 					Последнее действие:
@@ -173,7 +173,7 @@ export const VisibleTwo: Story<OverflowProps> = {
 		return (
 			<Stack gap='md'>
 				<Overflow visibleCount={2} display='icon-label'>
-					<ActionItems on={on} />
+					{actionItems(on)}
 				</Overflow>
 				<Text size='sm' color='muted'>
 					Последнее действие:
@@ -424,7 +424,7 @@ export const Interaction: Story<OverflowProps> = {
 		return (
 			<Stack gap='md'>
 				<Overflow visibleCount={2}>
-					<ActionItems on={on} />
+					{actionItems(on)}
 				</Overflow>
 				<Text size='sm' color='muted'>
 					Последнее действие:

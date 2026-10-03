@@ -3,7 +3,7 @@ import React from 'react';
 import {Media, MediaProps} from './Media';
 import {Card} from '../Card/Card';
 import {Grid} from '../Grid/Grid';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {demoImage, demoThumb} from '../../storybook/demoImages';
 import {componentParameters, story, Story} from '../../storybook/meta';
@@ -143,10 +143,7 @@ export const Video: Story<MediaProps> = {
 export const UsageExample: Story<MediaProps> = {
 	render: () => (
 		<Grid
-			columns={{
-				xs: 1,
-				sm: 2
-			}}
+			columns={2}
 			gap='md'
 			style={{maxWidth: 560}}
 		>

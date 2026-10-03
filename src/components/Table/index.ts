@@ -7,7 +7,6 @@ export type {
 	TablePagination,
 	TableEmptyConfig,
 	TableProps,
-	TableContentProps,
 	TableRowActionsProps,
 	TableViewProps,
 	TableRowComponentProps,

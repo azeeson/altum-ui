@@ -1,32 +1,31 @@
-/* Виртуализированный список: вьюпорт / spacer / строка. */
+/* Виртуализированный список: вьюпорт, распорка высоты, окно строк. */
 
 .root {
-  --altum-virtual-total: 0px;
-
   position: relative;
 
   box-sizing: border-box;
-  overflow: auto;
-  overscroll-behavior: contain;
 
   width: 100%;
 
-  &.external {
+  &[data-external] {
     overflow: visible;
     overscroll-behavior: auto;
   }
 
+  /* Явная высота + clip: abspos-окно не расширяет scrollHeight
+     (иначе у переменных высот maxScroll дёргается на конце списка). */
   & .spacer {
     position: relative;
 
-    height: var(--altum-virtual-total);
+    overflow: hidden;
+    overflow: clip;
+
+    width: 100%;
 
     pointer-events: none;
   }
 
-  & .item {
-    --altum-virtual-top: 0px;
-
+  & .content {
     position: absolute;
     top: 0;
     left: 0;
@@ -35,10 +34,14 @@
 
     pointer-events: auto;
 
-    transform: translateY(var(--altum-virtual-top));
+    will-change: transform;
   }
 
-  & .item > * {
+  & .item {
     position: relative;
+
+    box-sizing: border-box;
+
+    width: 100%;
   }
 }

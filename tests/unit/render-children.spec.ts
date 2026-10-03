@@ -1,7 +1,7 @@
 import {createElement, isValidElement, type ReactElement} from 'react';
 import {test, expect} from '@playwright/test';
-import {mergeSlotProps} from '../../src/utils/slot';
-import {renderChildren} from '../../src/utils/renderChildren';
+import {mergeSlotProps} from '../../src/core/utils/slot';
+import {renderChildren} from '../../src/core/utils/renderChildren';
 
 test.describe('mergeSlotProps', () => {
 	test('склеивает className и перекрывает style слотом', () => {

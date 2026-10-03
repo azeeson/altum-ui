@@ -1,305 +1,87 @@
 import type {Messages} from './types';
+import {enSlice as common} from './slices/common.en';
+import {enSlice as calendar} from './slices/calendar.en';
+import {enSlice as calendarBoard} from './slices/calendarBoard.en';
+import {enSlice as dayStrip} from './slices/dayStrip.en';
+import {enSlice as timeField} from './slices/timeField.en';
+import {enSlice as dateRangeField} from './slices/dateRangeField.en';
+import {enSlice as select} from './slices/select.en';
+import {enSlice as customSelect} from './slices/customSelect.en';
+import {enSlice as listbox} from './slices/listbox.en';
+import {enSlice as suggestField} from './slices/suggestField.en';
+import {enSlice as sheet} from './slices/sheet.en';
+import {enSlice as modal} from './slices/modal.en';
+import {enSlice as confirmDialog} from './slices/confirmDialog.en';
+import {enSlice as table} from './slices/table.en';
+import {enSlice as pagination} from './slices/pagination.en';
+import {enSlice as sortable} from './slices/sortable.en';
+import {enSlice as upload} from './slices/upload.en';
+import {enSlice as imageCrop} from './slices/imageCrop.en';
+import {enSlice as imageGallery} from './slices/imageGallery.en';
+import {enSlice as imageLightbox} from './slices/imageLightbox.en';
+import {enSlice as sidebar} from './slices/sidebar.en';
+import {enSlice as password} from './slices/password.en';
+import {enSlice as numberField} from './slices/numberField.en';
+import {enSlice as pinInput} from './slices/pinInput.en';
+import {enSlice as searchField} from './slices/searchField.en';
+import {enSlice as slider} from './slices/slider.en';
+import {enSlice as rating} from './slices/rating.en';
+import {enSlice as actionList} from './slices/actionList.en';
+import {enSlice as commandPalette} from './slices/commandPalette.en';
+import {enSlice as pullToRefresh} from './slices/pullToRefresh.en';
+import {enSlice as spinner} from './slices/spinner.en';
+import {enSlice as steps} from './slices/steps.en';
+import {enSlice as bubble} from './slices/bubble.en';
+import {enSlice as chip} from './slices/chip.en';
+import {enSlice as fileList} from './slices/fileList.en';
+import {enSlice as virtualList} from './slices/virtualList.en';
+import {enSlice as skipLink} from './slices/skipLink.en';
+import {enSlice as overflow} from './slices/overflow.en';
+import {enSlice as buttonGroup} from './slices/buttonGroup.en';
+import {enSlice as menu} from './slices/menu.en';
 
 /**
  * Встроенный словарь английского языка.
  */
 export const en: Messages = {
-	common: {
-		close: 'Close',
-		clear: 'Clear',
-		collapse: 'Collapse',
-	},
-
-	calendar: {
-		months: [
-			'January',
-			'February',
-			'March',
-			'April',
-			'May',
-			'June',
-			'July',
-			'August',
-			'September',
-			'October',
-			'November',
-			'December',
-		],
-		monthsShort: [
-			'Jan',
-			'Feb',
-			'Mar',
-			'Apr',
-			'May',
-			'Jun',
-			'Jul',
-			'Aug',
-			'Sep',
-			'Oct',
-			'Nov',
-			'Dec',
-		],
-		weekdaysShort: [
-			'Mo',
-			'Tu',
-			'We',
-			'Th',
-			'Fr',
-			'Sa',
-			'Su'
-		],
-		prevMonth: 'Previous month',
-		nextMonth: 'Next month',
-		prevYear: 'Previous year',
-		nextYear: 'Next year',
-		prevYears: 'Previous years',
-		nextYears: 'Next years',
-		selectYear: 'Select year, currently {year}',
-		selectMonth: 'Select month, currently {month}',
-		monthsOfYear: 'Months {year}',
-		yearsRange: 'Years {start}–{end}',
-	},
-
-	calendarBoard: {
-		ariaLabel: 'Calendar board',
-		prevPeriod: 'Previous period',
-		nextPeriod: 'Next period',
-		viewSwitchAria: 'Calendar view',
-		views: {
-			month: 'Month',
-			week: 'Week',
-			day: 'Day',
-			year: 'Year',
-		},
-		scheduleAria: 'Schedule',
-		allDay: 'All-day events',
-		allDayShort: 'all day',
-		dayWithTasks: '{day} {month}, tasks: {count}',
-		dayWithoutTasks: '{day} {month}',
-		moreTasks: '{count} more',
-	},
-
-	dayStrip: {
-		ariaLabel: 'Day navigation',
-		prev: 'Previous day',
-		next: 'Next day',
-		days: 'Days',
-	},
-
-	timeField: {
-		hours: 'Hours',
-		minutes: 'Minutes',
-	},
-
-	dateRangeField: {
-		label: 'Period',
-		start: 'From',
-		end: 'To',
-	},
-
-	select: {
-		removeItem: 'Remove {label}',
-	},
-
-	customSelect: {
-		filterPlaceholder: 'Search...',
-		noOptions: 'No results found',
-	},
-
-	listbox: {
-		noOptions: 'No results found',
-	},
-
-	suggestField: {
-		noOptions: 'No results found',
-	},
-
-	sheet: {
-		ariaLabel: 'Sheet',
-	},
-
-	modal: {
-		ariaLabel: 'Dialog',
-	},
-
-	confirmDialog: {
-		confirm: 'Confirm',
-		cancel: 'Cancel',
-	},
-
-	table: {
-		expandColumn: 'Expand',
-		selectAll: 'Select all rows',
-		selectRow: 'Select row {id}',
-		resizeColumn: 'Resize {header}',
-		emptyTitle: 'No data',
-		rowActions: 'Row actions',
-	},
-
-	pagination: {
-		ariaLabel: 'Pagination',
-		prev: 'Previous page',
-		next: 'Next page',
-		page: 'Page {page}',
-		summary: '{start}–{end} of {total}',
-		pageSizeLabel: 'Per page',
-		pageSizeAria: 'Page size',
-	},
-
-	sortable: {
-		moveUp: 'Move up',
-		moveDown: 'Move down',
-		moved: 'Position {position} of {total}: item moved',
-		dragItem: 'Drag item',
-	},
-
-	upload: {
-		dropHint: 'Drop files here or',
-		choose: 'browse',
-		selectedCount: 'Selected files: {count}',
-		release: 'Release to upload',
-	},
-
-	imageCrop: {
-		title: 'Crop image',
-		confirm: 'Apply',
-		cancel: 'Cancel',
-		choose: 'Choose an image',
-		hint: 'Drag the image or scale from the corners',
-		loadError: 'Failed to load image',
-		cropError: 'Failed to crop image',
-		exportError: 'Failed to export image',
-		scaleHandle: 'Scale {corner}',
-	},
-
-	imageGallery: {
-		empty: 'No images',
-		prev: 'Previous image',
-		next: 'Next image',
-		imageN: 'Image {index}',
-	},
-
-	imageLightbox: {
-		close: 'Close gallery',
-		ariaLabel: 'Image gallery',
-	},
-
-	sidebar: {
-		ariaLabel: 'Sidebar navigation',
-		openMenu: 'Open menu',
-		expand: 'Expand',
-		collapse: 'Collapse',
-		expandSidebar: 'Expand sidebar',
-		collapseSidebar: 'Collapse sidebar',
-	},
-
-	password: {
-		reveal: 'Show password',
-		hide: 'Hide password',
-		strength: {
-			weak: 'Weak',
-			fair: 'Fair',
-			good: 'Good',
-			strong: 'Strong',
-		},
-	},
-
-	numberField: {
-		group: 'Change value',
-		decrement: 'Decrease',
-		increment: 'Increase',
-	},
-
-	pinInput: {
-		ariaLabel: 'Confirmation code',
-		digit: 'Digit {index}',
-	},
-
-	searchField: {
-		label: 'Search',
-	},
-
-	slider: {
-		ariaLabel: 'Slider',
-		from: 'From',
-		to: 'To',
-	},
-
-	rating: {
-		ariaLabel: 'Rating',
-	},
-
-	actionList: {
-		filterPlaceholder: 'Filter…',
-		empty: 'No results found',
-		ariaLabel: 'Action list',
-	},
-
-	commandPalette: {
-		placeholder: 'Search commands…',
-		title: 'Command palette',
-	},
-
-	pullToRefresh: {
-		pull: 'Pull to refresh',
-		release: 'Release',
-		refreshing: 'Refreshing…',
-	},
-
-	spinner: {
-		typing: 'Typing',
-		loading: 'Loading',
-	},
-
-	steps: {
-		ariaLabel: 'Progress steps',
-	},
-
-	segmentedControl: {
-		ariaLabel: 'Segmented control',
-	},
-
-	bubble: {
-		expand: 'More',
-		collapse: 'Collapse',
-		reactions: 'Reactions',
-	},
-
-	chip: {
-		remove: 'Remove',
-		groupChips: 'Chips',
-		groupTags: 'Tags',
-	},
-
-	fileList: {
-		remove: 'Remove',
-		retry: 'Retry',
-	},
-
-	virtualList: {
-		ariaLabel: 'List',
-	},
-
-	skipLink: {
-		label: 'Skip to content',
-	},
-
-	overflow: {
-		title: 'Actions',
-		ariaLabel: 'Actions',
-		more: 'More actions',
-		groupTitle: 'More',
-		groupAriaLabel: 'Group',
-		groupMore: 'Show more',
-	},
-
-	buttonGroup: {
-		ariaLabel: 'Button group',
-	},
-
-	menu: {
-		mobileTitle: 'Menu',
-		ariaLabel: 'Menu',
-		contextAriaLabel: 'Context menu',
-	},
+	common,
+	calendar,
+	calendarBoard,
+	dayStrip,
+	timeField,
+	dateRangeField,
+	select,
+	customSelect,
+	listbox,
+	suggestField,
+	sheet,
+	modal,
+	confirmDialog,
+	table,
+	pagination,
+	sortable,
+	upload,
+	imageCrop,
+	imageGallery,
+	imageLightbox,
+	sidebar,
+	password,
+	numberField,
+	pinInput,
+	searchField,
+	slider,
+	rating,
+	actionList,
+	commandPalette,
+	pullToRefresh,
+	spinner,
+	steps,
+	bubble,
+	chip,
+	fileList,
+	virtualList,
+	skipLink,
+	overflow,
+	buttonGroup,
+	menu,
 };

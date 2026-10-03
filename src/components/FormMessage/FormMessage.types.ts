@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 /**
@@ -15,4 +16,6 @@ export interface FormMessageProps extends Omit<ComponentPropsWithoutRef<'p'>, 'c
 	/** @default 'hint' */
 	variant?: FormMessageVariant;
 	children: React.ReactNode;
+	/** DOM-узел абзаца. */
+	rootRef?: Ref<HTMLParagraphElement>;
 }

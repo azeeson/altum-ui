@@ -255,8 +255,7 @@ export const WithRowActions: Story = {
 						</span>
 						<Button
 							size='sm'
-							variant='primary'
-							status='danger'
+							variant='danger'
 							onClick={() => alert('Удалить 3')}
 						>
 							Удалить
@@ -374,8 +373,7 @@ export const WithSwipeToAction: Story = {
 											</Button>
 											<Button
 												size='sm'
-												variant='primary'
-												status='danger'
+												variant='danger'
 												onClick={() => remove(row.id)}
 											>
 												Удал.

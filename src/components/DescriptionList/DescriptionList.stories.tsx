@@ -3,7 +3,7 @@ import React from 'react';
 import {DescriptionList, DescriptionListProps} from './DescriptionList';
 import {Badge} from '../Badge/Badge';
 import {Card} from '../Card/Card';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Title} from '../Title/Title';
 import {Avatar} from '../Avatar/Avatar';

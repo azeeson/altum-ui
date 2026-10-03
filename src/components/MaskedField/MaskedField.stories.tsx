@@ -1,7 +1,7 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {MaskedField, MaskedFieldProps} from './MaskedField';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {Button} from '../Button/Button';
 import {Fieldset} from '../Fieldset/Fieldset';
 import {TextField} from '../TextField/TextField';
@@ -25,7 +25,6 @@ export default {
 		label: 'Дата рождения (ДД.ММ.ГГГГ)',
 		mask: '99.99.9999',
 		size: 'md',
-		labelPlacement: 'inline',
 	},
 	argTypes: {
 		...fieldArgTypes,
@@ -35,7 +34,7 @@ export default {
 		},
 		maskAsPlaceholder: {
 			control: 'boolean',
-			description: 'Маска (`9` → `_`) как placeholder вне inline',
+			description: 'Маска (`9` → `_`) как placeholder без `label`',
 		},
 	},
 } satisfies Meta<typeof MaskedField>;
@@ -61,7 +60,6 @@ export const Playground: Story<MaskedFieldProps> = {
 		label: 'Дата рождения (ДД.ММ.ГГГГ)',
 		mask: '99.99.9999',
 		size: 'md',
-		labelPlacement: 'inline',
 	},
 	parameters: story('Используйте панель Controls для настройки.'),
 };
@@ -127,10 +125,9 @@ export const SizesAndPlacement: Story<MaskedFieldProps> = {
 						align='center'
 					>
 						<MaskedField
-							label='Дата'
+							aria-label='Дата'
 							mask='99.99.9999'
 							size={size}
-							labelPlacement='none'
 							maskAsPlaceholder
 							value={date}
 							onChange={setDate}
@@ -145,41 +142,28 @@ export const SizesAndPlacement: Story<MaskedFieldProps> = {
 			</Stack>
 		);
 	},
-	parameters: story('`size` `sm`–`lg` и `labelPlacement="none"` — `maskOverlay` совпадает с текстом инпута.'),
+	parameters: story('`size` `sm`–`lg` и поле без `label` — `maskOverlay` совпадает с текстом инпута.'),
 };
 
 export const LabelPlacement: Story<MaskedFieldProps> = {
 	render: function LabelPlacementRender() {
-		const [inline, setInline] = useState('');
-		const [outside, setOutside] = useState('');
-		const [none, setNone] = useState('');
+		const [withLabel, setWithLabel] = useState('');
+		const [withoutLabel, setWithoutLabel] = useState('');
 		return (
 			<Stack gap='lg' style={{maxWidth: 320}}>
 				<MaskedField
-					label='Дата (inline)'
+					label='Дата'
 					mask='99.99.9999'
-					value={inline}
-					onChange={setInline}
-					labelPlacement='inline'
+					value={withLabel}
+					onChange={setWithLabel}
 					width='full'
 					id='story-mask-lp-inline'
 				/>
 				<MaskedField
-					label='Дата (outside)'
+					aria-label='Дата'
 					mask='99.99.9999'
-					value={outside}
-					onChange={setOutside}
-					labelPlacement='outside'
-					maskAsPlaceholder
-					width='full'
-					id='story-mask-lp-outside'
-				/>
-				<MaskedField
-					label='Дата'
-					mask='99.99.9999'
-					value={none}
-					onChange={setNone}
-					labelPlacement='none'
+					value={withoutLabel}
+					onChange={setWithoutLabel}
 					maskAsPlaceholder
 					width='full'
 					id='story-mask-lp-none'
@@ -187,7 +171,7 @@ export const LabelPlacement: Story<MaskedFieldProps> = {
 			</Stack>
 		);
 	},
-	parameters: story('`labelPlacement` + `maskAsPlaceholder` вне inline.'),
+	parameters: story('С `label` — floating-лейбл; без `label` маска видна как placeholder.'),
 };
 
 export const Disabled: Story<MaskedFieldProps> = {
@@ -222,7 +206,7 @@ export const Empty: Story<MaskedFieldProps> = {
 				mask='99.99.9999'
 				value=''
 				onChange={() => undefined}
-				helperText='Формат ДД.ММ.ГГГГ'
+				description='Формат ДД.ММ.ГГГГ'
 				width='full'
 			/>
 		</div>

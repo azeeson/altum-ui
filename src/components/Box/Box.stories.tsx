@@ -2,7 +2,7 @@ import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {Box, type BoxProps, type BoxVariant, type BoxShadow} from './Box';
 import {Text} from '../Text/Text';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {Button} from '../Button/Button';
 import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
 import {ButtonGroup} from '../ButtonGroup/ButtonGroup';
@@ -120,8 +120,6 @@ function SurfaceControls() {
 	const [segment, setSegment] = useState('day');
 	const [segmentTinted, setSegmentTinted] = useState('day');
 	const [segmentGhost, setSegmentGhost] = useState('day');
-	const [groupActive, setGroupActive] = useState('left');
-	const [groupTinted, setGroupTinted] = useState('a');
 	const [text, setText] = useState('');
 	const [notes, setNotes] = useState('');
 	const [number, setNumber] = useState(1);
@@ -201,8 +199,7 @@ function SurfaceControls() {
 						Ghost
 					</Button>
 					<Button
-						variant='secondary'
-						status='danger'
+						variant='danger_tinted'
 						size='sm'
 					>
 						Опасная sec
@@ -210,13 +207,13 @@ function SurfaceControls() {
 					<ButtonIcon
 						variant='ghost'
 						size='sm'
-						icon={<IconPlus />}
+						icon={<IconPlus/>}
 						aria-label='Добавить'
 					/>
 					<ButtonIcon
 						variant='secondary'
 						size='sm'
-						icon={<IconPlus />}
+						icon={<IconPlus/>}
 						aria-label='Добавить secondary'
 					/>
 				</Inline>
@@ -232,27 +229,27 @@ function SurfaceControls() {
 						size='sm'
 						aria-label='Выравнивание'
 					>
-						<ButtonGroup.Item active={groupActive === 'left'} onClick={() => setGroupActive('left')}>
+						<Button>
 							Л
-						</ButtonGroup.Item>
-						<ButtonGroup.Item active={groupActive === 'center'} onClick={() => setGroupActive('center')}>
+						</Button>
+						<Button>
 							Ц
-						</ButtonGroup.Item>
-						<ButtonGroup.Item active={groupActive === 'right'} onClick={() => setGroupActive('right')}>
+						</Button>
+						<Button>
 							П
-						</ButtonGroup.Item>
+						</Button>
 					</ButtonGroup>
 					<ButtonGroup
 						variant='tinted'
 						size='sm'
 						aria-label='Режим'
 					>
-						<ButtonGroup.Item active={groupTinted === 'a'} onClick={() => setGroupTinted('a')}>
+						<Button>
 							A
-						</ButtonGroup.Item>
-						<ButtonGroup.Item active={groupTinted === 'b'} onClick={() => setGroupTinted('b')}>
+						</Button>
+						<Button>
 							B
-						</ButtonGroup.Item>
+						</Button>
 					</ButtonGroup>
 				</Inline>
 				<Inline gap='sm' wrap>
@@ -340,7 +337,7 @@ function SurfaceControls() {
 					<Chip
 						variant='secondary'
 						size='sm'
-						as={chipActive ? 'toggle' : 'chip'}
+						mode={chipActive ? 'toggle' : 'chip'}
 						onClick={() => setChipActive((v) => !v)}
 					>
 						Secondary
@@ -349,14 +346,14 @@ function SurfaceControls() {
 						Tinted
 					</Chip>
 					<Chip
-						as='tag'
+						mode='tag'
 						variant='secondary'
 						size='sm'
 					>
 						Tag
 					</Chip>
 					<Chip
-						as='tag'
+						mode='tag'
 						variant='tinted'
 						size='sm'
 					>
@@ -375,13 +372,11 @@ function SurfaceControls() {
 					onChange={setTab}
 					variant='pill'
 				>
-					<Tabs.List>
-						{TAB_ITEMS.map((item) => (
-							<Tabs.Trigger key={item.id} value={item.id}>
-								{item.label}
-							</Tabs.Trigger>
-						))}
-					</Tabs.List>
+					<Tabs.List items={TAB_ITEMS.map((item) => ({
+						value: item.id,
+						label: item.label,
+					}))}
+					/>
 					{TAB_ITEMS.map((item) => (
 						<Tabs.Panel key={item.id} value={item.id}>
 							{item.content}
@@ -464,16 +459,6 @@ export default {
 				'lg'
 			] satisfies BoxShadow[],
 		},
-		padding: {
-			control: 'select',
-			options: [
-				'none',
-				'xs',
-				'sm',
-				'md',
-				'lg'
-			],
-		},
 		radius: {
 			control: 'select',
 			options: [
@@ -491,7 +476,6 @@ export const Playground: Story<BoxProps> = {
 		variant: 'outlined',
 		border: true,
 		shadow: 'none',
-		padding: 'md',
 		radius: 'md',
 		children: 'Содержимое Box',
 	},
@@ -504,7 +488,7 @@ export const Playground: Story<BoxProps> = {
 			</Box>
 		</div>
 	),
-	parameters: story('Controls: вариант, рамка, тень, внутренние отступы, радиус.'),
+	parameters: story('Controls: вариант, рамка, тень, радиус.'),
 };
 
 export const Variants: Story<BoxProps> = {
@@ -514,7 +498,7 @@ export const Variants: Story<BoxProps> = {
 				<Box
 					key={variant}
 					variant={variant}
-					padding='md'
+					style={{padding: 'var(--altum-g-space-3)'}}
 				>
 					<Text size='sm' weight='bold'>
 						{variant}
@@ -540,7 +524,7 @@ export const BorderAndShadow: Story<BoxProps> = {
 					variant='tinted'
 					border={false}
 					shadow='none'
-					padding='md'
+					style={{padding: 'var(--altum-g-space-3)'}}
 				>
 					без рамки / тени
 				</Box>
@@ -548,7 +532,7 @@ export const BorderAndShadow: Story<BoxProps> = {
 					variant='tinted'
 					border
 					shadow='none'
-					padding='md'
+					style={{padding: 'var(--altum-g-space-3)'}}
 				>
 					только рамка
 				</Box>
@@ -556,7 +540,7 @@ export const BorderAndShadow: Story<BoxProps> = {
 					variant='tinted'
 					border={false}
 					shadow='sm'
-					padding='md'
+					style={{padding: 'var(--altum-g-space-3)'}}
 				>
 					только shadow sm
 				</Box>
@@ -564,7 +548,7 @@ export const BorderAndShadow: Story<BoxProps> = {
 					variant='tinted'
 					border
 					shadow='md'
-					padding='md'
+					style={{padding: 'var(--altum-g-space-3)'}}
 				>
 					рамка + md
 				</Box>
@@ -572,7 +556,7 @@ export const BorderAndShadow: Story<BoxProps> = {
 					variant='tinted'
 					border
 					shadow='lg'
-					padding='md'
+					style={{padding: 'var(--altum-g-space-3)'}}
 				>
 					рамка + lg
 				</Box>
@@ -592,7 +576,7 @@ export const BorderAndShadow: Story<BoxProps> = {
 						variant='outlined'
 						border
 						shadow={shadow}
-						padding='md'
+						style={{padding: 'var(--altum-g-space-3)'}}
 					>
 						shadow=
 						{shadow}
@@ -620,8 +604,8 @@ export const Glass: Story<BoxProps> = {
 					variant='glass'
 					border
 					shadow='sm'
-					padding='lg'
 					radius='lg'
+					style={{padding: 'var(--altum-g-space-4)'}}
 				>
 					<Text size='sm' weight='bold'>
 						glass + border + sm
@@ -631,8 +615,8 @@ export const Glass: Story<BoxProps> = {
 					variant='glass'
 					border={false}
 					shadow='lg'
-					padding='lg'
 					radius='lg'
+					style={{padding: 'var(--altum-g-space-4)'}}
 				>
 					<Text size='sm' weight='bold'>
 						glass без рамки + lg
@@ -644,44 +628,44 @@ export const Glass: Story<BoxProps> = {
 	parameters: story('`glass` + произвольный border/shadow.'),
 };
 
-export const PaddingAndRadius: Story<BoxProps> = {
+export const RadiusAndPadding: Story<BoxProps> = {
 	render: () => (
 		<Inline gap='md' wrap>
 			<Box
 				variant='outlined'
 				border
-				padding='xs'
 				radius='none'
+				style={{padding: 'var(--altum-g-space-1)'}}
 			>
 				xs / none
 			</Box>
 			<Box
 				variant='outlined'
 				border
-				padding='sm'
 				radius='sm'
+				style={{padding: 'var(--altum-g-space-2)'}}
 			>
 				sm / sm
 			</Box>
 			<Box
 				variant='outlined'
 				border
-				padding='md'
 				radius='md'
+				style={{padding: 'var(--altum-g-space-3)'}}
 			>
 				md / md
 			</Box>
 			<Box
 				variant='outlined'
 				border
-				padding='lg'
 				radius='lg'
+				style={{padding: 'var(--altum-g-space-4)'}}
 			>
 				lg / lg
 			</Box>
 		</Inline>
 	),
-	parameters: story('Комбинации padding и radius.'),
+	parameters: story('Комбинации style padding и radius.'),
 };
 
 export const DashedBorder: Story<BoxProps> = {
@@ -691,7 +675,7 @@ export const DashedBorder: Story<BoxProps> = {
 				variant='ghost'
 				border
 				borderStyle='dashed'
-				padding='md'
+				style={{padding: 'var(--altum-g-space-3)'}}
 			>
 				ghost + dashed
 			</Box>
@@ -699,7 +683,7 @@ export const DashedBorder: Story<BoxProps> = {
 				variant='muted'
 				border
 				borderStyle='dashed'
-				padding='md'
+				style={{padding: 'var(--altum-g-space-3)'}}
 			>
 				muted + dashed
 			</Box>
@@ -725,8 +709,8 @@ export const SurfaceAdaptation: Story<BoxProps> = {
 				const box = (
 					<Box
 						variant={variant}
-						padding='md'
 						border
+						style={{padding: 'var(--altum-g-space-3)'}}
 					>
 						<Stack gap='sm'>
 							<Text size='sm' weight='bold'>
@@ -772,7 +756,7 @@ export const Empty: Story<BoxProps> = {
 				variant='outlined'
 				border
 				borderStyle='dashed'
-				padding='lg'
+				style={{padding: 'var(--altum-g-space-4)'}}
 			/>
 		</div>
 	),
@@ -784,7 +768,7 @@ export const OverflowText: Story<BoxProps> = {
 		<div style={{maxWidth: 240}}>
 			<Box
 				variant='outlined'
-				padding='md'
+				style={{padding: 'var(--altum-g-space-3)'}}
 			>
 				<Text size='sm'>
 					Очень длинный абзац без переноса слов-исключений: суперкалендарнаядоскасобытий
@@ -801,8 +785,8 @@ export const UsageExample: Story<BoxProps> = {
 		<div style={{maxWidth: 360}}>
 			<Box
 				variant='elevated'
-				padding='md'
 				radius='lg'
+				style={{padding: 'var(--altum-g-space-3)'}}
 			>
 				<Stack gap='sm'>
 					<Title level={4}>

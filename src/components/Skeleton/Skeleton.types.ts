@@ -1,6 +1,4 @@
-import type {
-	ComponentPropsWithoutRef,
-} from 'react';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
 
 export type SkeletonVariant = 'block' | 'text' | 'avatar' | 'card' | 'table';
 
@@ -9,6 +7,8 @@ export type SkeletonVariant = 'block' | 'text' | 'avatar' | 'card' | 'table';
  * Пресеты задаются `variant`: `text` / `avatar` / `card` / `table` (без variant — блок).
  */
 export interface SkeletonProps extends ComponentPropsWithoutRef<'div'> {
+	/** DOM-узел плейсхолдера. */
+	rootRef?: Ref<HTMLDivElement>;
 	variant?: SkeletonVariant;
 	width?: string | number;
 	height?: string | number;

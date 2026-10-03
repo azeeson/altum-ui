@@ -11,7 +11,6 @@ export const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
  *
  * @example
  * const reduceMotion = usePrefersReducedMotion();
- * <motion.div animate={reduceMotion ? false : {opacity: 1}} />
  */
 export function usePrefersReducedMotion(): boolean {
 	return useMediaQuery(REDUCED_MOTION_QUERY);

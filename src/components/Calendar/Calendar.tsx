@@ -24,14 +24,11 @@ import {
  *   </Calendar.Root>
  * </Calendar.Provider>
  */
-export const Calendar = Object.assign(
-	{
-		Provider: CalendarProvider,
-		Root: CalendarRoot,
-		Header: CalendarHeader,
-		Title: CalendarTitle,
-		Nav: CalendarNav,
-		Body: CalendarBody,
-	},
-	{displayName: 'Calendar'},
-);
+export const Calendar = {
+	Provider: CalendarProvider,
+	Root: CalendarRoot,
+	Header: CalendarHeader,
+	Title: CalendarTitle,
+	Nav: CalendarNav,
+	Body: CalendarBody,
+};

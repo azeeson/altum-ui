@@ -1,3 +1,3 @@
-import {createIcon} from '../createIcon';
-
-export const IconBatteryLow = createIcon('M88,35h-3V24c0-2.2-1.7-4-4-4H4c-2.2,0-4,1.8-4,4v44c0,2.2,1.8,4,4,4h77c2.2,0,4-1.8,4-4V57h3 c2.2,0,4-1.4,4-3.6V38.6C92,36.4,90.2,35,88,35z M77,64H8V28h69v10.6v14.8V64z M29,54c0,2.2-1.8,4-4,4h-7c-2.2,0-4-1.8-4-4V38 c0-2.2,1.8-4,4-4h7c2.2,0,4,1.8,4,4V54z');
+import {IconBase, type IconProps} from '../IconBase';
+import {ICON_PATHS} from '../registry';
+export const IconBatteryLow = (p: IconProps) => <IconBase d={ICON_PATHS.batteryLow} {...p} />;

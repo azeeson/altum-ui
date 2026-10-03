@@ -1,9 +1,12 @@
 export {ru} from './ru';
+export {en} from './en';
 export type {
 	Messages,
 	DeepPartialMessages,
 	LocaleCode,
 	TranslationParams,
+	MessageTree,
+	PluralMessage,
 } from './types';
 export {builtInMessages} from './messages';
 export {

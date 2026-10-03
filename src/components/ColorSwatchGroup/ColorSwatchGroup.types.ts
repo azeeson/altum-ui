@@ -1,5 +1,6 @@
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 /**
@@ -13,4 +14,6 @@ export interface ColorSwatchGroupProps extends Omit<ComponentPropsWithoutRef<'di
 	label?: string;
 	readOnly?: boolean;
 	disabled?: boolean;
+	/** DOM-узел группы. */
+	rootRef?: Ref<HTMLDivElement>;
 }

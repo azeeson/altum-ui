@@ -1,5 +1,16 @@
-export {TextField} from './TextField';
+export {
+	TextField,
+	FieldBaseButton,
+	FieldBaseIcon,
+	fieldOverlayClassName,
+} from './TextField';
 export type {
-	FieldLabelPlacement,
+	ControlSize,
+	FieldWidth,
+	FieldBaseProps,
+	FieldBaseButtonProps,
+	FieldBaseIconProps,
+	TextFieldAs,
+	TextFieldRef,
 	TextFieldProps,
 } from './TextField.types';

@@ -1,69 +1,41 @@
-import type {
-	ActionListItem,
-	ActionListHandle,
-	ActionListProps,
-} from './ActionList.types';
+import type {ActionListItem, ActionListProps} from './ActionList.types';
 export type {
 	ActionListItem,
+	ActionListSeparator,
+	ActionListEntry,
 	ActionListGroup,
-	ActionListHandle,
 	ActionListProps,
 } from './ActionList.types';
 
-import React, {
-	forwardRef,
-	useId,
-	useImperativeHandle,
+import {
+	useLayoutEffect,
 	useMemo,
 	useRef,
-	useState,
 } from 'react';
-import {Listbox, type ListboxGroup, type ListboxHandle, type ListboxOption} from '../Listbox/Listbox';
-import {handleListHighlightKeyDown} from '../../utils/keyboard';
-import {filterListboxOptions, getListboxOptionDomId} from '../../utils/listboxOptions';
-import {cn} from '../../utils/cn';
-import {useControlledStateWithCallback} from '../../hooks/useControlledState';
+import {Listbox} from '../Listbox/Listbox';
+import {cn} from '../../core/utils/cn';
+import {uRef} from '../../core/utils/bundle';
+import {useFallbackId} from '../../hooks/useFallbackId';
 import {useLocale} from '../../locales/localeContext';
-import {FieldBaseIcon} from '../../base/FieldBase';
-import {TextField} from '../TextField/TextField';
-import {IconSearch} from '../../icons/icons/IconSearch';
+import {SearchField} from '../SearchField/SearchField';
+import {
+	ACTION_LIST_EMPTY_ATTR,
+	applyActionListFilter,
+	buildActionListOptions,
+	isActionListItem,
+	moveActionListHighlight,
+} from './actionListFilter';
 import styles from './ActionList.module.css';
+import utilities from '../../styles/utilities.module.css';
+import {ruSlice as ru_actionList} from '../../locales/slices/actionList.ru';
 
-function itemText(item: ActionListItem): string {
-	const label = item.textValue
-		?? (typeof item.label === 'string' || typeof item.label === 'number' ? String(item.label) : item.id);
-	return [label, ...(item.keywords ?? []), typeof item.description === 'string' ? item.description : ''].join(' ');
-}
-
-function renderItemLabel(item: ActionListItem): React.ReactNode {
-	return (
-		<>
-			{item.icon && (
-				<span className={styles.icon} aria-hidden>
-					{item.icon}
-				</span>
-			)}
-			<span className={styles.itemBody}>
-				<span className={styles.itemLabel}>
-					{item.label}
-				</span>
-				{item.description != null && (
-					<span className={styles.itemDescription}>
-						{item.description}
-					</span>
-				)}
-			</span>
-			{item.shortcut != null && (
-				<span className={styles.shortcut}>
-					{item.shortcut}
-				</span>
-			)}
-		</>
-	);
-}
+const localeFallback = {
+	actionList: ru_actionList,
+};
 
 /**
  * Список действий с поиском, группами и клавиатурной навигацией.
+ * Фильтр скрывает строки через `hidden` и не пересобирает `options`.
  *
  * @component
  * @example
@@ -74,137 +46,107 @@ function renderItemLabel(item: ActionListItem): React.ReactNode {
  *   onAction={handleAction}
  * />
  */
-export const ActionList = forwardRef<ActionListHandle, ActionListProps>(function ActionList(
-	{
-		items,
-		groups,
-		className = '',
-		id: providedId,
-		'aria-label': ariaLabelProp,
-		onAction,
-		onHighlightChange,
-		filterable = false,
-		filterPlaceholder,
-		query: queryProp,
-		onQueryChange,
-		emptyText,
-		...rest
-	},
-	ref,
-) {
-	const {t} = useLocale();
-	const generatedId = useId();
-	const listId = providedId ?? generatedId;
-	const listRef = useRef<ListboxHandle>(null);
-	const [query, setQuery] = useControlledStateWithCallback(queryProp, '', onQueryChange);
-	const [highlight, setHighlight] = useState(-1);
-	const listboxOptions = useMemo((): ListboxOption[] => filterListboxOptions({
-		query,
-		options: items.map((item) => ({
-			value: item.id,
-			label: renderItemLabel(item),
-			textValue: itemText(item),
-			disabled: item.disabled,
-			groupId: item.groupId,
-			buttonProps: item.buttonProps,
-		})),
-	}), [items, query]);
-	const listboxGroups = useMemo((): ListboxGroup[] | undefined => {
-		if (!groups?.length) return undefined;
-		const used = new Set(
-			listboxOptions.map((option) => option.groupId).filter((id): id is string => Boolean(id)),
-		);
-		return groups.filter((group) => used.has(group.id));
-	}, [listboxOptions, groups]);
-	const activateById = (itemId: string) => {
-		const item = items.find((entry) => entry.id === itemId);
-		if (!item || item.disabled) return undefined;
+export function ActionList({
+	items,
+	groups,
+	className,
+	id: providedId,
+	'aria-label': ariaLabelProp,
+	onAction,
+	onHighlightChange,
+	filterable = false,
+	filterPlaceholder,
+	query,
+	onQueryChange,
+	emptyText,
+	rootRef,
+	...rest
+}: ActionListProps) {
+	const {t} = useLocale(localeFallback);
+	const listId = useFallbackId(providedId);
+	const containerRef = useRef<HTMLDivElement>(null);
+	const onHighlightChangeRef = useRef(onHighlightChange);
+	onHighlightChangeRef.current = onHighlightChange;
+	const options = useMemo(() => buildActionListOptions(items), [items]);
+	const activate = (itemId: string) => {
+		const item = items.find((entry): entry is ActionListItem =>
+			isActionListItem(entry) && entry.id === itemId);
+		if (!item) return;
 		item.onSelect?.();
 		onAction?.(item);
-		return item;
 	};
-	const updateHighlight = (index: number) => {
-		setHighlight(index);
-		onHighlightChange?.(index);
-	};
-	useImperativeHandle(ref, () => {
-		const list = () => listRef.current;
-		return {
-			highlightNext: () => list()?.highlightNext(),
-			highlightPrev: () => list()?.highlightPrev(),
-			highlightFirst: () => list()?.highlightFirst(),
-			highlightLast: () => list()?.highlightLast(),
-			selectHighlighted: () => {
-				const id = list()?.selectHighlighted();
-				return id ? items.find((item) => item.id === id) : undefined;
-			},
-			getHighlightedIndex: () => list()?.getHighlightedIndex() ?? -1,
-			getActiveDescendantId: () => list()?.getActiveDescendantId(),
-			getListId: () => listId,
-		};
-	}, [items, listId]);
 	const filterLabel = filterPlaceholder ?? t('actionList.filterPlaceholder');
-	const nav = {
-		onNext: () => listRef.current?.highlightNext(),
-		onPrev: () => listRef.current?.highlightPrev(),
-		onFirst: () => listRef.current?.highlightFirst(),
-		onLast: () => listRef.current?.highlightLast(),
-		onSelect: () => {
-			const id = listboxOptions[highlight]?.value;
-			if (id) activateById(id);
-		},
-	};
+	const resolvedEmpty = emptyText ?? t('actionList.empty');
+	const filtersInDom = filterable || query !== undefined;
+
+	useLayoutEffect(() => {
+		const container = containerRef.current;
+		if (!container || !filtersInDom) return;
+		const field = container.querySelector('input');
+		const next = query !== undefined ? query : (field?.value ?? '');
+		applyActionListFilter(container, next, onHighlightChangeRef.current);
+	}, [filtersInDom, query, items]);
 
 	return (
 		<div
-			className={cn(styles.root, className)}
 			{...rest}
+			ref={uRef(rootRef, containerRef)}
+			className={cn(styles.root, className)}
 		>
 			{filterable && (
-				<div className={styles.filter}>
-					<TextField
-						type='search'
-						size='sm'
-						width='full'
-						labelPlacement='none'
-						keepPlaceholder
-						label={filterLabel}
-						placeholder={filterLabel}
-						value={query}
-						autoComplete='off'
-						prefix={(
-							<FieldBaseIcon>
-								<IconSearch />
-							</FieldBaseIcon>
-						)}
-						role='combobox'
-						aria-expanded
-						aria-controls={listId}
-						aria-autocomplete='list'
-						aria-activedescendant={highlight >= 0 ? getListboxOptionDomId(listId, highlight) : undefined}
-						autoFocus
-						onChange={(event) => setQuery(event.target.value)}
-						onKeyDown={(event) => handleListHighlightKeyDown(event, nav)}
-					/>
-				</div>
+				<SearchField
+					wrapperClassName={styles.filter}
+					size='sm'
+					keepPlaceholder
+					aria-label={filterLabel}
+					placeholder={filterLabel}
+					value={query}
+					autoComplete='off'
+					role='combobox'
+					aria-expanded
+					aria-controls={listId}
+					aria-autocomplete='list'
+					autoFocus
+					onChange={(event) => {
+						const container = containerRef.current;
+						if (container) {
+							applyActionListFilter(container, event.target.value, onHighlightChangeRef.current);
+						}
+						onQueryChange?.(event.target.value);
+					}}
+					onKeyDown={(event) => {
+						const container = containerRef.current;
+						if (!container) return;
+						moveActionListHighlight(container, event, onHighlightChangeRef.current);
+					}}
+				/>
 			)}
 			<Listbox
-				ref={listRef}
 				id={listId}
-				className={styles.list}
-				options={listboxOptions}
-				groups={listboxGroups}
+				className={cn(utilities.scrollport, styles.list)}
+				options={options}
+				groups={groups}
 				navigation='highlight'
-				highlightedIndex={highlight}
-				onHighlightChange={updateHighlight}
-				preventOptionMouseDown={filterable || queryProp !== undefined}
 				multiline
-				noOptionsText={emptyText ?? t('actionList.empty')}
+				virtualized={filtersInDom ? false : undefined}
+				noOptionsText={resolvedEmpty}
 				aria-label={ariaLabelProp ?? t('actionList.ariaLabel')}
-				onSelect={activateById}
+				onMouseDown={filtersInDom ? (event) => {
+					const target = event.target;
+					if (target instanceof Element && target.closest('[role="option"]')) {
+						event.preventDefault();
+					}
+				} : undefined}
+				onSelect={activate}
 			/>
+			{filtersInDom && items.length > 0 ? (
+				<p
+					{...{[ACTION_LIST_EMPTY_ATTR]: ''}}
+					className={styles.empty}
+				>
+					{resolvedEmpty}
+				</p>
+			) : null}
 		</div>
 	);
-});
-
-ActionList.displayName = 'ActionList';
+}

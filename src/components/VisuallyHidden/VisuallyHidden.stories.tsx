@@ -1,16 +1,16 @@
 import type {Meta} from '@storybook/react';
 import React from 'react';
 import {VisuallyHidden, VisuallyHiddenProps} from './VisuallyHidden';
-import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
 import {IconCross} from '../../icons/icons/IconCross';
 import {componentParameters, story, Story} from '../../storybook/meta';
+import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
 
 export default {
 	title: 'altum/Utilities/VisuallyHidden',
 	component: VisuallyHidden,
 	tags: ['autodocs'],
 	parameters: componentParameters(
-		'Контент скрыт визуально, но доступен скринридерам (sr-only).',
+		'Контент скрыт визуально, но доступен скринридерам.',
 	),
 } satisfies Meta<typeof VisuallyHidden>;
 

@@ -36,6 +36,7 @@ export const parameters = {
 			order: [
 				'altum',
 				[
+					'About',
 					'Components',
 					'Mobile',
 					'Common',

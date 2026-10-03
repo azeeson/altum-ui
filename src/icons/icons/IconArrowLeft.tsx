@@ -1,3 +1,3 @@
-import {createIcon} from '../createIcon';
-
-export const IconArrowLeft = createIcon('M82,29H45V16c0-1.6-1.2-3.1-2.6-3.7c-1.5-0.6-3.3-0.3-4.4,0.8l-30.7,30C6.5,43.9,6,44.9,6,46 s0.4,2.1,1.2,2.9l30.6,30c0.8,0.7,1.8,1.1,2.8,1.1c0.5,0,1.2-0.1,1.7-0.3c1.5-0.6,2.6-2.1,2.6-3.7V63h37c2.2,0,4-2.3,4-4.5v-25 C86,31.3,84.2,29,82,29z M78,55H40.6c-2.2,0-3.6,1.3-3.6,3.5v8L16.1,46L37,25.5v8c0,2.2,1.4,3.5,3.6,3.5H78V55z');
+import {IconBase, type IconProps} from '../IconBase';
+import {ICON_PATHS} from '../registry';
+export const IconArrowLeft = (p: IconProps) => <IconBase d={ICON_PATHS.arrowLeft} {...p} />;

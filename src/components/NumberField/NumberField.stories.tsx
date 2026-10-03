@@ -5,7 +5,7 @@ import {TextField} from '../TextField/TextField';
 import {FieldLabel} from '../FieldLabel/FieldLabel';
 import {Button} from '../Button/Button';
 import {Fieldset} from '../Fieldset/Fieldset';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {
 	componentParameters,
 	fieldArgTypes,
@@ -160,7 +160,7 @@ export const Empty: Story<NumberFieldProps> = {
 					onChange={setVal}
 					min={0}
 					max={100}
-					helperText='Не задано — пустое поле'
+					description='Не задано — пустое поле'
 					width='full'
 				/>
 			</div>
@@ -202,7 +202,7 @@ export const BoundedMin: Story<NumberFieldProps> = {
 					max={100}
 					id='story-num-bounded'
 					width='full'
-					helperText='Spam − / ArrowDown — значение ≥ 1'
+					description='Spam − / ArrowDown — значение ≥ 1'
 				/>
 			</div>
 		);
@@ -233,8 +233,6 @@ export const SettingsRow: Story<NumberFieldProps> = {
 					size='sm'
 				>
 					<NumberField
-						label='Колонки'
-						labelPlacement='none'
 						value={cols}
 						onChange={setCols}
 						size='sm'
@@ -251,8 +249,6 @@ export const SettingsRow: Story<NumberFieldProps> = {
 					size='sm'
 				>
 					<NumberField
-						label='Строки'
-						labelPlacement='none'
 						value={rows}
 						onChange={setRows}
 						size='sm'
@@ -266,7 +262,7 @@ export const SettingsRow: Story<NumberFieldProps> = {
 		);
 	},
 	parameters: story(
-		'TextField top-label + NumberField sm с `labelPlacement="none"` и FieldLabel horizontal.',
+		'TextField с лейблом + NumberField sm в `FieldLabel` horizontal.',
 	),
 };
 

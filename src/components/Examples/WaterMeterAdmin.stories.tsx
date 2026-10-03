@@ -8,7 +8,7 @@ import {Card} from '../Card/Card';
 import {ConfirmDialog} from '../ConfirmDialog/ConfirmDialog';
 import {DateField} from '../DateField/DateField';
 import {Sheet} from '../Sheet/Sheet';
-import {Inline, Split} from '../Layout/Layout';
+import {Inline, Split} from '../Layout';
 import {LineChart} from '../LineChart/LineChart';
 import {Modal} from '../Modal/Modal';
 import {NotificationContainer} from '../Notification/Notification';
@@ -315,7 +315,6 @@ const WaterMeterAdminDemo = () => {
 						<Sidebar.Title>
 							Водоканал
 						</Sidebar.Title>
-						<Sidebar.Collapse />
 					</Sidebar.Header>
 					<Sidebar.Content>
 						<Sidebar.Item value='dashboard' icon={<IconGraphBar size={18} />}>
@@ -460,7 +459,7 @@ const WaterMeterAdminDemo = () => {
 								<Title level={4}>
 									Реестр счётчиков
 								</Title>
-								<Chip as='tag' variant='secondary'>
+								<Chip mode='tag' variant='secondary'>
 									{filtered.length}
 									{' '}
 									шт.
@@ -524,7 +523,7 @@ const WaterMeterAdminDemo = () => {
 									key: 'status',
 									header: 'Статус',
 									render: (row) => (
-										<Chip as='tag' variant={row.status === 'active' ? 'primary' : 'secondary'}>
+										<Chip mode='tag' variant={row.status === 'active' ? 'primary' : 'secondary'}>
 											{STATUS_LABEL[row.status]}
 										</Chip>
 									),
@@ -548,8 +547,7 @@ const WaterMeterAdminDemo = () => {
 											</Button>
 											<Button
 												size='sm'
-												variant='secondary'
-												status='danger'
+												variant='danger_tinted'
 												onClick={() => setDeleteTarget(row)}
 											>
 												Удалить
@@ -575,12 +573,11 @@ const WaterMeterAdminDemo = () => {
 				mode='sidebar'
 				direction='end'
 				width={420}
-				backdrop
 			>
 				<Sheet.Header showClose>
-					<Sheet.Title>
+					<Title level={3}>
 						{detailMeter ? detailMeter.serialNumber : 'Счётчик'}
-					</Sheet.Title>
+					</Title>
 				</Sheet.Header>
 				{detailMeter && (
 					<Sheet.Body>
@@ -663,9 +660,9 @@ const WaterMeterAdminDemo = () => {
 				onOpenChange={setReadingModalOpen}
 			>
 				<Modal.Header>
-					<Modal.Title>
+					<Title level={3}>
 						Внесение показаний
-					</Modal.Title>
+					</Title>
 				</Modal.Header>
 				<Modal.Body>
 					<div className={styles.modalForm}>

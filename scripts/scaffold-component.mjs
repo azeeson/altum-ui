@@ -28,7 +28,7 @@ if (fs.existsSync(root)) {
 
 const tsx = `import {forwardRef, type ComponentPropsWithoutRef} from 'react';
 import styles from './${name}.module.css';
-import {cn} from '../../utils/cn';
+import {cn} from '../../core/utils/cn';
 import type {${name}Props} from './${name}.types';
 
 export type {${name}Props};

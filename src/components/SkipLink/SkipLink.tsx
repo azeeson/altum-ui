@@ -5,13 +5,19 @@ export type {
 	SkipLinkProps,
 } from './SkipLink.types';
 
-import {forwardRef} from 'react';
+import {Link} from '../Link/Link';
 import styles from './SkipLink.module.css';
-import {cn} from '../../utils/cn';
+import {cn} from '../../core/utils/cn';
 import {useLocale} from '../../locales/localeContext';
+import {ruSlice as ru_skipLink} from '../../locales/slices/skipLink.ru';
+
+const localeFallback = {
+	skipLink: ru_skipLink,
+};
 
 /**
  * «Перейти к содержимому» — появляется при фокусе (a11y-база).
+ * На базе {@link Link}.
  *
  * @component
  * @example
@@ -19,26 +25,22 @@ import {useLocale} from '../../locales/localeContext';
  * ...
  * <main id="main">...</main>
  */
-export const SkipLink = forwardRef<HTMLAnchorElement, SkipLinkProps>(function SkipLink(
-	{
-		href = '#main',
-		children,
-		className,
-		...rest
-	},
-	ref,
-) {
-	const {t} = useLocale();
+export const SkipLink = ({
+	href = '#main',
+	children,
+	className,
+	rootRef,
+	...rest
+}: SkipLinkProps) => {
+	const {t} = useLocale(localeFallback);
 	return (
-		<a
-			ref={ref}
+		<Link
+			rootRef={rootRef}
 			href={href}
 			className={cn(styles.skipLink, className)}
 			{...rest}
 		>
 			{children ?? t('skipLink.label')}
-		</a>
+		</Link>
 	);
-});
-
-SkipLink.displayName = 'SkipLink';
+};

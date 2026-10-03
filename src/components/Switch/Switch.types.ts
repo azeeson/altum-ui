@@ -1,5 +1,6 @@
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 import type {ControlSize, LabelSide} from '../../types';
 
@@ -23,4 +24,6 @@ export interface SwitchProps extends Omit<ComponentPropsWithoutRef<'input'>, 'on
 	size?: ControlSize;
 	/** @default 'end' */
 	labelSide?: SwitchLabelSide;
+	/** Нативный input переключателя. */
+	inputRef?: Ref<HTMLInputElement>;
 }

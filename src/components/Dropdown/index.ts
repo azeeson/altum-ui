@@ -5,8 +5,9 @@ export type {
 	DropdownAlign,
 	DropdownWidthMode,
 	DropdownPanelScroll,
+	DropdownPanelState,
 	DropdownTriggerAttrs,
 	DropdownTriggerSlotProps,
+	DropdownPopup,
 	DropdownProps,
-	DropdownMobileSheetProps,
 } from './Dropdown.types';

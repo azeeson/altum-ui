@@ -7,45 +7,18 @@ export type {
 	ProgressCircleProps,
 } from './Progress.types';
 
-import {forwardRef, type ReactNode} from 'react';
-import type {ProgressVariant} from './Progress.types';
+import type {CSSProperties} from 'react';
 import styles from './Progress.module.css';
-import {cn} from '../../utils/cn';
-import {mergeStyles} from '../../utils/mergeStyles';
+import utilities from '../../styles/utilities.module.css';
+import {cn} from '../../core/utils/cn';
+import {progressModel} from './Progress.utils';
+import {unitRatio} from '../../core/utils/math';
 
 const CIRCLE_DIAMETER = {
 	sm: 40,
 	md: 50,
 	lg: 64,
 } as const;
-
-function progressModel(
-	percentage: number,
-	indeterminate: boolean,
-	variant: ProgressVariant,
-	label: ReactNode,
-	valueText: ReactNode,
-) {
-	const n = Math.min(100, Math.max(0, percentage));
-	const text = valueText ?? (indeterminate ? undefined : `${Math.round(n)}%`);
-	return {
-		n,
-		text,
-		tone: variant === 'auto'
-			? (!indeterminate && n >= 100 ? 'success' : 'primary')
-			: variant,
-		aria: {
-			role: 'progressbar' as const,
-			'aria-valuemin': indeterminate ? undefined : 0,
-			'aria-valuemax': indeterminate ? undefined : 100,
-			'aria-valuenow': indeterminate ? undefined : n,
-			'aria-valuetext': typeof text === 'string' || typeof text === 'number'
-				? String(text)
-				: undefined,
-			'aria-label': typeof label === 'string' ? label : undefined,
-		},
-	};
-}
 
 /**
  * Горизонтальный индикатор выполнения.
@@ -54,30 +27,33 @@ function progressModel(
  * @example
  * <Progress percentage={65} label="Загрузка" />
  */
-export const Progress = forwardRef<HTMLDivElement, ProgressProps>(function Progress(
-	{
-		percentage = 0,
-		indeterminate = false,
-		label,
-		valueText,
-		showValueText = true,
-		size = 'md',
-		variant = 'auto',
-		className,
-		style,
-		...rest
-	},
-	ref,
-) {
+export const Progress = ({
+	percentage = 0,
+	indeterminate = false,
+	label,
+	valueText,
+	showValueText = true,
+	size = 'md',
+	variant = 'auto',
+	className,
+	style,
+	rootRef,
+	...rest
+}: ProgressProps) => {
 	const {n, text, tone, aria} = progressModel(percentage, indeterminate, variant, label, valueText);
 	const showMeta = label != null || (showValueText && text != null);
+	const ratio = unitRatio(n, 0, 100);
 
 	return (
 		<div
-			ref={ref}
-			className={cn(styles.root, styles[`tone_${tone}`], className)}
-			style={mergeStyles({['--altum-progress' as string]: n}, style)}
 			{...rest}
+			ref={rootRef}
+			className={cn(styles.root, className)}
+			style={{
+				'--local-ratio': ratio,
+				...style
+			} as CSSProperties}
+			data-tone={tone}
 		>
 			{showMeta && (
 				<div className={styles.meta}>
@@ -94,20 +70,16 @@ export const Progress = forwardRef<HTMLDivElement, ProgressProps>(function Progr
 				</div>
 			)}
 			<div
-				className={cn(
-					styles.progressLine,
-					size !== 'md' && styles[size],
-					indeterminate && styles.indeterminate,
-				)}
+				className={styles.progressLine}
+				data-size={size !== 'md' ? size : undefined}
+				data-indeterminate={indeterminate ? '' : undefined}
 				{...aria}
 			>
 				<div className={styles.progressBar} />
 			</div>
 		</div>
 	);
-});
-
-Progress.displayName = 'Progress';
+};
 
 /**
  * Круговой индикатор прогресса.
@@ -116,35 +88,39 @@ Progress.displayName = 'Progress';
  * @example
  * <ProgressCircle percentage={72} label="CPU" />
  */
-export const ProgressCircle = forwardRef<HTMLDivElement, ProgressCircleProps>(function ProgressCircle(
-	{
-		percentage = 0,
-		indeterminate = false,
-		size = 'md',
-		diameter,
-		label,
-		valueText,
-		showValueText = true,
-		variant = 'auto',
-		className,
-		style,
-		...rest
-	},
-	ref,
-) {
+export const ProgressCircle = ({
+	percentage = 0,
+	indeterminate = false,
+	size = 'md',
+	diameter,
+	label,
+	valueText,
+	showValueText = true,
+	variant = 'auto',
+	className,
+	style,
+	rootRef,
+	...rest
+}: ProgressCircleProps) => {
 	const {n, text, tone, aria} = progressModel(percentage, indeterminate, variant, label, valueText);
 	const svgSize = diameter ?? CIRCLE_DIAMETER[size];
+	const ratio = unitRatio(n, 0, 100);
 
 	return (
 		<div
-			ref={ref}
-			className={cn(styles.circleRoot, styles[`tone_${tone}`], className)}
-			style={mergeStyles({['--altum-progress' as string]: n}, style)}
 			{...rest}
+			ref={rootRef}
+			className={cn(utilities.fColumn, utilities.fCenter, styles.circleRoot, className)}
+			style={{
+				'--local-ratio': ratio,
+				...style
+			} as CSSProperties}
+			data-tone={tone}
+			data-indeterminate={indeterminate ? '' : undefined}
 			{...aria}
 		>
 			<svg
-				className={cn(styles.progressCircle, indeterminate && styles.circleIndeterminate)}
+				className={styles.progressCircle}
 				width={svgSize}
 				height={svgSize}
 				viewBox='0 0 40 40'
@@ -165,7 +141,7 @@ export const ProgressCircle = forwardRef<HTMLDivElement, ProgressCircleProps>(fu
 				/>
 			</svg>
 			{(label != null || (showValueText && text != null)) && (
-				<div className={styles.circleMeta}>
+				<div className={cn(utilities.fColumn, utilities.fCenter, styles.circleMeta)}>
 					{showValueText && text != null && (
 						<span className={styles.circleValue}>
 							{text}
@@ -180,6 +156,4 @@ export const ProgressCircle = forwardRef<HTMLDivElement, ProgressCircleProps>(fu
 			)}
 		</div>
 	);
-});
-
-ProgressCircle.displayName = 'ProgressCircle';
+};

@@ -1,0 +1,31 @@
+/**
+ * Монолитный аппаратно-ускоренный дискретный переход для Top Layer.
+ * `allow-discrete` + `@starting-style` — один раз на всю библиотеку.
+ * Floating: класс на popover-хосте (`:popover-open`).
+ * Modal: класс на внутренней `.panel` при `:global(dialog[open])`.
+ */
+.fadeScale {
+  opacity: 0;
+
+  transform: scale(0.96);
+
+  transition:
+    opacity var(--altum-motion-overlay, 200ms) cubic-bezier(0.16, 1, 0.3, 1),
+    transform var(--altum-motion-overlay, 200ms) cubic-bezier(0.16, 1, 0.3, 1),
+    display var(--altum-motion-overlay, 200ms) allow-discrete,
+    overlay var(--altum-motion-overlay, 200ms) allow-discrete;
+
+  &:popover-open,
+  &[open],
+  :global(dialog[open]) & {
+    opacity: 1;
+
+    transform: scale(1);
+
+    @starting-style {
+      opacity: 0;
+
+      transform: scale(0.96);
+    }
+  }
+}

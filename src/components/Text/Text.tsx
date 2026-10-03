@@ -5,10 +5,9 @@ export type {
 	TextProps,
 } from './Text.types';
 
-import {forwardRef} from 'react';
-import {Type} from '../../base/Type';
-import colors from './Text.module.css';
-import {cn} from '../../utils/cn';
+import {Typography} from '../../base/Typography';
+import styles from './Text.module.css';
+import {cn} from '../../core/utils/cn';
 
 /**
  * Базовый текстовый примитив с типографическими токенами размера, веса и цвета.
@@ -23,24 +22,22 @@ import {cn} from '../../utils/cn';
  * <Text as="p" size="sm" color="secondary">Подсказка под заголовком</Text>
  * <Text size="sm" color="secondary" title="Подсказка" id="hint">Подсказка</Text>
  */
-export const Text = forwardRef<HTMLElement, TextProps>(function Text(
-	{
-		color = 'primary',
-		className,
-		...rest
-	},
-	ref,
-) {
-	return (
-		<Type
-			ref={ref}
-			className={cn(
-				color !== 'primary' && colors[`col_${color}`],
-				className,
-			)}
-			{...rest}
-		/>
-	);
-});
-
-Text.displayName = 'Text';
+export const Text = ({
+	color = 'primary',
+	size = 'md',
+	weight = 'normal',
+	as = 'span',
+	className,
+	rootRef,
+	...rest
+}: TextProps) => (
+	<Typography
+		as={as}
+		rootRef={rootRef}
+		className={cn(styles.text, className)}
+		data-color={color !== 'primary' ? color : undefined}
+		data-size={size !== 'md' ? size : undefined}
+		data-weight={weight !== 'normal' ? weight : undefined}
+		{...rest}
+	/>
+);

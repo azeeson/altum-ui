@@ -45,4 +45,3 @@ export function ChartHoverBubble({
 		</g>
 	);
 }
-ChartHoverBubble.displayName = 'ChartHoverBubble';

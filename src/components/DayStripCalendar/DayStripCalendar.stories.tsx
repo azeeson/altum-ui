@@ -5,13 +5,21 @@ import {
 	DayStripCalendarProps,
 } from './DayStripCalendar';
 import {Card} from '../Card/Card';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Button} from '../Button/Button';
 import {componentParameters, story, Story} from '../../storybook/meta';
 import {playClick} from '../../storybook/play';
 import {formatMonthYear, isSameDay} from '../Calendar/Calendar.utils';
 import {useLocale} from '../../locales/localeContext';
+import {ruSlice as ru_calendar} from '../../locales/slices/calendar.ru';
+
+const localeFallback = {
+	calendar: ru_calendar,
+};
+
+
+
 
 const STORY_DATE = new Date(2026, 8, 8);
 
@@ -67,7 +75,7 @@ export default {
 export const Playground: Story<DayStripCalendarProps> = {
 	render: function PlaygroundRender(args) {
 		const [value, setValue] = useState(STORY_DATE);
-		const {messages} = useLocale();
+		const {messages} = useLocale(localeFallback);
 
 		return (
 			<div style={{
@@ -194,7 +202,7 @@ export const CustomDay: Story<DayStripCalendarProps> = {
 export const Interaction: Story<DayStripCalendarProps> = {
 	render: function InteractionRender() {
 		const [value, setValue] = useState(STORY_DATE);
-		const {messages} = useLocale();
+		const {messages} = useLocale(localeFallback);
 		return (
 			<Stack gap='sm'>
 				<DayStripCalendar
@@ -221,7 +229,7 @@ export const Interaction: Story<DayStripCalendarProps> = {
 export const UsageExample: Story<DayStripCalendarProps> = {
 	render: function UsageExampleRender() {
 		const [value, setValue] = useState(STORY_DATE);
-		const {messages} = useLocale();
+		const {messages} = useLocale(localeFallback);
 		return (
 			<Card
 				style={{maxWidth: 480}}

@@ -1,5 +1,4 @@
-/* Сброс UA-кнопки. Chrome (размер, hover, цвет) — в модуле компонента. */
-
+/* Ультимативный сброс браузерного хрома. Один раз на всю систему. */
 .control {
   box-sizing: border-box;
 
@@ -9,12 +8,15 @@
   border: none;
 
   font: inherit;
+  text-align: inherit;
 
   color: inherit;
   background: transparent;
 
   cursor: pointer;
   appearance: none;
+
+  -webkit-tap-highlight-color: transparent;
 
   &:disabled {
     cursor: not-allowed;

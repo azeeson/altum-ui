@@ -1,6 +1,6 @@
 export {Popover} from './Popover';
 export type {
-	PopoverTriggerMode,
+	PopoverTargetAction,
 	PopoverContentVariant,
 	PopoverTriggerSlotProps,
 	PopoverProps,

@@ -1,0 +1,18 @@
+.root {
+  position: relative;
+
+  display: flex;
+  overflow: hidden;
+
+  flex-direction: column;
+
+  min-width: 0;
+  min-height: 0;
+
+  & .close {
+    position: absolute;
+    top: var(--altum-g-space-2);
+    right: var(--altum-g-space-2);
+    z-index: var(--altum-g-z-raised-above);
+  }
+}

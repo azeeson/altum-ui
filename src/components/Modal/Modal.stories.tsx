@@ -4,7 +4,8 @@ import {Modal, ModalProps} from './Modal';
 import {Button} from '../Button/Button';
 import {Text} from '../Text/Text';
 import {TextField} from '../TextField/TextField';
-import {Stack, Inline} from '../Layout/Layout';
+import {Title} from '../Title/Title';
+import {ControlRow, Stack, Inline} from '../Layout';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
@@ -12,10 +13,14 @@ export default {
 	component: Modal,
 	tags: ['autodocs'],
 	parameters: componentParameters(
-		'Модальное окно (составное): Header / Title / Close / Body / Footer. Header и Footer — sticky.',
+		'Модальное окно: корень DialogLayout, шапка / тело / футер — Layout. Крестик поверх контента. Header и Footer — sticky.',
 	),
 	argTypes: {
 		open: {control: 'boolean'},
+		size: {
+			control: 'inline-radio',
+			options: ['sm', 'md', 'lg'],
+		},
 		'aria-label': {control: 'text'},
 		onOpenChange: {action: 'onOpenChange'},
 	},
@@ -31,9 +36,9 @@ export const Playground: Story<ModalProps> = {
 				</Button>
 				<Modal open={isOpen} onOpenChange={setIsOpen}>
 					<Modal.Header>
-						<Modal.Title>
+						<Title level={3}>
 							Системное оповещение
-						</Modal.Title>
+						</Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Text size='md'>
@@ -56,6 +61,55 @@ export const Playground: Story<ModalProps> = {
 	parameters: story('Составной API: Modal + Header/Title/Body/Footer.'),
 };
 
+export const Sizes: Story<ModalProps> = {
+	render: function SizesRender() {
+		const [size, setSize] = useState<'sm' | 'md' | 'lg' | null>(null);
+		return (
+			<>
+				<Inline gap='sm'>
+					<Button onClick={() => setSize('sm')}>
+						sm
+					</Button>
+					<Button onClick={() => setSize('md')}>
+						md
+					</Button>
+					<Button onClick={() => setSize('lg')}>
+						lg
+					</Button>
+				</Inline>
+				<Modal
+					open={size != null}
+					size={size ?? 'md'}
+					onOpenChange={(next) => {
+						if (!next) setSize(null);
+					}}
+				>
+					<Modal.Header>
+						<Title level={3}>
+							{`Размер ${size ?? 'md'}`}
+						</Title>
+					</Modal.Header>
+					<Modal.Body>
+						<Text size='md'>
+							Ширина sm / md / lg. Узкое окно браузера сжимает диалог, оставляя отступ от краёв.
+						</Text>
+					</Modal.Body>
+					<Modal.Footer>
+						<Button
+							variant='primary'
+							size='sm'
+							onClick={() => setSize(null)}
+						>
+							Закрыть
+						</Button>
+					</Modal.Footer>
+				</Modal>
+			</>
+		);
+	},
+	parameters: story('`size`: sm 400px, md 500px, lg 600px. Уже окна — с отступом 16px.'),
+};
+
 export const WithFooter: Story<ModalProps> = {
 	render: function WithFooterRender() {
 		const [isOpen, setIsOpen] = useState(false);
@@ -66,9 +120,9 @@ export const WithFooter: Story<ModalProps> = {
 				</Button>
 				<Modal open={isOpen} onOpenChange={setIsOpen}>
 					<Modal.Header>
-						<Modal.Title>
+						<Title level={3}>
 							Редактировать профиль
-						</Modal.Title>
+						</Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Text size='md'>
@@ -108,9 +162,9 @@ export const FooterAlignment: Story<ModalProps> = {
 				</Button>
 				<Modal open={isOpen} onOpenChange={setIsOpen}>
 					<Modal.Header>
-						<Modal.Title>
+						<Title level={3}>
 							Удалить аккаунт
-						</Modal.Title>
+						</Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Text size='md'>
@@ -126,8 +180,7 @@ export const FooterAlignment: Story<ModalProps> = {
 							Отмена
 						</Button>
 						<Button
-							variant='primary'
-							status='danger'
+							variant='danger'
 							size='sm'
 							onClick={() => setIsOpen(false)}
 						>
@@ -151,9 +204,9 @@ export const StickySections: Story<ModalProps> = {
 				</Button>
 				<Modal open={isOpen} onOpenChange={setIsOpen}>
 					<Modal.Header>
-						<Modal.Title>
+						<Title level={3}>
 							Длинный список
-						</Modal.Title>
+						</Title>
 					</Modal.Header>
 					<Modal.Body>
 						<div style={{
@@ -224,9 +277,9 @@ export const FormFooter: Story<ModalProps> = {
 				</Button>
 				<Modal open={isOpen} onOpenChange={setIsOpen}>
 					<Modal.Header>
-						<Modal.Title>
+						<Title level={3}>
 							Настройки профиля
-						</Modal.Title>
+						</Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Text size='md'>
@@ -248,43 +301,52 @@ export const FormFooter: Story<ModalProps> = {
 							Есть несохранённые изменения
 						</label>
 					</Modal.Body>
-					<Modal.FormFooter
-						message={dirty ? 'Есть несохранённые изменения' : 'Все изменения сохранены'}
-					>
-						<Button
-							type='button'
-							variant='secondary'
-							size='sm'
-							onClick={() => setIsOpen(false)}
-							disabled={loading}
-						>
-							Отмена
-						</Button>
-						<Button
-							type='button'
-							variant='primary'
-							size='sm'
-							onClick={handleSubmit}
-							disabled={!dirty || loading}
-							loading={loading}
-						>
-							Сохранить
-						</Button>
-					</Modal.FormFooter>
+					<Modal.Footer>
+						<ControlRow justify='between'>
+							<Text
+								size='sm'
+								color='muted'
+								role='status'
+							>
+								{dirty ? 'Есть несохранённые изменения' : 'Все изменения сохранены'}
+							</Text>
+							<ControlRow>
+								<Button
+									type='button'
+									variant='secondary'
+									size='sm'
+									onClick={() => setIsOpen(false)}
+									disabled={loading}
+								>
+									Отмена
+								</Button>
+								<Button
+									type='button'
+									variant='primary'
+									size='sm'
+									onClick={handleSubmit}
+									disabled={!dirty || loading}
+									loading={loading}
+								>
+									Сохранить
+								</Button>
+							</ControlRow>
+						</ControlRow>
+					</Modal.Footer>
 				</Modal>
 			</>
 		);
 	},
-	parameters: story('`Modal.FormFooter`: message слева, кнопки передаются children.'),
+	parameters: story('Статус и кнопки в `Modal.Footer` через `ControlRow`.'),
 };
 
 export const Opened: Story<ModalProps> = {
 	render: () => (
 		<Modal open onOpenChange={() => undefined}>
-			<Modal.Header showClose>
-				<Modal.Title>
+			<Modal.Header>
+				<Title level={3}>
 					Системное оповещение
-				</Modal.Title>
+				</Title>
 			</Modal.Header>
 			<Modal.Body>
 				<Text size='md'>
@@ -305,9 +367,9 @@ export const OverflowText: Story<ModalProps> = {
 	render: () => (
 		<Modal open onOpenChange={() => undefined}>
 			<Modal.Header>
-				<Modal.Title>
+				<Title level={3}>
 					Очень длинный заголовок модального окна про уточнение юридических условий обработки данных
-				</Modal.Title>
+				</Title>
 			</Modal.Header>
 			<Modal.Body>
 				<Text size='md'>
@@ -336,9 +398,9 @@ export const UsageExample: Story<ModalProps> = {
 				</Button>
 				<Modal open={open} onOpenChange={setOpen}>
 					<Modal.Header>
-						<Modal.Title>
+						<Title level={3}>
 							Профиль
-						</Modal.Title>
+						</Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Stack gap='md'>
@@ -388,9 +450,9 @@ export const Interaction: Story<ModalProps> = {
 				</Button>
 				<Modal open={open} onOpenChange={setOpen}>
 					<Modal.Header>
-						<Modal.Title>
+						<Title level={3}>
 							Системное оповещение
-						</Modal.Title>
+						</Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Text size='md'>

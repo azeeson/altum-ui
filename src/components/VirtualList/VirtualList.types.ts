@@ -1,6 +1,8 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	MutableRefObject,
+	Ref,
 } from 'react';
 
 export type VirtualListAlign = 'start' | 'center' | 'end' | 'auto';
@@ -8,7 +10,8 @@ export type VirtualListAlign = 'start' | 'center' | 'end' | 'auto';
 export interface VirtualListRenderItemInfo<T> {
 	item: T;
 	index: number;
-	style: React.CSSProperties;
+	/** Позиционирование ячейки — класс `.item` (`position: relative`). */
+	style?: React.CSSProperties;
 }
 
 /** Видимый диапазон индексов (без overscan) — для a11y «показано N из M». */
@@ -76,6 +79,11 @@ export interface VirtualListProps<T> extends Omit<
 	'children' | 'onScroll' | 'ref'
 > {
 	items: T[];
+	/**
+	 * Оценка высоты строки до измерения (число или по индексу).
+	 * Смонтированные строки уточняются через ResizeObserver; распорка и окно
+	 * пересчитываются из измеренных размеров.
+	 */
 	estimateSize?: number | ((index: number) => number);
 	overscan?: number;
 	/**
@@ -110,4 +118,14 @@ export interface VirtualListProps<T> extends Omit<
 	 * Если задано — VirtualList НЕ вешает scroll listener.
 	 */
 	scrollMetricsStore?: VirtualScrollMetricsStore;
+	/**
+	 * Оборачивать каждую ячейку в `div.item` (`role="listitem"`).
+	 * `false` — `renderItem` возвращает узел сам (например `<tr>` для Table).
+	 * @default true
+	 */
+	itemWrapper?: boolean;
+	/** Imperative API: `scrollToIndex`, `scrollToOffset`, `getScrollElement`. */
+	controlRef?: MutableRefObject<VirtualListHandle | null>;
+	/** Корень списка. */
+	rootRef?: Ref<HTMLDivElement>;
 }

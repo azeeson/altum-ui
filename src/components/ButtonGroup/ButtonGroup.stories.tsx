@@ -1,5 +1,6 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
+import {Button} from '../Button/Button';
 import {ButtonGroup, ButtonGroupRootProps} from './ButtonGroup';
 import {IconChevronUp} from '../../icons/icons/IconChevronUp';
 import {IconChevronDown} from '../../icons/icons/IconChevronDown';
@@ -9,18 +10,18 @@ import {IconAlignRight} from '../../icons/icons/IconAlignRight';
 import {IconMenu} from '../../icons/icons/IconMenu';
 import {IconViewList} from '../../icons/icons/IconViewList';
 import {Text} from '../Text/Text';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Card} from '../Card/Card';
 import {componentParameters, story, Story} from '../../storybook/meta';
-import type {ButtonVariant} from '../../base/ButtonBase';
 
-const VARIANTS: ButtonVariant[] = [
+const VARIANTS = [
 	'primary',
 	'tinted',
 	'secondary',
+	'danger',
+	'danger_tinted',
 	'ghost',
-	'link',
-];
+] as const;
 
 export default {
 	title: 'altum/Components/ButtonGroup',
@@ -28,7 +29,7 @@ export default {
 	tags: ['autodocs'],
 	parameters: {
 		...componentParameters(
-			'Составная группа: `mode` `button` / `toggle` / `multi_toggle`. Стили на Root, в `button` выбранность через `active` на Item.',
+			'Коробка для независимых кнопок: внутрь кладётся `Button`. Склейка и `orientation`. Варианты как у `Button`, кроме `link`. Выбранного пункта нет.',
 		),
 	},
 	argTypes: {
@@ -36,9 +37,9 @@ export default {
 			control: {type: 'select'},
 			options: ['sm', 'md', 'lg'],
 		},
-		mode: {
+		orientation: {
 			control: {type: 'select'},
-			options: ['button', 'toggle', 'multi_toggle'],
+			options: ['horizontal', 'vertical'],
 		},
 		itemFit: {
 			control: {type: 'select'},
@@ -46,19 +47,9 @@ export default {
 		},
 		variant: {
 			control: {type: 'select'},
-			options: [...VARIANTS, 'plain'],
-		},
-		status: {
-			control: {type: 'select'},
-			options: ['default', 'danger'],
-		},
-		borderless: {
-			control: 'boolean',
+			options: [...VARIANTS],
 		},
 		disabled: {
-			control: 'boolean',
-		},
-		readOnly: {
 			control: 'boolean',
 		},
 		width: {
@@ -67,108 +58,62 @@ export default {
 				options: ['auto', 'full'],
 			},
 		},
-		onChange: {
-			action: 'change',
-		},
 	},
 } satisfies Meta<typeof ButtonGroup>;
 
 export const Playground: Story<ButtonGroupRootProps> = {
-	render: ({size, variant, status, borderless}) => (
+	render: ({size, variant, orientation}) => (
 		<ButtonGroup
 			size={size}
 			variant={variant}
-			status={status}
-			borderless={borderless}
+			orientation={orientation}
 			aria-label='Навигация'
 		>
-			<ButtonGroup.Item icon={<IconChevronUp />} aria-label='Вверх' />
-			<ButtonGroup.Item icon={<IconChevronDown />} aria-label='Вниз' />
+			<Button prefix={<IconChevronUp />} aria-label='Вверх' />
+			<Button prefix={<IconChevronDown />} aria-label='Вниз' />
 		</ButtonGroup>
 	),
 	args: {
 		size: 'md',
 		variant: 'secondary',
-		status: 'default',
-		borderless: false,
+		orientation: 'horizontal',
 	},
-	parameters: story('Иконки без toggle-состояния.'),
+	parameters: story('Иконки без состояния выбора.'),
 };
 
 export const WithLabels: Story<ButtonGroupRootProps> = {
 	render: () => (
 		<ButtonGroup aria-label='Действия'>
-			<ButtonGroup.Item icon={<IconViewList />}>
+			<Button prefix={<IconViewList />}>
 				Список
-			</ButtonGroup.Item>
-			<ButtonGroup.Item icon={<IconMenu />}>
+			</Button>
+			<Button prefix={<IconMenu />}>
 				Меню
-			</ButtonGroup.Item>
-			<ButtonGroup.Item icon={<IconAlignLeft />}>
+			</Button>
+			<Button prefix={<IconAlignLeft />}>
 				Слева
-			</ButtonGroup.Item>
+			</Button>
 		</ButtonGroup>
 	),
 	parameters: story('Иконка + подпись.'),
 };
 
-export const ExclusiveToggle: Story<ButtonGroupRootProps> = {
-	render: function ExclusiveToggleRender() {
-		const [align, setAlign] = useState('left');
-
-		return (
-			<ButtonGroup
-				mode='toggle'
-				value={align}
-				onChange={(next) => {
-					if (typeof next === 'string') setAlign(next);
-				}}
-				aria-label='Выравнивание'
-				variant='secondary'
-			>
-				<ButtonGroup.Item
-					value='left'
-					icon={<IconAlignLeft />}
-					aria-label='Слева'
-				/>
-				<ButtonGroup.Item
-					value='center'
-					icon={<IconAlignCenter />}
-					aria-label='По центру'
-				/>
-				<ButtonGroup.Item
-					value='right'
-					icon={<IconAlignRight />}
-					aria-label='Справа'
-				/>
+export const Orientation: Story<ButtonGroupRootProps> = {
+	render: () => (
+		<Inline gap='lg' align='start'>
+			<ButtonGroup aria-label='Ряд' orientation='horizontal'>
+				<Button prefix={<IconAlignLeft />} aria-label='Слева' />
+				<Button prefix={<IconAlignCenter />} aria-label='По центру' />
+				<Button prefix={<IconAlignRight />} aria-label='Справа' />
 			</ButtonGroup>
-		);
-	},
-	parameters: story('`mode="toggle"` — один активный пункт, слайдер как у SegmentedControl.'),
-};
-
-export const ToggleToolbar: Story<ButtonGroupRootProps> = {
-	render: function ToggleToolbarRender() {
-		const [marks, setMarks] = useState<string[]>(['italic']);
-
-		return (
-			<ButtonGroup
-				aria-label='Форматирование'
-				variant='secondary'
-				mode='multi_toggle'
-				value={marks}
-				onChange={(next) => setMarks(Array.isArray(next) ? next : [next])}
-			>
-				<ButtonGroup.Item value='bold' aria-label='Жирный'>
-					Ж
-				</ButtonGroup.Item>
-				<ButtonGroup.Item value='italic' aria-label='Курсив'>
-					К
-				</ButtonGroup.Item>
+			<ButtonGroup aria-label='Колонка' orientation='vertical'>
+				<Button prefix={<IconAlignLeft />} aria-label='Слева' />
+				<Button prefix={<IconAlignCenter />} aria-label='По центру' />
+				<Button prefix={<IconAlignRight />} aria-label='Справа' />
 			</ButtonGroup>
-		);
-	},
-	parameters: story('`mode="multi_toggle"` — несколько активных пунктов, `aria-pressed`.'),
+		</Inline>
+	),
+	parameters: story('`orientation`: ряд и колонка. Кнопки друг друга не выбирают.'),
 };
 
 const FIT_OPTIONS = [
@@ -187,57 +132,42 @@ const FIT_OPTIONS = [
 ];
 
 export const ItemFitContent: Story<ButtonGroupRootProps> = {
-	render: function ItemFitContentRender() {
-		const [equal, setEqual] = useState('5');
-		const [content, setContent] = useState('5');
-
-		return (
-			<Stack gap='md' style={{maxWidth: 560}}>
-				<div>
-					<Text size='sm'>
-						itemFit=&quot;equal&quot;
-					</Text>
-					<ButtonGroup
-						mode='toggle'
-						width='full'
-						itemFit='equal'
-						value={equal}
-						onChange={(next) => {
-							if (typeof next === 'string') setEqual(next);
-						}}
-						aria-label='Equal'
-					>
-						{FIT_OPTIONS.map((option) => (
-							<ButtonGroup.Item key={option.value} value={option.value}>
-								{option.label}
-							</ButtonGroup.Item>
-						))}
-					</ButtonGroup>
-				</div>
-				<div>
-					<Text size='sm'>
-						itemFit=&quot;content&quot;
-					</Text>
-					<ButtonGroup
-						mode='toggle'
-						width='full'
-						itemFit='content'
-						value={content}
-						onChange={(next) => {
-							if (typeof next === 'string') setContent(next);
-						}}
-						aria-label='Content'
-					>
-						{FIT_OPTIONS.map((option) => (
-							<ButtonGroup.Item key={option.value} value={option.value}>
-								{option.label}
-							</ButtonGroup.Item>
-						))}
-					</ButtonGroup>
-				</div>
-			</Stack>
-		);
-	},
+	render: () => (
+		<Stack gap='md' style={{maxWidth: 560}}>
+			<div>
+				<Text size='sm'>
+					itemFit=&quot;equal&quot;
+				</Text>
+				<ButtonGroup
+					width='full'
+					itemFit='equal'
+					aria-label='Equal'
+				>
+					{FIT_OPTIONS.map((option) => (
+						<Button key={option.value}>
+							{option.label}
+						</Button>
+					))}
+				</ButtonGroup>
+			</div>
+			<div>
+				<Text size='sm'>
+					itemFit=&quot;content&quot;
+				</Text>
+				<ButtonGroup
+					width='full'
+					itemFit='content'
+					aria-label='Content'
+				>
+					{FIT_OPTIONS.map((option) => (
+						<Button key={option.value}>
+							{option.label}
+						</Button>
+					))}
+				</ButtonGroup>
+			</div>
+		</Stack>
+	),
 	parameters: story('`itemFit`: равные доли vs ширина от контента, трек на 100%.'),
 };
 
@@ -254,53 +184,21 @@ export const AllVariants: Story<ButtonGroupRootProps> = {
 						aria-label={variant}
 						size='md'
 					>
-						<ButtonGroup.Item active>
+						<Button>
 							One
-						</ButtonGroup.Item>
-						<ButtonGroup.Item>
+						</Button>
+						<Button>
 							Two
-						</ButtonGroup.Item>
-						<ButtonGroup.Item>
+						</Button>
+						<Button>
 							Three
-						</ButtonGroup.Item>
+						</Button>
 					</ButtonGroup>
 				</div>
 			))}
 		</Stack>
 	),
-	parameters: story('Все варианты заливки; первый сегмент с `active`.'),
-};
-
-export const Borderless: Story<ButtonGroupRootProps> = {
-	render: () => (
-		<Stack gap='md'>
-			{(['secondary', 'ghost', 'tinted'] as const).map((variant) => (
-				<div key={variant}>
-					<Text size='sm'>
-						{variant}
-						{' '}
-						+ borderless
-					</Text>
-					<ButtonGroup
-						variant={variant}
-						borderless
-						aria-label={variant}
-					>
-						<ButtonGroup.Item active>
-							A
-						</ButtonGroup.Item>
-						<ButtonGroup.Item>
-							B
-						</ButtonGroup.Item>
-						<ButtonGroup.Item>
-							C
-						</ButtonGroup.Item>
-					</ButtonGroup>
-				</div>
-			))}
-		</Stack>
-	),
-	parameters: story('`borderless` снимает рамку трека (ортогонально `variant`).'),
+	parameters: story('Все варианты заливки трека.'),
 };
 
 export const Sizes: Story<ButtonGroupRootProps> = {
@@ -317,13 +215,13 @@ export const Sizes: Story<ButtonGroupRootProps> = {
 						variant='secondary'
 						aria-label={size}
 					>
-						<ButtonGroup.Item active>
+						<Button>
 							One
-						</ButtonGroup.Item>
-						<ButtonGroup.Item>
+						</Button>
+						<Button>
 							Two
-						</ButtonGroup.Item>
-						<ButtonGroup.Item icon={<IconMenu />} aria-label='Меню' />
+						</Button>
+						<Button prefix={<IconMenu />} aria-label='Меню' />
 					</ButtonGroup>
 				</div>
 			))}
@@ -339,15 +237,15 @@ export const Disabled: Story<ButtonGroupRootProps> = {
 			aria-label='Заблокировано'
 			variant='secondary'
 		>
-			<ButtonGroup.Item active>
+			<Button>
 				One
-			</ButtonGroup.Item>
-			<ButtonGroup.Item>
+			</Button>
+			<Button>
 				Two
-			</ButtonGroup.Item>
-			<ButtonGroup.Item>
+			</Button>
+			<Button>
 				Three
-			</ButtonGroup.Item>
+			</Button>
 		</ButtonGroup>
 	),
 	parameters: story('`disabled` на корне блокирует все пункты.'),
@@ -355,53 +253,58 @@ export const Disabled: Story<ButtonGroupRootProps> = {
 
 export const Danger: Story<ButtonGroupRootProps> = {
 	render: () => (
-		<ButtonGroup
-			status='danger'
-			variant='secondary'
-			aria-label='Опасные действия'
-		>
-			<ButtonGroup.Item>
-				Удалить
-			</ButtonGroup.Item>
-			<ButtonGroup.Item>
-				Архив
-			</ButtonGroup.Item>
-		</ButtonGroup>
+		<Stack gap='md'>
+			<ButtonGroup
+				variant='danger'
+				aria-label='Опасные действия'
+			>
+				<Button>
+					Удалить
+				</Button>
+				<Button>
+					Архив
+				</Button>
+			</ButtonGroup>
+			<ButtonGroup
+				variant='danger_tinted'
+				aria-label='Опасные действия, приглушённо'
+			>
+				<Button>
+					Удалить
+				</Button>
+				<Button>
+					Архив
+				</Button>
+			</ButtonGroup>
+		</Stack>
 	),
-	parameters: story('`status="danger"` на треке группы.'),
+	parameters: story('`variant="danger"` и `danger_tinted`.'),
 };
 
 export const Interaction: Story<ButtonGroupRootProps> = {
 	render: function InteractionRender() {
-		const [align, setAlign] = useState('left');
+		const [pressed, setPressed] = useState('left');
 		return (
 			<Stack gap='sm'>
-				<ButtonGroup
-					mode='toggle'
-					value={align}
-					onChange={(next) => {
-						if (typeof next === 'string') setAlign(next);
-					}}
-					aria-label='Выравнивание'
-				>
-					<ButtonGroup.Item
-						value='left'
-						icon={<IconAlignLeft />}
+				<ButtonGroup aria-label='Выравнивание'>
+					<Button
+						prefix={<IconAlignLeft />}
 						aria-label='Слева'
+						onClick={() => setPressed('left')}
 					/>
-					<ButtonGroup.Item
-						value='center'
-						icon={<IconAlignCenter />}
+					<Button
+						prefix={<IconAlignCenter />}
 						aria-label='По центру'
+						onClick={() => setPressed('center')}
 					/>
-					<ButtonGroup.Item
-						value='right'
-						icon={<IconAlignRight />}
+					<Button
+						prefix={<IconAlignRight />}
 						aria-label='Справа'
+						onClick={() => setPressed('right')}
 					/>
 				</ButtonGroup>
 				<Text size='sm' color='muted'>
-					{align}
+					{pressed}
 				</Text>
 			</Stack>
 		);
@@ -411,7 +314,7 @@ export const Interaction: Story<ButtonGroupRootProps> = {
 		center?.click();
 		center?.focus();
 	},
-	parameters: story('Play выбирает выравнивание по центру.'),
+	parameters: story('Play жмёт «По центру». Группа выбор не хранит: подпись снаружи.'),
 };
 
 export const UsageExample: Story<ButtonGroupRootProps> = {
@@ -431,24 +334,16 @@ export const UsageExample: Story<ButtonGroupRootProps> = {
 						<Text weight='bold'>
 							Документы
 						</Text>
-						<ButtonGroup
-							mode='toggle'
-							size='sm'
-							value={view}
-							onChange={(next) => {
-								if (typeof next === 'string') setView(next);
-							}}
-							aria-label='Вид'
-						>
-							<ButtonGroup.Item
-								value='list'
-								icon={<IconViewList />}
+						<ButtonGroup size='sm' aria-label='Вид'>
+							<Button
+								prefix={<IconViewList />}
 								aria-label='Список'
+								onClick={() => setView('list')}
 							/>
-							<ButtonGroup.Item
-								value='menu'
-								icon={<IconMenu />}
+							<Button
+								prefix={<IconMenu />}
 								aria-label='Сетка'
+								onClick={() => setView('menu')}
 							/>
 						</ButtonGroup>
 					</Inline>
@@ -462,5 +357,5 @@ export const UsageExample: Story<ButtonGroupRootProps> = {
 			</Card>
 		);
 	},
-	parameters: story('Переключатель вида в шапке карточки.'),
+	parameters: story('Кнопки вида в шапке карточки. Какая включена — пишет текст, не группа.'),
 };

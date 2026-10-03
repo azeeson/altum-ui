@@ -39,7 +39,7 @@ import {Kbd, KbdGroup} from '../Kbd/Kbd';
 import {LineChart} from '../LineChart/LineChart';
 import {Link} from '../Link/Link';
 import {SortableList, type SortableItem} from '../SortableList/SortableList';
-import {Inline, Split, Stack} from '../Layout/Layout';
+import {Inline, Split, Stack} from '../Layout';
 import {Marker} from '../Marker/Marker';
 import {MaskedField} from '../MaskedField/MaskedField';
 import {Media} from '../Media/Media';
@@ -207,7 +207,7 @@ function DemoFilterBar({
 									key={item.id}
 									size='sm'
 									variant={item.active ? 'tinted' : 'secondary'}
-									as={item.active ? 'toggle' : 'chip'}
+									mode={item.active ? 'toggle' : 'chip'}
 									onClick={onFilterChange
 										? () => onFilterChange(item.id, !item.active)
 										: undefined}
@@ -383,7 +383,7 @@ const ComponentShowcaseDemo = () => {
 			label: 'Макет',
 			content: (
 				<div className={styles.section}>
-					<Box variant='outlined' padding='sm'>
+					<Box variant='outlined' style={{padding: 'var(--altum-g-space-2)'}}>
 						<Split align='center'>
 							<Inline gap='sm'>
 								<Button size='sm'>
@@ -462,7 +462,6 @@ const ComponentShowcaseDemo = () => {
 										<Sidebar.Title>
 											altum
 										</Sidebar.Title>
-										<Sidebar.Collapse />
 									</Sidebar.Header>
 									<Sidebar.Content>
 										<Sidebar.Item value='forms' icon={<IconDocument size={18} />}>
@@ -718,10 +717,10 @@ const ComponentShowcaseDemo = () => {
 						<Button variant='secondary'>
 							Вторичная
 						</Button>
-						<Button variant='primary' status='danger'>
+						<Button variant='danger'>
 							Опасная
 						</Button>
-						<Button variant='secondary' status='danger'>
+						<Button variant='danger_tinted'>
 							Опасная втор.
 						</Button>
 						<Button loading>
@@ -770,11 +769,11 @@ const ComponentShowcaseDemo = () => {
 						align='center'
 					>
 						<Dropdown
-							renderTrigger={(props, ref) => (
+							trigger={(props, ref) => (
 								<Button
 									variant='secondary'
 									{...props}
-									ref={ref}>
+									rootRef={ref}>
 									Dropdown
 								</Button>
 							)}
@@ -809,12 +808,12 @@ const ComponentShowcaseDemo = () => {
 							]}
 						/>
 						<Popover
-							renderTrigger={(props, ref) => (
+							trigger={(props, ref) => (
 								<Button
 									variant='secondary'
 									size='sm'
 									{...props}
-									ref={ref}>
+									rootRef={ref}>
 									Popover
 								</Button>
 							)}
@@ -938,14 +937,14 @@ const ComponentShowcaseDemo = () => {
 								Badge
 							</Button>
 						</Badge>
-						<Chip as='tag' size='sm'>
+						<Chip mode='tag' size='sm'>
 							Тег
 						</Chip>
-						<Chip as='toggle' onClick={() => undefined}>
+						<Chip mode='toggle' onClick={() => undefined}>
 							Chip
 						</Chip>
 						<Chip
-							as='tag'
+							mode='tag'
 							variant='success'
 							size='sm'
 						>
@@ -1116,8 +1115,9 @@ const ComponentShowcaseDemo = () => {
 					<Box
 						variant='outlined'
 						border
-						padding='md'
-						radius='md'>
+						radius='md'
+						style={{padding: 'var(--altum-g-space-3)'}}
+					>
 						<Text size='xs' color='muted'>
 							bash
 						</Text>
@@ -1293,7 +1293,7 @@ const ComponentShowcaseDemo = () => {
 							</Text>
 							{color && (
 								<Chip
-									as='tag'
+									mode='tag'
 									size='sm'
 									variant='info'
 								>
@@ -1343,13 +1343,10 @@ const ComponentShowcaseDemo = () => {
 					onChange={setActiveTab}
 					variant='pill'
 				>
-					<Tabs.List>
-						{tabItems.map((item) => (
-							<Tabs.Trigger key={item.id} value={item.id}>
-								{item.label}
-							</Tabs.Trigger>
-						))}
-					</Tabs.List>
+					<Tabs.List items={tabItems.map((item) => ({
+						value: item.id,
+						label: item.label,
+					}))} />
 					{tabItems.map((item) => (
 						<Tabs.Panel key={item.id} value={item.id}>
 							{item.content}
@@ -1363,12 +1360,11 @@ const ComponentShowcaseDemo = () => {
 				onOpenChange={setSidebarOpen}
 				mode='sidebar'
 				direction='start'
-				backdrop
 			>
 				<Sheet.Header showClose>
-					<Sheet.Title>
+					<Title level={3}>
 						Боковая Sheet
-					</Sheet.Title>
+					</Title>
 				</Sheet.Header>
 				<Sheet.Body>
 					<Text>
@@ -1384,9 +1380,9 @@ const ComponentShowcaseDemo = () => {
 				showHandle
 			>
 				<Sheet.Header>
-					<Sheet.Title>
+					<Title level={3}>
 						Sheet
-					</Sheet.Title>
+					</Title>
 				</Sheet.Header>
 				<Sheet.Body>
 					<Text>
@@ -1400,9 +1396,9 @@ const ComponentShowcaseDemo = () => {
 				onOpenChange={setModalOpen}
 			>
 				<Modal.Header>
-					<Modal.Title>
+					<Title level={3}>
 						Modal
-					</Modal.Title>
+					</Title>
 				</Modal.Header>
 				<Modal.Body>
 					<Text>

@@ -1,24 +1,25 @@
-import type {
-	ImageLightboxProps,
-} from './ImageLightbox.types';
-export type {
-	ImageLightboxProps,
-} from './ImageLightbox.types';
+import type {ImageLightboxProps} from './ImageLightbox.types';
+export type {ImageLightboxProps} from './ImageLightbox.types';
 
-import {forwardRef} from 'react';
-import {Overlay, type OverlayContentProps} from '../Overlay/Overlay';
+import type {KeyboardEvent} from 'react';
+import {Overlay} from '../Overlay/Overlay';
 import {ImageGallery} from '../ImageGallery/ImageGallery';
-import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
-import {IconCross} from '../../icons/icons/IconCross';
-import overlayClose from '../../styles/overlayClose.module.css';
-import {cn} from '../../utils/cn';
-import {composeEventHandlers} from '../../utils/composeEvents';
+import {OverlayCloseControl} from '../Button/overlayCloseControl';
+import {cn} from '../../core/utils/cn';
 import styles from './ImageLightbox.module.css';
+import overlayScrim from '../../styles/overlayScrim.module.css';
+import utilities from '../../styles/utilities.module.css';
 import {useLocale} from '../../locales/localeContext';
+import {ruSlice as ru_imageLightbox} from '../../locales/slices/imageLightbox.ru';
+
+const localeFallback = {
+	imageLightbox: ru_imageLightbox,
+};
 
 /**
  * Полноэкранный просмотр галереи поверх затемнённого backdrop.
- * Фото без рамки, с тенью. На `Overlay` (`variant="modal"`, `purpose="lightbox"`).
+ * Фото без рамки, с тенью. На `Overlay` (`variant="modal"`, нативный `<dialog>`).
+ * Стрелки с кнопки закрытия листают кадр через кнопки галереи.
  *
  * @component
  * @example
@@ -30,66 +31,58 @@ import {useLocale} from '../../locales/localeContext';
  *   onOpenChange={setOpen}
  * />
  */
-export const ImageLightbox = forwardRef<HTMLElement, ImageLightboxProps>(function ImageLightbox(
-	{
-		open,
-		onOpenChange,
-		images,
-		index,
-		defaultIndex = 0,
-		onIndexChange,
-		className,
-		onClick,
-		...rest
-	},
-	ref,
-) {
-	const {t} = useLocale();
+export function ImageLightbox({
+	open,
+	onOpenChange,
+	images,
+	index,
+	defaultIndex,
+	onIndexChange,
+	className,
+	rootRef,
+	...rest
+}: ImageLightboxProps) {
+	const {t} = useLocale(localeFallback);
+
+	const onStageKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+		if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+		const gallery = event.currentTarget.querySelector(`.${styles.gallery}`);
+		if (gallery?.contains(event.target as Node)) return;
+		const nav = event.key === 'ArrowLeft' ? 'prev' : 'next';
+		const button = event.currentTarget.querySelector<HTMLButtonElement>(`[data-nav="${nav}"]`);
+		if (button == null || button.disabled) return;
+		event.preventDefault();
+		button.click();
+	};
 
 	return (
 		<Overlay
-			ref={ref}
 			variant='modal'
-			purpose='lightbox'
 			open={open}
 			onOpenChange={onOpenChange}
+			hostClassName={overlayScrim.host}
 			aria-label={t('imageLightbox.ariaLabel')}
 		>
-			{(slotProps: OverlayContentProps, contentRef) => (
-				<div
-					{...slotProps}
-					{...rest}
-					ref={contentRef}
-					className={cn(styles.stage, slotProps.className, className)}
-					style={slotProps.style}
-					onClick={composeEventHandlers(onClick, slotProps.onClick)}
-				>
-					<ButtonIcon
-						className={styles.close}
-						appearance='diskClose'
-						aria-label={t('imageLightbox.close')}
-						icon={(
-							<IconCross
-								className={overlayClose.icon}
-								size={16}
-								aria-hidden
-							/>
-						)}
-						onClick={() => onOpenChange(false)}
-					/>
-					<ImageGallery
-						images={images}
-						index={index}
-						defaultIndex={defaultIndex}
-						onIndexChange={onIndexChange}
-						enableKeyboard
-						showThumbnails={false}
-						className={styles.gallery}
-					/>
-				</div>
-			)}
+			<div
+				ref={rootRef}
+				{...rest}
+				className={cn(utilities.fCenter, styles.stage, className)}
+				onKeyDown={onStageKeyDown}
+			>
+				<OverlayCloseControl
+					className={styles.close}
+					aria-label={t('imageLightbox.close')}
+					onClick={() => onOpenChange(false)}
+				/>
+				<ImageGallery
+					images={images}
+					index={index}
+					defaultIndex={defaultIndex}
+					onIndexChange={onIndexChange}
+					showThumbnails={false}
+					className={styles.gallery}
+				/>
+			</div>
 		</Overlay>
 	);
-});
-
-ImageLightbox.displayName = 'ImageLightbox';
+}

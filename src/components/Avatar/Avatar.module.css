@@ -1,13 +1,11 @@
 .avatar {
-  --altum-avatar-size: 44px;
+  --altum-avatar-size: var(--altum-control-height-md);
   position: relative;
 
   display: inline-flex;
   overflow: hidden;
 
   flex-shrink: 0;
-  justify-content: center;
-  align-items: center;
 
   width: var(--altum-avatar-size);
   height: var(--altum-avatar-size);
@@ -35,8 +33,8 @@
     box-sizing: border-box;
 
     width: 22%;
-    min-width: 8px;
-    min-height: 8px;
+    min-width: var(--altum-g-space-2);
+    min-height: var(--altum-g-space-2);
     aspect-ratio: 1;
 
     border: 2px solid var(--altum-color-surface);
@@ -60,37 +58,45 @@
   &[data-status='away'] {
     --altum-avatar-status: var(--altum-color-status-warning);
   }
+
+  &[data-size='xs'] {
+    --altum-avatar-size: var(--altum-g-space-6);
+  }
+
+  &[data-size='sm'] {
+    --altum-avatar-size: var(--altum-control-height-sm);
+  }
+
+  &[data-size='lg'] {
+    --altum-avatar-size: var(--altum-control-height-lg);
+  }
+
+  &[data-size='xl'] {
+    --altum-avatar-size: calc(var(--altum-g-space-8) * 2);
+  }
 }
 
-.xs {
-  --altum-avatar-size: 24px;
-}
+.photo {
+  position: absolute;
+  inset: 0;
 
-.sm {
-  --altum-avatar-size: 32px;
-}
-
-.lg {
-  --altum-avatar-size: 52px;
-}
-
-.xl {
-  --altum-avatar-size: 64px;
-}
-
-.img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  aspect-ratio: auto;
 
-  border-radius: 50%;
+  background: none;
+}
+
+.avatar:has(img:not([data-broken])) .icon {
+  display: none;
+}
+
+.avatar:has(img[data-broken]) .photo {
+  display: none;
 }
 
 .icon {
   display: inline-flex;
-
-  justify-content: center;
-  align-items: center;
 
   line-height: 1;
 

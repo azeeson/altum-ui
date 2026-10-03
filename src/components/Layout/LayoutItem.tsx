@@ -1,10 +1,9 @@
-import {forwardRef} from 'react';
-import {As} from '../../base/As';
-import {cn} from '../../utils/cn';
-import flexChild from '../../styles/flexChild.module.css';
 import type {LayoutItemProps} from './Layout.types';
-
 export type {LayoutItemProps} from './Layout.types';
+
+import type {ElementType} from 'react';
+import {cn} from '../../core/utils/cn';
+import styles from './LayoutItem.module.css';
 
 /**
  * Flex-ячейка для дочерних элементов в `Stack`, `Inline`, `Split` или `ControlRow`.
@@ -16,29 +15,22 @@ export type {LayoutItemProps} from './Layout.types';
  *   <LayoutItem shrink={false}><Button>Найти</Button></LayoutItem>
  * </ControlRow>
  */
-export const LayoutItem = forwardRef<HTMLElement, LayoutItemProps>(function LayoutItem(
-	{
-		grow = false,
-		shrink = true,
-		className,
-		as = 'div',
-		...rest
-	},
-	ref,
-) {
+export const LayoutItem = ({
+	grow = false,
+	shrink = true,
+	className,
+	as = 'div',
+	rootRef,
+	...rest
+}: LayoutItemProps) => {
+	const Component = as as ElementType;
 	return (
-		<As
-			ref={ref}
-			as={as}
-			className={cn(
-				flexChild.child,
-				grow && flexChild.grow,
-				shrink === false && flexChild.noShrink,
-				className,
-			)}
+		<Component
+			ref={rootRef}
+			className={cn(styles.item, className)}
+			data-grow={grow ? '' : undefined}
+			data-shrink={shrink === false ? 'false' : undefined}
 			{...rest}
 		/>
 	);
-});
-
-LayoutItem.displayName = 'LayoutItem';
+};

@@ -7,215 +7,98 @@
 
   font-family: var(--altum-g-font-family-ui);
 
-  &.vertical {
+  &[data-orientation='vertical'] {
     flex-direction: row;
-    align-items: stretch;
+    align-items: flex-start;
     gap: var(--altum-g-space-4);
+  }
 
-    & .tabsHeader {
-      overflow: visible;
+  &[data-variant='line'] .tabsHeader {
+    --altum-button-group-gap: var(--altum-g-space-4);
 
-      flex-direction: column;
-      align-items: stretch;
+    overflow-x: auto;
 
-      width: max-content;
-      min-width: 140px;
+    width: 100%;
 
-      padding-right: var(--altum-g-space-3);
+    margin-bottom: var(--altum-g-space-4);
+    padding: 0;
 
-      border-right: 1px solid var(--altum-color-panel-border);
-      border-bottom: none;
+    border: none;
+    border-bottom: 1px solid var(--altum-color-border);
+    border-radius: 0;
+
+    background: transparent;
+    box-shadow: none;
+
+    & button {
+      flex: 0 0 auto;
     }
 
-    & .tab {
-      justify-content: flex-start;
-
-      width: 100%;
-
-      padding: var(--altum-g-space-2) var(--altum-g-space-3);
-
-      border-radius: var(--altum-g-radius-sm);
-    }
-
-    & .active::after {
-      top: 0;
-      right: -1px;
-      bottom: 0;
-      left: auto;
-
-      width: 2px;
-      height: auto;
-    }
-
-    &.pill .tabsHeader {
-      flex-direction: column;
-
-      width: auto;
-
-      padding-right: var(--altum-g-space-1);
-
-      border-right: none;
+    & button[aria-selected='true'],
+    & button[aria-selected='true']:hover:not(:disabled) {
+      background-color: transparent;
+      box-shadow: inset 0 -2px 0 var(--altum-color-tabs-indicator);
     }
   }
 
-  &.pill {
-    & .tabsHeader {
-      display: inline-flex;
-      box-sizing: border-box;
+  &[data-orientation='vertical'][data-variant='line'] .tabsHeader {
+    overflow: visible;
 
-      align-items: stretch;
-      gap: var(--altum-g-space-1);
+    width: max-content;
+    min-width: 140px;
 
-      max-width: 100%;
+    margin-bottom: 0;
 
-      padding: var(--altum-g-space-1);
+    border-right: 1px solid var(--altum-color-panel-border);
+    border-bottom: none;
 
-      border-bottom: none;
-      border-radius: var(--altum-g-radius);
-
-      background-color: var(--altum-color-panel-bg);
-    }
-
-    & .tab {
-      position: static;
-
-      flex: 1 1 auto;
-      justify-content: center;
-
-      min-width: 0;
-
-      padding: var(--altum-g-space-2) var(--altum-g-space-4);
-
-      border-radius: calc(var(--altum-g-radius) - 2px);
-
-      font-size: var(--altum-g-font-size-base);
-      font-weight: var(--altum-g-font-weight-medium, 500);
-      line-height: 1.25;
-      text-align: center;
-      white-space: nowrap;
-
-      &:focus-visible {
-        border-radius: calc(var(--altum-g-radius) - 2px);
-        outline-offset: var(--altum-focus-ring-offset);
-      }
-    }
-
-    & .active {
-      font-weight: var(--altum-g-font-weight-medium, 500);
-
-      color: var(--altum-color-field-text);
-      background-color: var(--altum-color-bg);
-      box-shadow: var(--altum-shadow-brand);
-
-      &::after {
-        display: none;
-      }
+    & button[aria-selected='true'],
+    & button[aria-selected='true']:hover:not(:disabled) {
+      box-shadow: inset -2px 0 0 var(--altum-color-tabs-indicator);
     }
   }
 }
 
 .tabsHeader {
-  display: flex;
   overflow-x: auto;
-  overflow-y: hidden;
-
-  gap: var(--altum-g-space-4);
-
-  margin-bottom: var(--altum-g-space-4);
-
-  border-bottom: 1px solid var(--altum-color-border);
-}
-
-.tab {
-  position: relative;
-
-  display: inline-flex;
 
   flex-shrink: 0;
-  align-items: center;
-  gap: var(--altum-g-space-2);
 
-  min-width: 0;
-  min-height: var(--altum-control-height-sm);
+  max-width: 100%;
+}
 
-  padding: var(--altum-g-space-2) var(--altum-g-space-1);
+.tabBadge {
+  display: inline-flex;
 
-  font-size: var(--altum-g-font-size-base);
-  font-weight: var(--altum-g-font-weight-medium);
+  min-width: var(--altum-badge-size-md);
+  height: var(--altum-badge-size-md);
 
-  color: var(--altum-field-label);
+  padding: 0 var(--altum-g-space-1);
 
-  transition: var(--altum-transition-smooth);
+  border-radius: var(--altum-g-radius-pill);
 
-  &:hover:not(:disabled) {
-    color: var(--altum-color-field-text);
-  }
+  font-size: var(--altum-badge-font-size);
+  font-weight: var(--altum-g-font-weight-bold);
+  line-height: 1;
 
-  &:focus-visible {
-    border-radius: var(--altum-g-radius-sm);
-  }
+  color: var(--altum-color-text-secondary);
+  background-color: var(--altum-color-option-hover);
+}
 
-  &:disabled {
-    opacity: var(--altum-opacity-disabled);
-  }
+.tabsHeader [aria-selected='true'] .tabBadge {
+  color: var(--altum-color-brand);
+  background-color: color-mix(in srgb, var(--altum-color-brand) 18%, transparent);
+}
 
-  & .tabBadge {
-    display: inline-flex;
+.tabBadgeDot {
+  flex-shrink: 0;
 
-    justify-content: center;
-    align-items: center;
+  width: var(--altum-g-space-2);
+  height: var(--altum-g-space-2);
 
-    min-width: var(--altum-badge-size-md);
-    height: var(--altum-badge-size-md);
+  border-radius: 50%;
 
-    padding: 0 var(--altum-g-space-1);
-
-    border-radius: var(--altum-g-radius-pill);
-
-    font-size: var(--altum-badge-font-size);
-    font-weight: var(--altum-g-font-weight-bold);
-    line-height: 1;
-
-    color: var(--altum-color-text-secondary);
-    background-color: var(--altum-color-option-hover);
-  }
-
-  &.active {
-    font-weight: var(--altum-g-font-weight-semibold);
-
-    color: var(--altum-color-ink-default);
-
-    &::after {
-      position: absolute;
-      right: 0;
-      bottom: -1px;
-      left: 0;
-
-      content: '';
-
-      height: 2px;
-
-      border-radius: 2px;
-
-      background-color: var(--altum-color-tabs-indicator);
-    }
-
-    & .tabBadge {
-      color: var(--altum-color-brand);
-      background-color: color-mix(in srgb, var(--altum-color-brand) 18%, transparent);
-    }
-  }
-
-  & .tabBadgeDot {
-    flex-shrink: 0;
-
-    width: var(--altum-g-space-2);
-    height: var(--altum-g-space-2);
-
-    border-radius: 50%;
-
-    background-color: var(--altum-color-status-error);
-  }
+  background-color: var(--altum-color-status-error);
 }
 
 .tabPanel {

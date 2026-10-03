@@ -1,34 +1,77 @@
-.col_secondary {
-  color: var(--altum-color-type-secondary);
-}
+.text {
+  margin: 0;
 
-.col_tertiary {
-  color: var(--altum-color-type-tertiary);
-}
+  font-family: var(--altum-g-font-family-ui);
+  font-size: var(--altum-g-font-size-base);
+  font-weight: var(--altum-g-font-weight-normal);
+  line-height: var(--altum-g-line-height-base);
 
-.col_muted {
-  color: var(--altum-color-type-muted);
-}
+  color: var(--altum-color-type);
 
-.col_info {
-  color: var(--altum-color-status-info);
-}
+  &[data-size='xs'] {
+    font-size: var(--altum-g-font-size-xs);
+    line-height: var(--altum-g-line-height-xs);
+  }
 
-.col_success {
-  color: var(--altum-color-status-success);
-}
+  &[data-size='sm'] {
+    font-size: var(--altum-g-font-size-sm);
+    line-height: var(--altum-g-line-height-sm);
+  }
 
-.col_warning {
-  color: var(--altum-color-status-warning);
-}
+  &[data-size='lg'] {
+    font-size: var(--altum-g-font-size-lg);
+    line-height: var(--altum-g-line-height-lg);
+  }
 
-.col_error {
-  color: var(--altum-color-status-error);
-}
+  &[data-size='xl'] {
+    font-size: var(--altum-g-font-size-xl);
+    line-height: var(--altum-g-line-height-xl);
+  }
 
-.col_disabled {
-  color: var(--altum-color-type-disabled);
-  opacity: var(--altum-opacity-disabled);
+  &[data-weight='medium'] {
+    font-weight: var(--altum-g-font-weight-medium);
+  }
 
-  cursor: not-allowed;
+  &[data-weight='semibold'] {
+    font-weight: var(--altum-g-font-weight-semibold);
+  }
+
+  &[data-weight='bold'] {
+    font-weight: var(--altum-g-font-weight-bold);
+  }
+
+  &[data-color='secondary'] {
+    color: var(--altum-color-type-secondary);
+  }
+
+  &[data-color='tertiary'] {
+    color: var(--altum-color-type-tertiary);
+  }
+
+  &[data-color='muted'] {
+    color: var(--altum-color-type-muted);
+  }
+
+  &[data-color='info'] {
+    color: var(--altum-color-status-info);
+  }
+
+  &[data-color='success'] {
+    color: var(--altum-color-status-success);
+  }
+
+  &[data-color='warning'] {
+    color: var(--altum-color-status-warning);
+  }
+
+  &[data-color='error'] {
+    color: var(--altum-color-status-error);
+  }
+
+  &[data-color='disabled'] {
+    color: var(--altum-color-type-disabled);
+    opacity: var(--altum-opacity-disabled);
+
+    cursor: not-allowed;
+  }
 }

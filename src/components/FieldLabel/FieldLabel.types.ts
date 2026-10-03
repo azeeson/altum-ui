@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 import {ControlSize} from '../../types';
 
@@ -23,4 +24,6 @@ export interface FieldLabelProps extends Omit<ComponentPropsWithoutRef<'div'>, '
 	labelClassName?: string;
 	contentClassName?: string;
 	id?: string;
+	/** DOM-узел обёртки. */
+	rootRef?: Ref<HTMLDivElement>;
 }

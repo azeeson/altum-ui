@@ -1,16 +1,23 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {Button, ButtonProps} from './Button';
-import {Inline, Stack} from '../Layout/Layout';
+import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Card} from '../Card/Card';
 import {IconPlus} from '../../icons/icons/IconPlus';
+import {IconCross} from '../../icons/icons/IconCross';
+import {IconSearch} from '../../icons/icons/IconSearch';
+import {IconMenu} from '../../icons/icons/IconMenu';
 import {componentParameters, story, Story} from '../../storybook/meta';
+import overlayClose from '../../styles/overlayClose.module.css';
 
 const VARIANTS = [
 	'primary',
 	'tinted',
 	'secondary',
+	'danger',
+	'danger_tinted',
 	'ghost',
 	'link',
 ] as const;
@@ -27,13 +34,6 @@ export default {
 				options: [...VARIANTS],
 			},
 			description: 'Вариант оформления (primary = Prominent, tinted = приглушённый акцент)',
-		},
-		status: {
-			control: {
-				type: 'select',
-				options: ['default', 'danger'],
-			},
-			description: 'Семантический статус (danger — опасное действие)',
 		},
 		size: {
 			control: {
@@ -62,10 +62,6 @@ export default {
 			control: 'text',
 			description: 'Текст кнопки'
 		},
-		shortcut: {
-			control: 'text',
-			description: 'Подпись шортката (mod+s)',
-		},
 		onClick: {
 			action: 'click',
 		},
@@ -76,7 +72,6 @@ export const Playground: Story<ButtonProps> = {
 	args: {
 		children: 'Продолжить',
 		variant: 'primary',
-		status: 'default',
 		size: 'md',
 		disabled: false,
 		loading: false,
@@ -97,6 +92,12 @@ export const AllVariants: Story<ButtonProps> = {
 			<Button variant='secondary'>
 				Отмена
 			</Button>
+			<Button variant='danger'>
+				Удалить
+			</Button>
+			<Button variant='danger_tinted'>
+				Удалить
+			</Button>
 			<Button variant='ghost'>
 				Ghost
 			</Button>
@@ -114,60 +115,84 @@ export const AllVariants: Story<ButtonProps> = {
 	parameters: story('Все визуальные варианты.'),
 };
 
-export const Sizes: Story<ButtonProps> = {
+export const AsLink: Story<ButtonProps> = {
 	render: () => (
-		<Inline gap='md' align='center'>
-			<Button size='sm'>
-				Small
+		<Inline
+			gap='md'
+			wrap
+			align='center'
+		>
+			<Button>
+				Действие
 			</Button>
-			<Button size='md'>
-				Medium
+			<Button disabled>
+				Недоступно
 			</Button>
-			<Button size='lg'>
-				Large
+			<Button as='a' href='#base-link'>
+				Ссылка
 			</Button>
 		</Inline>
 	),
-	parameters: story('Размеры sm / md / lg.'),
+	parameters: story('`as="a"` рендерит якорь; `disabled` на кнопке и на ссылке.'),
+};
+
+export const Sizes: Story<ButtonProps> = {
+	render: () => (
+		<Stack gap='md'>
+			<Inline gap='md' align='center'>
+				<Button size='sm'>
+					Small
+				</Button>
+				<Button size='md'>
+					Medium
+				</Button>
+				<Button size='lg'>
+					Large
+				</Button>
+			</Inline>
+			<Inline gap='md' align='center'>
+				<Button
+					variant='link'
+					size='sm'
+					prefix={<IconPlus />}
+				>
+					Small
+				</Button>
+				<Button
+					variant='link'
+					size='md'
+					prefix={<IconPlus />}
+				>
+					Medium
+				</Button>
+				<Button
+					variant='link'
+					size='lg'
+					prefix={<IconPlus />}
+				>
+					Large
+				</Button>
+			</Inline>
+		</Stack>
+	),
+	parameters: story('Размеры sm / md / lg, в том числе у variant="link".'),
 };
 
 export const Danger: Story<ButtonProps> = {
 	render: () => (
 		<Inline gap='md' wrap>
-			<Button
-				variant='primary'
-				status='danger'
-			>
+			<Button variant='danger'>
 				Удалить
 			</Button>
-			<Button
-				variant='secondary'
-				status='danger'
-			>
+			<Button variant='danger_tinted'>
 				Удалить
 			</Button>
-			<Button
-				variant='ghost'
-				status='danger'
-			>
-				Удалить
-			</Button>
-			<Button
-				variant='link'
-				status='danger'
-			>
-				Удалить
-			</Button>
-			<Button
-				variant='primary'
-				status='danger'
-				disabled
-			>
+			<Button variant='danger' disabled>
 				Удалить
 			</Button>
 		</Inline>
 	),
-	parameters: story('`status="danger"` на разных вариантах.'),
+	parameters: story('`variant="danger"` и `danger_tinted`.'),
 };
 
 /** Disabled — та же форма × opacity; loading сохраняет заливку enabled. */
@@ -194,11 +219,7 @@ export const PrimaryEnabledVsDisabled: Story<ButtonProps> = {
 				<Button variant='primary' loading>
 					Сохранение
 				</Button>
-				<Button
-					variant='primary'
-					status='danger'
-					disabled
-				>
+				<Button variant='danger' disabled>
 					Удалить
 				</Button>
 				<Button variant='secondary'>
@@ -217,7 +238,7 @@ export const WithIcon: Story<ButtonProps> = {
 	args: {
 		variant: 'primary',
 		size: 'sm',
-		iconStart: <IconPlus size={14} />,
+		prefix: <IconPlus size={14} />,
 		children: 'Быстрый старт',
 	},
 	parameters: story('Компактная кнопка с иконкой в начале.'),
@@ -232,14 +253,6 @@ export const FullWidth: Story<ButtonProps> = {
 		</div>
 	),
 	parameters: story('`fullWidth` растягивает кнопку на контейнер.'),
-};
-
-export const WithShortcut: Story<ButtonProps> = {
-	args: {
-		children: 'Сохранить',
-		shortcut: 'mod+s',
-	},
-	parameters: story('`shortcut` задаёт `aria-keyshortcuts` и title.'),
 };
 
 export const OverflowText: Story<ButtonProps> = {
@@ -293,8 +306,7 @@ export const UsageExample: Story<ButtonProps> = {
 				</Text>
 				<Inline gap='sm'>
 					<Button
-						variant='primary'
-						status='danger'
+						variant='danger'
 						size='sm'
 					>
 						Удалить
@@ -311,3 +323,62 @@ export const UsageExample: Story<ButtonProps> = {
 	),
 	parameters: story('Пара кнопок в карточке подтверждения.'),
 };
+
+export const IconOnly: Story<ButtonProps> = {
+	render: () => (
+		<Inline
+			gap='sm'
+			align='center'
+			wrap
+		>
+			<ButtonIcon
+				variant='ghost'
+				aria-label='Меню'
+				icon={<IconMenu size={20} />}
+			/>
+			<ButtonIcon
+				variant='primary'
+				aria-label='Добавить'
+				icon={<IconPlus size={20} />}
+			/>
+			<ButtonIcon
+				variant='tinted'
+				aria-label='Тонированная'
+				icon={<IconPlus size={20} />}
+			/>
+			<ButtonIcon
+				variant='secondary'
+				data-shape='circle'
+				aria-label='Поиск'
+				icon={<IconSearch size={20} />}
+			/>
+			<ButtonIcon
+				variant='danger'
+				aria-label='Удалить'
+				icon={<IconCross size={18} />}
+			/>
+			<ButtonIcon
+				variant='ghost'
+				aria-label='Добавить'
+				icon={<IconPlus size={20} />}
+				disabled
+			/>
+		</Inline>
+	),
+	parameters: story('`data-icon-only` и `data-shape="circle"` — компактные кнопки только с иконкой.'),
+};
+
+export const DiskClose: Story<ButtonProps> = {
+	render: () => (
+		<ButtonIcon
+			variant='ghost'
+			className={overlayClose.close}
+			data-shape='circle'
+			data-appearance='diskClose'
+			aria-label='Закрыть'
+			icon={<IconCross size={16} />}
+		/>
+	),
+	parameters: story('Закрытие overlay: `overlayClose.close` + `data-appearance="diskClose"`.'),
+};
+

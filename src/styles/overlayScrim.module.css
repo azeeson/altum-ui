@@ -1,0 +1,38 @@
+/**
+ * Визуальный scrim / `::backdrop` для modal/sheet Overlay.
+ * Вешается на хост через `hostClassName` у потребителей
+ * (Modal, Sheet, CommandPalette, ImageLightbox, ImageCrop).
+ * Платформенный reset dialog — в Overlay.module.css.
+ */
+
+.host {
+  --altum-overlay-scrim-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.host::backdrop {
+  opacity: 0;
+  background-color: var(--altum-overlay-scrim);
+  -webkit-backdrop-filter: blur(var(--altum-backdrop-blur, 4px));
+  backdrop-filter: blur(var(--altum-backdrop-blur, 4px));
+
+  transition:
+    opacity var(--altum-motion-overlay) var(--altum-overlay-scrim-ease),
+    display var(--altum-motion-overlay) allow-discrete,
+    overlay var(--altum-motion-overlay) allow-discrete;
+}
+
+.host[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .host[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .host::backdrop {
+    transition: none;
+  }
+}

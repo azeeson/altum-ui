@@ -1,83 +1,81 @@
 import type {
 	AriaRole,
-	ComponentPropsWithoutRef,
+	CSSProperties,
+	MouseEvent,
+	ReactElement,
 	ReactNode,
+	Ref,
 } from 'react';
-import type {RenderChildrenFn} from '../../utils/renderChildren';
+import type {RenderChildrenFn} from '../../core/utils/renderChildren';
 import type {AnchorAlign, AnchorSide} from '../../types';
-import type {OverlayDismiss} from '../Overlay/Overlay.types';
-
-/**
- * Способ открытия: клик, наведение/фокус или только контролируемый режим / `onOpenChange`.
- */
-export type PopoverTriggerMode = 'click' | 'hover' | 'manual';
 
 /**
  * Визуальный вариант контента.
  * - `panel` — диалог/карточка
- * - `tooltip` — внутренний chrome для `Tooltip`; публично используйте `Tooltip`.
- * - `plain` — без chrome (только позиционирование)
+ * - `plain` — без chrome (только позиционирование). Подсказка — `Tooltip`.
  */
-export type PopoverContentVariant = 'panel' | 'tooltip' | 'plain';
+export type PopoverContentVariant = 'panel' | 'plain';
 
-/** Slot-пропсы триггера: `renderTrigger(props, ref)`. */
+/** Как клик по инвокеру действует на панель. Комбобокс — `show`. */
+export type PopoverTargetAction = 'toggle' | 'show' | 'hide';
+
+/** Slot-пропсы, которые `renderChildren` вешает на `trigger`. */
 export type PopoverTriggerSlotProps = {
-	className?: string;
-	'aria-expanded'?: boolean;
-	'aria-haspopup'?: 'dialog' | 'true';
-	'aria-controls'?: string;
-	'aria-describedby'?: string;
+	/** HTML `popovertarget`. Нижний регистр — иначе React 18 не ставит атрибут на DOM. */
+	popovertarget?: string;
+	popovertargetaction?: PopoverTargetAction;
+	onClick?: (event: MouseEvent<HTMLElement>) => void;
+	style?: CSSProperties;
 };
 
 /**
- * Свойства `Popover` — панель через `children`, якорь через `renderTrigger`.
+ * Свойства `Popover` — панель через `children`, якорь через `trigger`.
+ * Хост панели — `Overlay variant="floating"`; открытие и light dismiss —
+ * нативный `popover="auto"` и `popovertarget`.
  */
-export interface PopoverProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
+export interface PopoverProps {
 	/** Содержимое панели. */
 	children?: ReactNode;
 	/**
-	 * Якорь. Навесьте `props` и `ref` на хост (или на обёртку при `wrap`).
+	 * Якорь: элемент или `(props, ref) => …`. Слот навешивает `renderChildren`.
+	 * На кнопку слот ставит `popovertarget`. Ref получает `anchor-name`.
 	 * @example
-	 * renderTrigger={(props, ref) => <Button {...props} ref={ref}>Открыть</Button>}
+	 * <Popover trigger={<Button>Открыть</Button>}>Панель</Popover>
 	 */
-	renderTrigger: RenderChildrenFn<PopoverTriggerSlotProps>;
-	open?: boolean;
-	defaultOpen?: boolean;
-	onOpenChange?: (open: boolean) => void;
-	/**
-	 * `click` — переключение по клику; `hover` — задержки + фокус; `manual` — только контролируемый режим.
-	 * @default 'click'
-	 */
-	trigger?: PopoverTriggerMode;
+	trigger: ReactElement | RenderChildrenFn<PopoverTriggerSlotProps>;
+	/** id панели. Без пропа — стабильный id из `useId`. */
+	id?: string;
 	disabled?: boolean;
 	/**
-	 * Обернуть якорь в span (для disabled-кнопок без pointer events).
-	 * Slot-пропсы и ref уходят на span.
-	 * @default false
-	 */
-	wrap?: boolean;
-	/**
-	 * Chrome панели: `panel` | `tooltip` | `plain`.
+	 * Chrome панели: `panel` | `plain`.
 	 * @default 'panel'
 	 */
 	variant?: PopoverContentVariant;
-	/** Стрелка к якорю. @default true */
-	arrow?: boolean;
-	/** className панели (не корня). */
-	panelClassName?: string;
-	/** ARIA role. @default `'dialog'` для panel, `'tooltip'` для tooltip. */
+	/** className панели. */
+	className?: string;
+	/** ARIA role. @default `'dialog'` */
 	role?: AriaRole;
 	/** Предпочтительная сторона панели относительно триггера; при нехватке места — flip. @default 'bottom' */
 	side?: AnchorSide;
 	/** Выравнивание вдоль стороны. @default 'center' */
 	align?: AnchorAlign;
-	/** Задержка открытия при `trigger="hover"` (мс). @default 200 */
-	openDelay?: number;
-	/** Задержка закрытия при `trigger="hover"` (мс). @default 100 */
-	closeDelay?: number;
 	/**
-	 * Закрытие: снаружи, Escape, оба или выкл.
-	 * @default `'all'` для `click`, `'none'` для `hover` / `manual`
+	 * Ширина панели относительно якоря.
+	 * `trigger` — как якорь, `content` — по контенту, `trigger-fit` — не уже якоря.
+	 * Без пропа ширина по контенту.
 	 */
-	dismiss?: OverlayDismiss;
+	widthMode?: 'trigger' | 'content' | 'trigger-fit';
+	/**
+	 * `toggle` — клик открывает и закрывает. `show` — клик только открывает (комбобокс).
+	 * @default 'toggle'
+	 */
+	popoverTargetAction?: PopoverTargetAction;
+	/** Показать панель после монтирования через `showPopover()`. */
+	defaultOpen?: boolean;
+	/**
+	 * Нативное событие `toggle`. Не зеркало видимости: панель не читает React-стейт.
+	 */
+	onToggle?: (open: boolean) => void;
+	/** Узел панели (`showPopover` / `hidePopover`). */
+	panelRef?: Ref<HTMLElement | null>;
 }

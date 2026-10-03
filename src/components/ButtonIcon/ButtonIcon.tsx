@@ -1,52 +1,24 @@
-import type {ButtonIconProps} from './ButtonIcon.types';
-export type {
-	ButtonVariant,
-	ButtonStatus,
-	ButtonIconProps,
-} from './ButtonIcon.types';
+import type {ReactNode} from 'react';
+import {Button, type ButtonProps} from '../Button/Button';
 
-import {forwardRef} from 'react';
-import {ButtonBase, buttonBaseStyles as styles} from '../../base/ButtonBase';
-import overlayClose from '../../styles/overlayClose.module.css';
-import {cn} from '../../utils/cn';
+export type ButtonIconProps = ButtonProps & {icon?: ReactNode};
 
 /**
- * Компактная кнопка только с иконкой — для панелей инструментов и вторичных действий.
+ * Кнопка только с иконкой: прокси над **`Button`** с `data-icon-only`.
+ * Иконка — `icon` или `children` (мапится в `prefix`).
  *
  * @component
  * @example
- * <ButtonIcon icon={<IconPlus />} aria-label="Добавить" variant="tinted" />
+ * <ButtonIcon variant="ghost" icon={<IconMenu />} aria-label="Меню" />
  */
-export const ButtonIcon = forwardRef<HTMLButtonElement, ButtonIconProps>(
-	function ButtonIcon(
-		{
-			variant = 'ghost',
-			shape = 'square',
-			appearance = 'default',
-			icon,
-			children,
-			className,
-			...props
-		},
-		ref,
-	) {
-		const isDiskClose = appearance === 'diskClose';
-
-		return (
-			<ButtonBase
-				ref={ref}
-				variant={isDiskClose ? 'ghost' : variant}
-				className={cn(
-					isDiskClose ? overlayClose.close : (variant === 'link' ? '' : styles.icon),
-					!isDiskClose && shape === 'circle' && styles.circle,
-					className,
-				)}
-				{...props}
-			>
-				{icon ?? children}
-			</ButtonBase>
-		);
-	},
+export const ButtonIcon = ({
+	icon,
+	children,
+	...props
+}: ButtonIconProps) => (
+	<Button
+		{...props}
+		data-icon-only=''
+		prefix={icon ?? children}
+	/>
 );
-
-ButtonIcon.displayName = 'ButtonIcon';

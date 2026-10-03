@@ -1,7 +1,7 @@
 import type {Meta} from '@storybook/react';
 import React from 'react';
 import {ScrollArea, ScrollAreaProps} from './ScrollArea';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Item} from '../Item/Item';
 import {Box} from '../Box/Box';
@@ -149,7 +149,6 @@ export const UsageExample: Story<ScrollAreaProps> = {
 	render: () => (
 		<Box
 			variant='outlined'
-			padding='none'
 			style={{maxWidth: 360}}
 		>
 			<Stack gap='none'>

@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 /**
@@ -56,33 +57,22 @@ export interface SortableListProps<T extends {id: string} = SortableItem> extend
 	 * @default true
 	 */
 	handleOnly?: boolean;
+	/**
+	 * Оценка высоты строки для `VirtualList` (длинные списки).
+	 * @default 56
+	 */
+	estimateSize?: number;
+	/**
+	 * Порог длины: при `items.length > virtualThreshold` включается VirtualList.
+	 * На время drag виртуализация отключается.
+	 * @default 40
+	 */
+	virtualThreshold?: number;
+	/**
+	 * Высота scroll-хоста при виртуализации.
+	 * @default 360
+	 */
+	height?: number | string;
+	/** DOM-узел списка. */
+	rootRef?: Ref<HTMLDivElement>;
 }
-
-export interface DragLayout {
-	draggingId: string;
-	fromIndex: number;
-	hoverIndex: number;
-	shiftHeight: number;
-	phase: 'drag' | 'drop';
-}
-
-export interface DragSession {
-	id: string;
-	fromIndex: number;
-	hoverIndex: number;
-	items: Array<{id: string}>;
-	pointerId: number;
-	startX: number;
-	startY: number;
-	element: HTMLDivElement;
-	captureTarget: HTMLElement;
-	isDropping: boolean;
-	dropCommitted: boolean;
-	onPointerMove: (event: PointerEvent) => void;
-	onPointerUp: (event: PointerEvent) => void;
-	onLostPointerCapture: (event: PointerEvent) => void;
-	onTransitionEnd: (event: TransitionEvent) => void;
-	dropFallbackTimer: number | null;
-}
-
-export const DROP_FALLBACK_MS = 400;

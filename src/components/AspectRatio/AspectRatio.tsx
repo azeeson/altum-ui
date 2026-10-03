@@ -5,9 +5,9 @@ export type {
 	AspectRatioProps,
 } from './AspectRatio.types';
 
-import {forwardRef} from 'react';
+import type {CSSProperties} from 'react';
 import styles from './AspectRatio.module.css';
-import {cn} from '../../utils/cn';
+import {cn} from '../../core/utils/cn';
 
 /**
  * Обёртка с фиксированным `aspect-ratio` (превью 16:9 / 1:1 без магии в CSS).
@@ -18,29 +18,28 @@ import {cn} from '../../utils/cn';
  *   <img src={src} alt="" />
  * </AspectRatio>
  */
-export const AspectRatio = forwardRef<HTMLDivElement, AspectRatioProps>(function AspectRatio(
-	{
-		ratio = 16 / 9,
-		children,
-		className,
-		style,
-		...rest
-	},
-	ref,
-) {
+export function AspectRatio({
+	ratio = 16 / 9,
+	children,
+	className,
+	style,
+	rootRef,
+	...rest
+}: AspectRatioProps) {
 	return (
 		<div
-			ref={ref}
+			{...rest}
+			ref={rootRef}
 			className={cn(styles.root, className)}
 			style={{
-				aspectRatio: ratio,
-				...style
-			}}
-			{...rest}
+				border: 'none',
+				boxShadow: 'none',
+				color: 'inherit',
+				'--altum-aspect-ratio': String(ratio),
+				...style,
+			} as CSSProperties}
 		>
 			{children}
 		</div>
 	);
-});
-
-AspectRatio.displayName = 'AspectRatio';
+}

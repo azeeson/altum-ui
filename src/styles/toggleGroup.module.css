@@ -27,9 +27,9 @@
   gap: var(--altum-toggle-stack-gap);
 
   width: 100%;
+}
 
-  &.horizontal {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
+.fieldset[data-orientation='horizontal'] .stack {
+  flex-direction: row;
+  flex-wrap: wrap;
 }

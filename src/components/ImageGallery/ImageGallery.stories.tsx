@@ -2,7 +2,7 @@ import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {ImageGallery, type ImageGalleryProps} from './ImageGallery';
 import {Card} from '../Card/Card';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {demoGalleryItem, demoImage} from '../../storybook/demoImages';
 import {componentParameters, story, Story} from '../../storybook/meta';

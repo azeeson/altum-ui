@@ -4,7 +4,7 @@ import {DateField, DateFieldProps} from './DateField';
 import {TimeField} from '../TimeField/TimeField';
 import {Button} from '../Button/Button';
 import {Fieldset} from '../Fieldset/Fieldset';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {
 	componentParameters,
 	fieldArgTypes,
@@ -24,7 +24,6 @@ export default {
 	args: {
 		label: 'Укажите дату',
 		size: 'md',
-		labelPlacement: 'inline',
 	},
 	argTypes: {
 		...fieldArgTypes,
@@ -78,35 +77,25 @@ export const Sizes: Story<DateFieldProps> = {
 
 export const LabelPlacement: Story<DateFieldProps> = {
 	render: function LabelPlacementRender() {
-		const [inline, setInline] = useState<Date | undefined>();
-		const [outside, setOutside] = useState<Date | undefined>();
-		const [none, setNone] = useState<Date | undefined>();
+		const [withLabel, setWithLabel] = useState<Date | undefined>();
+		const [withoutLabel, setWithoutLabel] = useState<Date | undefined>();
 		return (
 			<Stack gap='md' style={{maxWidth: 280}}>
 				<DateField
-					label='Дата (inline)'
-					value={inline}
-					onChange={setInline}
-					labelPlacement='inline'
-				/>
-				<DateField
-					label='Дата (outside)'
-					value={outside}
-					onChange={setOutside}
-					labelPlacement='outside'
-					maskAsPlaceholder
-				/>
-				<DateField
 					label='Дата'
-					value={none}
-					onChange={setNone}
-					labelPlacement='none'
+					value={withLabel}
+					onChange={setWithLabel}
+				/>
+				<DateField
+					aria-label='Дата'
+					value={withoutLabel}
+					onChange={setWithoutLabel}
 					maskAsPlaceholder
 				/>
 			</Stack>
 		);
 	},
-	parameters: story('`labelPlacement` + `maskAsPlaceholder` вне inline.'),
+	parameters: story('С `label` — floating-лейбл; без `label` маска видна как placeholder.'),
 };
 
 export const Disabled: Story<DateFieldProps> = {
@@ -138,7 +127,7 @@ export const Empty: Story<DateFieldProps> = {
 					label='Дата'
 					value={date}
 					onChange={setDate}
-					helperText='Формат ДД.ММ.ГГГГ'
+					description='Формат ДД.ММ.ГГГГ'
 				/>
 			</div>
 		);

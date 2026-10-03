@@ -1,22 +1,16 @@
+import type {MouseEvent} from 'react';
 import type {BarChartProps} from './BarChart.types';
-export type {
-	BarChartDataset,
-	BarChartProps,
-} from './BarChart.types';
+export type {BarChartDataset, BarChartProps} from './BarChart.types';
 
-import {forwardRef, useState} from 'react';
+import {useState} from 'react';
 import styles from './BarChart.module.css';
-import series from '../../styles/chartSeries.module.css';
-import {cn} from '../../utils/cn';
-import {
-	ChartCartesian,
-	ChartHoverBubble,
-	chartBandX,
-} from '../../base/ChartBase';
+import {cn} from '../../core/utils/cn';
+import {ChartCartesian, ChartHoverBubble, chartBandX} from '../../base/ChartBase';
 
 /**
  * Столбчатый SVG-график без внешних зависимостей.
  * При `showHoverValue` наведение на столбец показывает его значение.
+ * Наведение читается на общей группе (`data-bar`).
  *
  * @component
  * @example
@@ -26,30 +20,46 @@ import {
  *   showHoverValue
  * />
  */
-export const BarChart = forwardRef<HTMLDivElement, BarChartProps>(function BarChart(
-	{
-		categories,
-		datasets,
-		height = 280,
-		className,
-		showValues = false,
-		showHoverValue = true,
-		...rest
-	},
-	ref,
-) {
+export const BarChart = ({
+	categories,
+	datasets,
+	height = 280,
+	className,
+	showValues = false,
+	showHoverValue = true,
+	rootRef,
+	...rest
+}: BarChartProps) => {
 	const [hover, setHover] = useState<[number, number] | null>(null);
+
+	function clearHover() {
+		setHover((prev) => (prev == null ? prev : null));
+	}
+
+	function onBarOver(event: MouseEvent<SVGGElement>) {
+		if (!showHoverValue) return;
+		const target = event.target;
+		if (!(target instanceof Element)) return;
+		const node = target.closest('[data-bar]');
+		if (!node) return;
+		const group = Number(node.getAttribute('data-group'));
+		const seriesIndex = Number(node.getAttribute('data-series'));
+		if (Number.isNaN(group) || Number.isNaN(seriesIndex)) return;
+		setHover((prev) => (
+			prev && prev[0] === group && prev[1] === seriesIndex ? prev : [group, seriesIndex]
+		));
+	}
 
 	return (
 		<ChartCartesian
-			ref={ref}
+			rootRef={rootRef}
 			categories={categories}
 			datasets={datasets}
 			height={height}
-			className={className}
+			className={cn(styles.root, className)}
 			getX={chartBandX}
 			aria-label='Столбчатый график'
-			onPlotLeave={() => setHover(null)}
+			onPlotLeave={clearHover}
 			{...rest}
 		>
 			{(plot) => {
@@ -62,7 +72,10 @@ export const BarChart = forwardRef<HTMLDivElement, BarChartProps>(function BarCh
 				const hovered = hover && datasets[hover[1]];
 
 				return (
-					<>
+					<g
+						onMouseOver={onBarOver}
+						onMouseLeave={clearHover}
+					>
 						{categories.map((_, groupIndex) =>
 							datasets.map((dataset, seriesIndex) => {
 								const value = dataset.data[groupIndex] ?? 0;
@@ -70,20 +83,22 @@ export const BarChart = forwardRef<HTMLDivElement, BarChartProps>(function BarCh
 								const y = plot.getY(value);
 								const on = hover?.[0] === groupIndex && hover[1] === seriesIndex;
 								return (
-									<g key={`${groupIndex}-${seriesIndex}`}>
+									<g
+										key={`${groupIndex}-${seriesIndex}`}
+										data-bar=''
+										data-group={groupIndex}
+										data-series={seriesIndex}
+									>
 										<rect
+											className={styles.bar}
 											x={x}
 											y={y}
 											width={barW}
 											height={Math.max(0, plot.top + plot.plotH - y)}
 											rx={3}
 											fill={plot.items[seriesIndex].color}
-											className={cn(
-												series.item,
-												hover && !on && series.dimmed,
-												on && series.active,
-											)}
-											onMouseEnter={showHoverValue ? () => setHover([groupIndex, seriesIndex]) : undefined}
+											data-dimmed={hover && !on ? '' : undefined}
+											data-active={on ? '' : undefined}
 										>
 											<title>
 												{`${dataset.name}: ${value}`}
@@ -113,11 +128,9 @@ export const BarChart = forwardRef<HTMLDivElement, BarChartProps>(function BarCh
 									: `${categories[hover[0]]}: ${hovered.data[hover[0]] ?? 0}`}
 							/>
 						)}
-					</>
+					</g>
 				);
 			}}
 		</ChartCartesian>
 	);
-});
-
-BarChart.displayName = 'BarChart';
+};

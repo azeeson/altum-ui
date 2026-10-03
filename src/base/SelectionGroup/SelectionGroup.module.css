@@ -1,0 +1,9 @@
+/* Выбранный пункт. Раскладка и chrome — у ButtonGroup. */
+.group button[aria-checked='true'],
+.group button[aria-checked='true']:hover:not(:disabled),
+.group button[aria-selected='true'],
+.group button[aria-selected='true']:hover:not(:disabled) {
+  color: var(--altum-fg-item-on);
+  background-color: var(--altum-bg-thumb);
+  box-shadow: var(--altum-bg-thumb-shadow);
+}

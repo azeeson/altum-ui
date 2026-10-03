@@ -1,8 +1,7 @@
-import {forwardRef} from 'react';
-import {Flex} from '../../base/Flex';
 import type {StackProps} from './Layout.types';
-
 export type {LayoutAlign, LayoutGap, LayoutJustify, StackProps} from './Layout.types';
+
+import {Flex} from '../../base/Flex';
 
 /**
  * Вертикальный flex-стек: секции формы, списки карточек, колонка в сайдбаре.
@@ -25,17 +24,19 @@ export type {LayoutAlign, LayoutGap, LayoutJustify, StackProps} from './Layout.t
  *   <Button variant="primary">Сохранить</Button>
  * </Stack>
  */
-export const Stack = forwardRef<HTMLElement, StackProps>(function Stack(props, ref) {
-	return (
-		<Flex
-			ref={ref}
-			gap='md'
-			align='stretch'
-			justify='start'
-			{...props}
-			direction='column'
-		/>
-	);
-});
-
-Stack.displayName = 'Stack';
+export const Stack = ({
+	rootRef,
+	gap = 'md',
+	align = 'stretch',
+	justify = 'start',
+	...props
+}: StackProps) => (
+	<Flex
+		rootRef={rootRef}
+		gap={gap}
+		align={align}
+		justify={justify}
+		{...props}
+		direction='column'
+	/>
+);

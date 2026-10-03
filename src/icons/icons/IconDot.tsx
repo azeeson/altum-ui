@@ -1,3 +1,3 @@
-import {createIcon} from '../createIcon';
-
-export const IconDot = createIcon('M46,53c-1.8,0-3.7-0.8-5-2.1c-1.3-1.3-2-3.1-2-4.9c0-1.8,0.8-3.6,2-5c1.3-1.3,3.1-2,5-2c1.8,0,3.6,0.8,4.9,2 c1.3,1.3,2.1,3.1,2.1,5c0,1.8-0.8,3.6-2.1,4.9C49.6,52.2,47.8,53,46,53z');
+import {IconBase, type IconProps} from '../IconBase';
+import {ICON_PATHS} from '../registry';
+export const IconDot = (p: IconProps) => <IconBase d={ICON_PATHS.dot} {...p} />;

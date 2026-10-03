@@ -1,6 +1,23 @@
-/* Отступ сообщения под полем. Цвет и кегль — `Text`. */
+/* Отступ сообщения под полем. Кегль — xs, цвет варианта — data-variant. */
 
 .message {
+  margin: 0;
   margin-top: var(--altum-field-message-gap, var(--altum-g-space-1));
   margin-left: var(--altum-form-helper-indent, var(--altum-g-space-1));
+
+  font-family: var(--altum-g-font-family-ui);
+  font-size: var(--altum-g-font-size-xs);
+  line-height: var(--altum-g-line-height-xs);
+
+  &[data-variant='hint'] {
+    color: var(--altum-color-type-muted);
+  }
+
+  &[data-variant='error'] {
+    color: var(--altum-color-status-error);
+  }
+
+  &[data-variant='success'] {
+    color: var(--altum-color-status-success);
+  }
 }

@@ -1,0 +1,16 @@
+.root {
+  box-sizing: border-box;
+
+  flex-shrink: 0;
+
+  &[data-orientation='horizontal'] {
+    width: 100%;
+    height: var(--altum-gap-size);
+  }
+
+  &[data-orientation='vertical'] {
+    align-self: stretch;
+
+    width: var(--altum-gap-size);
+  }
+}

@@ -1,72 +1,16 @@
 .grid {
   display: grid;
+  container-type: inline-size;
 
-  gap: var(--altum-grid-gap-xs);
-  grid-template-columns: var(--altum-grid-cols-xs);
+  gap: var(--altum-grid-gap, var(--altum-g-space-3));
+  grid-template-columns: var(--altum-grid-cols, repeat(1, minmax(0, 1fr)));
 
   width: 100%;
 }
 
-@media (min-width: 600px) {
-  .grid {
-    gap: var(--altum-grid-gap-sm);
-    grid-template-columns: var(--altum-grid-cols-sm);
-  }
-}
-
-@media (min-width: 768px) {
-  .grid {
-    gap: var(--altum-grid-gap-md);
-    grid-template-columns: var(--altum-grid-cols-md);
-  }
-}
-
-@media (min-width: 1024px) {
-  .grid {
-    gap: var(--altum-grid-gap-lg);
-    grid-template-columns: var(--altum-grid-cols-lg);
-  }
-}
-
-@media (min-width: 1280px) {
-  .grid {
-    gap: var(--altum-grid-gap-xl);
-    grid-template-columns: var(--altum-grid-cols-xl);
-  }
-}
-
 .gridItem {
-  /* Каскад брейкпоинтов пишет JS — CSS читает var без пирамид fallback. */
-  grid-row: var(--altum-grid-item-row-xs, auto);
-  grid-column: var(--altum-grid-item-col-xs, auto);
+  grid-row: var(--altum-grid-item-row, auto);
+  grid-column: var(--altum-grid-item-col, auto);
 
   min-width: 0;
-}
-
-@media (min-width: 600px) {
-  .gridItem {
-    grid-row: var(--altum-grid-item-row-sm, auto);
-    grid-column: var(--altum-grid-item-col-sm, auto);
-  }
-}
-
-@media (min-width: 768px) {
-  .gridItem {
-    grid-row: var(--altum-grid-item-row-md, auto);
-    grid-column: var(--altum-grid-item-col-md, auto);
-  }
-}
-
-@media (min-width: 1024px) {
-  .gridItem {
-    grid-row: var(--altum-grid-item-row-lg, auto);
-    grid-column: var(--altum-grid-item-col-lg, auto);
-  }
-}
-
-@media (min-width: 1280px) {
-  .gridItem {
-    grid-row: var(--altum-grid-item-row-xl, auto);
-    grid-column: var(--altum-grid-item-col-xl, auto);
-  }
 }

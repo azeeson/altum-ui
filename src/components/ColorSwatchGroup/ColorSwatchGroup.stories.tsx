@@ -1,7 +1,7 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {ColorSwatchGroup, ColorSwatchGroupProps} from './ColorSwatchGroup';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Card} from '../Card/Card';
 import {Button} from '../Button/Button';

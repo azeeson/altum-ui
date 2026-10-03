@@ -1,172 +1,150 @@
 import type {
-	OverlayZIndexTier,
-	SheetDirection,
 	SheetProps,
 	SheetHeaderProps,
 	SheetBodyProps,
+	SheetFooterProps,
 } from './Sheet.types';
 export type {
-	OverlayZIndexTier,
 	SheetMode,
 	SheetDirection,
 	SheetFooterAlign,
 	SheetProps,
 	SheetHeaderProps,
-	SheetTitleProps,
-	SheetCloseProps,
 	SheetBodyProps,
 	SheetFooterProps,
 } from './Sheet.types';
 
-import {forwardRef, useId, type Ref} from 'react';
-import {GrabHandle} from '../GrabHandle/GrabHandle';
-import {Overlay, type OverlayPurpose, type OverlaySheetSide} from '../Overlay/Overlay';
-import {DialogBase} from '../../base/DialogBase';
-import {MOBILE_MEDIA_QUERY, useMediaQuery} from '../../hooks/useMediaQuery';
-import {toCssSize} from '../../utils/cssSize';
+import type {CSSProperties} from 'react';
+import {createContext, useContext} from 'react';
+import {Box} from '../Box/Box';
+import {OverlayCloseControl} from '../Button/overlayCloseControl';
+import {Layout} from '../Layout/Layout';
+import {Overlay} from '../Overlay/Overlay';
+import {toCssSize} from '../../core/utils/cssSize';
 import styles from './Sheet.module.css';
-import {cn} from '../../utils/cn';
+import overlayScrim from '../../styles/overlayScrim.module.css';
+import {cn} from '../../core/utils/cn';
 import {useLocale} from '../../locales/localeContext';
-import {treeContainsDialogTitle} from '../../utils/visitElementTree';
+import {ruSlice as ru_sheet} from '../../locales/slices/sheet.ru';
 
-function sheetTierToPurpose(tier?: OverlayZIndexTier): OverlayPurpose | undefined {
-	if (tier == null) return undefined;
-	if (tier === 'overlay') return 'sheet';
-	if (tier === 'modal') return 'modal';
-	if (tier === 'dropdown') return 'dropdown';
-	if (tier === 'lightbox') return 'lightbox';
-	if (tier === 'notification') return 'notification';
-	return undefined;
-}
+const localeFallback = {
+	sheet: ru_sheet,
+};
 
-function resolveSheetSide(
-	mode: 'sidebar' | 'sheet',
-	direction: SheetDirection,
-): OverlaySheetSide {
-	if (mode === 'sidebar') {
-		return direction === 'start' ? 'left' : 'right';
-	}
-	return direction === 'start' ? 'top' : 'bottom';
-}
+const SheetCloseContext = createContext<(() => void) | null>(null);
 
 /**
- * Маркер / слот шапки.
+ * Шапка панели: сетка `leftControls` / заголовок / `rightControls`.
+ * Крестик стоит в правой ячейке и не сдвигает заголовок из центра.
+ * `plain` — ряд без левой ячейки, раскладка в CSS по `data-variant`.
  *
  * @component
  * @example
  * <Sheet.Header leftControls={<Button>Назад</Button>} showClose>
- *   <Sheet.Title>Фильтры</Sheet.Title>
+ *   <Title level={3}>Фильтры</Title>
  * </Sheet.Header>
  */
-const SheetHeader = forwardRef<HTMLElement, SheetHeaderProps>(function SheetHeader({
+const SheetHeader = ({
 	children,
-	className = '',
+	className,
 	variant = 'chrome',
 	leftControls,
 	rightControls,
 	showClose: showCloseProp,
+	rootRef,
 	...rest
-}, ref) {
+}: SheetHeaderProps) => {
+	const onClose = useContext(SheetCloseContext);
 	const showClose = showCloseProp ?? (rightControls == null);
-	const closeControl = showClose ? <DialogBase.Close /> : null;
-	const resolvedRight = (rightControls || showClose) ? (
+	const closeControl = showClose && onClose != null ? (
+		<OverlayCloseControl onClick={onClose} />
+	) : null;
+	const end = (rightControls || showClose) ? (
 		<>
 			{rightControls}
 			{closeControl}
 		</>
 	) : null;
 
-	if (variant === 'plain') {
-		return (
-			<DialogBase.Header
-				ref={ref}
-				showClose={false}
-				className={cn(styles.headerPlain, className)}
-				contentClassName={styles.headerPlainInner}
-				{...rest}
-			>
-				<div className={styles.headerPlainContent}>
-					{children}
-				</div>
-				{resolvedRight ? (
-					<div className={styles.headerPlainEnd}>
-						{resolvedRight}
-					</div>
-				) : null}
-			</DialogBase.Header>
-		);
-	}
-
 	return (
-		<DialogBase.Header
-			ref={ref}
-			showClose={false}
-			className={cn(styles.headerChrome, className)}
-			contentClassName={styles.headerChromeContent}
+		<Layout.Header
+			rootRef={rootRef}
+			sticky
+			className={cn(styles.headerSlot, className)}
 			{...rest}
+			data-variant={variant}
 		>
-			<div className={cn(styles.headerSide, styles.headerSideStart)}>
+			<div className={styles.leftSide}>
 				{leftControls}
 			</div>
-			<div className={styles.headerCenter}>
+			<div className={styles.centerSide}>
 				{children}
 			</div>
-			<div className={cn(styles.headerSide, styles.headerSideEnd)}>
-				{resolvedRight}
+			<div className={styles.rightSide}>
+				{end}
 			</div>
-		</DialogBase.Header>
+		</Layout.Header>
 	);
-});
-SheetHeader.displayName = 'Sheet.Header';
+};
 
 /**
- * Прокручиваемое тело панели.
+ * Тело панели. Скролл живёт на `Layout` внутри `Sheet`.
+ * `padding={false}` снимает поле через `data-flush`.
  *
  * @component
  */
-const SheetBody = forwardRef<HTMLElement, SheetBodyProps>(function SheetBody({
-	children,
-	className = '',
+const SheetBody = ({
+	className,
 	padding = true,
+	rootRef,
 	...rest
-}, ref) {
-	if (padding) {
-		return (
-			<DialogBase.Body
-				ref={ref}
-				className={cn(styles.bodyFollowsHeader, className)}
-				{...rest}
-			>
-				{children}
-			</DialogBase.Body>
-		);
-	}
-
+}: SheetBodyProps) => {
 	return (
-		<div
-			ref={ref as Ref<HTMLDivElement>}
-			className={cn(styles.bodyFlush, className)}
+		<Layout.Content
+			rootRef={rootRef}
+			className={className}
 			{...rest}
-		>
-			{children}
-		</div>
+			data-flush={!padding ? '' : undefined}
+		/>
 	);
-});
-SheetBody.displayName = 'Sheet.Body';
+};
 
 /**
- * Универсальная выезжающая панель на базе `Overlay` (`variant="sheet"`).
+ * Действия внизу панели.
  *
- * Составной API: `Sheet.Header` / `Title` / `Close` / `Body` / `Footer`.
+ * @component
+ */
+const SheetFooter = ({
+	className,
+	align = 'end',
+	rootRef,
+	...rest
+}: SheetFooterProps) => {
+	return (
+		<Layout.Footer
+			rootRef={rootRef}
+			sticky
+			align={align}
+			className={className}
+			{...rest}
+		/>
+	);
+};
+
+/**
+ * Выезжающая панель на `Overlay` (`variant="sheet"`).
+ * Поверхность — `Box`, шапка, тело и футер — `Layout`.
+ * Заголовок — `Title`. Крестик — в правой ячейке `Sheet.Header`.
+ * `mode="auto"` на узком экране становится нижней или верхней шторкой силами CSS.
  *
- * Держите `Sheet` смонтированным и управляйте видимостью через `open`
- * (`{open && <Sheet>}` убивает exit-анимацию).
+ * Держите `Sheet` смонтированным: закрытие — `open={false}`.
+ * Браузер снимает `open` у dialog и доигрывает CSS. `{open && <Sheet>}` обрывает уход.
  *
  * @component
  * @example
  * <Sheet open={open} onOpenChange={setOpen} mode="sheet" showHandle>
  *   <Sheet.Header showClose>
- *     <Sheet.Title>Фильтры</Sheet.Title>
+ *     <Title level={3}>Фильтры</Title>
  *   </Sheet.Header>
  *   <Sheet.Body>…</Sheet.Body>
  *   <Sheet.Footer>
@@ -174,40 +152,27 @@ SheetBody.displayName = 'Sheet.Body';
  *   </Sheet.Footer>
  * </Sheet>
  */
-const SheetRoot = forwardRef<HTMLDivElement, SheetProps>(function Sheet(
-	{
-		open,
-		onOpenChange,
-		children,
-		showHandle = false,
-		mode = 'auto',
-		direction = 'end',
-		backdrop = true,
-		width = 280,
-		height,
-		backdropVariant = 'default',
-		backdropBlur = 'sm',
-		zIndexTier,
-		zIndex,
-		dismiss,
-		className = '',
-		style,
-		'aria-label': ariaLabel,
-		'aria-labelledby': ariaLabelledBy,
-		...rest
-	},
-	ref,
-) {
-	const {t} = useLocale();
-	const titleId = useId();
-	const isMobile = useMediaQuery(MOBILE_MEDIA_QUERY);
-	const resolvedMode: 'sidebar' | 'sheet' = mode === 'auto'
-		? (isMobile ? 'sheet' : 'sidebar')
-		: mode;
-	const side = resolveSheetSide(resolvedMode, direction);
-	const labelled = treeContainsDialogTitle(children);
-	const handleAtOuterStart = showHandle && !(resolvedMode === 'sheet' && direction === 'start');
-	const handleAtOuterEnd = showHandle && resolvedMode === 'sheet' && direction === 'start';
+const SheetRoot = ({
+	open,
+	onOpenChange,
+	children,
+	showHandle = false,
+	mode = 'auto',
+	direction = 'end',
+	width = 280,
+	height,
+	className,
+	style,
+	'aria-label': ariaLabel,
+	'aria-labelledby': ariaLabelledBy,
+	rootRef,
+	...rest
+}: SheetProps) => {
+	const {t} = useLocale(localeFallback);
+	const side = mode === 'sheet'
+		? (direction === 'start' ? 'top' : 'bottom')
+		: (direction === 'start' ? 'left' : 'right');
+	const close = () => onOpenChange(false);
 
 	return (
 		<Overlay
@@ -215,65 +180,42 @@ const SheetRoot = forwardRef<HTMLDivElement, SheetProps>(function Sheet(
 			side={side}
 			open={open}
 			onOpenChange={onOpenChange}
-			backdrop={backdrop}
-			backdropVariant={backdropVariant}
-			backdropBlur={backdropBlur}
-			purpose={sheetTierToPurpose(zIndexTier)}
-			zIndex={zIndex}
-			dismiss={dismiss}
-			aria-labelledby={labelled ? titleId : ariaLabelledBy}
-			aria-label={ariaLabel ?? (labelled ? undefined : t('sheet.ariaLabel'))}
+			hostClassName={overlayScrim.host}
+			aria-labelledby={ariaLabel ? undefined : ariaLabelledBy}
+			aria-label={ariaLabel ?? (ariaLabelledBy ? undefined : t('sheet.ariaLabel'))}
 		>
-			<DialogBase.Surface
-				as='div'
-				padding='none'
-				radius={resolvedMode === 'sidebar' ? 'none' : 'md'}
-				ref={ref}
-				data-mode={resolvedMode}
-				data-direction={direction}
-				data-z-tier={zIndexTier}
-				className={cn(
-					styles.sheet,
-					styles[`panel_${resolvedMode}`],
-					styles[`panel_${direction}`],
-					showHandle && styles.sheetWithHandle,
-					className,
-				)}
+			<Box
+				variant='floating'
+				rootRef={rootRef}
+				className={cn(styles.sheet, className)}
 				style={{
-					...(resolvedMode === 'sidebar'
-						? {width: toCssSize(width)}
-						: (height === undefined ? undefined : {height: toCssSize(height)})),
+					'--altum-sheet-width': toCssSize(width),
+					'--altum-sheet-height': height !== undefined ? toCssSize(height) : undefined,
 					...style,
-				}}
-				onClose={() => onOpenChange(false)}
-				titleId={titleId}
+				} as CSSProperties}
 				{...rest}
+				data-mode={mode}
+				data-direction={direction}
+				data-handle={showHandle ? '' : undefined}
 			>
-				{handleAtOuterStart && <GrabHandle className={styles.grabHandleOverlay} />}
-				{children}
-				{handleAtOuterEnd && <GrabHandle className={styles.grabHandleOverlay} />}
-			</DialogBase.Surface>
+				<SheetCloseContext.Provider value={close}>
+					<Layout
+						padding='md'
+						gap='md'
+					>
+						{children}
+					</Layout>
+				</SheetCloseContext.Provider>
+			</Box>
 		</Overlay>
 	);
-});
-
-SheetRoot.displayName = 'Sheet';
-
-type SheetComponent = typeof SheetRoot & {
-	Header: typeof SheetHeader;
-	Title: typeof DialogBase.Title;
-	Close: typeof DialogBase.Close;
-	Body: typeof SheetBody;
-	Footer: typeof DialogBase.Footer;
 };
 
 /**
- * Универсальная выезжающая панель (составной API).
+ * Выезжающая панель: `Header` / `Body` / `Footer`.
  */
 export const Sheet = Object.assign(SheetRoot, {
 	Header: SheetHeader,
-	Title: DialogBase.Title,
-	Close: DialogBase.Close,
 	Body: SheetBody,
-	Footer: DialogBase.Footer,
-}) as SheetComponent;
+	Footer: SheetFooter,
+});

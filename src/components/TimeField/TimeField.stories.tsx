@@ -4,7 +4,7 @@ import {TimeField, type TimeFieldProps} from './TimeField';
 import {DateField} from '../DateField/DateField';
 import {Button} from '../Button/Button';
 import {Fieldset} from '../Fieldset/Fieldset';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {
 	componentParameters,
 	fieldArgTypes,
@@ -22,7 +22,6 @@ export default {
 	args: {
 		label: 'Время',
 		size: 'md',
-		labelPlacement: 'inline',
 	},
 	argTypes: {
 		...fieldArgTypes,
@@ -90,38 +89,27 @@ export const Sizes: Story<TimeFieldProps> = {
 
 export const LabelPlacement: Story<TimeFieldProps> = {
 	render: function LabelPlacementRender() {
-		const [inline, setInline] = useState('');
-		const [outside, setOutside] = useState('');
-		const [none, setNone] = useState('');
+		const [withLabel, setWithLabel] = useState('');
+		const [withoutLabel, setWithoutLabel] = useState('');
 		return (
 			<Stack gap='md' style={{maxWidth: 280}}>
 				<TimeField
-					label='Время (inline)'
-					value={inline}
-					onChange={setInline}
-					labelPlacement='inline'
-					width='full'
-				/>
-				<TimeField
-					label='Время (outside)'
-					value={outside}
-					onChange={setOutside}
-					labelPlacement='outside'
-					maskAsPlaceholder
-					width='full'
-				/>
-				<TimeField
 					label='Время'
-					value={none}
-					onChange={setNone}
-					labelPlacement='none'
+					value={withLabel}
+					onChange={setWithLabel}
+					width='full'
+				/>
+				<TimeField
+					aria-label='Время'
+					value={withoutLabel}
+					onChange={setWithoutLabel}
 					maskAsPlaceholder
 					width='full'
 				/>
 			</Stack>
 		);
 	},
-	parameters: story('`labelPlacement` + `maskAsPlaceholder` вне inline.'),
+	parameters: story('С `label` — floating-лейбл; без `label` маска видна как placeholder.'),
 };
 
 export const Disabled: Story<TimeFieldProps> = {
@@ -153,7 +141,7 @@ export const Empty: Story<TimeFieldProps> = {
 					label='Время'
 					value={val}
 					onChange={setVal}
-					helperText='Формат ЧЧ:ММ'
+					description='Формат ЧЧ:ММ'
 				/>
 			</div>
 		);

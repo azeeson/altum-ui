@@ -1,6 +1,6 @@
 # Layout-компоненты altum
 
-Гайд: **что выбрать** и **зачем**, для панели `Layout` и flex-примитивов (`Stack`, `Inline`, `Split`, `ControlRow`, `LayoutItem`).
+Гайд: **что выбрать** и **зачем**, для панели `Layout`, flex-примитивов (`Stack`, `Inline`, `Split`, `ControlRow`, `LayoutItem`) и точечного зазора `Gap`.
 
 Стили — CSS Modules + токены `--altum-g-space-*` (8pt).
 
@@ -16,10 +16,11 @@ import {
   Grid,
   Container,
   Page,
+  Gap,
 } from 'altum';
 ```
 
-Связанные: **FieldBase** — см. [COMPONENTS.md](./COMPONENTS.md).
+Связанные: **TextField** — см. [COMPONENTS.md](./COMPONENTS.md).
 
 ---
 
@@ -32,9 +33,10 @@ import {
 | Чипы / теги / мелкие кнопки в ряд с переносом | **Inline** |
 | Слева заголовок, справа действия | **Split** |
 | Поля + Chip + Button в одной строке фильтров | **ControlRow** |
-| Одному ребёнку — `flex: 1` или «не сжимать» | **LayoutItem** (`ControlRow.Item` / `Layout.Item`) |
+| Одному ребёнку — `flex: 1` или «не сжимать» | **LayoutItem** (`ControlRow.Item`) |
 | Колонки сетки | **Grid** |
-| Оболочка input (label / prefix / clear) | **FieldBase** |
+| Один дополнительный шаг между двумя соседями | **Gap** |
+| Оболочка input (label / prefix / clear) | **TextField** |
 
 ---
 
@@ -58,7 +60,7 @@ import {
 
 | Часть | Роль | Ключевые пропсы |
 |-------|------|-----------------|
-| `Layout` | Корень-scrollport (`overflow-y: auto`, flex-колонка) | `as` (по умолчанию `div`) |
+| `Layout` | Корень-scrollport (`overflow-y: auto`, flex-колонка) | `as`, `padding` (отступ корня), `gap` (между секциями). Оба: `sm` 12px, `md` 16px, `lg` 24px |
 | `Layout.Header` | Шапка | `sticky`, `as="header"` |
 | `Layout.Content` | Середина (без собственного overflow) | `as` |
 | `Layout.Footer` | Низ с действиями | `sticky`, `align` (`start` \| `center` \| `end` \| `space-between`), `as="footer"` |
@@ -83,7 +85,7 @@ import {
   <Layout.Header sticky>
     <Split>
       <h2>Настройки</h2>
-      <ButtonIcon aria-label="Закрыть" />
+      <Button variant="ghost" data-icon-only aria-label="Закрыть" prefix={<IconCross />} />
     </Split>
   </Layout.Header>
   <Layout.Content>
@@ -100,11 +102,11 @@ import {
 </Layout>
 ```
 
-### Namespace
+### Состав объекта
 
-На `Layout` также висят алиасы: `Layout.Inline`, `.Split`, `.ControlRow`, `.Item`.
+На `Layout` висят только `Layout.Header`, `Layout.Content` и `Layout.Footer`.
 
-В приложении предпочтительны **именованные импорты**; `Layout.*` удобен, когда вы уже внутри панели.
+`Inline`, `Split`, `ControlRow` и `LayoutItem` — отдельные компоненты, их импортируют по имени.
 
 Также экспортируются: `LayoutRoot`, `LayoutHeader`, `LayoutContent`, `LayoutFooter`.
 
@@ -228,7 +230,7 @@ Flex-ячейка внутри Stack / Inline / Split / ControlRow.
 | `grow` | `false` | `flex: 1` — занять оставшееся место |
 | `shrink` | `true` | `false` — кнопка/чип не сжимаются |
 
-Алиасы: `ControlRow.Item`, `Layout.Item`.
+Алиас: `ControlRow.Item`.
 
 **Использовать:** поле поиска растягивается, кнопка — по контенту; иконка/чип с `shrink={false}`.
 
@@ -243,6 +245,38 @@ Flex-ячейка внутри Stack / Inline / Split / ControlRow.
     <Button>Найти</Button>
   </LayoutItem>
 </ControlRow>
+```
+
+---
+
+## Gap
+
+Пустой зазор фиксированного размера. Общий ритм группы по-прежнему задаёт `gap` у **Stack** / **Inline**. **Gap** — один дополнительный шаг между двумя соседями или зазор вне flex-примитива. Линия — **Separator**.
+
+| Проп | По умолчанию | Смысл |
+|------|--------------|--------|
+| `size` | `md` | Токен `none`…`xl` (как `gap` у Stack), число (px) или CSS-строка |
+| `orientation` | `horizontal` | `horizontal` — высота между блоками; `vertical` — ширина в ряду |
+
+**Использовать:** отделить подвал формы от полей сильнее, чем общий `gap`; вставить шаг в разметке, которая не обёрнута в Stack / Inline.
+
+**Не использовать:** одинаковый ритм у всех детей → `gap` у **Stack** / **Inline**; линия между секциями → **Separator**.
+
+```tsx
+<Stack gap="md">
+  <TextField label="Имя" width="full" />
+  <TextField label="Эл. почта" width="full" />
+  <Gap size="lg" />
+  <Button variant="primary">Сохранить</Button>
+</Stack>
+```
+
+```tsx
+<Inline gap="none">
+  <Text>Профиль</Text>
+  <Gap orientation="vertical" size="md" />
+  <Text>Настройки</Text>
+</Inline>
 ```
 
 ---
@@ -279,4 +313,4 @@ Flex-ячейка внутри Stack / Inline / Split / ControlRow.
 | `Stack` для чипов в ряд | **Inline** |
 | `div` + `display:flex` + px `gap` | **Stack** / **Inline** с токенами |
 | Оборачивать всё в `LayoutItem` | Только где нужны `grow` / `shrink` |
-| Путать `Layout` и `FieldBase` | `Layout` — панель UI; `FieldBase` — оболочка поля ввода |
+| Путать `Layout` и `TextField` | `Layout` — панель UI; `TextField` — оболочка поля ввода |

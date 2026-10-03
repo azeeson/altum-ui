@@ -3,7 +3,7 @@ import React from 'react';
 import {FieldLabel, FieldLabelProps} from './FieldLabel';
 import {TextField} from '../TextField/TextField';
 import {Text} from '../Text/Text';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Switch} from '../Switch/Switch';
 import {Card} from '../Card/Card';
 import {Button} from '../Button/Button';
@@ -77,7 +77,6 @@ export const VerticalWithField: Story<FieldLabelProps> = {
 				layout='vertical'
 			>
 				<TextField
-					label='Телефон'
 					defaultValue='+7 (900) 123-45-67'
 					width='full'
 				/>
@@ -252,7 +251,6 @@ export const HorizontalWithControl: Story<FieldLabelProps> = {
 				align='start'
 			>
 				<TextField
-					label='Комментарий'
 					defaultValue=''
 					width='full'
 				/>
@@ -292,8 +290,6 @@ export const Disabled: Story<FieldLabelProps> = {
 			>
 				<TextField
 					id='story-field-label-disabled'
-					label='Архивный номер'
-					labelPlacement='none'
 					defaultValue='WM-1042-A'
 					width='full'
 					disabled
@@ -353,8 +349,6 @@ export const UsageExample: Story<FieldLabelProps> = {
 					>
 						<TextField
 							id='story-field-label-usage-email'
-							label='Эл. почта'
-							labelPlacement='none'
 							value={email}
 							onChange={(event) => setEmail(event.target.value)}
 							width='full'
@@ -393,8 +387,6 @@ export const Interaction: Story<FieldLabelProps> = {
 				>
 					<TextField
 						id='story-field-label-interaction'
-						label='Имя'
-						labelPlacement='none'
 						value={value}
 						onChange={(event) => setValue(event.target.value)}
 						width='full'

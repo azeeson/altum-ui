@@ -5,12 +5,19 @@ export type {
 	CollapseProps,
 } from './Collapse.types';
 
-import {forwardRef, type HTMLAttributes} from 'react';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
 import styles from './Collapse.module.css';
-import {cn} from '../../utils/cn';
+import {cn} from '../../core/utils/cn';
+
+type CollapseRootProps = ComponentPropsWithoutRef<'div'> & {
+	ref?: Ref<HTMLDivElement>;
+	inert?: boolean;
+};
 
 /**
- * Плавное раскрытие и сворачивание блока по высоте с учётом reduced motion.
+ * Плавное раскрытие и сворачивание блока по высоте.
+ * Анимация гасится системным `prefers-reduced-motion`.
+ * Закрытый блок исключается из Tab и скринридеров атрибутом `inert`.
  *
  * @component
  * @example
@@ -18,34 +25,29 @@ import {cn} from '../../utils/cn';
  *   <p>Дополнительные детали секции</p>
  * </Collapse>
  */
-export const Collapse = forwardRef<HTMLDivElement, CollapseProps>(function Collapse(
-	{
-		open,
-		children,
-		className,
-		reducedMotion,
-		...rest
-	},
-	ref,
-) {
+export function Collapse({
+	open,
+	children,
+	className,
+	rootRef,
+	...rest
+}: CollapseProps) {
+	const rootProps: CollapseRootProps = {
+		...rest,
+		ref: rootRef,
+		className: cn(styles.root, className),
+		'aria-hidden': !open,
+		inert: !open || undefined,
+	};
+
 	return (
 		<div
-			ref={ref}
-			className={cn(
-				styles.root,
-				open && styles.open,
-				reducedMotion && styles.instant,
-				className,
-			)}
-			aria-hidden={!open}
-			{...(!open ? {inert: ''} as HTMLAttributes<HTMLDivElement> : {})}
-			{...rest}
+			{...rootProps}
+			data-expanded={open ? '' : undefined}
 		>
 			<div className={styles.inner}>
 				{children}
 			</div>
 		</div>
 	);
-});
-
-Collapse.displayName = 'Collapse';
+}

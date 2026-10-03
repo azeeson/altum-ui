@@ -7,10 +7,9 @@ export type {
 	SafeAreaProps,
 } from './SafeArea.types';
 
-import {forwardRef, type CSSProperties, type ElementType} from 'react';
+import type {CSSProperties, ElementType} from 'react';
 import styles from './SafeArea.module.css';
-import {cn} from '../../utils/cn';
-import {mergeStyles} from '../../utils/mergeStyles';
+import {cn} from '../../core/utils/cn';
 
 function resolveEdges(edges: SafeAreaEdges | SafeAreaEdges[]): Set<string> {
 	const list = Array.isArray(edges) ? edges : [edges];
@@ -41,54 +40,37 @@ function resolveEdges(edges: SafeAreaEdges | SafeAreaEdges[]): Set<string> {
  * @example
  * <SafeArea edges="top" fill as="main">{content}</SafeArea>
  */
-export const SafeArea = forwardRef<HTMLElement, SafeAreaProps>(function SafeArea(
-	{
-		edges = 'all',
-		padding,
-		fill = false,
-		as: Component = 'div',
-		children,
-		className,
-		style,
-		...rest
-	},
-	ref,
-) {
+export const SafeArea = ({
+	edges = 'all',
+	padding,
+	fill = false,
+	as: Component = 'div',
+	children,
+	className,
+	style,
+	rootRef,
+	...rest
+}: SafeAreaProps) => {
 	const edgeSet = resolveEdges(edges);
 	const pad = typeof padding === 'number' ? `${padding}px` : padding;
-
-	const insetStyle = mergeStyles(
-		{
-			...(pad ? {['--altum-safe-pad' as string]: pad} : {}),
-			paddingTop: edgeSet.has('top')
-				? 'calc(env(safe-area-inset-top, 0px) + var(--altum-safe-pad, 0px))'
-				: undefined,
-			paddingRight: edgeSet.has('right')
-				? 'calc(env(safe-area-inset-right, 0px) + var(--altum-safe-pad, 0px))'
-				: undefined,
-			paddingBottom: edgeSet.has('bottom')
-				? 'calc(env(safe-area-inset-bottom, 0px) + var(--altum-safe-pad, 0px))'
-				: undefined,
-			paddingLeft: edgeSet.has('left')
-				? 'calc(env(safe-area-inset-left, 0px) + var(--altum-safe-pad, 0px))'
-				: undefined,
-		} as CSSProperties,
-		style,
-	);
-
 	const Element = Component as ElementType;
 
 	return (
 		<Element
-			ref={ref as never}
-			className={cn(styles.root, fill ? styles.fill : '', className)}
-			style={insetStyle}
+			ref={rootRef}
+			className={cn(styles.root, className)}
+			data-fill={fill ? '' : undefined}
+			data-top={edgeSet.has('top') ? '' : undefined}
+			data-right={edgeSet.has('right') ? '' : undefined}
+			data-bottom={edgeSet.has('bottom') ? '' : undefined}
+			data-left={edgeSet.has('left') ? '' : undefined}
+			style={{
+				...(pad ? {'--altum-safe-pad': pad} : {}),
+				...style,
+			} as CSSProperties}
 			{...rest}
-			data-edges={Array.from(edgeSet).join(' ')}
 		>
 			{children}
 		</Element>
 	);
-});
-
-SafeArea.displayName = 'SafeArea';
+};

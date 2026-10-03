@@ -4,6 +4,7 @@ import {Sheet, SheetProps} from './Sheet';
 import {Button} from '../Button/Button';
 import {Badge} from '../Badge/Badge';
 import {Text} from '../Text/Text';
+import {Title} from '../Title/Title';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 export default {
@@ -11,7 +12,7 @@ export default {
 	component: Sheet,
 	tags: ['autodocs'],
 	parameters: componentParameters(
-		'Универсальная панель: составной API (`Sheet.Header` / `Title` / `Body` / `Footer`); `mode` (auto / sidebar / sheet), `direction`, Backdrop.',
+		'Универсальная панель: `Sheet.Header` / `Body` / `Footer`, заголовок — `Title`. `mode` (auto / sidebar / sheet), `direction`. Подложка — нативный dialog.',
 	),
 	argTypes: {
 		mode: {
@@ -27,28 +28,6 @@ export default {
 				options: ['start', 'end']
 			},
 			description: 'Сторона: start = left/top, end = right/bottom',
-		},
-		backdrop: {
-			control: 'boolean',
-			description: 'Показывать Backdrop',
-		},
-		zIndexTier: {
-			control: {
-				type: 'select',
-				options: [
-					'overlay',
-					'modal',
-					'dropdown',
-					'lightbox',
-					'notification'
-				],
-			},
-			description:
-				'Слой z-index (дефолт overlay = между chrome и Modal). notification — панель над Modal; меню внутри поднимаются автоматически.',
-		},
-		zIndex: {
-			control: 'number',
-			description: 'Сырой z-index (перебивает zIndexTier)',
 		},
 	},
 } satisfies Meta<typeof Sheet>;
@@ -68,13 +47,13 @@ export const Playground: Story<SheetProps> = {
 					onOpenChange={setIsOpen}
 				>
 					<Sheet.Header>
-						<Sheet.Title>
+						<Title level={3}>
 							Действия
-						</Sheet.Title>
+						</Title>
 					</Sheet.Header>
 					<Sheet.Body>
 						<Text size='md'>
-							Режим, направление и backdrop настраиваются в Controls.
+							Режим и направление настраиваются в Controls.
 						</Text>
 					</Sheet.Body>
 				</Sheet>
@@ -84,7 +63,6 @@ export const Playground: Story<SheetProps> = {
 	args: {
 		mode: 'sheet',
 		direction: 'end',
-		backdrop: false,
 	},
 	parameters: story('Используйте панель Controls для настройки.'),
 };
@@ -102,7 +80,6 @@ export const WithControls: Story<SheetProps> = {
 					open={isOpen}
 					onOpenChange={setIsOpen}
 					mode='sheet'
-					backdrop={false}
 				>
 					<Sheet.Header
 						leftControls={(
@@ -124,9 +101,9 @@ export const WithControls: Story<SheetProps> = {
 							</Button>
 						)}
 					>
-						<Sheet.Title>
+						<Title level={3}>
 							Фильтры
-						</Sheet.Title>
+						</Title>
 					</Sheet.Header>
 					<Sheet.Body>
 						<div style={{
@@ -166,7 +143,6 @@ export const WithoutTitle: Story<SheetProps> = {
 					open={isOpen}
 					onOpenChange={setIsOpen}
 					mode='sheet'
-					backdrop={false}
 				>
 					<Sheet.Body>
 						<div style={{
@@ -217,7 +193,6 @@ export const ControlsOnly: Story<SheetProps> = {
 					open={isOpen}
 					onOpenChange={setIsOpen}
 					mode='sheet'
-					backdrop={false}
 				>
 					<Sheet.Header
 						leftControls={(
@@ -251,12 +226,11 @@ export const LongContent: Story<SheetProps> = {
 					open={isOpen}
 					onOpenChange={setIsOpen}
 					mode='sheet'
-					backdrop={false}
 				>
 					<Sheet.Header>
-						<Sheet.Title>
+						<Title level={3}>
 							Выберите город
-						</Sheet.Title>
+						</Title>
 					</Sheet.Header>
 					<Sheet.Body>
 						<div style={{
@@ -313,13 +287,12 @@ export const WithHandle: Story<SheetProps> = {
 					open={isOpen}
 					onOpenChange={setIsOpen}
 					mode='sheet'
-					backdrop={false}
 					showHandle
 				>
 					<Sheet.Header>
-						<Sheet.Title>
+						<Title level={3}>
 							Нижняя панель
-						</Sheet.Title>
+						</Title>
 					</Sheet.Header>
 					<Sheet.Body>
 						<Text size='md'>
@@ -352,28 +325,27 @@ export const WithRef: Story<SheetProps> = {
 					Открыть с ref
 				</Button>
 				<Sheet
-					ref={sheetRef}
+					rootRef={sheetRef}
 					open={isOpen}
 					onOpenChange={setIsOpen}
 					mode='sheet'
-					backdrop={false}
 					data-testid='sheet-panel'
 				>
 					<Sheet.Header>
-						<Sheet.Title>
+						<Title level={3}>
 							Ref доступен
-						</Sheet.Title>
+						</Title>
 					</Sheet.Header>
 					<Sheet.Body>
 						<Text size='md'>
-							ref указывает на корневой элемент панели (role=&quot;dialog&quot;).
+							rootRef указывает на поверхность панели.
 						</Text>
 					</Sheet.Body>
 				</Sheet>
 			</>
 		);
 	},
-	parameters: story('Демонстрация forwardRef на корневой элемент Sheet.'),
+	parameters: story('Демонстрация rootRef на поверхность Sheet.'),
 };
 
 export const SidebarMode: Story<SheetProps> = {
@@ -393,9 +365,9 @@ export const SidebarMode: Story<SheetProps> = {
 					width={320}
 				>
 					<Sheet.Header showClose>
-						<Sheet.Title>
+						<Title level={3}>
 							Навигация
-						</Sheet.Title>
+						</Title>
 					</Sheet.Header>
 					<Sheet.Body>
 						<Text size='md'>
@@ -422,12 +394,11 @@ export const AutoMode: Story<SheetProps> = {
 					open={isOpen}
 					onOpenChange={setIsOpen}
 					mode='auto'
-					backdrop
 				>
 					<Sheet.Header showClose>
-						<Sheet.Title>
+						<Title level={3}>
 							Адаптивная панель
-						</Sheet.Title>
+						</Title>
 					</Sheet.Header>
 					<Sheet.Body>
 						<Text size='md'>
@@ -449,30 +420,29 @@ export const WithBackdrop: Story<SheetProps> = {
 		return (
 			<>
 				<Button variant='primary' onClick={() => setIsOpen(true)}>
-					С backdrop
+					Открыть
 				</Button>
 				<Sheet
 					open={isOpen}
 					onOpenChange={setIsOpen}
 					mode='sheet'
 					direction='end'
-					backdrop
 				>
 					<Sheet.Header showClose>
-						<Sheet.Title>
+						<Title level={3}>
 							Подтверждение
-						</Sheet.Title>
+						</Title>
 					</Sheet.Header>
 					<Sheet.Body>
 						<Text size='md'>
-							Backdrop затемняет фон; клик по scrim закрывает панель.
+							Клик по подложке и Escape закрывают панель.
 						</Text>
 					</Sheet.Body>
 				</Sheet>
 			</>
 		);
 	},
-	parameters: story('`backdrop={true}` — scrim под панелью.'),
+	parameters: story('Подложка dialog затемняет фон, клик по ней закрывает панель.'),
 };
 
 export const TopSheet: Story<SheetProps> = {
@@ -489,12 +459,11 @@ export const TopSheet: Story<SheetProps> = {
 					onOpenChange={setIsOpen}
 					mode='sheet'
 					direction='start'
-					backdrop
 				>
 					<Sheet.Header showClose>
-						<Sheet.Title>
+						<Title level={3}>
 							Уведомления
-						</Sheet.Title>
+						</Title>
 					</Sheet.Header>
 					<Sheet.Body>
 						<Text size='md'>
@@ -523,7 +492,6 @@ export const CompoundSlots: Story<SheetProps> = {
 					mode='sheet'
 					direction='end'
 					showHandle
-					backdrop
 				>
 					<Sheet.Header variant='plain' showClose>
 						<Badge
@@ -531,9 +499,9 @@ export const CompoundSlots: Story<SheetProps> = {
 							size='sm'
 							label='Черновик'
 						/>
-						<Sheet.Title>
+						<Title level={3}>
 							Карточка сделки
-						</Sheet.Title>
+						</Title>
 						<Button size='sm' variant='secondary'>
 							В архив
 						</Button>
@@ -583,12 +551,11 @@ export const Empty: Story<SheetProps> = {
 				open={isOpen}
 				onOpenChange={setIsOpen}
 				mode='sheet'
-				backdrop
 			>
 				<Sheet.Header showClose>
-					<Sheet.Title>
+					<Title level={3}>
 						Пустая панель
-					</Sheet.Title>
+					</Title>
 				</Sheet.Header>
 				<Sheet.Body>
 					<Text size='md' color='muted'>
@@ -609,12 +576,11 @@ export const OverflowText: Story<SheetProps> = {
 				open={isOpen}
 				onOpenChange={setIsOpen}
 				mode='sheet'
-				backdrop
 			>
 				<Sheet.Header showClose>
-					<Sheet.Title>
+					<Title level={3}>
 						Очень длинный заголовок нижней панели фильтров и дополнительных параметров отчёта
-					</Sheet.Title>
+					</Title>
 				</Sheet.Header>
 				<Sheet.Body>
 					<Text size='md'>
@@ -642,9 +608,9 @@ export const Interaction: Story<SheetProps> = {
 					direction='end'
 				>
 					<Sheet.Header>
-						<Sheet.Title>
+						<Title level={3}>
 							Действия
-						</Sheet.Title>
+						</Title>
 					</Sheet.Header>
 					<Sheet.Body>
 						<Text size='md'>

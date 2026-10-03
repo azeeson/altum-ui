@@ -41,6 +41,7 @@ function shouldMarkUseClient(rel) {
 	return (
 		normalized === 'index.js'
 		|| normalized === 'entries/hooks.js'
+		|| normalized === 'entries/locales.js'
 		|| normalized.startsWith('components/')
 		|| normalized.startsWith('base/')
 		|| normalized.startsWith('hooks/')

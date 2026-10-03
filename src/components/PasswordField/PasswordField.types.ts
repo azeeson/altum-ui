@@ -1,3 +1,4 @@
+import type {Ref} from 'react';
 import {type TextFieldProps} from '../TextField/TextField';
 
 /**
@@ -22,4 +23,6 @@ export interface PasswordFieldProps extends Omit<TextFieldProps, 'type' | 'postf
 	showStrength?: boolean;
 	/** Подписи уровней сложности */
 	strengthLabels?: Partial<Record<Exclude<PasswordStrength, 'empty'>, string>>;
+	/** Узел `<input>`. */
+	inputRef?: Ref<HTMLInputElement>;
 }

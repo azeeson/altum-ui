@@ -1,18 +1,23 @@
-import type {MountRange, ScrollTarget, VirtualScrollMetrics} from './VirtualList.types';
+import type {
+	MountRange,
+	ScrollTarget,
+	VirtualListAlign,
+	VirtualListRange,
+	VirtualScrollMetrics,
+} from './VirtualList.types';
 
 export const DEFAULT_ESTIMATE = 48;
 export const DEFAULT_OVERSCAN = 4;
-const EMPTY_METRICS: VirtualScrollMetrics = {
-	scrollTop: 0,
-	clientHeight: 0,
-};
 
-export function noopSubscribe(): () => void {
-	return () => undefined;
+export function cancelIdleTask(id: number | ReturnType<typeof setTimeout> | null): void {
+	if (id == null) return;
+	if (typeof cancelIdleCallback === 'function') cancelIdleCallback(id as number);
+	else clearTimeout(id);
 }
 
-export function noopGetSnapshot(): VirtualScrollMetrics {
-	return EMPTY_METRICS;
+export function scheduleIdleTask(run: () => void): number | ReturnType<typeof setTimeout> {
+	if (typeof requestIdleCallback === 'function') return requestIdleCallback(run);
+	return setTimeout(run, 0);
 }
 
 export function resolveEstimate(
@@ -91,11 +96,75 @@ export function getListOffsetInScrollParent(
 	return listRect.top - parentRect.top + parent.scrollTop;
 }
 
-export function rangesEqual(a: MountRange, b: MountRange): boolean {
-	return a.start === b.start
-		&& a.end === b.end
-		&& a.visibleStart === b.visibleStart
-		&& a.visibleEnd === b.visibleEnd;
+export function buildOffsets(
+	count: number,
+	getSize: (index: number) => number,
+	gap: number,
+): {
+	list: number[];
+	total: number;
+} {
+	const list = new Array<number>(count);
+	let offset = 0;
+	for (let index = 0; index < count; index += 1) {
+		list[index] = offset;
+		offset += Math.max(1, getSize(index)) + (index < count - 1 ? gap : 0);
+	}
+	return {
+		list,
+		total: count === 0 ? 0 : offset,
+	};
+}
+
+/** Оценка или уже измеренная высота строки. */
+export function resolveItemSize(
+	measured: Array<number | undefined>,
+	estimateSize: number | ((index: number) => number) | undefined,
+	index: number,
+): number {
+	const size = measured[index];
+	if (size != null && size > 0) return size;
+	return resolveEstimate(estimateSize, index);
+}
+
+export function toReportedRange(
+	mount: MountRange,
+	count: number,
+	mode: 'visible' | 'withOverscan',
+): VirtualListRange {
+	if (mode === 'withOverscan') {
+		return {
+			start: count === 0 ? 0 : mount.start,
+			end: count === 0 ? -1 : mount.end,
+			count,
+		};
+	}
+	return {
+		start: count === 0 ? 0 : mount.visibleStart,
+		end: count === 0 ? -1 : mount.visibleEnd,
+		count,
+	};
+}
+
+/**
+ * Куда поставить `scrollTop`, чтобы строка встала по `align`.
+ * `null` — для `auto`, если строка уже целиком во вьюпорте.
+ */
+export function resolveAlignedScrollTop(options: {
+	absoluteTop: number;
+	itemSize: number;
+	viewHeight: number;
+	current: number;
+	align: VirtualListAlign;
+}): number | null {
+	const {absoluteTop, itemSize, viewHeight, current, align} = options;
+	const absoluteEnd = absoluteTop + itemSize;
+	if (align === 'center') return absoluteTop - (viewHeight - itemSize) / 2;
+	if (align === 'end') return absoluteEnd - viewHeight;
+	if (align === 'start') return absoluteTop;
+	if (absoluteTop < current) return absoluteTop;
+	if (absoluteEnd > current + viewHeight) return absoluteEnd - viewHeight;
+	return null;
 }
 
 export function computeMountRange(options: {

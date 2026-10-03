@@ -1,8 +1,6 @@
-import type {
-	ReactNode,
-} from 'react';
+import type {ReactNode, Ref} from 'react';
 import type {AnchorSide} from '../../types';
-import type {WithEnrichedChildren} from '../../utils/renderChildren';
+import type {WithEnrichedChildren} from '../../core/utils/renderChildren';
 
 /**
  * Сторона подсказки относительно триггера (`TooltipSide`).
@@ -10,12 +8,8 @@ import type {WithEnrichedChildren} from '../../utils/renderChildren';
 export type TooltipSide = AnchorSide;
 
 /**
- * @deprecated Используйте {@link TooltipSide}.
- */
-export type TooltipPosition = TooltipSide;
-
-/**
- * Slot-пропсы триггера Tooltip (через `renderChildren`).
+ * Slot-пропсы триггера Tooltip.
+ * Вешаются на единственный элемент или приходят первым аргументом render-prop.
  */
 export type TooltipTriggerProps = {
 	className?: string;
@@ -26,34 +20,32 @@ type TooltipBaseProps = {
 	content: ReactNode;
 	/** Сторона панели. @default `'top'` */
 	side?: TooltipSide;
-	/**
-	 * @deprecated Используйте `side`.
-	 */
-	position?: TooltipSide;
 	className?: string;
-	/** Контролируемая видимость. */
+	/**
+	 * Принудительно показать подсказку (визуальные тесты).
+	 * Это атрибут, не стейт открытия: ховер по-прежнему считает CSS.
+	 */
 	open?: boolean;
+	/** То же, что `open`: подсказка видна без наведения. */
 	defaultOpen?: boolean;
-	onOpenChange?: (open: boolean) => void;
-	/** Задержка открытия при hover (мс). @default 200 */
+	/** Задержка появления при hover (мс). Пишется в CSS, без таймера. @default 200 */
 	openDelay?: number;
-	/** Задержка закрытия (мс). @default 100 */
+	/** Задержка скрытия (мс). Пишется в CSS, без таймера. @default 100 */
 	closeDelay?: number;
 	/** Не показывать подсказку */
 	disabled?: boolean;
+	/** Хост подсказки. Если подсказка скрыта — узел триггера. */
+	rootRef?: Ref<HTMLElement>;
 	/**
-	 * Обернуть триггер в span (нужно для disabled-кнопок без pointer events).
-	 * Для элемент-child оборачивает children в `span` перед slot-merge.
-	 * @default auto — true, если единственный child disabled
+	 * Оставлен для совместимости: хост и так оборачивает триггер,
+	 * поэтому disabled-кнопка получает hover.
 	 */
 	wrap?: boolean;
-	/** Стрелка к триггеру. @default true */
-	arrow?: boolean;
 };
 
 /**
- * Свойства `Tooltip` — тонкая обёртка над `Popover` (`trigger="hover"`, `variant="tooltip"`).
- *
+ * Свойства `Tooltip`.
+ * Ховер и фокус — CSS (`:hover`, `:focus-within`) и CSS Anchor Positioning.
  * Триггер: элемент-child (slot) или render-prop.
  */
 export type TooltipProps = WithEnrichedChildren<TooltipBaseProps, TooltipTriggerProps>;

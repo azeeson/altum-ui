@@ -1,15 +1,12 @@
 import type {Meta, StoryObj} from '@storybook/react';
-import React, {useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {
 	Overlay,
-	type OverlayContentProps,
 	type OverlaySheetSide,
-	type OverlayWidthMode,
 } from './Overlay';
 import {Button} from '../Button/Button';
 import {Text} from '../Text/Text';
 import {componentParameters, story} from '../../storybook/meta';
-import type {AnchorAlign, AnchorSide} from '../../types';
 
 const demoPanelStyle: React.CSSProperties = {
 	background: 'var(--altum-color-dropdown-bg)',
@@ -20,22 +17,16 @@ const demoPanelStyle: React.CSSProperties = {
 };
 
 function demoPanel(extraStyle: React.CSSProperties | undefined, body: React.ReactNode) {
-	function OverlayDemoPanel(slotProps: OverlayContentProps, contentRef: React.RefCallback<HTMLElement>) {
-		return (
-			<div
-				{...slotProps}
-				ref={contentRef}
-				style={{
-					...demoPanelStyle,
-					...extraStyle,
-					...slotProps.style,
-				}}
-			>
-				{body}
-			</div>
-		);
-	}
-	return OverlayDemoPanel;
+	return (
+		<div
+			style={{
+				...demoPanelStyle,
+				...extraStyle,
+			}}
+		>
+			{body}
+		</div>
+	);
 }
 
 export default {
@@ -44,22 +35,16 @@ export default {
 	tags: ['autodocs'],
 	parameters: {
 		...componentParameters(
-			'Примитив позиционирования без chrome: modal / floating / sheet / popover / dropdown.',
+			'Слой без chrome: modal и sheet — нативный dialog (showModal), floating — popover="auto".',
 		),
 		controls: {
-			exclude: ['children', 'onOpenChange', 'targetRef']
+			exclude: ['children', 'onOpenChange'],
 		},
 	},
 	argTypes: {
 		variant: {
 			control: 'select',
-			options: [
-				'modal',
-				'floating',
-				'sheet',
-				'popover',
-				'dropdown'
-			],
+			options: ['modal', 'floating', 'sheet'],
 		},
 		side: {
 			control: 'select',
@@ -67,29 +52,7 @@ export default {
 				'top',
 				'bottom',
 				'left',
-				'right'
-			],
-		},
-		align: {
-			control: 'select',
-			options: ['start', 'center', 'end'],
-		},
-		triggerMode: {
-			control: 'select',
-			options: ['click', 'hover', 'manual'],
-		},
-		widthMode: {
-			control: 'select',
-			options: ['trigger', 'content', 'trigger-fit'],
-		},
-		backdrop: {control: 'boolean'},
-		dismiss: {
-			control: 'select',
-			options: [
-				'all',
-				'outside',
-				'escape',
-				'none'
+				'right',
 			],
 		},
 		onOpenChange: {action: 'onOpenChange'},
@@ -123,10 +86,11 @@ export const ModalVariant: OverlayStory = {
 									Модальный Overlay
 								</Text>
 								<Text color='secondary'>
-									Backdrop, FocusTrap, Escape и scroll-lock. Контент с max-height окна и прокруткой.
+									Нативный dialog: фокус, Escape, scroll lock и клик по подложке.
+									Контент с max-height окна.
 								</Text>
 								<div style={{
-									marginTop: 'var(--altum-g-space-4)'
+									marginTop: 'var(--altum-g-space-4)',
 								}}
 								>
 									<Button variant='secondary' onClick={() => setOpen(false)}>
@@ -134,13 +98,13 @@ export const ModalVariant: OverlayStory = {
 									</Button>
 								</div>
 							</>
-						)
+						),
 					)}
 				</Overlay>
 			</>
 		);
 	},
-	parameters: story('variant="modal": Fade Backdrop + появление children снизу вверх.'),
+	parameters: story('variant="modal": подложка и появление панели силами CSS.'),
 };
 
 export const FloatingVariant: OverlayStory = {
@@ -173,11 +137,11 @@ export const FloatingVariant: OverlayStory = {
 									Плавающий Overlay
 								</Text>
 								<Text color='secondary'>
-									Свободные left/top без центрирования. Backdrop опционален;
-									portal, stack, FocusTrap и Escape — как у modal.
+									popover=&quot;auto&quot;: свободные left/top, без подложки;
+									клик снаружи и Escape закрывают.
 								</Text>
 								<div style={{
-									marginTop: 'var(--altum-g-space-4)'
+									marginTop: 'var(--altum-g-space-4)',
 								}}
 								>
 									<Button variant='secondary' onClick={() => setOpen(false)}>
@@ -185,22 +149,16 @@ export const FloatingVariant: OverlayStory = {
 									</Button>
 								</div>
 							</>
-						)
+						),
 					)}
 				</Overlay>
 			</>
 		);
 	},
-	parameters: story('variant="floating": свободное позиционирование; backdrop / lockScroll / trapFocus опциональны.'),
+	parameters: story('variant="floating": позиция через style, показ через showPopover.'),
 };
 
-function SheetDemo({
-	side,
-	backdrop = false,
-}: {
-	side: OverlaySheetSide;
-	backdrop?: boolean;
-}) {
+function SheetDemo({side}: {side: OverlaySheetSide}) {
 	const [open, setOpen] = useState(false);
 	return (
 		<>
@@ -208,14 +166,12 @@ function SheetDemo({
 				Sheet
 				{' '}
 				{side}
-				{backdrop ? ' + затемнение' : ''}
 			</Button>
 			<Overlay
 				variant='sheet'
 				side={side}
 				open={open}
 				onOpenChange={setOpen}
-				backdrop={backdrop}
 				aria-label={`Sheet ${side}`}
 			>
 				{demoPanel(
@@ -235,12 +191,11 @@ function SheetDemo({
 								{side}
 							</Text>
 							<Text color='secondary'>
-								{backdrop
-									? 'С Backdrop: Escape и клик по scrim закрывают панель.'
-									: 'Выезд с края, без Backdrop. top/bottom — max 95% высоты; left/right — max 95% ширины.'}
+								Выезд с края внутри dialog. Escape и клик по подложке закрывают панель.
+								top/bottom — max 95% высоты; left/right — max 95% ширины.
 							</Text>
 							<div style={{
-								marginTop: 'var(--altum-g-space-4)'
+								marginTop: 'var(--altum-g-space-4)',
 							}}
 							>
 								<Button variant='secondary' onClick={() => setOpen(false)}>
@@ -248,7 +203,7 @@ function SheetDemo({
 								</Button>
 							</div>
 						</>
-					)
+					),
 				)}
 			</Overlay>
 		</>
@@ -260,213 +215,16 @@ export const SheetVariant: OverlayStory = {
 		<div style={{
 			display: 'flex',
 			flexWrap: 'wrap',
-			gap: 'var(--altum-g-space-3)'
+			gap: 'var(--altum-g-space-3)',
 		}}
 		>
 			<SheetDemo side='bottom' />
 			<SheetDemo side='top' />
 			<SheetDemo side='left' />
 			<SheetDemo side='right' />
-			<SheetDemo side='bottom' backdrop />
 		</div>
 	),
-	parameters: story('variant="sheet": slide с края; опционально backdrop / dismiss.'),
-};
-
-function AnchorDemo({
-	variant,
-	triggerMode,
-	side = 'bottom',
-	align = 'start',
-	widthMode,
-}: {
-	variant: 'popover' | 'dropdown';
-	triggerMode: 'click' | 'hover' | 'manual';
-	side?: AnchorSide;
-	align?: AnchorAlign;
-	widthMode?: OverlayWidthMode;
-}) {
-	const targetRef = useRef<HTMLButtonElement>(null);
-	const [open, setOpen] = useState(false);
-
-	return (
-		<>
-			<Button
-				ref={targetRef}
-				variant='secondary'
-				onClick={triggerMode === 'manual' ? () => setOpen((v) => !v) : undefined}
-			>
-				{variant}
-				{' '}
-				·
-				{triggerMode}
-				{' '}
-				·
-				{side}
-				/
-				{align}
-			</Button>
-			{variant === 'popover' ? (
-				<Overlay
-					variant='popover'
-					open={open}
-					onOpenChange={setOpen}
-					targetRef={targetRef}
-					triggerMode={triggerMode}
-					side={side}
-					align={align}
-				>
-					{demoPanel(
-						{minWidth: 200}, (
-							<Text>
-								Содержимое popover
-							</Text>
-						)
-					)}
-				</Overlay>
-			) : (
-				<Overlay
-					variant='dropdown'
-					open={open}
-					onOpenChange={setOpen}
-					targetRef={targetRef}
-					triggerMode={triggerMode}
-					side={side}
-					align={align}
-					widthMode={widthMode ?? 'trigger-fit'}
-				>
-					{demoPanel(
-						undefined, (
-							<>
-								<Text>
-									Dropdown (
-									{widthMode ?? 'trigger-fit'}
-									)
-								</Text>
-								<Text color='secondary' size='sm'>
-									Раскрытие от якоря с transform-origin по стороне.
-								</Text>
-							</>
-						)
-					)}
-				</Overlay>
-			)}
-		</>
-	);
-}
-
-export const PopoverVariant: OverlayStory = {
-	render: () => (
-		<div style={{
-			display: 'flex',
-			flexWrap: 'wrap',
-			gap: 'var(--altum-g-space-3)',
-			padding: 'var(--altum-g-space-8)',
-			justifyContent: 'center',
-		}}
-		>
-			<AnchorDemo
-				variant='popover'
-				triggerMode='click'
-				side='bottom'
-				align='start'
-			/>
-			<AnchorDemo
-				variant='popover'
-				triggerMode='click'
-				side='bottom'
-				align='end'
-			/>
-			<AnchorDemo
-				variant='popover'
-				triggerMode='hover'
-				side='top'
-				align='center'
-			/>
-			<AnchorDemo
-				variant='popover'
-				triggerMode='manual'
-				side='right'
-				align='start'
-			/>
-		</div>
-	),
-	parameters: story('variant="popover": Fade + flip side/align относительно targetRef.'),
-};
-
-export const DropdownVariant: OverlayStory = {
-	render: () => (
-		<div style={{
-			display: 'flex',
-			flexWrap: 'wrap',
-			gap: 'var(--altum-g-space-3)',
-			padding: 'var(--altum-g-space-8)',
-			justifyContent: 'center',
-		}}
-		>
-			<AnchorDemo
-				variant='dropdown'
-				triggerMode='click'
-				widthMode='trigger-fit'
-			/>
-			<AnchorDemo
-				variant='dropdown'
-				triggerMode='click'
-				widthMode='trigger'
-			/>
-			<AnchorDemo
-				variant='dropdown'
-				triggerMode='click'
-				widthMode='content'
-				side='top'
-			/>
-		</div>
-	),
-	parameters: story('variant="dropdown": как popover + widthMode + expand-анимация.'),
-};
-
-export const RenderProp: OverlayStory = {
-	render: function RenderPropDemo() {
-		const [open, setOpen] = useState(false);
-		return (
-			<>
-				<Button variant='primary' onClick={() => setOpen(true)}>
-					Модалка, render-prop
-				</Button>
-				<Overlay
-					variant='modal'
-					open={open}
-					onOpenChange={setOpen}
-					aria-label='Модалка через render-prop'
-				>
-					{(slotProps, contentRef) => (
-						<div
-							{...slotProps}
-							ref={contentRef}
-							style={{
-								...demoPanelStyle,
-								...slotProps.style,
-								width: 320,
-							}}
-						>
-							<Text>
-								Render-prop: пропсы и contentRef применяются вручную.
-							</Text>
-							<div style={{
-								marginTop: 'var(--altum-g-space-4)'
-							}}
-							>
-								<Button variant='secondary' onClick={() => setOpen(false)}>
-									Закрыть
-								</Button>
-							</div>
-						</div>
-					)}
-				</Overlay>
-			</>
-		);
-	},
-	parameters: story('`children` — функция `(props, contentRef) => ReactNode`.'),
+	parameters: story('variant="sheet": выезд с края, подложка — ::backdrop.'),
 };
 
 export const Playground: OverlayStory = {
@@ -497,7 +255,7 @@ export const Playground: OverlayStory = {
 									Базовый modal Overlay. Остальные варианты — в отдельных историях.
 								</Text>
 								<div style={{
-									marginTop: 'var(--altum-g-space-4)'
+									marginTop: 'var(--altum-g-space-4)',
 								}}
 								>
 									<Button variant='secondary' onClick={() => setOpen(false)}>
@@ -505,7 +263,7 @@ export const Playground: OverlayStory = {
 									</Button>
 								</div>
 							</>
-						)
+						),
 					)}
 				</Overlay>
 			</>
@@ -539,7 +297,7 @@ export const OverflowText: OverlayStory = {
 								если панель сама не задаёт overflow.
 							</Text>
 							<div style={{
-								marginTop: 'var(--altum-g-space-4)'
+								marginTop: 'var(--altum-g-space-4)',
 							}}
 							>
 								<Button variant='secondary' onClick={() => setOpen(false)}>
@@ -547,7 +305,7 @@ export const OverflowText: OverlayStory = {
 								</Button>
 							</div>
 						</>
-					)
+					),
 				)}
 			</Overlay>
 		);
@@ -583,7 +341,7 @@ export const Interaction: OverlayStory = {
 									Закрыть
 								</Button>
 							</>
-						)
+						),
 					)}
 				</Overlay>
 			</>

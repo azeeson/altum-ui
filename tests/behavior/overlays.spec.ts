@@ -55,21 +55,6 @@ test.describe('Modal', () => {
 	});
 });
 
-test.describe('Backdrop', () => {
-	test('блокирует клики по контенту ниже в стори variants', async ({page}) => {
-		await visitStory(page, 'altum-components-backdrop--variants');
-
-		const containers = page.locator('div').filter({hasText: 'Контент под слоем'});
-		await expect(containers.first()).toBeVisible();
-
-		const box = await containers.first().boundingBox();
-		if (!box) return;
-
-		await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
-		await expect(containers.first()).toBeVisible();
-	});
-});
-
 test.describe('Sheet', () => {
 	test('открывается из playground', async ({page}) => {
 		await visitStory(page, 'altum-components-sheet--playground');

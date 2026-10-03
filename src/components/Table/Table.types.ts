@@ -1,5 +1,5 @@
 import type React from 'react';
-import type {ComponentPropsWithoutRef, ReactNode} from 'react';
+import type {ComponentPropsWithoutRef, ReactNode, Ref} from 'react';
 import type {ActionListItem} from '../ActionList/ActionList.types';
 import type {Density} from '../../types';
 
@@ -73,10 +73,19 @@ export interface TableProps<T> extends Omit<ComponentPropsWithoutRef<'div'>, 'ch
 	loadingRows?: number;
 	empty?: ReactNode | TableEmptyConfig;
 	footer?: TablePagination;
+	/**
+	 * Окно строк через `VirtualList` (sticky `thead` + body windowing).
+	 * @default false
+	 */
+	virtualized?: boolean;
+	/**
+	 * Оценка высоты строки (px) для virtualized.
+	 * @default 49
+	 */
+	estimateRowSize?: number;
+	/** Корень таблицы. */
+	rootRef?: Ref<HTMLDivElement>;
 }
-
-/** @deprecated Используйте {@link TableProps}. */
-export type TableContentProps<T> = TableProps<T>;
 
 export interface TableViewProps<T> extends Omit<ComponentPropsWithoutRef<'table'>, 'children'> {
 	data: T[];
@@ -92,10 +101,18 @@ export interface TableViewProps<T> extends Omit<ComponentPropsWithoutRef<'table'
 	onExpandedChange?: (keys: Set<string | number>) => void;
 	renderExpandedRow?: (row: T) => React.ReactNode;
 	effectiveColumns: Column<T>[];
+	/** Окно строк через VirtualList. */
+	virtualized?: boolean;
+	/** Оценка высоты строки для VirtualList. @default 49 */
+	estimateRowSize?: number;
+	/** Элемент `<table>`. */
+	tableRef?: Ref<HTMLTableElement>;
 }
 
 export interface TableRowActionsProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
 	items: ActionListItem[];
+	/** Корень меню действий. */
+	rootRef?: Ref<HTMLDivElement>;
 }
 
 export interface TableRowComponentProps<T> {
@@ -107,13 +124,12 @@ export interface TableRowComponentProps<T> {
 	isRowSelected: boolean;
 	onSelectionChange?: (keys: Set<string | number>) => void;
 	stickyLeftOffsets: Record<string, number>;
+	/** Сумма declared-ширин для fallback ratio ячеек. */
+	totalColPx: number;
 	controlSticky?: boolean;
 	selectStickyLeft?: number;
 	stickyLeftEdgeKeyId?: string;
-	colWidths: Record<string, number>;
 	colCount: number;
 	renderExpandedRow?: (row: T) => React.ReactNode;
-	onToggleExpand: (key: string | number) => void;
-	onSelectRow: (key: string | number) => void;
 	t: (key: string, params?: Record<string, string | number>) => string;
 }

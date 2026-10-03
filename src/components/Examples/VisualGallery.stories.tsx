@@ -14,6 +14,7 @@ import {Button} from '../Button/Button';
 import {ButtonGroup} from '../ButtonGroup/ButtonGroup';
 import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
 import {Card} from '../Card/Card';
+import overlayClose from '../../styles/overlayClose.module.css';
 import {Checkbox, CheckboxGroup} from '../Checkbox/Checkbox';
 import {Chip, ChipGroup} from '../Chip/Chip';
 import {ColorSwatchGroup} from '../ColorSwatchGroup/ColorSwatchGroup';
@@ -25,7 +26,7 @@ import {DescriptionList} from '../DescriptionList/DescriptionList';
 import {EmptyState} from '../EmptyState/EmptyState';
 import {Fieldset} from '../Fieldset/Fieldset';
 import {FormMessage} from '../FormMessage/FormMessage';
-import {Inline, Split, Stack} from '../Layout/Layout';
+import {ControlRow, Inline, Split, Stack} from '../Layout';
 import {Item} from '../Item/Item';
 import {Kbd, KbdGroup} from '../Kbd/Kbd';
 import {Link} from '../Link/Link';
@@ -144,6 +145,8 @@ const BUTTON_VARIANTS = [
 	'primary',
 	'tinted',
 	'secondary',
+	'danger',
+	'danger_tinted',
 	'ghost',
 	'link'
 ] as const;
@@ -166,6 +169,14 @@ const BADGE_VARIANTS = [
 	'warning',
 	'error'
 ] as const;
+const PAD_SPACE = {
+	xs: 'var(--altum-g-space-1)',
+	sm: 'var(--altum-g-space-2)',
+	md: 'var(--altum-g-space-3)',
+	lg: 'var(--altum-g-space-4)',
+	xl: 'var(--altum-g-space-6)',
+} as const;
+
 const BOX_VARIANTS = [
 	'outlined',
 	'elevated',
@@ -297,14 +308,12 @@ function GallerySelect({
 	value,
 	onChange,
 	width = 'full',
-	labelPlacement = 'outside',
 	size = 'md',
 }: {
 	label: string;
 	value: string;
 	onChange: (value: string) => void;
 	width?: 'full' | 'md';
-	labelPlacement?: 'outside' | 'inline';
 	size?: 'sm' | 'md' | 'lg';
 }) {
 	return (
@@ -316,7 +325,6 @@ function GallerySelect({
 			}}
 			label={label}
 			width={width}
-			labelPlacement={labelPlacement}
 			size={size}
 		/>
 	);
@@ -324,7 +332,6 @@ function GallerySelect({
 
 function VisualGalleryDemo() {
 	const [segment, setSegment] = useState<string | number>('week');
-	const [bgValue, setBgValue] = useState('list');
 	const [status, setStatus] = useState('active');
 	const [pin, setPin] = useState('12');
 	const [password, setPassword] = useState('Secret1!');
@@ -355,8 +362,6 @@ function VisualGalleryDemo() {
 	const [swatch, setSwatch] = useState(SWATCH_COLORS[3]);
 	const [slider, setSlider] = useState(42);
 	const [sliderRange, setSliderRange] = useState<[number, number]>([20, 70]);
-	const [fmtBold, setFmtBold] = useState(false);
-	const [fmtItalic, setFmtItalic] = useState(true);
 	const [confirmOpen, setConfirmOpen] = useState(false);
 	const [sortableItems, setSortableItems] = useState([
 		{
@@ -508,8 +513,8 @@ function VisualGalleryDemo() {
 								<Box
 									variant='outlined'
 									border
-									padding='md'
 									radius='md'
+									style={{padding: 'var(--altum-g-space-3)'}}
 								>
 									<Text size='xs' color='muted'>
 										tsx
@@ -533,15 +538,15 @@ function VisualGalleryDemo() {
 				<Section
 					id='surfaces'
 					title='Поверхности'
-					hint='Варианты Box / лестница padding'
+					hint='Варианты Box / лестница style padding'
 				>
 					<div className={styles.grid3}>
 						{BOX_VARIANTS.map((variant) => (
 							<Box
 								key={variant}
 								variant={variant}
-								padding='md'
 								border
+								style={{padding: 'var(--altum-g-space-3)'}}
 							>
 								<Stack gap='xs'>
 									<Text size='sm' weight='semibold'>
@@ -554,7 +559,7 @@ function VisualGalleryDemo() {
 							</Box>
 						))}
 					</div>
-					<Panel title='Отступы Box xs → xl'>
+					<Panel title='Отступы Box (style) xs → xl'>
 						<div className={styles.row}>
 							{([
 								'xs',
@@ -566,11 +571,12 @@ function VisualGalleryDemo() {
 								<Box
 									key={pad}
 									variant='outlined'
-									padding={pad}
 									border
+									style={{padding: PAD_SPACE[pad]}}
 								>
 									<Text size='xs'>
-										padding=
+										padding
+										{' '}
 										{pad}
 									</Text>
 								</Box>
@@ -582,7 +588,7 @@ function VisualGalleryDemo() {
 				<Section
 					id='buttons'
 					title='Кнопки'
-					hint='Button × size × variant; danger; ButtonIcon; отключённые'
+					hint='Button × size × variant; ButtonIcon; отключённые'
 				>
 					<Panel title='Матрица Button'>
 						<div className={styles.matrix}>
@@ -602,20 +608,6 @@ function VisualGalleryDemo() {
 									))}
 								</div>
 							))}
-							<div className={styles.matrixRow}>
-								<span className={styles.matrixLabel}>
-									danger
-								</span>
-								{BUTTON_SIZES.map((size) => (
-									<Button
-										key={`danger-${size}`}
-										status='danger'
-										size={size}
-									>
-										Удалить
-									</Button>
-								))}
-							</div>
 							<div className={styles.matrixRow}>
 								<span className={styles.matrixLabel}>
 									disabled
@@ -655,12 +647,15 @@ function VisualGalleryDemo() {
 									aria-label='Уведомить'
 								/>
 								<ButtonIcon
-									status='danger'
+									variant='danger'
 									icon={<IconTrash />}
 									aria-label='Удалить'
 								/>
 								<ButtonIcon
-									appearance='diskClose'
+									variant='ghost'
+									className={overlayClose.close}
+									data-shape='circle'
+									data-appearance='diskClose'
 									icon={<IconCross />}
 									aria-label='Закрыть'
 								/>
@@ -674,15 +669,15 @@ function VisualGalleryDemo() {
 										size={size}
 										aria-label={`Группа ${size}`}
 									>
-										<ButtonGroup.Item>
+										<Button>
 											Слева
-										</ButtonGroup.Item>
-										<ButtonGroup.Item active>
+										</Button>
+										<Button>
 											Центр
-										</ButtonGroup.Item>
-										<ButtonGroup.Item>
+										</Button>
+										<Button>
 											Справа
-										</ButtonGroup.Item>
+										</Button>
 									</ButtonGroup>
 								))}
 							</div>
@@ -721,7 +716,7 @@ function VisualGalleryDemo() {
 								{CHIP_VARIANTS.map((variant) => (
 									<Chip
 										key={`tag-${variant}`}
-										as='tag'
+										mode='tag'
 										variant={variant}
 										size='sm'
 									>
@@ -731,7 +726,7 @@ function VisualGalleryDemo() {
 							</div>
 							<div className={styles.row}>
 								<Chip
-									as='toggle'
+									mode='toggle'
 									variant='tinted'
 									onClick={() => undefined}
 								>
@@ -744,7 +739,7 @@ function VisualGalleryDemo() {
 									Отключён
 								</Chip>
 							</div>
-							<ChipGroup layout='wrap' gap='sm'>
+							<ChipGroup gap='sm'>
 								{[
 									'Дизайн',
 									'Разработка',
@@ -756,7 +751,7 @@ function VisualGalleryDemo() {
 										key={label}
 										size='sm'
 										variant='secondary'
-										as='tag'
+										mode='tag'
 									>
 										{label}
 									</Chip>
@@ -817,7 +812,7 @@ function VisualGalleryDemo() {
 				<Section
 					id='forms'
 					title='Формы'
-					hint='Размеры FieldBase, outside/inline, ошибка/подсказка, PinInput, пикеры'
+					hint='Размеры TextField, outside/inline, ошибка/подсказка, PinInput, пикеры'
 				>
 					<Panel title='Размеры TextField (outside) + ряд Button'>
 						<div className={styles.rowStretch}>
@@ -827,7 +822,6 @@ function VisualGalleryDemo() {
 										label={`Подпись ${size}`}
 										size={size}
 										width='full'
-										labelPlacement='outside'
 										placeholder='Название задачи'
 									/>
 								</div>
@@ -853,22 +847,19 @@ function VisualGalleryDemo() {
 								<TextField
 									label='Эл. почта'
 									width='full'
-									labelPlacement='outside'
 									error='Введите email вида name@company.com'
 									defaultValue='bad@'
-									helperText='Будет видно в профиле и уведомлениях'
+									description='Будет видно в профиле и уведомлениях'
 								/>
 								<TextField
 									label='Только чтение'
 									width='full'
-									labelPlacement='outside'
 									readOnly
 									defaultValue='Нельзя менять'
 								/>
 								<TextField
 									label='Отключено'
 									width='full'
-									labelPlacement='outside'
 									disabled
 									defaultValue='Отключено'
 								/>
@@ -879,7 +870,6 @@ function VisualGalleryDemo() {
 								<PasswordField
 									label='Пароль'
 									width='full'
-									labelPlacement='outside'
 									value={password}
 									onChange={(event) => setPassword(event.target.value)}
 									showStrength
@@ -887,7 +877,6 @@ function VisualGalleryDemo() {
 								<NumberField
 									label='Количество'
 									width='full'
-									labelPlacement='outside'
 									value={qty}
 									onChange={setQty}
 									min={1}
@@ -896,7 +885,6 @@ function VisualGalleryDemo() {
 								<MaskedField
 									label='Телефон'
 									width='full'
-									labelPlacement='outside'
 									mask='+7 (999) 999-99-99'
 									value={masked}
 									onChange={setMasked}
@@ -905,7 +893,6 @@ function VisualGalleryDemo() {
 									label='Поиск'
 									width='full'
 									size='md'
-									labelPlacement='outside'
 									placeholder='Найти задачу…'
 									value={search}
 									onChange={(event) => setSearch(event.target.value)}
@@ -913,10 +900,9 @@ function VisualGalleryDemo() {
 								<TextareaField
 									label='Описание'
 									width='full'
-									labelPlacement='outside'
 									value={description}
 									onChange={(event) => setDescription(event.target.value)}
-									helperText='Авто-рост — высота пустого = TextField'
+									description='Авто-рост — высота пустого = TextField'
 								/>
 							</div>
 						</Panel>
@@ -946,14 +932,12 @@ function VisualGalleryDemo() {
 								<DateField
 									label='Дата'
 									size='md'
-									labelPlacement='outside'
 									value={date}
 									onChange={setDate}
 								/>
 								<TimeField
 									label='Время'
 									size='md'
-									labelPlacement='outside'
 									value={time}
 									onChange={setTime}
 								/>
@@ -961,14 +945,12 @@ function VisualGalleryDemo() {
 									label='Период'
 									layout='split'
 									size='md'
-									labelPlacement='outside'
 									value={range}
 									onChange={setRange}
 								/>
 								<TextareaField
 									label='Комментарий'
 									width='full'
-									labelPlacement='outside'
 									minRows={2}
 									defaultValue='Многострочное поле рядом с пикерами.'
 								/>
@@ -1102,18 +1084,12 @@ function VisualGalleryDemo() {
 									width='full'
 									variant='secondary'
 								>
-									<ButtonGroup.Item
-										active={fmtBold}
-										onClick={() => setFmtBold((v) => !v)}
-									>
+									<Button>
 										Ж
-									</ButtonGroup.Item>
-									<ButtonGroup.Item
-										active={fmtItalic}
-										onClick={() => setFmtItalic((v) => !v)}
-									>
+									</Button>
+									<Button>
 										К
-									</ButtonGroup.Item>
+									</Button>
 								</ButtonGroup>
 								<div className={styles.overflowDemo}>
 									<Overflow fit='container' aria-label='Переполнение фильтров'>
@@ -1152,7 +1128,6 @@ function VisualGalleryDemo() {
 								/>
 								<SuggestField
 									label='Город'
-									labelPlacement='outside'
 									width='full'
 									options={SUGGEST_OPTIONS}
 									value={suggest}
@@ -1166,7 +1141,6 @@ function VisualGalleryDemo() {
 										if (!Array.isArray(next) && next != null) setRegion(String(next));
 									}}
 									label='Регион'
-									labelPlacement='outside'
 									width='full'
 									onClear={() => setRegion('')}
 								/>
@@ -1242,7 +1216,7 @@ function VisualGalleryDemo() {
 								title='Пока нет записей'
 								description='Измените фильтры или создайте первую запись.'
 								action={(
-									<Button size='sm' iconStart={<IconPlus />}>
+									<Button size='sm' prefix={<IconPlus />}>
 										Создать
 									</Button>
 								)}
@@ -1277,17 +1251,23 @@ function VisualGalleryDemo() {
 				>
 					<Panel title='Tabs + бейдж'>
 						<Tabs value={tab} onChange={setTab}>
-							<Tabs.List>
-								<Tabs.Trigger value='a' badge={3}>
-									Обзор
-								</Tabs.Trigger>
-								<Tabs.Trigger value='b'>
-									Детали
-								</Tabs.Trigger>
-								<Tabs.Trigger value='c' badgeDot>
-									Активность
-								</Tabs.Trigger>
-							</Tabs.List>
+							<Tabs.List items={[
+								{
+									value: 'a',
+									label: 'Обзор',
+									badge: 3
+								},
+								{
+									value: 'b',
+									label: 'Детали'
+								},
+								{
+									value: 'c',
+									label: 'Активность',
+									badgeDot: true
+								},
+							]}
+							/>
 							<Tabs.Panel value='a'>
 								<Text size='sm'>
 									Контент вкладки «Обзор».
@@ -1519,13 +1499,13 @@ function VisualGalleryDemo() {
 							</Button>
 						</Tooltip>
 						<Popover
-							renderTrigger={(props, ref) => (
+							trigger={(props, ref) => (
 								<Button
 									variant='secondary'
 									size='sm'
-									iconEnd={<IconDots3 />}
+									postfix={<IconDots3 />}
 									{...props}
-									ref={ref}
+									rootRef={ref}
 								>
 									Popover
 								</Button>
@@ -1544,8 +1524,7 @@ function VisualGalleryDemo() {
 								</Button>
 								<Button
 									size='sm'
-									variant='ghost'
-									status='danger'
+									variant='danger_tinted'
 									fullWidth
 								>
 									Удалить
@@ -1564,9 +1543,8 @@ function VisualGalleryDemo() {
 						</Button>
 						<Button
 							size='sm'
-							variant='secondary'
-							status='danger'
-							iconStart={<IconTrash />}
+							variant='danger_tinted'
+							prefix={<IconTrash />}
 							onClick={() => setConfirmOpen(true)}
 						>
 							Подтвердить
@@ -1575,16 +1553,15 @@ function VisualGalleryDemo() {
 
 					<Modal open={modalOpen} onOpenChange={setModalOpen}>
 						<Modal.Header>
-							<Modal.Title>
+							<Title level={3}>
 								Modal + форма
-							</Modal.Title>
+							</Title>
 						</Modal.Header>
 						<Modal.Body>
 							<Stack gap='md'>
 								<TextField
 									label='Название'
 									width='full'
-									labelPlacement='outside'
 								/>
 								<GallerySelect
 									label='Статус'
@@ -1593,25 +1570,27 @@ function VisualGalleryDemo() {
 								/>
 							</Stack>
 						</Modal.Body>
-						<Modal.FormFooter>
-							<Button variant='secondary' onClick={() => setModalOpen(false)}>
-								Отмена
-							</Button>
-							<Button onClick={() => setModalOpen(false)}>
-								Сохранить
-							</Button>
-						</Modal.FormFooter>
+						<Modal.Footer>
+							<ControlRow justify='end'>
+								<Button variant='secondary' onClick={() => setModalOpen(false)}>
+									Отмена
+								</Button>
+								<Button onClick={() => setModalOpen(false)}>
+									Сохранить
+								</Button>
+							</ControlRow>
+						</Modal.Footer>
 					</Modal>
 
 					<Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
 						<Sheet.Header>
-							<Sheet.Title>
+							<Title level={3}>
 								Sheet
-							</Sheet.Title>
+							</Title>
 						</Sheet.Header>
 						<Sheet.Body>
 							<Text size='sm' color='secondary'>
-								Тот же elevation ladder, что у Modal (`--altum-shadow-md`).
+								Тот же elevation ladder, что у Modal (`--altum-shadow-dropdown`).
 							</Text>
 						</Sheet.Body>
 						<Sheet.Footer>
@@ -1649,22 +1628,14 @@ function VisualGalleryDemo() {
 							/>
 							<Separator orientation='vertical' />
 							<ButtonGroup size='sm' aria-label='Режим вида'>
-								<ButtonGroup.Item
-									active={bgValue === 'list'}
-									onClick={() => setBgValue('list')}
-								>
+								<Button>
 									Список
-								</ButtonGroup.Item>
-								<ButtonGroup.Item
-									active={bgValue === 'board'}
-									onClick={() => setBgValue('board')}
-								>
+								</Button>
+								<Button>
 									Доска
-								</ButtonGroup.Item>
+								</Button>
 							</ButtonGroup>
 							<SearchField
-								label='Поиск'
-								labelPlacement='none'
 								size='sm'
 								width='md'
 								placeholder='Поиск…'
@@ -1685,7 +1656,7 @@ function VisualGalleryDemo() {
 								size='sm'
 								status='online'
 							/>
-							<Button size='sm' iconStart={<IconPlus />}>
+							<Button size='sm' prefix={<IconPlus />}>
 								Создать
 							</Button>
 						</div>
@@ -1705,7 +1676,6 @@ function VisualGalleryDemo() {
 									<TextField
 										label='Заголовок'
 										width='full'
-										labelPlacement='outside'
 									/>
 									<div className={styles.rowStretch}>
 										<div className={styles.fieldGrow}>
@@ -1719,7 +1689,6 @@ function VisualGalleryDemo() {
 											<DateField
 												label='Дедлайн'
 												size='md'
-												labelPlacement='outside'
 												value={date}
 												onChange={setDate}
 											/>
@@ -1740,7 +1709,7 @@ function VisualGalleryDemo() {
 											<Button variant='secondary'>
 												Отмена
 											</Button>
-											<Button iconStart={<IconCheckmark />}>
+											<Button prefix={<IconCheckmark />}>
 												Сохранить
 											</Button>
 										</Inline>
@@ -1806,7 +1775,7 @@ function VisualGalleryDemo() {
 									<Chip
 										size='sm'
 										variant='tinted'
-										as='toggle'
+										mode='toggle'
 									>
 										Продукт
 									</Chip>
@@ -1816,7 +1785,7 @@ function VisualGalleryDemo() {
 									<Chip
 										size='sm'
 										variant='secondary'
-										as='tag'
+										mode='tag'
 									>
 										v0.5
 									</Chip>

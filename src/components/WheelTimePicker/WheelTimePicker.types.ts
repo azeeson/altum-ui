@@ -1,4 +1,4 @@
-import type {ComponentPropsWithoutRef} from 'react';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
 
 /**
  * Разобранное время для попапов выбора.
@@ -24,4 +24,6 @@ export interface WheelTimePickerProps extends TimePopupProps,
 	Omit<ComponentPropsWithoutRef<'div'>, 'onChange' | 'defaultValue'> {
 	/** Панель открыта — программный скролл к `value` без smooth */
 	active?: boolean;
+	/** DOM-узел барабанов. */
+	rootRef?: Ref<HTMLDivElement>;
 }

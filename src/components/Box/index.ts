@@ -3,7 +3,6 @@ export type {
 	BoxVariant,
 	BoxShadow,
 	BoxBorderStyle,
-	BoxPadding,
 	BoxRadius,
 	BoxAs,
 	BoxProps,

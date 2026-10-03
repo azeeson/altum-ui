@@ -7,7 +7,7 @@ import {IconQuestion} from '../../icons/icons/IconQuestion';
 import {IconFlag} from '../../icons/icons/IconFlag';
 import {IconBell} from '../../icons/icons/IconBell';
 import {Card} from '../Card/Card';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
@@ -16,10 +16,10 @@ export default {
 	component: Chip,
 	tags: ['autodocs'],
 	parameters: componentParameters(
-		'Компактный чип, тег или toggle (`as`): статусы, размеры, иконка, удаление. Группировка — ChipGroup.',
+		'Компактный чип, тег или toggle (`mode`): статусы, размеры, иконка, удаление. Группировка — ChipGroup.',
 	),
 	argTypes: {
-		as: {
+		mode: {
 			control: {
 				type: 'select',
 				options: ['chip', 'tag', 'toggle']
@@ -69,7 +69,7 @@ export const Playground: Story<ChipProps> = {
 		size: 'md',
 		onRemove: () => {},
 	},
-	parameters: story('Панель Controls: variant, size, as, onRemove.'),
+	parameters: story('Панель Controls: variant, size, mode, onRemove.'),
 };
 
 export const Variants: Story<ChipProps> = {
@@ -154,25 +154,25 @@ export const Modes: Story<ChipProps> = {
 					color: 'var(--altum-color-muted)'
 				}}
 				>
-					as=&quot;chip&quot; — небольшое скругление (`--altum-g-radius-sm`)
+					mode=&quot;chip&quot; — небольшое скругление (`--altum-g-radius-sm`)
 				</div>
 				<ChipGroup aria-label='Режим chip'>
 					<Chip
-						as='toggle'
+						mode='toggle'
 						variant='primary'
 						onClick={() => {}}
 					>
 						Фильтр
 					</Chip>
 					<Chip
-						as='chip'
+						mode='chip'
 						variant='tinted'
 						onClick={() => {}}
 					>
 						Тонированный
 					</Chip>
 					<Chip
-						as='chip'
+						mode='chip'
 						variant='success'
 						onRemove={() => {}}
 					>
@@ -187,24 +187,24 @@ export const Modes: Story<ChipProps> = {
 					color: 'var(--altum-color-muted)'
 				}}
 				>
-					as=&quot;tag&quot; — pill (скруглённые края)
+					mode=&quot;tag&quot; — pill (скруглённые края)
 				</div>
 				<ChipGroup aria-label='Режим tag'>
-					<Chip as='tag' variant='primary'>
+					<Chip mode='tag' variant='primary'>
 						Статус
 					</Chip>
-					<Chip as='tag' variant='success'>
+					<Chip mode='tag' variant='success'>
 						Готово
 					</Chip>
 					<Chip
-						as='tag'
+						mode='tag'
 						variant='warning'
 						onRemove={() => {}}
 					>
 						С удалением
 					</Chip>
 					<Chip
-						as='tag'
+						mode='tag'
 						variant='info'
 						onClick={() => {}}
 					>
@@ -258,7 +258,7 @@ export const Active: Story<ChipProps> = {
 					<Chip
 						key={filter.id}
 						variant={filter.variant}
-						as={selected.includes(filter.id) ? 'toggle' : 'chip'}
+						mode={selected.includes(filter.id) ? 'toggle' : 'chip'}
 						onClick={() => toggle(filter.id)}
 					>
 						{filter.label}
@@ -267,7 +267,7 @@ export const Active: Story<ChipProps> = {
 			</ChipGroup>
 		);
 	},
-	parameters: story('`as="toggle"` + onClick — фильтры с aria-pressed.'),
+	parameters: story('`mode="toggle"` + onClick — фильтры с aria-pressed.'),
 };
 
 export const WithIcon: Story<ChipProps> = {
@@ -354,7 +354,7 @@ export const Disabled: Story<ChipProps> = {
 				Chip
 			</Chip>
 			<Chip
-				as='tag'
+				mode='tag'
 				variant='info'
 				disabled
 				onRemove={() => {}}
@@ -362,7 +362,7 @@ export const Disabled: Story<ChipProps> = {
 				Tag
 			</Chip>
 			<Chip
-				as='toggle'
+				mode='toggle'
 				disabled
 				onClick={() => {}}
 			>
@@ -449,7 +449,7 @@ export const UsageExample: Story<ChipProps> = {
 						].map((filter) => (
 							<Chip
 								key={filter.id}
-								as={selected.includes(filter.id) ? 'toggle' : 'chip'}
+								mode={selected.includes(filter.id) ? 'toggle' : 'chip'}
 								variant='secondary'
 								onClick={() => toggle(filter.id)}
 							>
@@ -501,64 +501,9 @@ export const Group: Story<ChipProps> = {
 					gap
 				</Chip>
 			</ChipGroup>
-			<ChipGroup
-				layout='scrollX'
-				gap='sm'
-				aria-label='Горизонтальный скролл'
-			>
-				{[
-					'React',
-					'TypeScript',
-					'CSS Modules',
-					'Storybook',
-					'a11y',
-					'Дизайн-токены',
-					'Формы',
-					'Оверлей',
-					'Токены'
-				].map((label) => (
-					<Chip
-						key={label}
-						variant='tinted'
-						size='sm'
-					>
-						{label}
-					</Chip>
-				))}
-			</ChipGroup>
-			<div style={{maxWidth: 220}}>
-				<ChipGroup
-					layout='scrollX'
-					gap='sm'
-					overflowAffordance='fade'
-					aria-label='С edge fade'
-				>
-					{[
-						'один',
-						'два',
-						'три',
-						'четыре',
-						'пять',
-						'шесть',
-						'семь',
-						'восемь'
-					].map((label) => (
-						<Chip
-							key={label}
-							as='tag'
-							variant='info'
-							size='sm'
-						>
-							{label}
-						</Chip>
-					))}
-				</ChipGroup>
-			</div>
 		</div>
 	),
-	parameters: story(
-		'ChipGroup — layout wrap|scrollX; OverflowAffordance fade (default на scrollX).',
-	),
+	parameters: story('ChipGroup — промежуток `sm` / `md` / `lg`.'),
 };
 
 /** Wrap держит равный gap; последний ряд упакован влево (без растяжения space-between). */

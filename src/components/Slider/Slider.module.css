@@ -12,6 +12,10 @@
   touch-action: none;
 
   & .track {
+    --local-ratio: 0;
+    --local-ratio-0: var(--local-ratio);
+    --local-ratio-1: 0;
+
     position: relative;
 
     width: 100%;
@@ -29,6 +33,7 @@
     top: 0;
     left: 0;
 
+    width: calc(var(--local-ratio) * 100%);
     height: 100%;
 
     border-radius: var(--altum-g-radius-pill);
@@ -36,9 +41,19 @@
     background-color: var(--altum-color-brand);
   }
 
+  & .track[data-range] .bar {
+    left: calc(min(var(--local-ratio-0), var(--local-ratio-1)) * 100%);
+
+    width: calc(
+      (max(var(--local-ratio-0), var(--local-ratio-1)) - min(var(--local-ratio-0), var(--local-ratio-1)))
+      * 100%
+    );
+  }
+
   & .handle {
     position: absolute;
     top: 50%;
+    left: calc(var(--local-ratio) * 100%);
     z-index: var(--altum-g-z-control);
 
     box-sizing: border-box;
@@ -55,6 +70,14 @@
     cursor: grab;
 
     transform: translate(-50%, -50%);
+
+    &[data-thumb='0'] {
+      left: calc(var(--local-ratio-0, var(--local-ratio)) * 100%);
+    }
+
+    &[data-thumb='1'] {
+      left: calc(var(--local-ratio-1) * 100%);
+    }
 
     transition: var(--altum-transition-smooth);
 
@@ -105,7 +128,7 @@
     transition: var(--altum-transition-smooth);
   }
 
-  &.readOnly {
+  &[data-readonly] {
     padding: var(--altum-g-space-2) var(--altum-g-space-3);
 
     border: 1px dashed var(--altum-field-border-readonly);
@@ -114,8 +137,8 @@
     background-color: var(--altum-field-bg-readonly);
   }
 
-  &.readOnly,
-  &.disabled {
+  &[data-readonly],
+  &[data-disabled] {
     cursor: default;
 
     & .track,
@@ -128,9 +151,9 @@
     }
   }
 
-  &.disabled .track,
-  &.disabled .handle,
-  &.disabled .bar {
+  &[data-disabled] .track,
+  &[data-disabled] .handle,
+  &[data-disabled] .bar {
     opacity: 0.5;
 
     cursor: not-allowed;

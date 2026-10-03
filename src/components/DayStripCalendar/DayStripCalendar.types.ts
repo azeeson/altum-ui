@@ -1,4 +1,5 @@
 import type React from 'react';
+import type {Ref} from 'react';
 
 export interface DayStripDayRenderProps {
 	date: Date;
@@ -13,7 +14,7 @@ export interface DayStripCalendarProps extends Omit<React.ComponentPropsWithoutR
 	onChange: (date: Date) => void;
 	/**
 	 * Первая видимая дата полосы (контролируемая).
-	 * По умолчанию — начало недели, содержащей `value` / сегодня.
+	 * Без пропа окно начинается с недели `value` или сегодня и дальше не возвращается к выбранному дню.
 	 */
 	viewDate?: Date;
 	onViewDateChange?: (date: Date) => void;
@@ -23,7 +24,9 @@ export interface DayStripCalendarProps extends Omit<React.ComponentPropsWithoutR
 	weekStartsOn?: 0 | 1;
 	/** Заголовок месяца/года над полосой. */
 	showHeader?: boolean;
-	/** Кнопки prev / next: выбирают соседний день; полоса сдвигается на `daysCount / 2`, если дата вне окна. */
+	/** Кнопки prev / next сдвигают видимое окно на `daysCount` и не меняют выбранный день. */
 	showNav?: boolean;
 	renderDay?: (props: DayStripDayRenderProps) => React.ReactNode;
+	/** DOM-узел корня. */
+	rootRef?: Ref<HTMLDivElement>;
 }

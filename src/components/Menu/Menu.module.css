@@ -1,6 +1,7 @@
 .target {
   min-width: 0;
-  &:focus {
+
+  &:focus:not(:focus-visible) {
     outline: none;
   }
 
@@ -10,12 +11,19 @@
   }
 }
 
-.host.host {
+/*
+ * Контекстный Dropdown-хост не участвует в раскладке.
+ * `display: contents` ок: позиция панели — top/left на самом popover, не CSS Anchor.
+ */
+.host {
   display: contents;
 }
 
+/* Невидимый invoker для popovertarget / showPopover; координаты курсора — на панели. */
 .anchor {
   position: fixed;
+  top: 0;
+  left: 0;
 
   width: 0;
   height: 0;
@@ -23,14 +31,35 @@
   pointer-events: none;
 }
 
-.menu {
+/*
+ * Панель у курсора без CSS Anchor (Safari 16–18 в browserslist его нет).
+ * Специфичность выше `.anchor[popover]` / `.panel` из Popover/floating.
+ */
+.menu.menu[popover] {
+
   --altum-menu-min-width: 180px;
   --altum-menu-max-width: 320px;
   --altum-menu-max-height: 360px;
-
-  overflow: auto;
+  position-anchor: none;
+  position-area: none;
+  position-try-fallbacks: none;
+  inset: unset;
+  top: var(--altum-menu-y, 0);
+  right: auto;
+  bottom: auto;
+  left: var(--altum-menu-x, 0);
 
   min-width: var(--altum-menu-min-width);
   max-width: min(var(--altum-menu-max-width), calc(100vw - var(--altum-g-space-4)));
   max-height: min(var(--altum-menu-max-height), calc(100vh - var(--altum-g-space-4)));
+
+  margin: 0;
+}
+
+/* Узкий экран: Dropdown перебивает в шторку — не держим top/left у курсора. */
+@media (max-width: 768px) {
+  .menu.menu[popover] {
+    top: auto;
+    left: auto;
+  }
 }

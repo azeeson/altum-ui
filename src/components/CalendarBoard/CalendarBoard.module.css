@@ -41,28 +41,6 @@
     gap: var(--altum-g-space-1);
   }
 
-  & .navBtn {
-    display: inline-flex;
-
-    justify-content: center;
-    align-items: center;
-
-    width: var(--altum-control-height-sm);
-    height: var(--altum-control-height-sm);
-
-    border: 1px solid var(--altum-color-border);
-    border-radius: var(--altum-g-radius-sm);
-
-    color: var(--altum-color-text-secondary);
-    background: var(--altum-color-surface);
-
-    transition: var(--altum-transition-smooth);
-    &:hover:not(:disabled) {
-      color: var(--altum-color-input-text);
-      background: var(--altum-color-surface-hover);
-    }
-  }
-
   & .viewSwitch {
     flex: 0 0 auto;
   }
@@ -147,7 +125,20 @@
 
     background: var(--altum-color-bg);
 
-    transition: var(--altum-transition-smooth);
+    &[data-outside] {
+      opacity: var(--altum-opacity-disabled);
+    }
+
+    &[data-today] {
+      border-color: var(--altum-color-brand);
+    }
+
+    &[data-selected] {
+      border-color: var(--altum-color-input-border-focus);
+
+      background: color-mix(in srgb, var(--altum-color-brand) 8%, var(--altum-color-bg));
+      box-shadow: inset 0 0 0 1px var(--altum-color-input-border-focus);
+    }
   }
 
   & .dayNumberBtn {
@@ -162,25 +153,10 @@
     }
   }
 
-  & .dayOutside {
-    opacity: var(--altum-opacity-disabled);
-  }
-
-  & .dayToday {
-    border-color: var(--altum-color-brand);
-  }
-
-  & .daySelected {
-    border-color: var(--altum-color-input-border-focus);
-
-    background: color-mix(in srgb, var(--altum-color-brand) 8%, var(--altum-color-bg));
-    box-shadow: inset 0 0 0 1px var(--altum-color-input-border-focus);
-  }
-
   & .dayNumber {
     font-size: var(--altum-g-font-size-2xs);
     font-weight: var(--altum-g-font-weight-semibold);
-    line-height: 1.2;
+    line-height: var(--altum-g-line-height-2xs);
 
     color: var(--altum-color-ink-muted);
   }
@@ -237,6 +213,8 @@
     display: flex;
     box-sizing: border-box;
 
+    grid-column: var(--local-span-column);
+
     min-width: 0;
     height: 100%;
 
@@ -277,7 +255,7 @@
     transition: var(--altum-transition-smooth);
   }
 
-  & .chipClickable {
+  & .chip:is(button) {
     cursor: pointer;
   }
 
@@ -301,11 +279,17 @@
     white-space: nowrap;
   }
 
-  & .chipCompleted {
+  & .chip[data-completed] {
     opacity: var(--altum-opacity-disabled);
     & .chipTitle {
       text-decoration: line-through;
     }
+  }
+
+  & .chip:is(button):hover,
+  & .chip[data-highlighted] {
+    background-color: color-mix(in srgb, var(--altum-calendar-board-task-color, var(--altum-color-brand)) 28%, var(--altum-color-dropdown-bg));
+    filter: brightness(0.97);
   }
 
   & .year {
@@ -337,7 +321,7 @@
     background: var(--altum-color-bg);
   }
 
-  & .yearMonthCurrent {
+  & .yearMonthCard[data-current] {
     border-color: var(--altum-color-brand);
   }
 
@@ -377,11 +361,6 @@
   }
 
   & .yearDay {
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
     width: 100%;
     min-height: calc(var(--altum-g-space-5) + var(--altum-control-inset));
 
@@ -390,19 +369,19 @@
     text-align: center;
   }
 
-  & .yearDayOutside {
+  & .yearDay[data-outside] {
     color: transparent;
 
     pointer-events: none;
   }
 
-  & .yearDayToday {
+  & .yearDay[data-today] {
     font-weight: var(--altum-g-font-weight-bold);
 
     box-shadow: inset 0 0 0 1px var(--altum-color-brand);
   }
 
-  & .yearDayHasTask {
+  & .yearDay[data-has-task] {
     font-weight: var(--altum-g-font-weight-semibold);
 
     color: var(--altum-color-brand-tint-text);
@@ -413,89 +392,3 @@
     }
   }
 }
-
-/* --- Месяц --- */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* --- Chip --- */
-
-
-
-
-
-.chipClickable:hover,
-.chipHighlighted {
-  background-color: color-mix(in srgb, var(--altum-calendar-board-task-color, var(--altum-color-brand)) 28%, var(--altum-color-dropdown-bg));
-  filter: brightness(0.97);
-}
-
-
-
-
-
-
-
-/* --- Год --- */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

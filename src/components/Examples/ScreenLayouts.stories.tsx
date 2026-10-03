@@ -20,7 +20,7 @@ import {DonutChart} from '../DonutChart/DonutChart';
 import {FieldLabel} from '../FieldLabel/FieldLabel';
 import {Fieldset} from '../Fieldset/Fieldset';
 import {ImageGallery} from '../ImageGallery/ImageGallery';
-import {Inline, Split, Stack} from '../Layout/Layout';
+import {Inline, Split, Stack} from '../Layout';
 import {MaskedField} from '../MaskedField/MaskedField';
 import {Modal} from '../Modal/Modal';
 import {NumberField} from '../NumberField/NumberField';
@@ -35,6 +35,7 @@ import {ScrollArea} from '../ScrollArea/ScrollArea';
 import {SearchField} from '../SearchField/SearchField';
 import {SegmentedControl} from '../SegmentedControl/SegmentedControl';
 import {Select} from '../Select/Select';
+import {MultiSelect} from '../MultiSelect/MultiSelect';
 import {Separator} from '../Separator/Separator';
 import {Steps} from '../Steps/Steps';
 import {Switch} from '../Switch/Switch';
@@ -161,8 +162,8 @@ code: string
 		<Box
 			variant='outlined'
 			border
-			padding='md'
 			radius='md'
+			style={{padding: 'var(--altum-g-space-3)'}}
 		>
 			{language ? (
 				<Text size='xs' color='muted'>
@@ -223,7 +224,7 @@ function DemoFilterBar({
 									key={item.id}
 									size='sm'
 									variant={item.active ? 'tinted' : 'secondary'}
-									as={item.active ? 'toggle' : 'chip'}
+									mode={item.active ? 'toggle' : 'chip'}
 									onClick={onFilterChange
 										? () => onFilterChange(item.id, !item.active)
 										: undefined}
@@ -671,20 +672,27 @@ label: 'Журнал аудита'
 					value={tab}
 					onChange={setTab}
 				>
-					<Tabs.List>
-						<Tabs.Trigger value='roles'>
-							Роли
-						</Tabs.Trigger>
-						<Tabs.Trigger value='security' badge={1}>
-							Безопасность
-						</Tabs.Trigger>
-						<Tabs.Trigger value='notifications'>
-							Уведомления
-						</Tabs.Trigger>
-						<Tabs.Trigger value='billing' disabled>
-							Биллинг
-						</Tabs.Trigger>
-					</Tabs.List>
+					<Tabs.List items={[
+						{
+value: 'roles',
+label: 'Роли'
+},
+						{
+value: 'security',
+label: 'Безопасность',
+badge: 1
+},
+						{
+value: 'notifications',
+label: 'Уведомления'
+},
+						{
+value: 'billing',
+label: 'Биллинг',
+disabled: true
+},
+					]}
+					/>
 					<Tabs.Panel value='roles'>
 						{rolesContent}
 					</Tabs.Panel>
@@ -1004,7 +1012,7 @@ export const MobileHomeShell: Story<Record<string, never>> = {
 												<RelativeTime date={new Date(item.when)} />
 											</Stack>
 											<Chip
-												as='tag'
+												mode='tag'
 												size='sm'
 												variant='secondary'
 											>
@@ -1059,20 +1067,26 @@ export const MobileHomeShell: Story<Record<string, never>> = {
 						onChange={setTab}
 						variant='pill'
 					>
-						<Tabs.List>
-							<Tabs.Trigger value='home'>
-								Главная
-							</Tabs.Trigger>
-							<Tabs.Trigger value='wallet' badge={2}>
-								Кошелёк
-							</Tabs.Trigger>
-							<Tabs.Trigger value='profile'>
-								Профиль
-							</Tabs.Trigger>
-							<Tabs.Trigger value='more'>
-								Ещё
-							</Tabs.Trigger>
-						</Tabs.List>
+						<Tabs.List items={[
+							{
+value: 'home',
+label: 'Главная'
+},
+							{
+value: 'wallet',
+label: 'Кошелёк',
+badge: 2
+},
+							{
+value: 'profile',
+label: 'Профиль'
+},
+							{
+value: 'more',
+label: 'Ещё'
+},
+						]}
+						/>
 					</Tabs>
 				</nav>
 			</div>
@@ -1213,7 +1227,7 @@ export const ProjectBoardScreen: Story<Record<string, never>> = {
 						<Button
 							size='sm'
 							variant='primary'
-							iconStart={<IconPlus size={16} />}
+							prefix={<IconPlus size={16} />}
 							onClick={() => setCreateOpen(true)}
 						>
 							Карточка
@@ -1236,7 +1250,7 @@ export const ProjectBoardScreen: Story<Record<string, never>> = {
 										{column.title}
 									</Title>
 									<Chip
-										as='tag'
+										mode='tag'
 										size='sm'
 										variant='tinted'
 									>
@@ -1254,7 +1268,7 @@ export const ProjectBoardScreen: Story<Record<string, never>> = {
 										<Inline gap='sm' align='center'>
 											<Avatar name={item.owner} size={22} />
 											<Chip
-												as='tag'
+												mode='tag'
 												size='sm'
 												variant='tinted'
 											>
@@ -1272,9 +1286,9 @@ export const ProjectBoardScreen: Story<Record<string, never>> = {
 
 				<Modal open={createOpen} onOpenChange={setCreateOpen}>
 					<Modal.Header>
-						<Modal.Title>
+						<Title level={3}>
 							Новая карточка
-						</Modal.Title>
+						</Title>
 					</Modal.Header>
 					<Modal.Body>
 						<TextField
@@ -1487,7 +1501,7 @@ export const ProductDetailScreen: Story<Record<string, never>> = {
 					<Stack gap='md'>
 						<Inline gap='sm' align='center'>
 							<Chip
-								as='tag'
+								mode='tag'
 								size='sm'
 								variant='success'
 							>
@@ -1536,14 +1550,17 @@ export const ProductDetailScreen: Story<Record<string, never>> = {
 							value={tab}
 							onChange={setTab}
 						>
-							<Tabs.List>
-								<Tabs.Trigger value='desc'>
-									Описание
-								</Tabs.Trigger>
-								<Tabs.Trigger value='specs'>
-									Характеристики
-								</Tabs.Trigger>
-							</Tabs.List>
+							<Tabs.List items={[
+								{
+value: 'desc',
+label: 'Описание'
+},
+{
+value: 'specs',
+label: 'Характеристики'
+},
+							]}
+							/>
 							<Tabs.Panel value='desc'>
 								<Text size='sm' color='muted'>
 									Алюминиевый корпус, диммирование, сенсорный управление.
@@ -1622,7 +1639,7 @@ export const RecruitingPipelineScreen: Story<Record<string, never>> = {
 			<div className={styles.shell}>
 				<DemoHeader
 					title='Интервью сегодня'
-					description='DayStripCalendar + этапы Steps + навыки CustomSelect + Timeline'
+					description='DayStripCalendar + этапы Steps + навыки Select + Timeline'
 					actions={(
 						<Chip size='sm' variant='tinted'>
 							{candidates.length}
@@ -1660,7 +1677,7 @@ export const RecruitingPipelineScreen: Story<Record<string, never>> = {
 										</Stack>
 									</Inline>
 									<Chip
-										as='tag'
+										mode='tag'
 										size='sm'
 										variant='secondary'
 									>
@@ -1699,10 +1716,9 @@ export const RecruitingPipelineScreen: Story<Record<string, never>> = {
 								]}
 							/>
 
-							<Select
-								selectionMode='multiple'
+							<MultiSelect
 								value={skills}
-								onChange={(value) => { if (Array.isArray(value)) setSkills(value); }}
+								onChange={setSkills}
 								options={[
 									{
 										label: 'React',

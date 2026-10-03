@@ -9,7 +9,7 @@ import {Button} from '../Button/Button';
 import {ButtonGroup} from '../ButtonGroup/ButtonGroup';
 import {Card} from '../Card/Card';
 import {EmptyState} from '../EmptyState/EmptyState';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {TextField} from '../TextField/TextField';
 import {componentParameters, story, Story} from '../../storybook/meta';
@@ -113,25 +113,25 @@ export const VariableHeight: Story<VirtualListProps<Row>> = {
 						size='sm'
 						aria-label='Прокрутка'
 					>
-						<ButtonGroup.Item
+						<Button
 							onClick={() => listRef.current?.scrollToIndex(0)}
 						>
 							В начало
-						</ButtonGroup.Item>
-						<ButtonGroup.Item
+						</Button>
+						<Button
 							onClick={() => listRef.current?.scrollToIndex(2499, {align: 'start'})}
 						>
 							К #2500
-						</ButtonGroup.Item>
-						<ButtonGroup.Item
+						</Button>
+						<Button
 							onClick={() => listRef.current?.scrollToIndex(items.length - 1, {align: 'end'})}
 						>
 							В конец
-						</ButtonGroup.Item>
+						</Button>
 					</ButtonGroup>
 				</div>
 				<VirtualList
-					ref={listRef}
+					controlRef={listRef}
 					items={items}
 					height={360}
 					estimateSize={72}
@@ -210,7 +210,7 @@ export const Playground: Story<VirtualListProps<Row>> = {
 					</span>
 				</div>
 				<VirtualList
-					ref={listRef}
+					controlRef={listRef}
 					items={items}
 					height={height}
 					estimateSize={typeof estimateSize === 'number' ? estimateSize : 64}
@@ -277,7 +277,7 @@ export const ExternalScrollParent: Story<VirtualListProps<Row>> = {
 						Шапка workspace — скролл общий для всей колонки.
 					</div>
 					<VirtualList
-						ref={listRef}
+						controlRef={listRef}
 						items={items}
 						scrollElement={scrollRef}
 						estimateSize={72}
@@ -377,7 +377,7 @@ export const Interaction: Story<VirtualListProps<Row>> = {
 					</Button>
 				</div>
 				<VirtualList
-					ref={listRef}
+					controlRef={listRef}
 					items={items}
 					height={280}
 					estimateSize={64}
@@ -427,8 +427,7 @@ export const UsageExample: Story<VirtualListProps<Row>> = {
 			>
 				<Stack gap='md'>
 					<TextField
-						label='Поиск'
-						labelPlacement='none'
+						aria-label='Поиск'
 						placeholder='Фильтр по названию'
 						value={query}
 						onChange={(event) => setQuery(event.target.value)}

@@ -1,7 +1,5 @@
 import type React from 'react';
-import type {
-	ComponentPropsWithoutRef,
-} from 'react';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
 
 /**
  * Сегмент круговой диаграммы.
@@ -17,6 +15,8 @@ export interface DonutSegment {
  * Свойства `DonutChart`.
  */
 export interface DonutChartProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
+	/** DOM-узел диаграммы. */
+	rootRef?: Ref<HTMLDivElement>;
 	segments: DonutSegment[];
 	/** Диаметр. @default 160 */
 	size?: number;

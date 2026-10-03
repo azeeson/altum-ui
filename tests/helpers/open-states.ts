@@ -64,24 +64,24 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-components-customselect--playground',
+		storyId: 'altum-components-formfield-select--playground',
 		snapshot: 'open-select-filterable.png',
 		prepare: async (page) => {
-			await page.getByRole('button', {name: /Москва|Выберите город/i}).click();
+			await page.getByRole('button', {name: /Город/i}).click();
 			await page.getByRole('searchbox').waitFor({state: 'visible'});
 			await page.getByRole('listbox').waitFor({state: 'visible'});
 		},
 	},
 	{
-		storyId: 'altum-components-customselect--playground',
+		storyId: 'altum-components-formfield-select--playground',
 		snapshot: 'open-combobox-playground.png',
 		prepare: async (page) => {
-			await page.getByRole('button', {name: /Москва|Выберите город/i}).click();
+			await page.getByRole('button', {name: /Город/i}).click();
 			await page.getByRole('listbox').waitFor({state: 'visible'});
 		},
 	},
 	{
-		storyId: 'altum-components-customselect--compound-multiple',
+		storyId: 'altum-components-formfield-select--multiple',
 		snapshot: 'open-combobox-compare.png',
 		prepare: async (page) => {
 			await page.getByRole('combobox').first().click();
@@ -111,9 +111,11 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		prepare: async (page) => {
 			await page.getByRole('textbox').first().click();
 			await page.getByRole('listbox', {name: /Часы|Hours/i}).waitFor({state: 'visible'});
-			await page.getByRole('option', {
+			const minutes = page.getByRole('listbox', {name: /Минуты|Minutes/i});
+			await minutes.waitFor({state: 'visible'});
+			await minutes.getByRole('option', {
 				name: '14',
-				exact: true
+				exact: true,
 			}).waitFor({state: 'visible'});
 		},
 	},

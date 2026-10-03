@@ -3,7 +3,7 @@ import React, {useMemo, useState} from 'react';
 import {Table, type TableProps, type TableSortDirection, type Column} from './Table';
 import {Chip} from '../Chip/Chip';
 import {Text} from '../Text/Text';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Button} from '../Button/Button';
 import {TextField} from '../TextField/TextField';
 import {Card} from '../Card/Card';
@@ -49,7 +49,7 @@ const COLUMNS = [
 		key: 'role',
 		header: 'Роль',
 		render: (row: UserRow) => (
-			<Chip as='tag' variant={row.role === 'Админ' ? 'primary' : 'secondary'}>
+			<Chip mode='tag' variant={row.role === 'Админ' ? 'primary' : 'secondary'}>
 				{row.role}
 			</Chip>
 		),
@@ -205,8 +205,8 @@ export const WithToolbar: Story<Record<string, never>> = {
 				toolbar={(
 					<>
 						<TextField
-							label='Поиск'
-							labelPlacement='none'
+							aria-label='Поиск'
+							placeholder='Поиск'
 							width='md'
 							value={query}
 							onChange={(event) => {
@@ -561,8 +561,8 @@ export const UsageExample: Story<Record<string, never>> = {
 						toolbar={(
 							<>
 								<TextField
-									label='Поиск'
-									labelPlacement='none'
+									aria-label='Поиск'
+									placeholder='Поиск'
 									width='md'
 									value={query}
 									onChange={(event) => {

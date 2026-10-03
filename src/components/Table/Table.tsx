@@ -6,27 +6,32 @@ export type {
 	TablePagination,
 	TableEmptyConfig,
 	TableProps,
-	TableContentProps,
 	TableRowActionsProps,
 } from './Table.types';
 
-import React, {forwardRef, useMemo} from 'react';
+import {isValidElement, useMemo} from 'react';
 import styles from './Table.module.css';
-import scroll from '../../styles/scroll.module.css';
-import {cn} from '../../utils/cn';
+import scroll from '../../styles/scrollable.module.css';
+import {cn} from '../../core/utils/cn';
 import {Pagination} from '../Pagination/Pagination';
 import {EmptyState} from '../EmptyState/EmptyState';
 import {Skeleton} from '../Skeleton/Skeleton';
 import {useLocale} from '../../locales/localeContext';
 import {TableView} from './TableView';
 import {TableRowActions} from './TableRowActions';
+import {ruSlice as ru_table} from '../../locales/slices/table.ru';
+
+const localeFallback = {
+	table: ru_table,
+};
 
 function isEmptyConfig(value: TableProps<object>['empty']): value is TableEmptyConfig {
-	return value != null && typeof value === 'object' && !React.isValidElement(value);
+	return value != null && typeof value === 'object' && !isValidElement(value);
 }
 
 /**
  * Таблица: `columns`, `data`, опционально `toolbar`, `loading`, `empty`, `footer`.
+ * `virtualized` — окно строк через `VirtualList` (sticky thead сохраняется).
  *
  * @component
  * @example
@@ -38,35 +43,35 @@ function isEmptyConfig(value: TableProps<object>['empty']): value is TableEmptyC
  *   empty={{title: 'Пользователей нет'}}
  * />
  */
-const TableInner = forwardRef(function Table<T extends object>(
-	{
-		columns,
-		data,
-		rowKey,
-		rowActions,
-		rowActionsLabel,
-		toolbar,
-		loading = false,
-		loadingRows = 5,
-		empty,
-		footer,
-		className,
-		'aria-label': ariaLabel,
-		stickyHeader,
-		selectedKeys,
-		onSelectionChange,
-		density,
-		sortKey,
-		sortDirection,
-		onSortChange,
-		expandedKeys,
-		onExpandedChange,
-		renderExpandedRow,
-		...rest
-	}: TableProps<T>,
-	ref: React.ForwardedRef<HTMLDivElement>,
-) {
-	const {t} = useLocale();
+export function Table<T extends object>({
+	columns,
+	data,
+	rowKey,
+	rowActions,
+	rowActionsLabel,
+	toolbar,
+	loading = false,
+	loadingRows = 5,
+	empty,
+	footer,
+	className,
+	'aria-label': ariaLabel,
+	stickyHeader,
+	selectedKeys,
+	onSelectionChange,
+	density,
+	sortKey,
+	sortDirection,
+	onSortChange,
+	expandedKeys,
+	onExpandedChange,
+	renderExpandedRow,
+	virtualized,
+	estimateRowSize,
+	rootRef,
+	...rest
+}: TableProps<T>) {
+	const {t} = useLocale(localeFallback);
 	const isEmpty = data.length === 0;
 	const actionsLabel = rowActionsLabel ?? t('table.rowActions');
 	const effectiveColumns = useMemo(() => {
@@ -82,7 +87,6 @@ const TableInner = forwardRef(function Table<T extends object>(
 						items={rowActions(row)}
 						aria-label={actionsLabel}
 						className={styles.rowActions}
-						onClick={(event) => event.stopPropagation()}
 					/>
 				),
 			},
@@ -117,7 +121,7 @@ const TableInner = forwardRef(function Table<T extends object>(
 
 	return (
 		<div
-			ref={ref}
+			ref={rootRef}
 			className={cn(styles.root, className)}
 			aria-label={ariaLabel}
 			{...rest}
@@ -157,6 +161,8 @@ const TableInner = forwardRef(function Table<T extends object>(
 					expandedKeys={expandedKeys}
 					onExpandedChange={onExpandedChange}
 					renderExpandedRow={renderExpandedRow}
+					virtualized={virtualized}
+					estimateRowSize={estimateRowSize}
 					aria-label={ariaLabel}
 					effectiveColumns={effectiveColumns}
 				/>
@@ -184,10 +190,4 @@ const TableInner = forwardRef(function Table<T extends object>(
 			) : null}
 		</div>
 	);
-});
-
-TableInner.displayName = 'Table';
-
-export const Table = TableInner as <T extends object>(
-	props: TableProps<T> & {ref?: React.Ref<HTMLDivElement>}
-) => React.ReactElement;
+}

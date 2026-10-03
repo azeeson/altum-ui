@@ -8,11 +8,20 @@ export type {
 	BubbleProps,
 } from './Bubble.types';
 
-import {forwardRef, useId, useState, type CSSProperties} from 'react';
-import unstyled from '../../styles/unstyledControl.module.css';
+import {useRef, useState, type CSSProperties, type MouseEvent} from 'react';
 import styles from './Bubble.module.css';
-import {cn} from '../../utils/cn';
+import unstyled from '../../styles/unstyledControl.module.css';
+import {cn} from '../../core/utils/cn';
+import {useFallbackId} from '../../hooks/useFallbackId';
 import {useLocale} from '../../locales/localeContext';
+import {ruSlice as ru_bubble} from '../../locales/slices/bubble.ru';
+
+const localeFallback = {
+	bubble: ru_bubble,
+};
+
+/** Атрибут эмодзи на кнопке реакции. Клик читает его с контейнера. */
+export const BUBBLE_REACTION_ATTR = 'data-reaction-emoji';
 
 /**
  * Пузырь сообщения в переписке.
@@ -21,38 +30,43 @@ import {useLocale} from '../../locales/localeContext';
  * @example
  * <Bubble variant="outgoing">Готово к ревью</Bubble>
  */
-export const Bubble = forwardRef<HTMLDivElement, BubbleProps>(function Bubble(
-	{
-		children,
-		variant = 'default',
-		align,
-		group = 'single',
-		meta,
-		reactions,
-		collapsible = false,
-		collapsedLines = 4,
-		expandLabel,
-		collapseLabel,
-		className,
-		style,
-		...rest
-	},
-	ref,
-) {
-	const {t} = useLocale();
+export const Bubble = ({
+	children,
+	variant = 'default',
+	align,
+	group = 'single',
+	meta,
+	reactions,
+	collapsible = false,
+	collapsedLines = 4,
+	expandLabel,
+	collapseLabel,
+	className,
+	style,
+	rootRef,
+	...rest
+}: BubbleProps) => {
+	const {t} = useLocale(localeFallback);
 	const [expanded, setExpanded] = useState(false);
-	const contentId = useId();
+	const contentId = useFallbackId();
+	const reactionsRef = useRef(reactions);
+	reactionsRef.current = reactions;
 	const resolvedAlign = align ?? (variant === 'outgoing' ? 'end' : 'start');
+
+	const handleReactionClick = (event: MouseEvent<HTMLDivElement>) => {
+		const target = (event.target as HTMLElement).closest(`[${BUBBLE_REACTION_ATTR}]`);
+		if (target == null) return;
+		const emoji = target.getAttribute(BUBBLE_REACTION_ATTR);
+		reactionsRef.current?.find((reaction) => reaction.emoji === emoji)?.onClick?.();
+	};
 
 	return (
 		<div
-			ref={ref}
-			className={cn(
-				styles.wrap,
-				resolvedAlign === 'end' ? styles.alignEnd : '',
-				collapsible ? styles.collapsible : '',
-				className,
-			)}
+			ref={rootRef}
+			className={cn(styles.wrap, className)}
+			data-align={resolvedAlign}
+			data-group={group}
+			data-collapsible={collapsible ? '' : undefined}
 			style={collapsible
 				? {
 					['--altum-bubble-lines' as string]: collapsedLines,
@@ -66,7 +80,10 @@ export const Bubble = forwardRef<HTMLDivElement, BubbleProps>(function Bubble(
 					{meta}
 				</div>
 			)}
-			<div className={cn(styles.bubble, styles[variant], styles[`group_${group}`])}>
+			<div
+				className={styles.bubble}
+				data-variant={variant}
+			>
 				<div id={contentId} className={styles.body}>
 					{children}
 				</div>
@@ -87,38 +104,33 @@ export const Bubble = forwardRef<HTMLDivElement, BubbleProps>(function Bubble(
 					className={styles.reactions}
 					role='group'
 					aria-label={t('bubble.reactions')}
+					onClick={handleReactionClick}
 				>
-					{reactions.map((reaction) => (
-						<button
-							key={reaction.emoji}
-							type='button'
-							className={cn(
-								unstyled.control,
-								styles.reaction,
-								reaction.active ? styles.reactionActive : '',
-							)}
-							onClick={reaction.onClick}
-							aria-pressed={reaction.active}
-							aria-label={
-								reaction.count != null && reaction.count > 0
-									? `${reaction.emoji} ${reaction.count}`
-									: reaction.emoji
-							}
-						>
-							<span aria-hidden>
-								{reaction.emoji}
-							</span>
-							{reaction.count != null && reaction.count > 0 && (
-								<span className={styles.reactionCount}>
-									{reaction.count}
+					{reactions.map((reaction) => {
+						const hasCount = reaction.count != null && reaction.count > 0;
+						return (
+							<button
+								key={reaction.emoji}
+								type='button'
+								className={cn(unstyled.control, styles.reaction)}
+								aria-pressed={reaction.active}
+								data-active={reaction.active ? '' : undefined}
+								aria-label={hasCount ? `${reaction.emoji} ${reaction.count}` : reaction.emoji}
+								{...{[BUBBLE_REACTION_ATTR]: reaction.emoji}}
+							>
+								<span aria-hidden>
+									{reaction.emoji}
 								</span>
-							)}
-						</button>
-					))}
+								{hasCount && (
+									<span className={styles.reactionCount}>
+										{reaction.count}
+									</span>
+								)}
+							</button>
+						);
+					})}
 				</div>
 			)}
 		</div>
 	);
-});
-
-Bubble.displayName = 'Bubble';
+};

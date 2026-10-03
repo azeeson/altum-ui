@@ -8,72 +8,57 @@ export type {
 	BadgeProps,
 } from './Badge.types';
 
-import {forwardRef} from 'react';
+import type {ReactNode, Ref} from 'react';
 import styles from './Badge.module.css';
-import status from '../../styles/status.module.css';
-import {cn} from '../../utils/cn';
+import {cn} from '../../core/utils/cn';
 
-function formatBadgeLabel(
-	label: React.ReactNode,
-	max: number | false | undefined,
-): React.ReactNode {
-	if (typeof label !== 'number' || !Number.isFinite(label)) {
-		return label;
-	}
+/**
+ * Числовой `label` режется до `{max}+`. Узел остаётся узлом.
+ */
+function badgeGlyph(label: ReactNode, dot: boolean, max: number | false | undefined): ReactNode {
+	if (dot || label == null) return null;
+	if (typeof label !== 'number' || !Number.isFinite(label)) return label;
 	const cap = max === false ? null : (max ?? 9);
-	if (cap == null || label <= cap) {
-		return label;
-	}
-	return `${cap}+`;
+	return cap != null && label > cap ? `${cap}+` : label;
 }
 
 /**
  * Индикатор: overlay на children или standalone; размеры sm/md.
  *
- * На `ButtonIcon` sm в плотных рейках предпочитайте `size="sm"`, `max={9}` (по умолчанию для чисел)
- * или `dot`; держите `gap ≥ --altum-g-space-3` между соседями.
- *
  * @component
  * @example
- * <Badge label={3} size="sm"><ButtonIcon … /></Badge>
- * <Badge label={31} size="sm" max={9}><ButtonIcon … /></Badge>
+ * <Badge label={3} size="sm"><ButtonIcon variant='ghost' /></Badge>
  * <Badge label="Бета" position="standalone" variant="info" />
  */
-export const Badge = forwardRef<HTMLDivElement | HTMLSpanElement, BadgeProps>(function Badge(
-	{
-		label,
-		dot = false,
-		variant = 'error',
-		size = 'md',
-		position: positionProp,
-		max,
-		children,
-		className,
-		...rest
-	},
-	ref,
-) {
-	const isStatus = variant === 'error' || variant === 'success' || variant === 'info' || variant === 'warning';
-	const overlay = children != null && (positionProp ?? 'overlay') !== 'standalone';
-	const displayLabel = formatBadgeLabel(label, max);
+export const Badge = ({
+	label,
+	dot = false,
+	variant = 'error',
+	size = 'md',
+	position: positionProp,
+	max,
+	children,
+	className,
+	rootRef,
+	...rest
+}: BadgeProps) => {
+	const isOverlay = children != null && positionProp !== 'standalone';
 	const showMark = label !== undefined || dot;
-	const markClass = cn(
-		styles.badge,
-		isStatus ? status[variant] : styles[variant],
-		isStatus ? (variant === 'warning' && !dot ? status.surface : status.fill) : '',
-		styles[size],
-		dot ? styles.dot : '',
-		overlay ? styles.overlay : styles.standalone,
-		overlay ? '' : className,
-	);
-	const glyph = !dot && displayLabel != null ? displayLabel : null;
+	const glyph = badgeGlyph(label, dot, max);
+	const markProps = {
+		'data-variant': variant !== 'error' ? variant : undefined,
+		'data-size': size !== 'md' ? size : undefined,
+		'data-dot': dot ? '' as const : undefined,
+		'data-position': isOverlay ? 'overlay' as const : undefined,
+		className: cn(styles.badge, !isOverlay && className),
+	};
 
-	if (!overlay) {
+	if (!isOverlay) {
 		if (!showMark) return null;
 		return (
 			<span
-				ref={ref as React.Ref<HTMLSpanElement>}
-				className={markClass}
+				ref={rootRef as Ref<HTMLSpanElement> | undefined}
+				{...markProps}
 				{...rest}
 			>
 				{glyph}
@@ -83,18 +68,16 @@ export const Badge = forwardRef<HTMLDivElement | HTMLSpanElement, BadgeProps>(fu
 
 	return (
 		<div
-			ref={ref as React.Ref<HTMLDivElement>}
+			ref={rootRef as Ref<HTMLDivElement> | undefined}
 			className={cn(styles.wrap, className)}
 			{...rest}
 		>
 			{children}
 			{showMark ? (
-				<span className={markClass}>
+				<span {...markProps}>
 					{glyph}
 				</span>
 			) : null}
 		</div>
 	);
-});
-
-Badge.displayName = 'Badge';
+};

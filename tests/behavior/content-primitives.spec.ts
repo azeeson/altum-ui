@@ -80,7 +80,7 @@ test.describe('Layout', () => {
 test.describe('Skeleton', () => {
 	test('рендерит плейсхолдер загрузки', async ({page}) => {
 		await visitStory(page, 'altum-components-skeleton--playground');
-		await expect(page.locator('#storybook-root [class*="skeleton"]').first()).toBeVisible();
+		await expect(page.locator('#storybook-root [class*="Skeleton"]').first()).toBeVisible();
 	});
 });
 
@@ -142,6 +142,17 @@ test.describe('VisuallyHidden', () => {
 	});
 });
 
+test.describe('LiveRegion', () => {
+	test('озвучивает сообщение и обновляет его', async ({page}) => {
+		await visitStory(page, 'altum-utilities-liveregion--playground');
+		const status = page.getByRole('status');
+		await expect(status).toBeAttached();
+		await expect(status).toHaveText('Файл сохранён');
+		await page.getByRole('button', {name: 'Сохранить'}).click();
+		await expect(status).toHaveText('Изменения сохранены');
+	});
+});
+
 test.describe('RelativeTime', () => {
 	test('рендерит элементы time', async ({page}) => {
 		await visitStory(page, 'altum-components-relativetime--playground');
@@ -159,7 +170,7 @@ test.describe('Kbd', () => {
 
 test.describe('Marker', () => {
 	test('рендерит текст маркера', async ({page}) => {
-		await visitStory(page, 'altum-components-marker--default');
+		await visitStory(page, 'altum-components-marker--playground');
 		await expect(page.getByText('Просмотрено 4 файла')).toBeVisible();
 	});
 });
@@ -173,14 +184,14 @@ test.describe('Media', () => {
 
 test.describe('AspectRatio', () => {
 	test('рендерит метку соотношения', async ({page}) => {
-		await visitStory(page, 'altum-components-aspectratio--playground');
-		await expect(page.getByText('16:9')).toBeVisible();
+		await visitStory(page, 'altum-components-aspectratio--square');
+		await expect(page.getByText('1:1')).toBeVisible();
 	});
 });
 
 test.describe('Attachment', () => {
 	test('показывает метаданные файла', async ({page}) => {
-		await visitStory(page, 'altum-components-attachment--default');
+		await visitStory(page, 'altum-components-attachment--playground');
 		await expect(page.getByText('report.pdf')).toBeVisible();
 	});
 });
@@ -205,13 +216,5 @@ test.describe('SafeArea', () => {
 	test('рендерит демо безопасной зоны', async ({page}) => {
 		await visitStory(page, 'altum-mobile-safearea--playground');
 		await expect(await getStoryRoot(page)).toBeVisible();
-	});
-});
-
-test.describe('GrabHandle', () => {
-	test('handle скрыт через aria-hidden', async ({page}) => {
-		await visitStory(page, 'altum-mobile-grabhandle--playground');
-		await expect(page.getByText('Нижняя панель')).toBeVisible();
-		await expect(page.locator('[aria-hidden="true"]').first()).toBeAttached();
 	});
 });

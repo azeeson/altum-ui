@@ -4,9 +4,10 @@ export type {
 	MarkerProps,
 } from './Marker.types';
 
-import {forwardRef} from 'react';
 import styles from './Marker.module.css';
-import {cn} from '../../utils/cn';
+import utilities from '../../styles/utilities.module.css';
+import {cn} from '../../core/utils/cn';
+import {Text} from '../Text/Text';
 
 /**
  * Inline-маркер в ленте: статус, системная заметка, bordered-row или labeled separator.
@@ -15,35 +16,36 @@ import {cn} from '../../utils/cn';
  * @example
  * <Marker icon={<IconSearch />}>Просмотрено 4 файла</Marker>
  */
-export const Marker = forwardRef<HTMLDivElement, MarkerProps>(function Marker(
-	{
-		children,
-		icon,
-		shimmer = false,
-		variant = 'default',
-		className,
-		...rest
-	},
-	ref,
-) {
+export const Marker = ({
+	children,
+	icon,
+	shimmer = false,
+	variant = 'default',
+	className,
+	rootRef,
+	...rest
+}: MarkerProps) => {
 	return (
 		<div
-			ref={ref}
-			className={cn(styles.marker, styles[variant], className)}
+			ref={rootRef}
+			className={cn(utilities.fCenter, styles.marker, className)}
+			data-variant={variant}
 			{...rest}
 		>
 			{icon != null && (
-				<span className={styles.icon} aria-hidden>
+				<span className={cn(utilities.fCenter, styles.icon)} aria-hidden>
 					{icon}
 				</span>
 			)}
 			{children != null && (
-				<span className={cn(styles.content, shimmer && styles.shimmer)}>
+				<Text
+					as='span'
+					className={styles.content}
+					data-shimmer={shimmer ? '' : undefined}
+				>
 					{children}
-				</span>
+				</Text>
 			)}
 		</div>
 	);
-});
-
-Marker.displayName = 'Marker';
+};

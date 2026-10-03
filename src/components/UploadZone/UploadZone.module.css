@@ -7,7 +7,7 @@
 
   transition: var(--altum-transition-smooth);
 
-  &.default {
+  &:not([data-custom]) {
     max-width: 100%;
 
     border: 1px dashed var(--altum-color-upload-border);
@@ -19,19 +19,19 @@
 
     cursor: pointer;
 
-    &:hover:not(.disabled):not(.readOnly) {
+    &:hover:not([data-disabled]):not([data-readonly]) {
       border-color: var(--altum-color-border-hover);
 
       background-color: var(--altum-color-option-hover);
     }
   }
 
-  &.custom {
+  &[data-custom] {
     height: 100%;
   }
 
-  &.readOnly.default,
-  &.readOnly.default:hover {
+  &[data-readonly]:not([data-custom]),
+  &[data-readonly]:not([data-custom]):hover {
     border-color: var(--altum-field-border-readonly);
 
     background-color: var(--altum-field-bg-readonly);
@@ -39,15 +39,15 @@
     cursor: default;
   }
 
-  &.disabled.default,
-  &.disabled.default:hover {
+  &[data-disabled]:not([data-custom]),
+  &[data-disabled]:not([data-custom]):hover {
     opacity: var(--altum-opacity-disabled);
     background-color: var(--altum-color-option-hover);
 
     cursor: not-allowed;
   }
 
-  &.readOnly .uploadLabel {
+  &[data-readonly] .uploadLabel {
     cursor: default;
   }
 

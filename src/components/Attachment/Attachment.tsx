@@ -5,11 +5,11 @@ export type {
 	AttachmentProps,
 } from './Attachment.types';
 
-import {forwardRef} from 'react';
 import {Spinner} from '../Spinner/Spinner';
 import {Item} from '../Item/Item';
 import styles from './Attachment.module.css';
-import {cn} from '../../utils/cn';
+import utilities from '../../styles/utilities.module.css';
+import {cn} from '../../core/utils/cn';
 
 /**
  * Карточка файла: `Item` + статус загрузки (`idle` / `uploading` / `error` / `done`).
@@ -23,43 +23,38 @@ import {cn} from '../../utils/cn';
  *   title="report.pdf"
  * />
  */
-export const Attachment = forwardRef<HTMLDivElement, AttachmentProps>(function Attachment(
-	{
-		size = 'md',
-		status = 'idle',
-		media,
-		className,
-		...rest
-	},
-	ref,
-) {
+export function Attachment({
+	size = 'md',
+	status = 'idle',
+	media,
+	className,
+	rootRef,
+	...rest
+}: AttachmentProps) {
+	const isUploading = status === 'uploading';
+
 	return (
 		<Item
-			ref={ref}
+			rootRef={rootRef}
 			{...rest}
 			size={size === 'xs' ? 'sm' : size}
 			variant='outlined'
 			mediaClassName={styles.media}
 			titleClassName={styles.title}
 			descriptionClassName={styles.description}
-			actionsClassName={styles.actions}
-			media={status === 'uploading' && media != null ? (
+			media={isUploading && media != null ? (
 				<>
 					{media}
-					<span className={styles.uploadOverlay} aria-hidden>
-						<Spinner size={16} />
+					<span className={cn(utilities.fCenter, styles.uploadOverlay)} aria-hidden>
+						<Spinner size={16} aria-hidden />
 					</span>
 				</>
 			) : media}
-			className={cn(
-				styles.attachment,
-				size !== 'md' ? styles[size] : '',
-				status === 'error' ? styles.error : '',
-				className,
-			)}
+			className={cn(styles.attachment, className)}
 			data-status={status}
+			data-size={size !== 'md' ? size : undefined}
+			aria-busy={isUploading || undefined}
+			aria-invalid={status === 'error' || undefined}
 		/>
 	);
-});
-
-Attachment.displayName = 'Attachment';
+}

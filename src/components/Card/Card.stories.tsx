@@ -5,7 +5,7 @@ import {Text} from '../Text/Text';
 import {Button} from '../Button/Button';
 import {Badge} from '../Badge/Badge';
 import {Grid} from '../Grid/Grid';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {Media} from '../Media/Media';
 import {demoImage} from '../../storybook/demoImages';
 import {componentParameters, story, Story} from '../../storybook/meta';
@@ -213,7 +213,7 @@ export const Loading: Story<CardProps> = {
 			</div>
 		);
 	},
-	parameters: story('`loading` — overlay с CSS-спиннером.'),
+	parameters: story('`loading` — overlay и Spinner.'),
 };
 
 export const Empty: Story<CardProps> = {
@@ -282,10 +282,7 @@ export const Clickable: Story<CardProps> = {
 export const UsageExample: Story<CardProps> = {
 	render: () => (
 		<Grid
-			columns={{
-				xs: 1,
-				md: 2
-			}}
+			columns={2}
 			gap='md'
 			style={{maxWidth: 640}}
 		>

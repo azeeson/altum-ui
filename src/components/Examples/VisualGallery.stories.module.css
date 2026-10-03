@@ -81,8 +81,8 @@
   border: 1px solid var(--altum-color-border);
   border-radius: var(--altum-g-radius);
 
-  font-size: var(--altum-form-helper-size, var(--altum-g-font-size-xs));
-  line-height: var(--altum-form-helper-line-height, var(--altum-g-line-height-xs));
+  font-size: var(--altum-g-font-size-xs);
+  line-height: var(--altum-g-line-height-xs);
 
   color: var(--altum-color-ink-muted);
   background: var(--altum-color-dropdown-bg);
@@ -121,7 +121,7 @@
   border-radius: var(--altum-g-radius);
 
   background: var(--altum-color-dropdown-bg);
-  box-shadow: var(--altum-shadow-sm);
+  box-shadow: var(--altum-shadow-surface);
 }
 
 .panelTitle {
@@ -135,8 +135,8 @@
 .caption {
   margin: 0;
 
-  font-size: var(--altum-form-helper-size, var(--altum-g-font-size-xs));
-  line-height: var(--altum-form-helper-line-height, var(--altum-g-line-height-xs));
+  font-size: var(--altum-g-font-size-xs);
+  line-height: var(--altum-g-line-height-xs);
 
   color: var(--altum-color-ink-muted);
 }
@@ -159,7 +159,7 @@
 
 /* Выровнять CTA с chrome поля с внешним лейблом (ряд лейбла + зазор). */
 .fieldRowCta {
-  margin-top: calc(var(--altum-form-label-size, var(--altum-g-font-size-sm)) * var(--altum-form-label-line-height, 1.35) + var(--altum-field-label-gap, var(--altum-g-space-1)));
+  margin-top: calc(var(--altum-g-font-size-sm) * var(--altum-g-line-height-sm) + var(--altum-g-space-1));
 }
 
 .col {
@@ -230,7 +230,7 @@
   border-radius: var(--altum-g-radius);
 
   background: var(--altum-color-dropdown-bg);
-  box-shadow: var(--altum-shadow-sm);
+  box-shadow: var(--altum-shadow-surface);
 }
 
 .toolbar {

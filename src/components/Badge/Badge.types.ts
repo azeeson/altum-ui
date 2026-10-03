@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 /**
@@ -42,4 +43,6 @@ export interface BadgeProps extends ComponentPropsWithoutRef<'div'> {
 	 * `false` — не ограничивать. По умолчанию `9`, если `label` — число.
 	 */
 	max?: number | false;
+	/** Корень: `span` у standalone, `div` у overlay. */
+	rootRef?: Ref<HTMLElement>;
 }

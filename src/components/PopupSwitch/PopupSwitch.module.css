@@ -1,0 +1,186 @@
+/* Один узел для FieldGroup: :first/:last на обёртке, panel не в ряду. */
+.root {
+  display: inline-flex;
+
+  max-width: 100%;
+
+  vertical-align: middle;
+}
+
+.value {
+  display: inline-grid;
+
+  & > span {
+    grid-area: 1 / 1;
+  }
+}
+
+.valueReserve {
+  visibility: hidden;
+}
+
+.iconSlot {
+  width: var(--altum-btn-icon-size);
+  height: var(--altum-btn-icon-size);
+}
+
+.trigger.trigger {
+  justify-content: flex-start;
+
+  max-width: calc(100vw - var(--altum-g-space-4));
+
+  /* Как postfix у Select: --altum-field-affix-inset. */
+  padding-inline-end: var(--altum-g-space-4);
+
+  /* Как TextField chrome: start/end из FieldGroup, иначе shape кнопки. */
+  border-radius:
+    var(--altum-field-group-radius-start, var(--altum-btn-shape, var(--altum-g-radius)))
+    var(--altum-field-group-radius-end, var(--altum-btn-shape, var(--altum-g-radius)))
+    var(--altum-field-group-radius-end, var(--altum-btn-shape, var(--altum-g-radius)))
+    var(--altum-field-group-radius-start, var(--altum-btn-shape, var(--altum-g-radius)));
+
+  text-align: left;
+  white-space: nowrap;
+}
+
+.panel[popover] {
+  --altum-field-group-radius-start: initial;
+  --altum-field-group-radius-end: initial;
+  --altum-popup-switch-row: var(--altum-control-height-md);
+
+  position: fixed;
+  position-anchor: var(--altum-popover-anchor);
+  position-area: none;
+  inset: unset;
+  top: anchor(top);
+  left: anchor(left);
+  z-index: var(--altum-g-z-dropdown);
+
+  box-sizing: border-box;
+
+  flex-direction: column;
+  align-items: stretch;
+
+  width: max-content;
+  min-width: anchor-size(width);
+  max-width: calc(100vw - var(--altum-g-space-4));
+  max-height: min(280px, calc(100vh - var(--altum-g-space-4)));
+  max-height: min(280px, calc(100dvh - var(--altum-g-space-4)));
+
+  margin: 0;
+  padding: 0;
+
+  border: none;
+  border-radius: var(--altum-g-radius);
+
+  color: var(--altum-color-text);
+  opacity: 0;
+  background: var(--altum-color-panel-bg);
+  box-shadow: var(--altum-shadow-dropdown);
+
+  /* Выбранная строка совпадает с триггером: вверх на index × высоту ряда. */
+  transform: translateY(
+    calc(var(--altum-popup-switch-selected, 0) * var(--altum-popup-switch-row) * -1)
+  );
+
+  transition:
+    opacity var(--altum-motion-overlay) cubic-bezier(0.16, 1, 0.3, 1),
+    display var(--altum-motion-overlay) allow-discrete,
+    overlay var(--altum-motion-overlay) allow-discrete;
+
+  &[data-size='sm'] {
+    --altum-popup-switch-row: var(--altum-control-height-sm);
+  }
+
+  &[data-size='lg'] {
+    --altum-popup-switch-row: var(--altum-control-height-lg);
+  }
+
+  &[data-align='center'] {
+    left: anchor(center);
+
+    transform: translate(
+      -50%,
+      calc(var(--altum-popup-switch-selected, 0) * var(--altum-popup-switch-row) * -1)
+    );
+  }
+
+  &[data-align='end'] {
+    right: anchor(right);
+    left: auto;
+  }
+
+  &::backdrop {
+    background: transparent;
+    background-color: transparent;
+    backdrop-filter: none;
+  }
+
+  &:popover-open {
+    display: flex;
+
+    opacity: 1;
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
+
+  & .option {
+    justify-content: flex-start;
+
+    min-width: 0;
+
+    margin: 0;
+    padding-inline-end: var(--altum-g-space-4);
+
+    border-radius: 0;
+
+    text-align: left;
+    white-space: nowrap;
+
+    transition: none;
+
+    &:not([aria-selected='true']) {
+      border-color: transparent;
+
+      &:not(:focus-visible) {
+        box-shadow: none;
+      }
+
+      &:not(:hover, :active, :focus-visible) {
+        background: transparent;
+      }
+    }
+
+    &[aria-selected='true']:is(:hover, :active) {
+      color: var(--altum-btn-text);
+      background-color: var(--altum-btn-bg);
+    }
+  }
+
+  & .text {
+    overflow: hidden;
+
+    flex: 1;
+
+    min-width: 0;
+
+    text-overflow: ellipsis;
+  }
+
+  & .chevron {
+    display: inline-flex;
+
+    flex: 0 0 var(--altum-btn-icon-size);
+    justify-content: center;
+    align-items: center;
+
+    width: var(--altum-btn-icon-size);
+    height: var(--altum-btn-icon-size);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}

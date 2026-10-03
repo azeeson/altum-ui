@@ -1,6 +1,5 @@
-import {createContext, useContext} from 'react';
-import type {LocaleCode, Messages} from './types';
-import {ru} from './ru';
+import {createContext, useContext, useMemo} from 'react';
+import type {LocaleCode, MessageTree, Messages, TranslationParams} from './types';
 import {translate, type TranslateFn} from './translate';
 
 export interface LocaleContextValue {
@@ -9,34 +8,46 @@ export interface LocaleContextValue {
 	t: TranslateFn;
 }
 
-const defaultMessages = ru as unknown as Messages;
+const emptyMessages = {} as Messages;
 
+/** Контекст без провайдера: локаль `ru`, пустой словарь. Строки лежат в срезах компонентов. */
 export const defaultLocaleContext: LocaleContextValue = {
 	locale: 'ru',
-	messages: defaultMessages,
-	t: (key, params) => translate(defaultMessages, key, params),
+	messages: emptyMessages,
+	t: (key, params) => translate(emptyMessages, key, params, 'ru'),
 };
 
 export const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 /**
  * Доступ к локали, словарю и функции `t`.
- * Вне провайдера локали возвращает русский словарь по умолчанию.
+ * Внутри {@link LocaleProvider} берёт его словарь.
+ * Снаружи — `fallback` (русский срез этого компонента), иначе пустой словарь.
  *
  * @example
- * const { t, locale, messages } = useLocale();
+ * const { t } = useLocale(fieldFallback);
  * const label = t('common.close');
  */
-export function useLocale(): LocaleContextValue {
-	return useContext(LocaleContext) ?? defaultLocaleContext;
+export function useLocale(fallback?: MessageTree): LocaleContextValue {
+	const ctx = useContext(LocaleContext);
+	return useMemo(() => {
+		if (ctx) return ctx;
+		if (!fallback) return defaultLocaleContext;
+		const messages = fallback as Messages;
+		return {
+			locale: 'ru' as const,
+			messages,
+			t: (key: string, params?: TranslationParams) => translate(messages, key, params, 'ru'),
+		};
+	}, [ctx, fallback]);
 }
 
 /**
  * Короткий доступ только к функции перевода.
+ * Вне провайдера без среза вернёт ключ. Компоненты библиотеки используют {@link useLocale}.
  *
  * @example
  * const t = useT();
- * return <span>{t('pagination.summary', { start: 1, end: 10, total: 100 })}</span>;
  */
 export function useT(): TranslateFn {
 	return useLocale().t;

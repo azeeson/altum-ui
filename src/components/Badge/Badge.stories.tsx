@@ -3,7 +3,7 @@ import React from 'react';
 import {Badge, BadgeProps} from './Badge';
 import {Button} from '../Button/Button';
 import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {IconBell} from '../../icons/icons/IconBell';
 import {IconMail} from '../../icons/icons/IconMail';
@@ -246,7 +246,7 @@ export const DenseIconRail: Story<BadgeProps> = {
 				fontSize: 'var(--altum-g-font-size-sm)'
 			}}
 			>
-				gap ≥ --altum-g-space-3; content 31 → 9+; prefer size=&quot;sm&quot; on ButtonIcon sm.
+				gap ≥ --altum-g-space-3; content 31 → 9+; prefer size=&quot;sm&quot; on icon-only Button sm.
 			</p>
 			<Stack gap='md' style={{width: 'fit-content'}}>
 				{(
@@ -262,7 +262,7 @@ export const DenseIconRail: Story<BadgeProps> = {
 						<ButtonIcon
 							variant='ghost'
 							size='sm'
-							icon={<Icon size={18} />}
+							icon={<Icon size={18}/>}
 							aria-label={label}
 						/>
 					</Badge>
@@ -271,7 +271,7 @@ export const DenseIconRail: Story<BadgeProps> = {
 		</Stack>
 	),
 	parameters: story(
-		'Вертикальный rail ButtonIcon sm + Badge sm; `max={9}` для двухзначных счётчиков.',
+		'Вертикальный rail icon-only Button sm + Badge sm; `max={9}` для двухзначных счётчиков.',
 	),
 };
 
@@ -323,7 +323,7 @@ export const UsageExample: Story<BadgeProps> = {
 					<ButtonIcon
 						variant='ghost'
 						size='sm'
-						icon={<IconBell size={18} />}
+						icon={<IconBell size={18}/>}
 						aria-label='Уведомления'
 					/>
 				</Badge>

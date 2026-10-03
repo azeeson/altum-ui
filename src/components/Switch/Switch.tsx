@@ -6,10 +6,10 @@ export type {
 	SwitchProps,
 } from './Switch.types';
 
-import {forwardRef} from 'react';
+import type {ChangeEvent} from 'react';
 import styles from './Switch.module.css';
 import {ToggleControlBase} from '../../base/ToggleControlBase';
-import {cn} from '../../utils/cn';
+import {cn} from '../../core/utils/cn';
 
 /**
  * Переключатель: `size`, `labelSide`.
@@ -18,24 +18,27 @@ import {cn} from '../../utils/cn';
  * @example
  * <Switch label="Уведомления" labelSide="start" size="sm" checked={on} onChange={setOn} />
  */
-export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
-	{
-		label,
-		checked,
-		onChange,
-		onCheckedChange,
-		className,
-		disabled,
-		readOnly,
-		size = 'md',
-		labelSide = 'end',
-		...props
-	},
-	ref,
-) {
+export const Switch = ({
+	label,
+	checked,
+	onChange,
+	onCheckedChange,
+	className,
+	disabled,
+	readOnly,
+	size = 'md',
+	labelSide = 'end',
+	inputRef,
+	...props
+}: SwitchProps) => {
+	const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+		onChange(event.target.checked);
+		onCheckedChange?.(event.target.checked);
+	};
+
 	return (
 		<ToggleControlBase
-			ref={ref}
+			inputRef={inputRef}
 			type='checkbox'
 			role='switch'
 			size={size}
@@ -45,17 +48,11 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
 			checked={checked}
 			className={cn(styles.root, className)}
 			inputClassName={styles.input}
-			boxClassName={cn(styles.switchTrack, readOnly && !disabled ? styles.readOnlyTrack : '')}
-			boxContent={<div className={styles.switchThumb} />}
+			boxClassName={styles.switchTrack}
 			label={label}
 			{...props}
 			aria-checked={checked}
-			onChange={(event) => {
-				onChange(event.target.checked);
-				onCheckedChange?.(event.target.checked);
-			}}
+			onChange={handleChange}
 		/>
 	);
-});
-
-Switch.displayName = 'Switch';
+};

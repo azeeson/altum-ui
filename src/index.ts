@@ -2,6 +2,7 @@
 export {Accordion} from './components/Accordion';
 export type {
 	AccordionProps,
+	AccordionItemData,
 	AccordionItemProps,
 	AccordionVariant,
 } from './components/Accordion';
@@ -16,7 +17,6 @@ export {Button} from './components/Button';
 export type {
 	ButtonProps,
 	ButtonVariant,
-	ButtonStatus,
 } from './components/Button';
 
 export {ButtonIcon} from './components/ButtonIcon';
@@ -24,21 +24,23 @@ export type {ButtonIconProps} from './components/ButtonIcon';
 
 export {ButtonGroup} from './components/ButtonGroup';
 export type {
-	ButtonGroupMode,
+	ButtonGroupOrientation,
 	ButtonGroupItemFit,
 	ButtonGroupVariant,
 	ButtonGroupRootProps,
-	ButtonGroupItemProps,
 } from './components/ButtonGroup';
 
 export {Chip, ChipGroup} from './components/Chip';
-export type {ChipProps, ChipVariant, ChipAs, ChipMode, ChipGroupProps, ChipGroupGap, ChipGroupLayout, ChipGroupOverflowAffordance} from './components/Chip';
+export type {ChipProps, ChipVariant, ChipMode, ChipGroupProps, ChipGroupGap} from './components/Chip';
 
 export {ColorSwatchGroup} from './components/ColorSwatchGroup';
 export type {ColorSwatchGroupProps} from './components/ColorSwatchGroup';
 
 export {EmptyState} from './components/EmptyState';
 export type {EmptyStateProps, EmptyStateSize} from './components/EmptyState';
+
+export {FieldGroup} from './components/FieldGroup';
+export type {FieldGroupProps, FieldGroupWidth} from './components/FieldGroup';
 
 export {Fieldset} from './components/Fieldset';
 export type {
@@ -76,6 +78,12 @@ export type {
 	FileListItemStatus,
 } from './components/FileList';
 
+export {FileUploader} from './components/FileUploader';
+export type {
+	FileUploaderFile,
+	FileUploaderProps,
+} from './components/FileUploader';
+
 export {PinInput} from './components/PinInput';
 export type {PinInputProps} from './components/PinInput';
 
@@ -103,6 +111,9 @@ export type {ScrollAreaProps} from './components/ScrollArea';
 export {VisuallyHidden} from './components/VisuallyHidden';
 export type {VisuallyHiddenProps} from './components/VisuallyHidden';
 
+export {LiveRegion} from './components/LiveRegion';
+export type {LiveRegionProps} from './components/LiveRegion';
+
 export {SkipLink} from './components/SkipLink';
 export type {SkipLinkProps} from './components/SkipLink';
 
@@ -122,11 +133,13 @@ export type {
 	DropdownProps,
 	DropdownTriggerAttrs,
 	DropdownTriggerSlotProps,
+	DropdownPopup,
 	DropdownPopupRole,
 	DropdownTriggerMode,
 	DropdownAlign,
 	DropdownWidthMode,
 	DropdownPanelScroll,
+	DropdownPanelState,
 } from './components/Dropdown';
 
 export {Menu} from './components/Menu';
@@ -165,18 +178,10 @@ export type {ProgressProps, ProgressCircleProps, ProgressVariant} from './compon
 export {Radio, RadioGroup} from './components/Radio';
 export type {RadioProps, RadioGroupProps} from './components/Radio';
 
-export {SelectionGroup} from './components/SelectionGroup';
-export type {
-	SelectionGroupOrientation,
-	SelectionGroupRootProps,
-	SelectionGroupListProps,
-	SelectionGroupItemProps,
-	SelectionGroupPanelProps,
-} from './components/SelectionGroup';
-
 export {SegmentedControl} from './components/SegmentedControl';
 export type {
 	SegmentedControlProps,
+	SegmentedControlVariant,
 	SegmentOption,
 	SegmentedItemFit,
 } from './components/SegmentedControl';
@@ -186,7 +191,6 @@ export type {
 	SidebarProps,
 	SidebarHeaderProps,
 	SidebarTitleProps,
-	SidebarCollapseProps,
 	SidebarContentProps,
 	SidebarGroupProps,
 	SidebarGroupLabelProps,
@@ -234,6 +238,7 @@ export type {
 	TabsProps,
 	TabsVariant,
 	TabsOrientation,
+	TabsItem,
 	TabsListProps,
 	TabsTriggerProps,
 	TabsPanelProps,
@@ -242,18 +247,21 @@ export type {
 export {Text} from './components/Text';
 export type {TextProps} from './components/Text';
 
-export {FieldBaseButton, FieldBaseIcon} from './base/FieldBase';
+export {
+	TextField,
+	FieldBaseButton,
+	FieldBaseIcon,
+} from './components/TextField';
 export type {
-	FieldLabelPlacement,
 	ControlSize,
 	FieldWidth,
 	FieldBaseProps,
 	FieldBaseButtonProps,
 	FieldBaseIconProps,
-} from './base/FieldBase';
-
-export {TextField} from './components/TextField';
-export type {TextFieldProps} from './components/TextField';
+	TextFieldAs,
+	TextFieldRef,
+	TextFieldProps,
+} from './components/TextField';
 
 export {PasswordField, getPasswordStrength} from './components/PasswordField';
 export type {
@@ -292,7 +300,6 @@ export type {TitleProps} from './components/Title';
 export {Tooltip} from './components/Tooltip';
 export type {
 	TooltipProps,
-	TooltipPosition,
 	TooltipSide,
 	TooltipTriggerProps,
 } from './components/Tooltip';
@@ -306,6 +313,12 @@ export type {
 	SeparatorOrientation,
 	SeparatorSpace,
 } from './components/Separator';
+
+export {Gap} from './components/Gap';
+export type {
+	GapProps,
+	GapOrientation,
+} from './components/Gap';
 
 export {Alert} from './components/Alert';
 export type {
@@ -350,16 +363,27 @@ export {Popover} from './components/Popover';
 export type {
 	PopoverProps,
 	PopoverTriggerSlotProps,
-	PopoverTriggerMode,
+	PopoverTargetAction,
 	PopoverContentVariant,
 } from './components/Popover';
 
-export {ActionList} from './components/ActionList';
+export {PopupSwitch} from './components/PopupSwitch';
+export type {
+	PopupSwitchProps,
+	PopupSwitchOption,
+	PopupSwitchVariant,
+	PopupSwitchAlign,
+	PopupSwitchWidth,
+} from './components/PopupSwitch';
+
+export {ActionList, ActionItem} from './components/ActionList';
 export type {
 	ActionListProps,
-	ActionListHandle,
 	ActionListItem,
+	ActionListSeparator,
+	ActionListEntry,
 	ActionListGroup,
+	ActionItemProps,
 } from './components/ActionList';
 
 export {ActionSheetTrigger} from './components/ActionSheetTrigger';
@@ -376,35 +400,37 @@ export type {
 
 export {Select} from './components/Select';
 export type {
+	SelectInputProps,
 	SelectProps,
 	SelectOption,
+	SelectSelectionMode,
 } from './components/Select';
-export {CustomSelect} from './components/CustomSelect';
-export type {
-	CustomSelectOption,
-	CustomSelectRootProps,
-	CustomSelectFilterProps,
-	CustomSelectListProps,
-	CustomSelectShellProps,
-	CustomSelectChevronProps,
-	CustomSelectPlaceholderProps,
-	CustomSelectRenderTargetContext,
-	CustomSelectSelectionMode,
-} from './components/CustomSelect';
 export {SuggestField} from './components/SuggestField';
 export type {SuggestFieldProps, SuggestFieldOption} from './components/SuggestField';
+export {AutocompleteField} from './components/AutocompleteField';
+export type {
+	AutocompleteFieldProps,
+	AutocompleteFieldOption,
+} from './components/AutocompleteField';
+export {MultiSelect} from './components/MultiSelect';
+export type {
+	MultiSelectProps,
+	MultiSelectOption,
+} from './components/MultiSelect';
 export {Listbox} from './components/Listbox';
 export type {
 	ListboxProps,
 	ListboxHandle,
 	ListboxNavigation,
+	ListboxEntry,
+	ListboxSeparator,
 } from './components/Listbox';
 export type {
 	ListboxOption,
 	ListboxGroup,
 	ListboxFilterFn,
 	ResolvedListboxGroup,
-} from './utils/listboxOptions';
+} from './core/utils/listboxOptions';
 
 export {
 	Layout,
@@ -423,6 +449,7 @@ export type {
 	LayoutGap,
 	LayoutJustify,
 	LayoutFooterAlign,
+	LayoutSpacing,
 	LayoutRootProps,
 	LayoutHeaderProps,
 	LayoutContentProps,
@@ -439,17 +466,15 @@ export type {
 	BoxVariant,
 	BoxShadow,
 	BoxBorderStyle,
-	BoxPadding,
 	BoxRadius,
 	BoxAs,
 } from './components/Box';
-export {Grid, GridItem, GRID_BREAKPOINTS} from './components/Grid';
+export {Grid, GridItem} from './components/Grid';
 export type {
 	GridProps,
 	GridItemProps,
 	GridGapToken,
 	GridMode,
-	AdaptiveValue,
 } from './components/Grid';
 export {Container, Page} from './components/Container';
 export type {
@@ -458,24 +483,21 @@ export type {
 	PageProps,
 } from './components/Container';
 
+export {DialogLayout} from './components/DialogLayout';
+export type {DialogLayoutProps} from './components/DialogLayout';
 export {Modal} from './components/Modal';
 export type {
 	ModalProps,
 	ModalRootProps,
 	ModalHeaderProps,
-	ModalTitleProps,
-	ModalCloseProps,
 	ModalBodyProps,
 	ModalFooterProps,
-	ModalFormFooterProps,
 	ModalFooterAlign,
 } from './components/Modal';
 export {Sheet} from './components/Sheet';
 export type {
 	SheetProps,
 	SheetHeaderProps,
-	SheetTitleProps,
-	SheetCloseProps,
 	SheetBodyProps,
 	SheetFooterProps,
 	SheetFooterAlign,
@@ -487,30 +509,15 @@ export type {
 	ConfirmDialogProps,
 	ConfirmDialogSecondaryAction,
 } from './components/ConfirmDialog';
-export {Backdrop} from './components/Backdrop';
-export type {
-	BackdropProps,
-	BackdropVariant,
-	BackdropBlur,
-	BackdropPosition,
-} from './components/Backdrop';
 export {Overlay} from './components/Overlay';
 export type {
 	OverlayProps,
-	OverlayDismiss,
 	OverlayBaseProps,
 	OverlayModalProps,
 	OverlayFloatingProps,
 	OverlaySheetProps,
-	OverlayPopoverProps,
-	OverlayDropdownProps,
 	OverlayVariant,
-	OverlayPurpose,
 	OverlaySheetSide,
-	OverlayTriggerMode,
-	OverlayWidthMode,
-	OverlayChildren,
-	OverlayContentProps,
 } from './components/Overlay';
 export {CommandPalette} from './components/CommandPalette';
 export type {
@@ -566,7 +573,6 @@ export {Notification} from './components/Notification';
 export type {
 	NotificationViewportProps,
 	NotificationProps,
-	NotificationRootProps,
 	NotificationItem,
 	NotificationAction,
 	NotificationPosition,
@@ -586,7 +592,6 @@ export type {
 export {Table} from './components/Table';
 export type {
 	TableProps,
-	TableContentProps,
 	TableRowActionsProps,
 	TableEmptyConfig,
 	Column,

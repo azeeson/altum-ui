@@ -23,7 +23,7 @@
     background-color: var(--altum-color-panel-border);
   }
 
-  &.horizontal {
+  &[data-orientation='horizontal'] {
     flex-direction: row;
 
     width: 100%;
@@ -41,7 +41,7 @@
     }
   }
 
-  &.vertical {
+  &[data-orientation='vertical'] {
     flex-direction: column;
     align-self: stretch;
 

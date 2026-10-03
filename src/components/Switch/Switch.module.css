@@ -34,7 +34,7 @@
     background-color: var(--altum-color-brand-active);
   }
 
-  &:has(.input[aria-readonly='true']:checked) .readOnlyTrack {
+  &:has(.input[aria-readonly='true']:checked) .switchTrack {
     border-style: solid;
     border-color: var(--altum-color-brand);
 
@@ -45,7 +45,7 @@
     background-color: var(--altum-color-brand);
   }
 
-  & .input:checked ~ .switchTrack .switchThumb {
+  & .input:checked ~ .switchTrack::after {
     background-color: var(--altum-color-brand-text);
 
     transform: translateX(var(--altum-switch-thumb-travel));
@@ -71,10 +71,12 @@
     transition: var(--altum-transition-smooth);
   }
 
-  & .switchThumb {
+  & .switchTrack::after {
     position: absolute;
     top: var(--altum-control-inset);
     left: var(--altum-control-inset);
+
+    content: '';
 
     width: var(--altum-switch-thumb-size);
     height: var(--altum-switch-thumb-size);
@@ -87,7 +89,7 @@
     transition: var(--altum-transition-smooth);
   }
 
-  & .readOnlyTrack {
+  & .input[aria-readonly='true'] ~ .switchTrack {
     box-sizing: border-box;
 
     border: 1px dashed var(--altum-color-control-border-readonly);

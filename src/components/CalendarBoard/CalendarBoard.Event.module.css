@@ -1,6 +1,7 @@
 .event {
   --altum-calendar-board-event-tint: 22%;
   --altum-calendar-board-event-tint-active: 34%;
+  --local-event-color: var(--altum-calendar-board-event-color, var(--altum-color-brand));
 
   display: flex;
   box-sizing: border-box;
@@ -11,34 +12,50 @@
   height: 100%;
 
   margin: 0;
+  padding: 0 var(--altum-g-space-2);
 
   border: none;
   border-radius: var(--altum-g-radius-sm);
 
   font-family: var(--altum-g-font-family-ui);
   font-size: var(--altum-g-font-size-2xs);
+  font-weight: var(--altum-g-font-weight-semibold);
+  line-height: 1.25;
   text-align: left;
 
   color: var(--altum-color-input-text);
   background-color: color-mix(
     in srgb,
-    var(--altum-calendar-board-event-color, var(--altum-color-brand)) var(--altum-calendar-board-event-tint, 20%),
+    var(--local-event-color) var(--altum-calendar-board-event-tint),
     var(--altum-color-dropdown-bg)
   );
-  box-shadow: inset var(--altum-calendar-board-event-accent-width, 3px) 0 0 0 var(--altum-calendar-board-event-color, var(--altum-color-brand));
+  box-shadow: inset var(--altum-calendar-board-event-accent-width, 3px) 0 0 0 var(--local-event-color);
 
-  &.bar {
+  &:is(button) {
+    cursor: pointer;
+
+    &:hover {
+      background-color: color-mix(
+        in srgb,
+        var(--local-event-color) var(--altum-calendar-board-event-tint-active),
+        var(--altum-color-dropdown-bg)
+      );
+      filter: brightness(0.94);
+    }
+
+    &:focus-visible {
+      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
+      outline-offset: var(--altum-focus-ring-offset);
+    }
+  }
+
+  &[data-layout='bar'] {
     align-items: center;
 
     min-height: var(--altum-g-space-5, 20px);
-
-    padding: 0 var(--altum-g-space-2);
-
-    font-weight: var(--altum-g-font-weight-semibold);
-    line-height: 1.25;
   }
 
-  &.timed {
+  &[data-layout='timed'] {
     --altum-calendar-board-event-tint: 18%;
     --altum-calendar-board-event-tint-active: 30%;
 
@@ -53,10 +70,22 @@
 
     padding: var(--altum-g-space-1) var(--altum-g-space-2);
 
+    font-weight: var(--altum-g-font-weight-normal);
     line-height: var(--altum-g-line-height-2xs);
+
+    & .title {
+      flex: 0 1 auto;
+
+      max-width: 100%;
+
+      font-weight: var(--altum-g-font-weight-semibold);
+      line-height: 1.25;
+
+      color: var(--altum-color-ink-muted);
+    }
   }
 
-  &.continuesBefore {
+  &[data-continues-before] {
     padding-left: var(--altum-g-space-1);
 
     border-top-left-radius: 0;
@@ -65,36 +94,17 @@
     box-shadow: none;
   }
 
-  &.continuesAfter {
+  &[data-continues-after] {
     padding-right: var(--altum-g-space-1);
 
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
 
-  &.clickable {
-    cursor: pointer;
-
-    transition: var(--altum-transition-smooth);
-    &:hover:not(:disabled) {
-      background-color: color-mix(
-        in srgb,
-        var(--altum-calendar-board-event-color, var(--altum-color-brand)) var(--altum-calendar-board-event-tint-active, 32%),
-        var(--altum-color-dropdown-bg)
-      );
-      filter: brightness(0.94);
-    }
-
-    &:focus-visible {
-      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
-      outline-offset: var(--altum-focus-ring-offset);
-    }
-  }
-
-  &.highlighted {
+  &[data-highlighted] {
     background-color: color-mix(
       in srgb,
-      var(--altum-calendar-board-event-color, var(--altum-color-brand)) var(--altum-calendar-board-event-tint-active, 32%),
+      var(--local-event-color) var(--altum-calendar-board-event-tint-active),
       var(--altum-color-dropdown-bg)
     );
     filter: brightness(0.94);
@@ -107,17 +117,6 @@
 
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  &.timed .title {
-    flex: 0 1 auto;
-
-    max-width: 100%;
-
-    font-weight: var(--altum-g-font-weight-semibold);
-    line-height: 1.25;
-
-    color: var(--altum-color-ink-muted);
   }
 
   & .time {
@@ -136,17 +135,17 @@
 
     color: var(--altum-color-muted);
   }
-}
 
-@container (max-height: 40px) {
-  .time {
-    display: none;
+  @container (max-height: 40px) {
+    & .time {
+      display: none;
+    }
   }
-}
 
-@container (max-height: 28px) {
-  .title {
-    font-size: var(--altum-g-font-size-xs);
-    line-height: 1.1;
+  @container (max-height: 28px) {
+    & .title {
+      font-size: var(--altum-g-font-size-xs);
+      line-height: 1.1;
+    }
   }
 }

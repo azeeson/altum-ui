@@ -1,3 +1,3 @@
-import {createIcon} from '../createIcon';
-
-export const IconLifting = createIcon('M77,22v48c0,2.2-1.8,4-4,4s-4-1.8-4-4V50H23v20c0,2.2-1.8,4-4,4s-4-1.8-4-4V22c0-2.2,1.8-4,4-4s4,1.8,4,4 v20h46V22c0-2.2,1.8-4,4-4S77,19.8,77,22z M6,27.9c-2.2,0-4,1.8-4,4v28.3c0,2.2,1.8,4,4,4s4-1.8,4-4V31.9C10,29.7,8.2,27.9,6,27.9z M86,27.9c-2.2,0-4,1.8-4,4v28.3c0,2.2,1.8,4,4,4s4-1.8,4-4V31.9C90,29.7,88.2,27.9,86,27.9z');
+import {IconBase, type IconProps} from '../IconBase';
+import {ICON_PATHS} from '../registry';
+export const IconLifting = (p: IconProps) => <IconBase d={ICON_PATHS.lifting} {...p} />;

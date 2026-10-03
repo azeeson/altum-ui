@@ -5,9 +5,19 @@ import {useLocale} from '../../locales/localeContext';
 import type {LocaleCode} from './LocaleProvider';
 import {Button} from '../Button/Button';
 import {Pagination} from '../Pagination/Pagination';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {Text} from '../Text/Text';
 import {componentParameters, story, Story} from '../../storybook/meta';
+import {ruSlice as ru_common} from '../../locales/slices/common.ru';
+import {ruSlice as ru_pagination} from '../../locales/slices/pagination.ru';
+
+const localeFallback = {
+	common: ru_common,
+	pagination: ru_pagination,
+};
+
+
+
 
 export default {
 	title: 'altum/Utilities/LocaleProvider',
@@ -27,7 +37,7 @@ export default {
 } satisfies Meta<typeof LocaleProvider>;
 
 function LocaleDemo() {
-	const {locale, t} = useLocale();
+	const {locale, t} = useLocale(localeFallback);
 	const [page, setPage] = useState(1);
 	return (
 		<Stack gap='md'>

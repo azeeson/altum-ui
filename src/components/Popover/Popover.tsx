@@ -1,155 +1,131 @@
-import type {
-	PopoverTriggerMode,
-	PopoverTriggerSlotProps,
-	PopoverProps,
-} from './Popover.types';
+import type {PopoverProps, PopoverTriggerSlotProps} from './Popover.types';
 export type {
-	PopoverTriggerMode,
 	PopoverContentVariant,
+	PopoverTargetAction,
 	PopoverTriggerSlotProps,
 	PopoverProps,
 } from './Popover.types';
 
-import {forwardRef, useId, useRef} from 'react';
-import {FocusTrap} from '../FocusTrap/FocusTrap';
-import {Overlay} from '../Overlay/Overlay';
+import {
+	useLayoutEffect,
+	useRef,
+	type CSSProperties,
+	type MutableRefObject,
+	type Ref,
+} from 'react';
 import {Box} from '../Box/Box';
-import {useControlledStateWithCallback} from '../../hooks/useControlledState';
-import {cn} from '../../utils/cn';
+import {Overlay} from '../Overlay/Overlay';
+import {cn} from '../../core/utils/cn';
+import {useFallbackId} from '../../hooks/useFallbackId';
+import {anchorNameFor, popoverDomId, positionArea} from '../../core/utils/popover';
+import {renderChildren} from '../../core/utils/renderChildren';
+import floating from '../../styles/floating.module.css';
 import styles from './Popover.module.css';
 
+function assignRef<T>(ref: Ref<T> | undefined, node: T | null) {
+	if (typeof ref === 'function') {
+		ref(node);
+		return;
+	}
+	if (ref != null) {
+		(ref as MutableRefObject<T | null>).current = node;
+	}
+}
+
 /**
- * Плавающий слой на базе Overlay.
- * Якорь — `renderTrigger`; содержимое панели — `children`.
+ * Немодальная панель у триггера: текст, форма, фильтры, календарь.
+ * Хост — `Overlay variant="floating"` (`popover="auto"`). Сторона — CSS Anchor Positioning.
+ * Клик внутри не закрывает. `Tab` ходит по полям и дальше по странице: фокус не запирается.
  *
  * @component
  * @example
- * <Popover renderTrigger={(props, ref) => <Button {...props} ref={ref}>Открыть</Button>}>
- *   Текст описания.
+ * <Popover trigger={<Button>Фильтры</Button>}>
+ *   Форма фильтров
  * </Popover>
  */
-export const Popover = forwardRef<HTMLDivElement, PopoverProps>(function Popover(
-	{
-		children,
-		renderTrigger,
-		open: controlledOpen,
-		defaultOpen = false,
-		onOpenChange,
-		trigger = 'click',
-		disabled = false,
-		wrap = false,
-		className,
-		variant = 'panel',
-		arrow = true,
-		panelClassName,
-		role,
-		side = 'bottom',
-		align = 'center',
-		openDelay = 200,
-		closeDelay = 100,
-		dismiss,
-		...rest
-	},
-	ref,
-) {
-	const triggerRef = useRef<HTMLElement | null>(null);
-	const contentId = useId();
-	const [openValue, setOpen] = useControlledStateWithCallback(
-		controlledOpen,
-		defaultOpen,
-		onOpenChange,
-	);
-	const open = !disabled && openValue;
-	const triggerMode: PopoverTriggerMode = trigger;
-	const wrapClass = wrap ? styles.wrap : undefined;
-	const triggerSlotProps: PopoverTriggerSlotProps = triggerMode === 'click'
-		? {
-			'aria-haspopup': 'dialog',
-			'aria-expanded': open,
-			'aria-controls': contentId,
-			className: wrapClass,
-		}
-		: {
-			'aria-describedby': open ? contentId : undefined,
-			className: wrapClass,
-		};
+export function Popover({
+	children,
+	trigger,
+	id,
+	disabled = false,
+	variant = 'panel',
+	className,
+	role,
+	side = 'bottom',
+	align = 'center',
+	widthMode,
+	popoverTargetAction = 'toggle',
+	defaultOpen = false,
+	onToggle,
+	panelRef,
+}: PopoverProps) {
+	const generatedId = useFallbackId();
+	const popoverId = id ?? popoverDomId(generatedId);
+	const anchorName = anchorNameFor(popoverId);
+	const localPanelRef = useRef<HTMLElement | null>(null);
+	const area = positionArea(side, align);
 
-	const assignTriggerRef = (node: HTMLElement | null) => {
-		triggerRef.current = node;
+	const assignAnchor = (node: HTMLElement | null) => {
+		node?.style.setProperty('anchor-name', anchorName);
 	};
 
-	const triggerNode = wrap
-		? (
-			<span
-				ref={assignTriggerRef}
-				className={styles.wrap}
-				aria-haspopup={triggerSlotProps['aria-haspopup']}
-				aria-expanded={triggerSlotProps['aria-expanded']}
-				aria-controls={triggerSlotProps['aria-controls']}
-				aria-describedby={triggerSlotProps['aria-describedby']}
-			>
-				{renderTrigger({}, () => undefined)}
-			</span>
-		)
-		: renderTrigger(triggerSlotProps, assignTriggerRef);
+	const setPanelRefs = (node: HTMLElement | null) => {
+		localPanelRef.current = node;
+		assignRef(panelRef, node);
+	};
 
-	const resolvedRole = role ?? (variant === 'tooltip' ? 'tooltip' : 'dialog');
-	const Panel = variant === 'panel' ? Box : 'div';
-	const panelProps = variant === 'panel'
-		? {
-			variant: 'floating' as const,
-			padding: 'md' as const,
-			as: 'div' as const
-		}
-		: undefined;
+	useLayoutEffect(() => {
+		if (!defaultOpen || disabled) return;
+		const panel = localPanelRef.current;
+		if (panel && !panel.matches(':popover-open')) panel.showPopover();
+	}, [defaultOpen, disabled]);
+
+	const triggerSlotProps: PopoverTriggerSlotProps = disabled
+		? {}
+		: {
+			popovertarget: popoverId,
+			popovertargetaction: popoverTargetAction,
+		};
+	const panelStyle = {
+		'--altum-popover-anchor': anchorName,
+		'--altum-popover-area': area,
+	} as CSSProperties;
 
 	return (
-		<div
-			ref={ref}
-			className={cn(styles.root, className)}
-			{...rest}
-		>
-			{triggerNode}
-			{!disabled && (
-				<Overlay
-					variant='popover'
-					purpose={variant === 'tooltip' ? 'tooltip' : 'popover'}
-					open={open}
-					onOpenChange={setOpen}
-					targetRef={triggerRef}
-					triggerMode={triggerMode}
-					side={side}
-					align={align}
-					openDelay={openDelay}
-					closeDelay={closeDelay}
-					dismiss={dismiss ?? (triggerMode === 'click' ? 'all' : 'none')}
-					role={resolvedRole}
-				>
-					<Panel
-						{...panelProps}
-						id={contentId}
-						role={resolvedRole}
-						className={cn(
-							styles.content,
-							variant === 'tooltip' ? styles.contentTooltip
-								: variant === 'plain' ? styles.contentPlain
-									: styles.contentPanel,
-							arrow && styles.withArrow,
-							panelClassName,
-						)}
-						aria-modal={resolvedRole === 'dialog' ? true : undefined}
+		<>
+			{renderChildren({
+				children: trigger,
+				props: triggerSlotProps,
+				contentRef: assignAnchor,
+			})}
+			<Overlay
+				variant='floating'
+				id={popoverId}
+				rootRef={setPanelRefs}
+				role={role ?? 'dialog'}
+				className={cn(
+					variant === 'plain' && floating.panel,
+					styles.anchor,
+					widthMode != null && styles.sized,
+					styles.content,
+					className,
+				)}
+				style={panelStyle}
+				data-side={side}
+				data-width-mode={widthMode}
+				onOpenChange={onToggle}
+			>
+				{variant === 'panel' ? (
+					<Box
+						variant='floating'
+						className={styles.contentPanel}
 					>
-						{variant === 'panel' ? (
-							<FocusTrap active={open} restoreFocus={false}>
-								{children}
-							</FocusTrap>
-						) : children}
-						{arrow ? <span className={styles.arrow} aria-hidden /> : null}
-					</Panel>
-				</Overlay>
-			)}
-		</div>
+						{children}
+					</Box>
+				) : (
+					children
+				)}
+			</Overlay>
+		</>
 	);
-});
-
-Popover.displayName = 'Popover';
+}

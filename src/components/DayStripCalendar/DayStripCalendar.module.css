@@ -16,26 +16,41 @@
     grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
 
     outline: none;
-    &:focus-visible {
-      border-radius: var(--altum-g-radius-sm);
-      outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
-      outline-offset: var(--altum-focus-ring-offset);
-    }
   }
 
   & .day {
-    display: flex;
-
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     gap: var(--altum-g-space-1);
 
     min-height: var(--altum-day-strip-day-min);
 
     padding: var(--altum-g-space-2) var(--altum-g-space-1);
 
+    border: 1px solid transparent;
     border-radius: var(--altum-g-radius-md, var(--altum-g-radius));
+
+    &:hover:not(:disabled) {
+      background-color: var(--altum-color-option-hover);
+    }
+
+    &[data-selected] {
+      color: var(--altum-color-selection-fill-fg);
+      background-color: var(--altum-color-selection-fill);
+
+      &:hover:not(:disabled) {
+        color: var(--altum-color-selection-fill-fg);
+        background-color: var(--altum-color-selection-fill-emphasis);
+      }
+
+      & .weekday {
+        color: inherit;
+        opacity: 0.85;
+      }
+    }
+
+    &[data-today]:not([data-selected]) {
+      box-shadow: inset 0 0 0 1px var(--altum-color-brand);
+    }
   }
 
   & .weekday {
@@ -53,10 +68,5 @@
     font-weight: var(--altum-g-font-weight-semibold);
     font-variant-numeric: tabular-nums;
     line-height: 1.2;
-  }
-
-  & .daySelected .weekday {
-    color: inherit;
-    opacity: 0.85;
   }
 }

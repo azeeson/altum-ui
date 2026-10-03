@@ -1,5 +1,6 @@
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 /**
@@ -11,4 +12,6 @@ export interface AspectRatioProps extends ComponentPropsWithoutRef<'div'> {
 	 * @default 16 / 9
 	 */
 	ratio?: number | string;
+	/** DOM-узел корня. */
+	rootRef?: Ref<HTMLDivElement>;
 }

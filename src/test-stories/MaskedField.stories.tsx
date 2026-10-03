@@ -2,7 +2,7 @@ import type {Meta, StoryObj} from '@storybook/react';
 import React, {useState} from 'react';
 import {MaskedField} from '../components/MaskedField/MaskedField';
 import {Button} from '../components/Button/Button';
-import {Inline, Stack} from '../components/Layout/Layout';
+import {Inline, Stack} from '../components/Layout';
 import {Text} from '../components/Text/Text';
 
 const meta = {
@@ -162,11 +162,10 @@ export const MaskAsPlaceholder: Story = {
 		return (
 			<div style={{maxWidth: 280}}>
 				<MaskedField
-					label='Дата'
+					aria-label='Дата'
 					mask='99.99.9999'
 					value={value}
 					onChange={setValue}
-					labelPlacement='none'
 					maskAsPlaceholder
 					id='test-masked-placeholder'
 					data-testid='masked-input'

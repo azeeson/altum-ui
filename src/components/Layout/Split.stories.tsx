@@ -64,7 +64,7 @@ export const Playground: Story<SplitProps> = {
 					Проекты
 				</Text>
 				<Chip
-					as='tag'
+					mode='tag'
 					variant='tinted'
 					size='sm'
 				>

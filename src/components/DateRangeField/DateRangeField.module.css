@@ -1,11 +1,11 @@
 .root {
   width: 100%;
   max-width: var(--altum-field-width-default);
-}
 
-.layoutSplit,
-.widthFull {
-  max-width: 100%;
+  &[data-layout='split'],
+  &[data-width='full'] {
+    max-width: 100%;
+  }
 }
 
 .splitFields {
@@ -33,11 +33,7 @@
 }
 
 .dash {
-  display: flex;
-
   flex: 0 0 auto;
-  justify-content: center;
-  align-items: center;
   align-self: flex-start;
 
   height: var(--altum-field-size-height);
@@ -46,4 +42,51 @@
   line-height: 1;
 
   color: var(--altum-color-muted);
+}
+
+@media (max-width: 768px) {
+  .panel[popover] {
+    position-anchor: --altum-popover-detached !important;
+    position-area: none !important;
+    position-try-fallbacks: none !important;
+    inset: auto 0 0 0 !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+
+    margin: 0 !important;
+
+    border-radius: var(--altum-g-radius-lg) var(--altum-g-radius-lg) 0 0;
+
+    transform: translateY(100%);
+
+    transition:
+      transform 0.25s cubic-bezier(0.2, 1, 0.2, 1),
+      display 0.25s allow-discrete,
+      overlay 0.25s allow-discrete;
+
+    &:popover-open {
+      transform: translateY(0) !important;
+
+      @starting-style {
+        transform: translateY(100%) !important;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .panel[popover] {
+    transform: none !important;
+
+    transition: none !important;
+
+    &:popover-open {
+      transform: none !important;
+
+      @starting-style {
+        transform: none !important;
+      }
+    }
+  }
 }

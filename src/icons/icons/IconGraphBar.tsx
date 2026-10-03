@@ -1,3 +1,3 @@
-import {createIcon} from '../createIcon';
-
-export const IconGraphBar = createIcon('M73,89c-3.3,0-6-2.7-6-6V9c0-3.3,2.7-6,6-6s6,2.7,6,6v74C79,86.3,76.3,89,73,89z M52,83V33.4 c0-3.3-2.7-6-6-6s-6,2.7-6,6V83c0,3.3,2.7,6,6,6S52,86.3,52,83z M25,83V57.8c0-3.3-2.7-6-6-6s-6,2.7-6,6V83c0,3.3,2.7,6,6,6 S25,86.3,25,83z');
+import {IconBase, type IconProps} from '../IconBase';
+import {ICON_PATHS} from '../registry';
+export const IconGraphBar = (p: IconProps) => <IconBase d={ICON_PATHS.graphBar} {...p} />;

@@ -2,7 +2,6 @@ import type {
 	SidebarProps,
 	SidebarHeaderProps,
 	SidebarTitleProps,
-	SidebarCollapseProps,
 	SidebarContentProps,
 	SidebarGroupProps,
 	SidebarGroupLabelProps,
@@ -14,7 +13,6 @@ export type {
 	SidebarProps,
 	SidebarHeaderProps,
 	SidebarTitleProps,
-	SidebarCollapseProps,
 	SidebarContentProps,
 	SidebarGroupProps,
 	SidebarGroupLabelProps,
@@ -24,32 +22,56 @@ export type {
 } from './Sidebar.types';
 
 import {
-	Children,
 	createContext,
-	forwardRef,
 	isValidElement,
-	useContext,
-	useMemo,
+	type MouseEvent,
+	type ReactNode,
 } from 'react';
+import {useRequiredContext} from '../../hooks/useRequiredContext';
+import {Layout} from '../Layout/Layout';
 import {Sheet} from '../Sheet/Sheet';
 import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
 import {Tooltip} from '../Tooltip/Tooltip';
 import {Badge} from '../Badge/Badge';
 import {IconMenu} from '../../icons/icons/IconMenu';
-import {IconChevronLeft} from '../../icons/icons/IconChevronLeft';
-import {MOBILE_MEDIA_QUERY, useMediaQuery} from '../../hooks/useMediaQuery';
 import {useControlledStateWithCallback} from '../../hooks/useControlledState';
 import styles from './Sidebar.module.css';
 import unstyled from '../../styles/unstyledControl.module.css';
-import {cn} from '../../utils/cn';
-import {composeEventHandlers} from '../../utils/composeEvents';
+import {cn} from '../../core/utils/cn';
 import {useLocale} from '../../locales/localeContext';
+import {ruSlice as ru_sidebar} from '../../locales/slices/sidebar.ru';
+
+const localeFallback = {
+	sidebar: ru_sidebar,
+};
+
+const panelIcon = (
+	<svg
+		viewBox='0 0 16 16'
+		fill='none'
+		aria-hidden
+	>
+		<rect
+			x='1.75'
+			y='2.25'
+			width='12.5'
+			height='11.5'
+			rx='1.5'
+			stroke='currentColor'
+			strokeWidth='1.5'
+		/>
+		<path
+			d='M6 2.25v11.5'
+			stroke='currentColor'
+			strokeWidth='1.5'
+		/>
+	</svg>
+);
 
 interface SidebarContextValue {
 	activeId: string;
 	setActiveId: (id: string) => void;
 	collapsed: boolean;
-	setCollapsed: (value: boolean) => void;
 	mobileOpen: boolean;
 	setMobileOpen: (value: boolean) => void;
 	ariaLabel: string;
@@ -58,13 +80,17 @@ interface SidebarContextValue {
 const SidebarContext = createContext<SidebarContextValue | null>(null);
 
 function useSidebarContext(component: string): SidebarContextValue {
-	const context = useContext(SidebarContext);
-	if (!context) throw new Error(`${component} должен использоваться внутри Sidebar.Root`);
-	return context;
+	return useRequiredContext(
+		SidebarContext,
+		`${component} должен использоваться внутри Sidebar.Root`,
+	);
 }
 
 /**
  * Навигационный сайдбар: collapsed, mobile drawer, `value` / `onChange`.
+ * Шапка, меню и футер — `Layout`. Скролл живёт на этой колонке.
+ * Кнопка сворачивания — у верхнего края правой границы (рядом с шапкой).
+ * На узком экране доковую колонку прячет CSS, меню открывает `Sheet`.
  *
  * @component
  * @example
@@ -75,27 +101,24 @@ function useSidebarContext(component: string): SidebarContextValue {
  *   </Sidebar.Content>
  * </Sidebar>
  */
-const SidebarRoot = forwardRef<HTMLElement, SidebarProps>(function SidebarRoot(
-	{
-		children,
-		value: controlledActiveId,
-		defaultValue: defaultActiveId = '',
-		onChange,
-		className,
-		'aria-label': ariaLabel,
-		collapsed: controlledCollapsed,
-		defaultCollapsed = false,
-		onCollapsedChange,
-		mobileDrawer = true,
-		mobileOpen: controlledMobileOpen,
-		onMobileOpenChange,
-		...rest
-	},
-	ref,
-) {
-	const {t} = useLocale();
+const SidebarRoot = ({
+	children,
+	value: controlledActiveId,
+	defaultValue: defaultActiveId = '',
+	onChange,
+	className,
+	'aria-label': ariaLabel,
+	collapsed: controlledCollapsed,
+	defaultCollapsed = false,
+	onCollapsedChange,
+	mobileDrawer = true,
+	mobileOpen: controlledMobileOpen,
+	onMobileOpenChange,
+	rootRef,
+	...rest
+}: SidebarProps) => {
+	const {t} = useLocale(localeFallback);
 	const resolvedAriaLabel = ariaLabel ?? t('sidebar.ariaLabel');
-	const isMobile = useMediaQuery(MOBILE_MEDIA_QUERY);
 	const [activeId, setActiveId] = useControlledStateWithCallback(controlledActiveId, defaultActiveId, onChange);
 	const [collapsed, setCollapsed] = useControlledStateWithCallback(
 		controlledCollapsed,
@@ -107,325 +130,273 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarProps>(function SidebarRoot(
 		false,
 		onMobileOpenChange,
 	);
-
-	const contextValue = useMemo<SidebarContextValue>(() => ({
-		activeId,
-		setActiveId,
-		collapsed,
-		setCollapsed,
-		mobileOpen,
-		setMobileOpen,
-		ariaLabel: resolvedAriaLabel,
-	}), [
-		activeId,
-		collapsed,
-		mobileOpen,
-		resolvedAriaLabel,
-		setActiveId,
-		setCollapsed,
-		setMobileOpen
-	]);
-
-	const childArray = Children.toArray(children);
-	const trigger = childArray.find(
+	const parts: ReactNode[] = Array.isArray(children)
+		? children
+		: children == null
+			? []
+			: [children];
+	const trigger = parts.find(
 		(child) => isValidElement(child) && child.type === SidebarMobileTrigger,
 	);
-	const content = childArray.filter((child) => child !== trigger);
+	const content = trigger ? parts.filter((child) => child !== trigger) : parts;
 
-	if (mobileDrawer && isMobile) {
-		return (
-			<SidebarContext.Provider value={contextValue}>
-				{trigger}
-				<Sheet
-					open={mobileOpen}
-					onOpenChange={setMobileOpen}
-					mode='sidebar'
-					direction='start'
-					width={280}
-					backdrop
-					aria-label={resolvedAriaLabel}
+	const renderAside = (placement: 'dock' | 'drawer') => (
+		<aside
+			ref={placement === 'dock' ? rootRef : undefined}
+			className={cn(styles.sidebar, className)}
+			{...rest}
+			data-collapsed={collapsed ? '' : undefined}
+			data-mobile-drawer={mobileDrawer ? '' : undefined}
+			data-placement={placement === 'drawer' ? 'drawer' : undefined}
+			{...(placement === 'dock' ? {'aria-expanded': !collapsed} : null)}
+		>
+			<Layout>
+				{content}
+			</Layout>
+			<div className={styles.edgeToggle}>
+				<Tooltip
+					content={collapsed ? t('sidebar.expand') : t('sidebar.collapse')}
+					side='right'
+					openDelay={150}
 				>
-					<aside
-						ref={ref}
-						className={cn(styles.sidebar, styles.mobileSidebar, className)}
-						{...rest}
-					>
-						{content}
-					</aside>
-				</Sheet>
-			</SidebarContext.Provider>
-		);
-	}
+					<ButtonIcon
+						variant='secondary'
+						size='sm'
+						data-shape='circle'
+						aria-label={collapsed ? t('sidebar.expandSidebar') : t('sidebar.collapseSidebar')}
+						aria-expanded={!collapsed}
+						icon={panelIcon}
+						onClick={() => {
+							setCollapsed(!collapsed);
+						}}
+					/>
+				</Tooltip>
+			</div>
+		</aside>
+	);
 
 	return (
-		<SidebarContext.Provider value={contextValue}>
-			<aside
-				ref={ref}
-				className={cn(styles.sidebar, collapsed && styles.collapsed, className)}
-				{...rest}
-				aria-expanded={!collapsed}
-			>
-				{content}
-			</aside>
+		<SidebarContext.Provider value={{
+			activeId,
+			setActiveId,
+			collapsed,
+			mobileOpen,
+			setMobileOpen,
+			ariaLabel: resolvedAriaLabel,
+		}}
+		>
+			{mobileDrawer ? (
+				<>
+					{trigger}
+					<Sheet
+						open={mobileOpen}
+						onOpenChange={setMobileOpen}
+						mode='sidebar'
+						direction='start'
+						width={280}
+						aria-label={resolvedAriaLabel}
+					>
+						{renderAside('drawer')}
+					</Sheet>
+				</>
+			) : null}
+			{renderAside('dock')}
 		</SidebarContext.Provider>
 	);
-});
-
-const SidebarHeader = forwardRef<HTMLElement, SidebarHeaderProps>(
-	function SidebarHeader({children, className = '', ...rest}, ref) {
-		return (
-			<header
-				ref={ref}
-				className={cn(styles.sidebarHeader, className)}
-				{...rest}
-			>
-				{children}
-			</header>
-		);
-	},
-);
-SidebarHeader.displayName = 'Sidebar.Header';
-
-const SidebarTitle = forwardRef<HTMLSpanElement, SidebarTitleProps>(
-	function SidebarTitle({children, className = '', ...rest}, ref) {
-		const {collapsed} = useSidebarContext('Sidebar.Title');
-		if (collapsed) return null;
-		return (
-			<span
-				ref={ref}
-				className={cn(styles.sidebarTitle, className)}
-				{...rest}
-			>
-				{children}
-			</span>
-		);
-	},
-);
-SidebarTitle.displayName = 'Sidebar.Title';
-
-const SidebarCollapse = forwardRef<HTMLButtonElement, SidebarCollapseProps>(
-	function SidebarCollapse({className = '', onClick, ...rest}, ref) {
-		const {t} = useLocale();
-		const {collapsed, setCollapsed} = useSidebarContext('Sidebar.Collapse');
-		return (
-			<Tooltip
-				content={collapsed ? t('sidebar.expand') : t('sidebar.collapse')}
-				position='right'
-				openDelay={150}
-			>
-				<ButtonIcon
-					ref={ref}
-					variant='ghost'
-					className={cn(styles.toggleBtn, className)}
-					aria-label={collapsed ? t('sidebar.expandSidebar') : t('sidebar.collapseSidebar')}
-					icon={(
-						<IconChevronLeft
-							size={16}
-							className={cn(styles.toggleIcon, collapsed && styles.toggleIconCollapsed)}
-							aria-hidden
-						/>
-					)}
-					onClick={composeEventHandlers(onClick, () => {
-						setCollapsed(!collapsed);
-					})}
-					{...rest}
-					aria-expanded={!collapsed}
-				/>
-			</Tooltip>
-		);
-	},
-);
-SidebarCollapse.displayName = 'Sidebar.Collapse';
-
-const SidebarContent = forwardRef<HTMLElement, SidebarContentProps>(
-	function SidebarContent({children, className = '', ...rest}, ref) {
-		const {ariaLabel} = useSidebarContext('Sidebar.Content');
-		return (
-			<nav
-				ref={ref}
-				className={cn(styles.sidebarMenu, styles.sidebarContent, className)}
-				aria-label={ariaLabel}
-				{...rest}
-			>
-				{children}
-			</nav>
-		);
-	},
-);
-SidebarContent.displayName = 'Sidebar.Content';
-
-const SidebarGroup = forwardRef<HTMLDivElement, SidebarGroupProps>(
-	function SidebarGroup({children, className = '', ...rest}, ref) {
-		return (
-			<div
-				ref={ref}
-				className={cn(styles.group, className)}
-				{...rest}
-			>
-				{children}
-			</div>
-		);
-	},
-);
-SidebarGroup.displayName = 'Sidebar.Group';
-
-const SidebarGroupLabel = forwardRef<HTMLDivElement, SidebarGroupLabelProps>(
-	function SidebarGroupLabel({children, className = '', ...rest}, ref) {
-		const {collapsed} = useSidebarContext('Sidebar.GroupLabel');
-		if (collapsed) return null;
-		return (
-			<div
-				ref={ref}
-				className={cn(styles.groupLabel, className)}
-				{...rest}
-			>
-				{children}
-			</div>
-		);
-	},
-);
-SidebarGroupLabel.displayName = 'Sidebar.GroupLabel';
-
-const SidebarItem = forwardRef<HTMLButtonElement, SidebarItemProps>(
-	function SidebarItem(
-		{
-			value,
-			icon,
-			badge,
-			badgeDot = false,
-			children,
-			className = '',
-			disabled = false,
-			onClick,
-			...rest
-		},
-		ref,
-	) {
-		const {activeId, setActiveId, collapsed} = useSidebarContext('Sidebar.Item');
-		const {'aria-label': ariaLabel, ...itemRest} = rest;
-		const isActive = activeId === value;
-		const button = (
-			<button
-				ref={ref}
-				type='button'
-				className={cn(
-					unstyled.control,
-					styles.menuItem,
-					isActive && styles.active,
-					disabled && styles.disabled,
-					className,
-				)}
-				{...itemRest}
-				aria-current={isActive ? 'page' : undefined}
-				aria-label={collapsed && typeof children === 'string' ? children : ariaLabel}
-				disabled={disabled}
-				onClick={composeEventHandlers(onClick, () => {
-					if (!disabled) setActiveId(value);
-				})}
-			>
-				{icon && (
-					<span className={styles.menuIcon} aria-hidden>
-						{icon}
-					</span>
-				)}
-				{!collapsed && (
-					<>
-						<span className={styles.menuLabel}>
-							{children}
-						</span>
-						{(badge != null || badgeDot) && (
-							<span className={styles.menuBadge}>
-								<Badge
-									label={badge}
-									dot={badgeDot}
-									size='sm'
-									position='standalone'
-									variant='primary'
-								/>
-							</span>
-						)}
-					</>
-				)}
-			</button>
-		);
-		return collapsed && typeof children === 'string'
-			? (
-				<Tooltip
-					content={children}
-					position='right'
-					openDelay={120}
-				>
-					{button}
-				</Tooltip>
-			)
-			: button;
-	},
-);
-SidebarItem.displayName = 'Sidebar.Item';
-
-const SidebarFooter = forwardRef<HTMLElement, SidebarFooterProps>(
-	function SidebarFooter({children, className = '', ...rest}, ref) {
-		const {collapsed} = useSidebarContext('Sidebar.Footer');
-		if (collapsed) return null;
-		return (
-			<footer
-				ref={ref}
-				className={cn(styles.sidebarFooter, className)}
-				{...rest}
-			>
-				{children}
-			</footer>
-		);
-	},
-);
-SidebarFooter.displayName = 'Sidebar.Footer';
-
-const SidebarMobileTrigger = forwardRef<HTMLButtonElement, SidebarMobileTriggerProps>(
-	function SidebarMobileTrigger({label, className = '', onClick, ...rest}, ref) {
-		const {t} = useLocale();
-		const {mobileOpen, setMobileOpen} = useSidebarContext('Sidebar.MobileTrigger');
-		return (
-			<ButtonIcon
-				ref={ref}
-				className={cn(styles.mobileTrigger, className)}
-				variant='ghost'
-				aria-label={label ?? t('sidebar.openMenu')}
-				icon={<IconMenu size={20} aria-hidden />}
-				onClick={composeEventHandlers(onClick, () => {
-					setMobileOpen(true);
-				})}
-				{...rest}
-				aria-expanded={mobileOpen}
-			/>
-		);
-	},
-);
-SidebarMobileTrigger.displayName = 'Sidebar.MobileTrigger';
-
-type SidebarComponent = typeof SidebarRoot & {
-	Root: typeof SidebarRoot;
-	Header: typeof SidebarHeader;
-	Title: typeof SidebarTitle;
-	Collapse: typeof SidebarCollapse;
-	Content: typeof SidebarContent;
-	Group: typeof SidebarGroup;
-	GroupLabel: typeof SidebarGroupLabel;
-	Item: typeof SidebarItem;
-	Footer: typeof SidebarFooter;
-	MobileTrigger: typeof SidebarMobileTrigger;
 };
 
+const SidebarHeader = ({
+	className,
+	rootRef,
+	...rest
+}: SidebarHeaderProps) => {
+	return (
+		<Layout.Header
+			rootRef={rootRef}
+			sticky
+			className={cn(styles.sidebarHeader, className)}
+			{...rest}
+		/>
+	);
+};
+
+const SidebarTitle = ({
+	className,
+	rootRef,
+	...rest
+}: SidebarTitleProps) => {
+	return (
+		<span
+			ref={rootRef}
+			className={cn(styles.sidebarTitle, className)}
+			{...rest}
+		/>
+	);
+};
+
+const SidebarContent = ({
+	className,
+	rootRef,
+	...rest
+}: SidebarContentProps) => {
+	const {ariaLabel} = useSidebarContext('Sidebar.Content');
+	return (
+		<Layout.Content
+			rootRef={rootRef}
+			as='nav'
+			className={cn(styles.sidebarMenu, className)}
+			aria-label={ariaLabel}
+			{...rest}
+		/>
+	);
+};
+
+const SidebarGroup = ({
+	className,
+	rootRef,
+	...rest
+}: SidebarGroupProps) => {
+	return (
+		<div
+			ref={rootRef}
+			className={cn(styles.group, className)}
+			{...rest}
+		/>
+	);
+};
+
+const SidebarGroupLabel = ({
+	className,
+	rootRef,
+	...rest
+}: SidebarGroupLabelProps) => {
+	return (
+		<div
+			ref={rootRef}
+			className={cn(styles.groupLabel, className)}
+			{...rest}
+		/>
+	);
+};
+
+const SidebarItem = ({
+	value,
+	icon,
+	badge,
+	badgeDot = false,
+	children,
+	className,
+	disabled = false,
+	onClick,
+	rootRef,
+	...rest
+}: SidebarItemProps) => {
+	const {activeId, setActiveId, collapsed} = useSidebarContext('Sidebar.Item');
+	const {'aria-label': ariaLabel, ...itemRest} = rest;
+	const isActive = activeId === value;
+	const button = (
+		<button
+			ref={rootRef}
+			type='button'
+			className={cn(unstyled.control, styles.menuItem, className)}
+			{...itemRest}
+			aria-current={isActive ? 'page' : undefined}
+			aria-label={collapsed && typeof children === 'string' ? children : ariaLabel}
+			disabled={disabled}
+			onClick={(event) => {
+				onClick?.(event);
+				if (event.defaultPrevented || disabled) return;
+				setActiveId(value);
+			}}
+		>
+			{icon && (
+				<span className={styles.menuIcon} aria-hidden>
+					{icon}
+				</span>
+			)}
+			<span className={styles.menuLabel}>
+				{children}
+			</span>
+			{(badge != null || badgeDot) && (
+				<span className={styles.menuBadge}>
+					<Badge
+						label={badge}
+						dot={badgeDot}
+						size='sm'
+						position='standalone'
+						variant='primary'
+					/>
+				</span>
+			)}
+		</button>
+	);
+	return collapsed && typeof children === 'string'
+		? (
+			<Tooltip
+				content={children}
+				side='right'
+				openDelay={120}
+			>
+				{button}
+			</Tooltip>
+		)
+		: button;
+};
+
+const SidebarFooter = ({
+	className,
+	rootRef,
+	...rest
+}: SidebarFooterProps) => {
+	return (
+		<Layout.Footer
+			rootRef={rootRef}
+			sticky
+			className={cn(styles.sidebarFooter, className)}
+			{...rest}
+		/>
+	);
+};
+
+const SidebarMobileTrigger = ({
+	label,
+	onClick,
+	rootRef,
+	className,
+	...rest
+}: SidebarMobileTriggerProps) => {
+	const {t} = useLocale(localeFallback);
+	const {mobileOpen, setMobileOpen} = useSidebarContext('Sidebar.MobileTrigger');
+	return (
+		<span className={styles.mobileTrigger}>
+			<ButtonIcon
+				rootRef={rootRef}
+				variant='ghost'
+				className={className}
+				aria-label={label ?? t('sidebar.openMenu')}
+				icon={<IconMenu size={20} aria-hidden />}
+				{...rest}
+				aria-expanded={mobileOpen}
+				onClick={(event: MouseEvent<HTMLButtonElement>) => {
+					onClick?.(event);
+					if (!event.defaultPrevented) setMobileOpen(true);
+				}}
+			/>
+		</span>
+	);
+};
+
+/**
+ * Навигационная колонка: `Header` / `Content` / `Item` / `Footer`.
+ */
 export const Sidebar = Object.assign(SidebarRoot, {
 	Root: SidebarRoot,
 	Header: SidebarHeader,
 	Title: SidebarTitle,
-	Collapse: SidebarCollapse,
 	Content: SidebarContent,
 	Group: SidebarGroup,
 	GroupLabel: SidebarGroupLabel,
 	Item: SidebarItem,
 	Footer: SidebarFooter,
 	MobileTrigger: SidebarMobileTrigger,
-}) as SidebarComponent;
-
-SidebarRoot.displayName = 'Sidebar';
+});

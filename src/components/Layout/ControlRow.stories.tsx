@@ -94,14 +94,14 @@ export const Playground: Story<ControlRowProps> = {
 				<ControlRow {...args}>
 					<Chip
 						variant={active === 'all' ? 'tinted' : 'secondary'}
-						as={active === 'all' ? 'toggle' : 'chip'}
+						mode={active === 'all' ? 'toggle' : 'chip'}
 						onClick={() => setActive('all')}
 					>
 						Все
 					</Chip>
 					<Chip
 						variant={active === 'mine' ? 'tinted' : 'secondary'}
-						as={active === 'mine' ? 'toggle' : 'chip'}
+						mode={active === 'mine' ? 'toggle' : 'chip'}
 						onClick={() => setActive('mine')}
 					>
 						Мои

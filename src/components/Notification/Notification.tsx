@@ -1,6 +1,6 @@
 import type {
 	NotificationItem,
-	NotificationPosition,
+	NotificationProviderProps,
 	NotificationViewportProps,
 	NotificationProps,
 } from './Notification.types';
@@ -10,137 +10,73 @@ export type {
 	NotificationPosition,
 	NotificationViewportProps,
 	NotificationProps,
-	NotificationRootProps,
 } from './Notification.types';
 
-/* eslint-disable react-hooks/set-state-in-effect -- Эффекты синхронизируют состояние со сбросами пропов и обновлениями ResizeObserver. */
-import React, {createContext, forwardRef, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
-import {IconCross} from '../../icons/icons/IconCross';
+import {
+	useCallback,
+	useEffect,
+	useRef,
+	useSyncExternalStore,
+	type AnimationEvent,
+	type MouseEvent,
+	type MutableRefObject,
+	type ReactNode,
+} from 'react';
 import {Button} from '../Button/Button';
-import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
-import overlayClose from '../../styles/overlayClose.module.css';
+import {OverlayCloseControl} from '../Button/overlayCloseControl';
+import {ProgressCircle} from '../Progress/Progress';
 import styles from './Notification.module.css';
-import {cn} from '../../utils/cn';
-import {composeEventHandlers} from '../../utils/composeEvents';
-import {useLocale} from '../../locales/localeContext';
-import type {NotificationProviderProps} from './toast';
-import {createLibraryPortal} from '../../utils/portal';
+import {cn} from '../../core/utils/cn';
+import {uRef} from '../../core/utils/bundle';
 import {useDocumentKeyDown} from '../../hooks/useDocumentKeyDown';
-import {formatKeyboardShortcut} from '../../utils/keyboardShortcut';
-import {matchesKeyboardShortcut} from '../../utils/keyboardShortcut.match';
+import {formatKeyboardShortcut} from '../../core/utils/keyboardShortcut';
+import {matchesKeyboardShortcut} from '../../core/utils/keyboardShortcut';
+import type {ToastStore} from './toast.utils';
 
-const NotificationViewportContext = createContext<{position: NotificationPosition}>({
-	position: 'bottom-right',
-});
+const EMPTY_TOASTS: NotificationItem[] = [];
 
-/** Портальный контейнер для toast-уведомлений. */
-const NotificationViewport = forwardRef<HTMLDivElement, NotificationViewportProps>(
-	function NotificationViewport(
-		{
-			children,
-			stacked = true,
-			stackDepth = 3,
-			position = 'bottom-right',
-			className,
-			...rest
-		},
-		ref,
-	) {
-		const viewportValue = useMemo(() => ({position}), [position]);
+const subscribeNothing = (): (() => void) => () => {};
 
-		return createLibraryPortal(
-			<NotificationViewportContext.Provider value={viewportValue}>
-				<div
-					ref={ref}
-					className={cn(styles.notificationsContainer, className)}
-					data-position={position}
-					{...rest}
-				>
-					<NotificationStack
-						stacked={stacked}
-						stackDepth={stackDepth}
-					>
-						{children}
-					</NotificationStack>
-				</div>
-			</NotificationViewportContext.Provider>,
-		);
-	}
-);
+const getEmptyToasts = (): NotificationItem[] => EMPTY_TOASTS;
 
-interface NotificationStackProps {
-	children?: React.ReactNode;
-	stacked: boolean;
-	stackDepth: number;
-}
+const closeCard = (node: HTMLElement): void => {
+	const card = node.closest<HTMLElement>(`.${styles.notification}`);
+	if (!card || card.hasAttribute('data-closing')) return;
+	card.setAttribute('data-closing', '');
+};
 
-const NotificationStack: React.FC<NotificationStackProps> = ({
+/** Top-layer контейнер тостов: `popover="manual"`. */
+function NotificationViewport({
 	children,
-	stacked,
-	stackDepth,
-}) => {
-	const [expanded, setExpanded] = useState(!stacked);
-	const frontRef = useRef<HTMLDivElement>(null);
-	const [frontHeight, setFrontHeight] = useState(64);
-	const items = React.Children.toArray(children);
-	const visibleDepth = Math.max(1, stackDepth);
+	stacked = true,
+	stackDepth: _stackDepth = 3,
+	position = 'top-right',
+	className,
+	rootRef,
+	...rest
+}: NotificationViewportProps) {
+	const localRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
-		setExpanded(!stacked);
-	}, [stacked]);
-
-	useEffect(() => {
-		const element = frontRef.current;
-		if (!element) return undefined;
-
-		const updateHeight = () => setFrontHeight(element.getBoundingClientRect().height);
-		updateHeight();
-		const observer = new ResizeObserver(updateHeight);
-		observer.observe(element);
-		return () => observer.disconnect();
-	}, [items.length]);
+		const node = localRef.current;
+		if (!node) return;
+		if (!node.matches(':popover-open')) node.showPopover();
+	}, []);
 
 	return (
 		<div
-			className={cn(
-				styles.stack,
-				expanded ? styles.stackExpanded : styles.stackCollapsed,
-			)}
-			style={{
-				['--altum-stack-depth' as string]: String(visibleDepth),
-				['--altum-stack-front-h' as string]: `${frontHeight}px`,
-			}}
-			onMouseEnter={() => {
-				if (stacked) setExpanded(true);
-			}}
-			onMouseLeave={() => {
-				if (stacked) setExpanded(false);
-			}}
-			onFocusCapture={() => {
-				if (stacked) setExpanded(true);
-			}}
-			onBlurCapture={(event) => {
-				if (stacked && !event.currentTarget.contains(event.relatedTarget as Node | null)) {
-					setExpanded(false);
-				}
-			}}
+			ref={uRef(rootRef, localRef)}
+			popover='manual'
+			className={cn(styles.notificationsContainer, className)}
+			data-position={position}
+			{...rest}
 		>
-			{items.map((child, index) => (
-				<div
-					key={React.isValidElement(child) ? (child.key ?? index) : index}
-					ref={index === 0 ? frontRef : undefined}
-					className={cn(
-						styles.stackItem,
-						index >= visibleDepth && styles.stackItemHidden,
-					)}
-					style={{['--altum-stack-i' as string]: String(index)}}
-				>
-					{child}
-				</div>
-			))}
+			<div className={cn(styles.stack, stacked && styles.stackCollapsed)}>
+				{children}
+			</div>
 		</div>
 	);
-};
+}
 
 /**
  * Тост / баннер: `title`, `description`, `actions`. Императивно — `notify()` + `NotificationProvider`.
@@ -151,62 +87,67 @@ const NotificationStack: React.FC<NotificationStackProps> = ({
  *   <Button onClick={() => notify({title: 'Сохранено', variant: 'success'})}>Тост</Button>
  * </NotificationProvider>
  */
-const NotificationCard = forwardRef<HTMLDivElement, NotificationProps>(function Notification(
-	{
-		variant = 'info',
-		duration = 3000,
-		progress = duration > 0,
-		pauseOnHover = true,
-		onClose,
-		title,
-		description,
-		actions,
-		className,
-		onMouseEnter,
-		onMouseLeave,
-		...rest
-	},
-	ref,
-) {
-	const {position} = useContext(NotificationViewportContext);
-	const {t} = useLocale();
-	const [paused, setPaused] = useState(false);
-	const [exiting, setExiting] = useState(false);
-	const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+function NotificationCard({
+	variant = 'info',
+	duration = 10000,
+	progress = duration > 0,
+	pauseOnHover = true,
+	onClose,
+	title,
+	description,
+	actions,
+	className,
+	style,
+	rootRef,
+	onAnimationEnd,
+	...rest
+}: NotificationProps) {
+	const alive = duration > 0;
+	const showTimer = Boolean(progress && alive);
+	const actionsRef = useRef(actions);
+	actionsRef.current = actions;
 
-	const close = useCallback(() => {
-		if (exiting) return;
-		setExiting(true);
-		if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
-		exitTimerRef.current = setTimeout(() => {
-			onClose?.();
-		}, 200);
-	}, [exiting, onClose]);
+	const handleAnimationEnd = (event: AnimationEvent<HTMLDivElement>) => {
+		onAnimationEnd?.(event);
+		if (event.target !== event.currentTarget) return;
+		if (event.animationName !== 'altum-notification-leave') return;
+		if (event.currentTarget.hasAttribute('data-dismissed')) return;
+		event.currentTarget.setAttribute('data-dismissed', '');
+		const toastId = event.currentTarget.getAttribute('data-toast-id') ?? undefined;
+		onClose?.(toastId);
+	};
 
-	useEffect(() => () => {
-		if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
-	}, []);
+	const handleClick = (event: MouseEvent<HTMLDivElement>) => {
+		const target = event.target as HTMLElement;
+		if (target.closest('[data-notification-close]')) {
+			closeCard(event.currentTarget);
+			return;
+		}
+		const button = target.closest<HTMLElement>('[data-action-index]');
+		if (!button || !event.currentTarget.contains(button)) return;
+		const index = Number(button.getAttribute('data-action-index'));
+		const action = actionsRef.current?.[index];
+		if (!action) return;
+		action.onClick();
+		closeCard(event.currentTarget);
+	};
 
 	return (
 		<div
-			ref={ref}
-			className={cn(
-				styles.notification,
-				styles[variant],
-				exiting && styles.exit,
-				className,
-			)}
-			data-variant={variant}
-			data-position={position}
-			onMouseEnter={composeEventHandlers(onMouseEnter, () => {
-				if (pauseOnHover) setPaused(true);
-			})}
-			onMouseLeave={composeEventHandlers(onMouseLeave, () => {
-				if (pauseOnHover) setPaused(false);
-			})}
+			ref={rootRef}
+			className={cn(styles.notification, className)}
+			style={{
+				...(alive ? {['--altum-toast-life' as string]: `${duration}ms`} : null),
+				...style,
+			}}
 			{...rest}
+			data-variant={variant}
+			data-life={alive ? '' : undefined}
+			data-pause={pauseOnHover ? '' : undefined}
 			role={variant === 'error' ? 'alert' : 'status'}
 			aria-live={variant === 'error' || variant === 'warning' ? 'assertive' : 'polite'}
+			onAnimationEnd={handleAnimationEnd}
+			onClick={handleClick}
 		>
 			<div className={styles.title}>
 				{title}
@@ -216,19 +157,22 @@ const NotificationCard = forwardRef<HTMLDivElement, NotificationProps>(function 
 					{description}
 				</div>
 			) : null}
-			<ButtonIcon
-				appearance='diskClose'
-				className={styles.close}
-				aria-label={t('common.close')}
-				icon={(
-					<IconCross
-						className={overlayClose.icon}
-						size={16}
+			<div className={styles.dismiss}>
+				{showTimer ? (
+					<ProgressCircle
+						className={styles.timer}
+						percentage={100}
+						showValueText={false}
+						diameter={28}
+						variant={variant ?? 'info'}
 						aria-hidden
 					/>
-				)}
-				onClick={close}
-			/>
+				) : null}
+				<OverlayCloseControl
+					className={cn(styles.close, showTimer && styles.closePending)}
+					data-notification-close=''
+				/>
+			</div>
 			{actions?.length ? (
 				<div className={styles.actions}>
 					{actions.map((action, index) => (
@@ -236,10 +180,8 @@ const NotificationCard = forwardRef<HTMLDivElement, NotificationProps>(function 
 							key={`${action.label}-${index}`}
 							size='sm'
 							variant={action.variant === 'secondary' ? 'secondary' : 'primary'}
-							onClick={() => {
-								action.onClick();
-								close();
-							}}
+							data-action-index={index}
+							data-action-shortcut={action.shortcut || undefined}
 						>
 							{action.label}
 							{(action.shortcutLabel ?? action.shortcut) && (
@@ -251,85 +193,102 @@ const NotificationCard = forwardRef<HTMLDivElement, NotificationProps>(function 
 					))}
 				</div>
 			) : null}
-
-			{progress && duration > 0 && !exiting && (
-				<div className={styles.progressTrack} aria-hidden>
-					<div
-						className={styles.progressBar}
-						style={{
-							animationDuration: `${duration}ms`,
-							animationPlayState: paused ? 'paused' : 'running',
-						}}
-						onAnimationEnd={close}
-					/>
-				</div>
-			)}
 		</div>
 	);
-});
+}
 
-NotificationCard.displayName = 'Notification';
-NotificationViewport.displayName = 'Notification.Viewport';
-
-export const Notification = Object.assign(NotificationCard, {
-	Viewport: NotificationViewport,
-}) as React.ForwardRefExoticComponent<
-	NotificationProps & React.RefAttributes<HTMLDivElement>
-> & {
-	Provider: React.FC<NotificationProviderProps>;
+type NotificationComponent = typeof NotificationCard & {
+	Provider: (props: NotificationProviderProps) => ReactNode;
 	Viewport: typeof NotificationViewport;
 };
 
+export const Notification = Object.assign(NotificationCard, {
+	Viewport: NotificationViewport,
+}) as NotificationComponent;
+
 interface NotificationContainerProps extends Omit<NotificationViewportProps, 'children'> {
-	notifications: NotificationItem[];
-	onClose: (id: string) => void;
+	notifications?: NotificationItem[];
+	store?: ToastStore;
+	/** Срез стора. Для переданного `notifications` не применяется. @default 5 */
+	maxVisible?: number;
+	onClose?: (id: string) => void;
 }
 
-/** Рендерит данные императивного уведомления. */
-export const NotificationItemRenderer: React.FC<{
-	item: NotificationItem;
-	onClose: (id: string) => void;
-}> = ({item, onClose}) => {
-	const close = useCallback(() => onClose(item.id), [item.id, onClose]);
+export function NotificationContainer({
+	notifications,
+	store,
+	onClose,
+	maxVisible = 5,
+	stackDepth = 3,
+	rootRef: rootRefProp,
+	...viewportProps
+}: NotificationContainerProps) {
+	const viewportRef = useRef<HTMLDivElement | null>(null);
+	const rootRefPropRef = useRef(rootRefProp);
+	rootRefPropRef.current = rootRefProp;
+	const setViewportRef = useCallback((node: HTMLDivElement | null) => {
+		viewportRef.current = node;
+		const external = rootRefPropRef.current;
+		if (typeof external === 'function') external(node);
+		else if (external) (external as MutableRefObject<HTMLDivElement | null>).current = node;
+	}, []);
+	const live = useSyncExternalStore(
+		store ? store.subscribe : subscribeNothing,
+		store ? store.getItems : getEmptyToasts,
+		store ? store.getItems : getEmptyToasts,
+	);
+	const shown = notifications ?? live.slice(-Math.max(1, maxVisible));
+	const ordered = shown.slice().reverse();
+	const visibleDepth = Math.max(1, stackDepth);
+
+	const closeItem = useCallback((id?: string) => {
+		if (!id) return;
+		if (notifications) onClose?.(id);
+		else store?.dismiss(id);
+	}, [notifications, onClose, store]);
 
 	useDocumentKeyDown((event) => {
 		if (event.defaultPrevented) return;
-
-		for (const action of item.actions ?? []) {
-			if (!action.shortcut || !matchesKeyboardShortcut(event, action.shortcut)) continue;
+		const root = viewportRef.current;
+		if (!root) return;
+		const buttons = root.querySelectorAll<HTMLElement>('[data-action-shortcut]');
+		for (const button of buttons) {
+			const shortcut = button.getAttribute('data-action-shortcut');
+			if (!shortcut || !matchesKeyboardShortcut(event, shortcut)) continue;
 			event.preventDefault();
-			action.onClick();
-			close();
+			button.click();
 			return;
 		}
 	});
 
 	return (
-		<Notification
-			variant={item.variant}
-			duration={item.duration}
-			progress={item.progress}
-			pauseOnHover={item.pauseOnHover}
-			onClose={close}
-			title={item.title}
-			description={item.description}
-			actions={item.actions}
-		/>
+		<NotificationViewport
+			{...viewportProps}
+			stackDepth={stackDepth}
+			rootRef={setViewportRef}
+		>
+			{ordered.map((item, index) => (
+				<div
+					key={item.id}
+					className={cn(
+						styles.stackItem,
+						index >= visibleDepth && styles.stackItemHidden,
+					)}
+					style={{['--altum-stack-i' as string]: String(index)}}
+				>
+					<Notification
+						data-toast-id={item.id}
+						variant={item.variant}
+						duration={item.duration}
+						progress={item.progress}
+						pauseOnHover={item.pauseOnHover}
+						onClose={closeItem}
+						title={item.title}
+						description={item.description}
+						actions={item.actions}
+					/>
+				</div>
+			))}
+		</NotificationViewport>
 	);
-};
-
-export const NotificationContainer: React.FC<NotificationContainerProps> = ({
-	notifications,
-	onClose,
-	...viewportProps
-}) => (
-	<NotificationViewport {...viewportProps}>
-		{notifications.slice().reverse().map((item) => (
-			<NotificationItemRenderer
-				key={item.id}
-				item={item}
-				onClose={onClose}
-			/>
-		))}
-	</NotificationViewport>
-);
+}

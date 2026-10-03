@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {Accordion, type AccordionProps} from './Accordion';
 import {Button} from '../Button/Button';
 import {Card} from '../Card/Card';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Title} from '../Title/Title';
 import {componentParameters, story, Story} from '../../storybook/meta';
@@ -173,7 +173,7 @@ export const Controlled: Story<AccordionProps> = {
 		const [openIds, setOpenIds] = useState<string[]>(['1']);
 		return (
 			<Stack gap='sm' style={{maxWidth: 480}}>
-				<Accordion openIds={openIds} onOpenChange={setOpenIds}>
+				<Accordion defaultOpenIds={['1']} onOpenChange={setOpenIds}>
 					<DemoItems />
 				</Accordion>
 				<Text size='xs' color='muted'>
@@ -184,7 +184,7 @@ export const Controlled: Story<AccordionProps> = {
 			</Stack>
 		);
 	},
-	parameters: story('Контролируемый режим: `openIds` + `onOpenChange`.'),
+	parameters: story('Неконтролируемый режим: `defaultOpenIds` и `onOpenChange`.'),
 };
 
 export const Interaction: Story<AccordionProps> = {
@@ -196,7 +196,7 @@ export const Interaction: Story<AccordionProps> = {
 		</div>
 	),
 	play: async ({canvasElement}) => {
-		await playClick(canvasElement, 'button[aria-expanded="false"]');
+		await playClick(canvasElement, 'summary');
 	},
 	parameters: story('Play: клик по первому триггеру раскрывает секцию.'),
 };

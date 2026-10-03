@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 /**
@@ -9,9 +10,6 @@ import type {
 export interface CollapseProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
 	open: boolean;
 	children: React.ReactNode;
-	/**
-	 * Отключить анимацию высоты.
-	 * По умолчанию учитывает `prefers-reduced-motion`.
-	 */
-	reducedMotion?: boolean;
+	/** DOM-узел корня. */
+	rootRef?: Ref<HTMLDivElement>;
 }

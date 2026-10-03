@@ -1,5 +1,6 @@
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 /**
@@ -16,4 +17,6 @@ export interface RatingProps extends Omit<ComponentPropsWithoutRef<'div'>, 'chil
 	size?: 'sm' | 'md' | 'lg';
 	/** Разрешить сброс повторным кликом по тому же значению. @default true */
 	allowClear?: boolean;
+	/** Корень группы. */
+	rootRef?: Ref<HTMLDivElement>;
 }

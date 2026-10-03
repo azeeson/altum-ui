@@ -1,8 +1,7 @@
-import {forwardRef} from 'react';
-import {Inline} from './Inline';
 import type {SplitProps} from './Layout.types';
-
 export type {LayoutAlign, LayoutGap, SplitProps} from './Layout.types';
+
+import {Inline} from './Inline';
 
 /**
  * Горизонтальный ряд с `justify-content: space-between`: левый и правый блоки
@@ -15,16 +14,17 @@ export type {LayoutAlign, LayoutGap, SplitProps} from './Layout.types';
  *   <Button size="sm">Добавить</Button>
  * </Split>
  */
-export const Split = forwardRef<HTMLDivElement, SplitProps>(function Split(props, ref) {
-	return (
-		<Inline
-			ref={ref}
-			gap='md'
-			align='center'
-			justify='between'
-			{...props}
-		/>
-	);
-});
-
-Split.displayName = 'Split';
+export const Split = ({
+	rootRef,
+	gap = 'md',
+	align = 'center',
+	...props
+}: SplitProps) => (
+	<Inline
+		rootRef={rootRef}
+		gap={gap}
+		align={align}
+		{...props}
+		justify='between'
+	/>
+);

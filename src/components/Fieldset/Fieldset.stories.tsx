@@ -5,7 +5,7 @@ import {TextField} from '../TextField/TextField';
 import {Select} from '../Select/Select';
 import {Button} from '../Button/Button';
 import {Text} from '../Text/Text';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Card} from '../Card/Card';
 import {FormMessage} from '../FormMessage/FormMessage';
 import {componentParameters, story, Story} from '../../storybook/meta';

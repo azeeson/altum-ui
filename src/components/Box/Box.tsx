@@ -5,68 +5,64 @@ export type {
 	BoxVariant,
 	BoxShadow,
 	BoxBorderStyle,
-	BoxPadding,
 	BoxRadius,
 	BoxAs,
 	BoxProps,
 } from './Box.types';
 
-import {forwardRef, type ButtonHTMLAttributes, type ElementType} from 'react';
+import {type ButtonHTMLAttributes, type CSSProperties, type ElementType} from 'react';
 import styles from './Box.module.css';
-import {cn} from '../../utils/cn';
+import {cn} from '../../core/utils/cn';
+
+/**
+ * Сброс заливки, рамки и цвета `Box`, когда наследник рисует свою геометрию.
+ * Инлайн побеждает класс `.root`, поэтому радиус и фон компонента не подмешиваются.
+ */
+export const boxInheritStyle: CSSProperties = {
+	border: 'none',
+	backgroundColor: 'transparent',
+	boxShadow: 'none',
+	color: 'inherit',
+	borderRadius: 0,
+};
 
 /**
  * Примитив поверхности: заливка (`variant`) + `border` / `borderStyle` / `shadow`.
  * Не переопределяет element-токены потомков — кнопки, чипы и поля остаются на глобальной палитре.
+ * Отступы задаёт потребитель (класс / `style`), не проп `padding`.
  *
  * @component
  * @example
- * <Box variant="outlined" border padding="md">С рамкой</Box>
- * <Box variant="muted" padding="sm">Мягкая заливка</Box>
- * <Box variant="ghost" border borderStyle="dashed" padding="xs">Пунктир</Box>
+ * <Box variant="outlined" border>С рамкой</Box>
+ * <Box variant="muted" className={styles.padded}>Мягкая заливка</Box>
+ * <Box variant="ghost" border borderStyle="dashed">Пунктир</Box>
  */
-export const Box = forwardRef<HTMLElement, BoxProps>(function Box(
-	{
-		variant = 'outlined',
-		border,
-		borderStyle = 'solid',
-		shadow,
-		as: Component = 'div',
-		padding = 'none',
-		radius = 'md',
-		className,
-		children,
-		...rest
-	},
-	ref,
-) {
-	const buttonProps = Component === 'button'
-		? {type: (rest as ButtonHTMLAttributes<HTMLButtonElement>).type ?? 'button'}
-		: undefined;
-
+export const Box = ({
+	variant = 'outlined',
+	border,
+	borderStyle = 'solid',
+	shadow,
+	as: Component = 'div',
+	radius = 'md',
+	className,
+	rootRef,
+	...rest
+}: BoxProps) => {
 	const Element = Component as ElementType;
 
 	return (
 		<Element
-			ref={ref as never}
-			className={cn(
-				styles.root,
-				styles[variant],
-				border === true && styles.bordered,
-				border === false && styles.unbordered,
-				border !== false && borderStyle === 'dashed' && styles.dashed,
-				shadow === 'none' && styles.noShadow,
-				shadow && shadow !== 'none' && styles[`shadow_${shadow}`],
-				padding !== 'none' && styles[`pad_${padding}`],
-				radius !== 'md' && styles[`radius_${radius}`],
-				className,
-			)}
+			ref={rootRef}
+			className={cn(styles.root, className)}
+			data-variant={variant}
+			data-border={border !== undefined ? String(border) : undefined}
+			data-border-style={borderStyle !== 'solid' ? borderStyle : undefined}
+			data-shadow={shadow || undefined}
+			data-radius={radius !== 'md' ? radius : undefined}
 			{...rest}
-			{...buttonProps}
-		>
-			{children}
-		</Element>
+			{...(Component === 'button'
+				? {type: (rest as ButtonHTMLAttributes<HTMLButtonElement>).type ?? 'button'}
+				: null)}
+		/>
 	);
-});
-
-Box.displayName = 'Box';
+};

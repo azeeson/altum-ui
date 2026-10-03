@@ -4,7 +4,7 @@ import {DateRangeField, DateRangeFieldProps, type DateRangeValue} from './DateRa
 import {Text} from '../Text/Text';
 import {Button} from '../Button/Button';
 import {Fieldset} from '../Fieldset/Fieldset';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {
 	componentParameters,
 	fieldArgTypes,
@@ -30,7 +30,6 @@ export default {
 		label: 'Период отчёта',
 		layout: 'single',
 		size: 'md',
-		labelPlacement: 'inline',
 	},
 	argTypes: {
 		...fieldArgTypes,
@@ -165,7 +164,7 @@ export const Empty: Story<DateRangeFieldProps> = {
 					label='Период отчёта'
 					value={range}
 					onChange={setRange}
-					helperText='Выберите начало и конец'
+					description='Выберите начало и конец'
 				/>
 			</div>
 		);

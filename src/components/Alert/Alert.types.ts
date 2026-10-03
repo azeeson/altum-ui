@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 import type {ControlSize} from '../../types';
@@ -20,12 +21,15 @@ export interface AlertProps extends Omit<ComponentPropsWithoutRef<'div'>, 'title
 	/** Заголовок. */
 	title?: React.ReactNode;
 	/**
-	 * Иконка слева. По умолчанию — иконка варианта.
-	 * `null` скрывает слот.
+	 * Иконка слева. По умолчанию — иконка варианта (`IconInformation` /
+	 * `IconCheckmark` / `IconWarning` / `IconWrong`).
+	 * `null` или `false` скрывает слот.
 	 */
 	icon?: React.ReactNode | null;
 	/** Кнопки под текстом. */
 	actions?: React.ReactNode;
 	onClose?: () => void;
 	closeLabel?: string;
+	/** DOM-узел корня. */
+	rootRef?: Ref<HTMLDivElement>;
 }

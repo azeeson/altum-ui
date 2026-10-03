@@ -1,18 +1,11 @@
+import type {CSSProperties, MouseEvent} from 'react';
 import type {LineChartProps} from './LineChart.types';
-export type {
-	ChartDataset,
-	LineChartProps,
-} from './LineChart.types';
+export type {ChartDataset, LineChartProps} from './LineChart.types';
 
-import {forwardRef, useId, useState} from 'react';
+import {useId, useState} from 'react';
 import styles from './LineChart.module.css';
-import series from '../../styles/chartSeries.module.css';
-import {cn} from '../../utils/cn';
-import {
-	ChartCartesian,
-	ChartHoverBubble,
-	chartPointX,
-} from '../../base/ChartBase';
+import {cn} from '../../core/utils/cn';
+import {ChartCartesian, ChartHoverBubble, chartPointX} from '../../base/ChartBase';
 
 function bezier(
 	data: number[],
@@ -52,6 +45,7 @@ function areaPath(
 
 /**
  * Линейный SVG-график с несколькими сериями данных и hover-подсказками.
+ * Наведение читается на общей группе (`data-point`).
  *
  * @component
  * @example
@@ -60,34 +54,52 @@ function areaPath(
  *   datasets={[{ name: 'Продажи', color: '#3b82f6', data: [12, 19, 8] }]}
  * />
  */
-export const LineChart = forwardRef<HTMLDivElement, LineChartProps>(function LineChart(
-	{
-		categories,
-		datasets,
-		height = 300,
-		className,
-		...rest
-	},
-	ref,
-) {
+export const LineChart = ({
+	categories,
+	datasets,
+	height = 300,
+	className,
+	rootRef,
+	...rest
+}: LineChartProps) => {
 	const gradientUid = useId().replace(/:/g, '');
 	const [hover, setHover] = useState<[number, number] | null>(null);
 
+	function clearHover() {
+		setHover((prev) => (prev == null ? prev : null));
+	}
+
+	function onPointOver(event: MouseEvent<SVGGElement>) {
+		const target = event.target;
+		if (!(target instanceof Element)) return;
+		const node = target.closest('[data-point]');
+		if (!node) return;
+		const seriesIndex = Number(node.getAttribute('data-series'));
+		const index = Number(node.getAttribute('data-index'));
+		if (Number.isNaN(seriesIndex) || Number.isNaN(index)) return;
+		setHover((prev) => (
+			prev && prev[0] === seriesIndex && prev[1] === index ? prev : [seriesIndex, index]
+		));
+	}
+
 	return (
 		<ChartCartesian
-			ref={ref}
+			rootRef={rootRef}
 			categories={categories}
 			datasets={datasets}
 			height={height}
-			className={className}
+			className={cn(styles.root, className)}
 			getX={chartPointX}
-			onPlotLeave={() => setHover(null)}
+			onPlotLeave={clearHover}
 			{...rest}
 		>
 			{(plot) => {
 				const point = hover && datasets[hover[0]];
 				return (
-					<>
+					<g
+						onMouseOver={onPointOver}
+						onMouseLeave={clearHover}
+					>
 						<defs>
 							{datasets.map((dataset, index) => (
 								<linearGradient
@@ -113,39 +125,36 @@ export const LineChart = forwardRef<HTMLDivElement, LineChartProps>(function Lin
 						</defs>
 						{datasets.map((dataset, datasetIndex) => {
 							const seriesOn = hover?.[0] === datasetIndex;
+							const color = plot.items[datasetIndex].color;
 							return (
 								<g key={dataset.name}>
 									<path
 										d={areaPath(dataset.data, plot.getX, plot.getY)}
 										fill={`url(#${gradientUid}-${datasetIndex})`}
-										className={cn(hover && !seriesOn && series.dimmed)}
+										data-dimmed={hover && !seriesOn ? '' : undefined}
 									/>
 									<path
-										className={cn(
-											styles.line,
-											series.item,
-											hover && !seriesOn && series.dimmed,
-											seriesOn && series.active,
-										)}
+										className={styles.line}
 										d={splinePath(dataset.data, plot.getX, plot.getY)}
-										style={{stroke: plot.items[datasetIndex].color}}
+										style={{'--local-color': color} as CSSProperties}
+										data-dimmed={hover && !seriesOn ? '' : undefined}
+										data-active={seriesOn ? '' : undefined}
 									/>
 									{dataset.data.map((value, index) => {
 										const on = seriesOn && hover?.[1] === index;
 										return (
 											<circle
 												key={index}
-												className={cn(
-													styles.node,
-													series.item,
-													hover && !on && series.dimmed,
-													on && series.active,
-												)}
+												className={styles.node}
+												data-point=''
+												data-series={datasetIndex}
+												data-index={index}
 												cx={plot.getX(index)}
 												cy={plot.getY(value)}
 												r={4}
-												fill={plot.items[datasetIndex].color}
-												onMouseEnter={() => setHover([datasetIndex, index])}
+												fill={color}
+												data-dimmed={hover && !on ? '' : undefined}
+												data-active={on ? '' : undefined}
 											/>
 										);
 									})}
@@ -161,11 +170,9 @@ export const LineChart = forwardRef<HTMLDivElement, LineChartProps>(function Lin
 								label={`${categories[hover[1]]} · ${point.name}: ${point.data[hover[1]]}`}
 							/>
 						)}
-					</>
+					</g>
 				);
 			}}
 		</ChartCartesian>
 	);
-});
-
-LineChart.displayName = 'LineChart';
+};

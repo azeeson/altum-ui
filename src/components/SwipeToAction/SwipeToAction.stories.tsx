@@ -8,7 +8,7 @@ import {Overflow} from '../Overflow/Overflow';
 import {SortableList} from '../SortableList/SortableList';
 import {VirtualList} from '../VirtualList/VirtualList';
 import {Button} from '../Button/Button';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {IconCheckmark} from '../../icons/icons/IconCheckmark';
 import {IconTrash} from '../../icons/icons/IconTrash';

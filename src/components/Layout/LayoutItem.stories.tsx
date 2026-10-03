@@ -19,7 +19,7 @@ export default {
 	parameters: componentParameters(
 		'Flex-ячейка с grow / shrink внутри Stack, Inline, Split или ControlRow. '
 		+ 'Оборачивайте только элементы, которым нужно растянуться или не сжиматься. '
-		+ 'Алиас: ControlRow.Item, Layout.Item.',
+		+ 'Алиас: ControlRow.Item.',
 	),
 	argTypes: {
 		grow: {

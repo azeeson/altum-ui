@@ -52,11 +52,8 @@
 
   & .dot {
     display: inline-flex;
-    box-sizing: border-box;
 
     flex-shrink: 0;
-    justify-content: center;
-    align-items: center;
 
     width: var(--altum-g-space-3);
     height: var(--altum-g-space-3);
@@ -178,7 +175,7 @@
     padding-bottom: 0;
   }
 
-  & .current .dot {
+  & .item[data-current] .dot {
     width: calc(var(--altum-g-space-4) + var(--altum-control-inset));
     height: calc(var(--altum-g-space-4) + var(--altum-control-inset));
 
@@ -187,7 +184,7 @@
     box-shadow: 0 0 0 var(--altum-g-space-1) color-mix(in srgb, var(--altum-color-brand) 18%, transparent);
   }
 
-  &.horizontal {
+  &[data-orientation='horizontal'] {
     --altum-timeline-rail-dir: row;
     --altum-timeline-rail-w: 100%;
     --altum-timeline-rail-h: var(--altum-g-space-5);

@@ -13,6 +13,7 @@ const entries = [
 	{input: 'src/entries/hooks.ts', output: 'types/entries/hooks.d.ts'},
 	{input: 'src/entries/utils.ts', output: 'types/entries/utils.d.ts'},
 	{input: 'src/entries/icons.ts', output: 'types/entries/icons.d.ts'},
+	{input: 'src/entries/locales.ts', output: 'types/entries/locales.d.ts'},
 ];
 
 fs.rmSync(typesRoot, {recursive: true, force: true});

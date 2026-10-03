@@ -1,0 +1,11 @@
+.item {
+  min-width: 0;
+
+  &[data-grow] {
+    flex: 1 1 auto;
+  }
+
+  &[data-shrink='false'] {
+    flex-shrink: 0;
+  }
+}

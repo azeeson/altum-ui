@@ -1,5 +1,5 @@
 import type React from 'react';
-import type {ComponentPropsWithoutRef} from 'react';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
 
 export type FieldsetVariant = 'default' | 'card' | 'plain';
 
@@ -18,4 +18,6 @@ export interface FieldsetProps extends ComponentPropsWithoutRef<'div'> {
 	footer?: React.ReactNode;
 	/** Gap между полями. @default `'var(--altum-g-space-4)'` */
 	gap?: number | string;
+	/** Корень — обёртка `<div>` вокруг `<fieldset>` + footer. */
+	rootRef?: Ref<HTMLDivElement>;
 }

@@ -3,7 +3,7 @@ import React from 'react';
 import {Container, Page, ContainerProps, type ContainerSize} from './Container';
 import {Card} from '../Card/Card';
 import {Grid} from '../Grid/Grid';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Title} from '../Title/Title';
 import {Button} from '../Button/Button';
@@ -189,10 +189,7 @@ export const PageAlias: Story<ContainerProps> = {
 				</Text>
 			</Stack>
 			<Grid
-				columns={{
-					xs: 1,
-					md: 3
-				}}
+				columns={3}
 				gap='md'
 				style={{marginTop: 'var(--altum-g-space-4)'}}
 			>

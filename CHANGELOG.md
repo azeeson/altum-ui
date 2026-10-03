@@ -8,6 +8,64 @@
 
 ## [Unreleased]
 
+## [0.0.11] — 2026-10-03
+
+**`Modal`** — `size` `sm` / `md` / `lg` (400 / 500 / 600px): ширина не больше окна и отступает на 16px от краёв. **`CommandPalette`** той же ширины, что **`Modal`** `md`.
+
+**Добавлено.** **`Menu`** и **`ActionList`** принимают в `items` `{ type: 'separator' }`, как **`Listbox`**. Линия не выбирается.
+
+**Исправлено.** **`Tabs`** больше не сжимает полосу вкладок по высоте. `popovertarget` и `popovertargetaction` в нижнем регистре — React 18 ставит атрибут на кнопку **`Select`** и других триггеров.
+
+## [0.0.10] — 2026-10-03
+
+**`Select`** рисует один `TextField`: поле задаётся `inputProps`, его же настраивают **`SuggestField`**, **`AutocompleteField`** и **`MultiSelect`**.
+
+**Добавлено.** **`pick`** / **`omit`** в `altum/utils`. Хуки `altum/hooks`: **`useMediaQuery`**, **`useIsMobile`**, **`useIsSidebarLarge`**, **`useIsSidebarMedium`**, **`usePrefersReducedMotion`**, **`useOutsideClick`** (мобильный до 768px, сайдбар medium 1024–1279px, large от 1280px).
+
+**Несовместимо.** У **`Select`** сняты `customTrigger`, `triggerMode`, `allowCustom`, колбэки комбобокса, `name`, `required`, `inputRef` и обработчики инпута. Печатное поле — `inputProps` или **`SuggestField`** / **`AutocompleteField`**.
+
+**Исправлено.** Symbol-shrink CSS больше не портит стили: словарь из 30 токенов, minify-имя переменной и alias `injectCss` сохраняются.
+
+## [0.0.9] — 2026-10-02
+
+Платформенный релиз: оверлеи на Popover API / `<dialog>` / CSS Anchor, утилиты в `src/core/utils`, общие CSS-доноры в `src/styles/`, булевы `data-*` как presence и default-fallback для enum. Публичный `altum/utils` без смены имён экспортов.
+
+**Добавлено.** **`AutocompleteField`**, **`MultiSelect`**, тонкий **`ButtonIcon`**-прокси, **`IconBase`** + `ICON_PATHS`, виртуализация **`Table`** / **`SortableList`**, плоские `items` у **`FileList`** / **`Accordion`**, композиция **`FileUploader`**, микро-утилиты `uRef` / `uEv` / `uEvMerge` / `ariaIds` / `getCtx` / `handleRovingFocus`, shared CSS (`unstyledControl`, `overlayTransition`, `scrollable`, `floating`, …). Единый кодекс — **`MANIFEST.md`**.
+
+**Изменено.** **`Select`** / **`SuggestField`** / поля дат — открытие через `showPopover` на click / `:focus-visible`. **`TextField`** — presence `data-*`, static label, chrome affix. **`Overlay`** / **`Popover`** / **`Dropdown`** / **`Menu`** / **`CommandPalette`** / **`ActionSheetTrigger`** — native top layer. **`Notification`** — пауза таймеров на всём стеке при hover. **`Typography`** — донор для Text/Title/Link/Button. Жесты (**`Slider`**, **`SwipeToAction`**, **`PullToRefresh`**, **`SortableList`**) — Pointer Capture + `--local-*` вне React.
+
+**Несовместимо.** Сняты публичные **`SelectionGroup`**, `createIcon`, `As`/`Type`/`FieldPopup`, AdaptiveValue у **`Grid`**, ряд legacy-хуков/утилит (`useOutsideClick`, `useEscapeKey`, FocusTrap-стек, `composeRefs`, …). **`Select.triggerMode`** — `'button' | 'input'`; freestyle — **`AutocompleteField`**. Рефы — `rootRef` / `inputRef` / `controlRef`, без `forwardRef`.
+
+**Исправлено.** **`VirtualList`** (синхрон `translate3d`↔range, конец списка), **`SortableList`** DnD, **`Menu`** context, **`ActionSheetTrigger`**, **`PopupSwitch`**, **`Select`**/`AutocompleteField` Enter, **`Sidebar`** toggle/tooltip, **`Sheet`** handle, **`FileList`** double border, **`ImageLightbox`**, **`SegmentedControl`** `itemFit="content"`, **`ActionList`** filter focus, **`Bubble`** reactions, **`PasswordField`** meter, **`Button`** ghost/link.
+
+## [0.0.8] — 2026-09-28
+
+**`Gap`** — пустой зазор (`size`, `orientation`). У **`Item`** `wrap` переносит длинные `title` и `description`.
+
+**Исправлено.** У **`Attachment`** hover ошибки не снимает заливку, `sm` / `xs` берут свой кегль, загрузка — `aria-busy`, ошибка — `aria-invalid`. У **`Alert`** один зазор до `actions`.
+
+## [0.0.7] — 2026-09-28
+
+**`FieldGroup`** стыкует поля и кнопки одной рамкой: оболочка **`Select`** по видимому полю, высота как у кнопки и **`PopupSwitch`**, тень варианта не ложится на соседа. **`PopupSwitch`**: `width="options"` по самой длинной подписи, шеврон **`IconChevronUpDown`**. У **`Button`** `variant="link"` `size` меняет кегль и иконку. Storybook **About**: страница бренда и каталог компонентов (`npm run catalog`).
+
+**Несовместимо.** У **`Select`** снят `combobox` (вместе с `inputRef`, `wrapperProps`, `name`, `required` и обработчиками инпута). Свой триггер — `customTrigger`: **`SuggestField`** рисует там `TextField`, **`Select`** поле не рисует.
+
+**Исправлено.** Клик по шеврону **`Select`** открывает и закрывает список. Отступ справа от шеврона **`PopupSwitch`** как у **`Select`**.
+
+## [0.0.6] — 2026-09-27
+
+**`DialogLayout`**, **`PopupSwitch`**, **`LiveRegion`**. **`isExistingLocalDate`** в `altum/utils`. Диалоги (**`Modal`**, **`Sheet`**, **`ImageCrop`**, **`CommandPalette`**) собраны из **`DialogLayout`**, **`Box`** и **`Layout`**. **`Select`** сам держит список, **`SuggestField`** — комбобокс на нём. **`Dropdown`** на **`Popover`**. У **`Layout`** отступы `padding` и `gap` (`sm` / `md` / `lg`): padding на секциях, промежуток у липких шапки и футера остаётся при прокрутке.
+
+**Несовместимо.** Снят **`CustomSelect`**: выбор — **`Select`**, подсказки — **`SuggestField`**. У **`Overlay`** нет `popover` / `dropdown`. У **`Popover`** нет `wrap`, корня и стрелки; класс панели — `className`, ширина — `widthMode`. У **`Tooltip`** сторона — `side`, стрелки нет. У **`Chip`** роль — `mode`. **`Layout`** больше не отдаёт `Inline`, `Split`, `ControlRow` и `Item`. У **`Modal`** крестик и имя на корне (`showClose`, `aria-label`); заголовок — **`Title`**, кнопки — **`ControlRow`** в футере. У **`Sheet`** заголовок — **`Title`**, крестик — `showClose` на **`Sheet.Header`**. **`Sidebar.Collapse`** снят. Удалены **`DialogBase`** и неиспользуемые токены темы. `useLocale()` без провайдера возвращает ключ.
+
+**Исправлено.** Стрелки **`ImageGallery`** листают кадр только при фокусе в галерее. Бегунок **`SegmentedControl`** при `itemFit="content"` не рвёт анимацию. Ховер кнопок внутри **`TextField`** читается на фоне поля. **`Overflow`** вызывает `onSelect` один раз. Автозакрытие **`Notification`** срабатывает и при `prefers-reduced-motion`.
+
+## [0.0.5] — 2026-09-25
+
+**`useForm`**: проверка через `validate` (`fieldRules`, `compose`, `required`, `pattern`, `checkedValue`), плюс `setValue`, `reset`, `handleSubmit`, `isDirty` и **`FormProvider`**. Публичные **`altum/locales`** со склонением и утилиты дат, поясов, длительности и plural.
+
+**`TextField`** вбрал `FieldBase`: `description` вместо `helperText` / `footer`, без `labelPlacement`. **`Button`**: `prefix` / `postfix` и `danger` / `danger_tinted` вместо `status`; **`ButtonIcon`** на **`Button`**. Стили в `@layer altum` — один `className` перекрывает библиотеку. **`ThemeProvider`** при `applyTo="document"` не вешает тему на обёртку.
+
 ## [0.0.4] — 2026-09-12
 
 `TimePicker` / `DatePicker` / `DateRangePicker` → **`TimeField`** / **`DateField`** / **`DateRangeField`** (ключи словаря `timePicker` → `timeField`, `dateRangePicker` → `dateRangeField`). Время — барабаны **`WheelTimePicker`**. **`Item`** на **`Flex`**, чище **`Attachment`**, `Flex.gap` — любой `SpacingValue`, floating-label выше, маркеры **`ImageCrop`** на углах кадра. Поля в Storybook — в **`FormField`**.
@@ -26,6 +84,8 @@
 - Storybook: состояния и play по полям, чартам, календарям и оверлеям.
 
 ### Исправлено
+- **`ActionList`** — Enter выбирает подсвеченный пункт в порядке групп, а не в сыром порядке `items`.
+- **`VirtualList`** — видимые строки снова следуют за `renderItem` при рендере родителя (подсветка в виртуализированном **`Listbox`**).
 - **DatePicker** / **TimePicker** / **DateRangePicker** — панель от края поля; **TextField** — кликабельная зона на всю высоту.
 - **DonutChart** — без нативного tooltip; **Container** не вылезает за колонку; clear/affix в **FieldBase** по центру.
 

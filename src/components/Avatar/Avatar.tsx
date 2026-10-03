@@ -9,10 +9,17 @@ export type {
 	AvatarGroupProps,
 } from './Avatar.types';
 
-import {forwardRef, type CSSProperties} from 'react';
+import type {CSSProperties, SyntheticEvent} from 'react';
 import {IconUser} from '../../icons/icons/IconUser';
+import {Media} from '../Media/Media';
+import {uEv} from '../../core/utils/bundle';
 import styles from './Avatar.module.css';
-import {cn} from '../../utils/cn';
+import utilities from '../../styles/utilities.module.css';
+import {cn} from '../../core/utils/cn';
+
+const markImageBroken = (event: SyntheticEvent<HTMLImageElement>) => {
+	event.currentTarget.dataset.broken = 'true';
+};
 
 const getInitials = (userName: string) => {
 	const parts = userName.trim().split(/\s+/);
@@ -29,66 +36,62 @@ const getInitials = (userName: string) => {
  * @example
  * <Avatar name="Алексей Иванов" size="lg" status="online" />
  */
-export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
-	{
-		src,
-		name,
-		size = 'md',
-		status,
-		className,
-		icon,
-		style,
-		...rest
-	},
-	ref,
-) {
+export function Avatar({
+	src,
+	name,
+	size = 'md',
+	status,
+	className,
+	icon,
+	style,
+	rootRef,
+	...rest
+}: AvatarProps) {
+	const isCustomSize = typeof size === 'number';
+
 	return (
 		<div
-			ref={ref}
+			ref={rootRef}
 			aria-label={name}
 			aria-description={status}
 			{...rest}
-			className={cn(
-				styles.avatar,
-				typeof size === 'string' && size !== 'md' ? styles[size] : '',
-				className,
-			)}
-			style={typeof size === 'number'
-				? {
-					['--altum-avatar-size' as string]: `${size}px`,
-					...style,
-				} as CSSProperties
-				: style}
+			className={cn(utilities.fCenter, styles.avatar, className)}
+			style={{
+				...(isCustomSize ? {['--altum-avatar-size' as string]: `${size}px`} : null),
+				...style,
+			} as CSSProperties}
 			data-status={status}
+			data-size={!isCustomSize && size !== 'md' ? size : undefined}
 		>
 			{src ? (
-				<img
+				<Media
+					key={src}
 					src={src}
 					alt={name || 'Avatar'}
-					className={styles.img}
+					ratio={1}
+					fit='cover'
+					rounded={false}
+					className={styles.photo}
+					onError={uEv(markImageBroken)}
 				/>
-			) : (
-				<span className={styles.icon}>
-					{icon ?? (name ? getInitials(name) : <IconUser aria-hidden />)}
-				</span>
-			)}
+			) : null}
+			<span className={cn(utilities.fCenter, styles.icon)}>
+				{icon ?? (name ? getInitials(name) : <IconUser aria-hidden />)}
+			</span>
 		</div>
 	);
-});
+}
 
-Avatar.displayName = 'Avatar';
-
-export const AvatarGroup = forwardRef<HTMLDivElement, AvatarGroupProps>(function AvatarGroup(
-	{className, ...rest},
-	ref,
-) {
+export function AvatarGroup({
+	className,
+	rootRef,
+	...rest
+}: AvatarGroupProps) {
 	return (
 		<div
-			ref={ref}
-			className={cn(styles.group, className)}
+			ref={rootRef}
 			{...rest}
+			className={cn(styles.group, className)}
 		/>
 	);
-});
-
-AvatarGroup.displayName = 'AvatarGroup';
+}

@@ -4,7 +4,7 @@ import {PasswordField, PasswordFieldProps} from './PasswordField';
 import {TextField} from '../TextField/TextField';
 import {Button} from '../Button/Button';
 import {Fieldset} from '../Fieldset/Fieldset';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {
 	componentParameters,
 	fieldArgTypes,
@@ -118,7 +118,7 @@ export const Disabled: Story<PasswordFieldProps> = {
 export const Empty: Story<PasswordFieldProps> = {
 	args: {
 		label: 'Пароль',
-		helperText: 'Не менее 8 символов',
+		description: 'Не менее 8 символов',
 		width: 'full',
 		showStrength: true,
 	},

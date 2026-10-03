@@ -1,37 +1,106 @@
-.horizontal {
-  --altum-field-label-width: 140px;
+.root {
+  display: flex;
+  box-sizing: border-box;
 
+  /* default layout=vertical */
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: var(--altum-g-space-1);
+
+  width: 100%;
+  min-width: 0;
+
+  &[data-layout='horizontal'] {
+    --altum-field-label-width: 140px;
+
+    flex-direction: row;
+    gap: var(--altum-g-space-4);
+
+    & .label {
+      flex: 0 0 var(--altum-field-label-width);
+
+      width: var(--altum-field-label-width);
+      max-width: 40%;
+    }
+
+    & .content {
+      flex: 1 1 0;
+
+      min-width: 0;
+    }
+
+    &[data-align='start'] {
+      align-items: flex-start;
+    }
+
+    /* default align=center for horizontal */
+    &:not([data-align]) {
+      align-items: center;
+    }
+
+    &[data-align='center'] {
+      align-items: center;
+    }
+
+    &[data-align='baseline'] {
+      align-items: baseline;
+    }
+
+    /* default justify=start — без атрибута */
+    &[data-justify='between'] {
+      justify-content: space-between;
+
+      &[data-fixed] .label {
+        flex: 0 0 var(--altum-field-label-width);
+      }
+
+      &:not([data-fixed]) .label {
+        flex: 0 1 auto;
+
+        width: auto;
+        max-width: 60%;
+      }
+
+      & .content {
+        flex: 0 1 auto;
+
+        width: auto;
+
+        margin-left: auto;
+
+        text-align: end;
+      }
+    }
+  }
+
+  /* default size=md на .label */
   & .label {
-    flex: 0 0 var(--altum-field-label-width);
-
-    width: var(--altum-field-label-width);
-    max-width: 40%;
+    font-size: var(--altum-g-font-size-sm);
+    line-height: var(--altum-g-line-height-sm);
   }
 
-  & .content {
-    flex: 1 1 0;
-
-    min-width: 0;
+  &[data-size='sm'] .label {
+    font-size: var(--altum-g-font-size-xs);
+    line-height: var(--altum-g-line-height-xs);
   }
-}
 
-.between:not(.fixed) .label {
-  flex: 0 1 auto;
-
-  width: auto;
-  max-width: 60%;
-}
-
-.between .content {
-  flex: 0 1 auto;
-
-  width: auto;
-
-  margin-left: auto;
-
-  text-align: end;
+  &[data-size='lg'] .label {
+    font-size: var(--altum-g-font-size-base);
+    line-height: var(--altum-g-line-height-base);
+  }
 }
 
 .label {
+  margin: 0;
+
+  font-family: var(--altum-g-font-family-ui);
+  font-weight: var(--altum-g-font-weight-medium);
+
   color: var(--altum-field-label, var(--altum-color-muted));
+}
+
+.content {
+  min-width: 0;
 }

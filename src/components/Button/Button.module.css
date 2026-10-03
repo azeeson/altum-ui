@@ -1,0 +1,281 @@
+.btn {
+  /* default variant = primary (data-variant не пишется) */
+  --altum-btn-border: var(--altum-field-group-stroke, var(--altum-color-button-border-primary));
+  --altum-btn-text: var(--altum-color-brand-text);
+  --altum-btn-text-hover: var(--altum-btn-text);
+  --altum-btn-bg: var(--altum-color-brand);
+  --altum-btn-bg-hover: var(--altum-color-brand-hover);
+  --altum-btn-bg-active: var(--altum-color-brand-active);
+  /* Не `none`: иначе `box-shadow: var(--altum-btn-shadow), 0 0 0 …` на :focus-visible невалиден у ghost/tinted/link. */
+  --altum-btn-shadow: var(--altum-field-group-shadow, var(--altum-shadow-brand));
+  --altum-btn-focus-ring: var(--altum-focus-ring-color);
+  --altum-btn-shape: var(--altum-btn-radius, var(--altum-g-radius));
+  --altum-btn-height: var(--altum-control-height-md);
+  --altum-btn-pad-x: var(--altum-g-space-5);
+  --altum-btn-font-size: var(--altum-g-font-size-base);
+  --altum-btn-icon-size: var(--altum-control-icon-size-md);
+
+  display: inline-flex;
+
+  justify-content: center;
+  align-items: center;
+  gap: var(--altum-g-space-2);
+
+  height: var(--altum-btn-height);
+
+  margin: 0;
+  padding: 0 var(--altum-btn-pad-x);
+
+  border: 1px solid var(--altum-btn-border);
+  border-radius:
+    var(--altum-field-group-radius-start, var(--altum-btn-shape))
+    var(--altum-field-group-radius-end, var(--altum-btn-shape))
+    var(--altum-field-group-radius-end, var(--altum-btn-shape))
+    var(--altum-field-group-radius-start, var(--altum-btn-shape));
+  outline: none;
+
+  font-family: var(--altum-g-font-family-ui);
+  font-size: var(--altum-btn-font-size);
+  font-weight: var(--altum-g-font-weight-medium);
+  user-select: none;
+
+  color: var(--altum-btn-text);
+  background: var(--altum-btn-bg);
+  box-shadow: var(--altum-btn-shadow);
+
+  cursor: pointer;
+  appearance: none;
+
+  transition: var(--altum-transition-smooth);
+
+  -webkit-tap-highlight-color: transparent;
+
+  & > * {
+    --altum-field-group-radius-start: initial;
+    --altum-field-group-radius-end: initial;
+  }
+
+  & svg {
+    width: var(--altum-btn-icon-size);
+    height: var(--altum-btn-icon-size);
+  }
+
+  &:is([data-disabled], :disabled) {
+    color: color-mix(in srgb, var(--altum-btn-text) 48%, var(--altum-color-bg));
+
+    cursor: not-allowed;
+
+    &:not([data-variant='ghost'], [data-variant='link']) {
+      border-color: var(--altum-field-group-stroke, transparent);
+
+      background: color-mix(in srgb, var(--altum-btn-bg) 36%, var(--altum-color-surface));
+      box-shadow: var(--altum-field-group-shadow, none);
+    }
+  }
+
+  &[aria-disabled='true'] {
+    pointer-events: none;
+  }
+
+  &[aria-busy='true'] {
+    cursor: progress;
+
+    &::before {
+      display: inline-block;
+      content: '';
+      box-sizing: border-box;
+
+      width: var(--altum-btn-icon-size);
+      height: var(--altum-btn-icon-size);
+
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+
+      animation: spin 0.75s linear infinite;
+    }
+  }
+
+  &:not(:disabled, [aria-disabled='true'], [aria-busy='true']) {
+    &:hover {
+      color: var(--altum-btn-text-hover);
+      background-color: var(--altum-btn-bg-hover);
+    }
+
+    &:active {
+      background-color: var(--altum-btn-bg-active);
+    }
+  }
+
+  &:focus-visible {
+    box-shadow: var(--altum-btn-shadow), 0 0 0 var(--altum-button-focus-inner) var(--altum-color-bg), 0 0 0 var(--altum-button-focus-outer) var(--altum-btn-focus-ring);
+  }
+
+  &:where([data-size='sm']) {
+    --altum-btn-height: var(--altum-control-height-sm);
+    --altum-btn-pad-x: var(--altum-g-space-3);
+    --altum-btn-font-size: var(--altum-g-font-size-2xs);
+    --altum-btn-icon-size: var(--altum-control-icon-size-sm);
+  }
+
+  &:where([data-size='lg']) {
+    --altum-btn-height: var(--altum-control-height-lg);
+    --altum-btn-pad-x: var(--altum-g-space-7);
+    --altum-btn-font-size: var(--altum-g-font-size-lg);
+    --altum-btn-icon-size: var(--altum-control-icon-size-lg);
+  }
+
+  /* alias: явный data-variant="primary" снаружи */
+  &[data-variant='primary'] {
+    --altum-btn-border: var(--altum-field-group-stroke, var(--altum-color-button-border-primary));
+    --altum-btn-text: var(--altum-color-brand-text);
+    --altum-btn-bg: var(--altum-color-brand);
+    --altum-btn-bg-hover: var(--altum-color-brand-hover);
+    --altum-btn-bg-active: var(--altum-color-brand-active);
+    --altum-btn-shadow: var(--altum-field-group-shadow, var(--altum-shadow-brand));
+  }
+
+  &[data-variant='tinted'] {
+    --altum-btn-border: var(--altum-field-group-stroke, var(--altum-color-button-tinted-border));
+    --altum-btn-text: var(--altum-color-button-tinted-text);
+    --altum-btn-bg: var(--altum-color-button-tinted-bg);
+    --altum-btn-bg-hover: var(--altum-color-button-tinted-bg-hover);
+    --altum-btn-bg-active: var(--altum-color-button-tinted-bg-active);
+  }
+
+  &[data-variant='secondary'] {
+    --altum-btn-border: var(--altum-field-group-stroke, var(--altum-color-button-secondary-border));
+    --altum-btn-text: var(--altum-color-button-secondary-text);
+    --altum-btn-bg: var(--altum-color-button-secondary-bg);
+    --altum-btn-bg-hover: var(--altum-color-button-secondary-bg-hover);
+    --altum-btn-bg-active: var(--altum-color-button-secondary-bg-active);
+    --altum-btn-shadow: var(--altum-field-group-shadow, var(--altum-color-button-secondary-shadow));
+  }
+
+  &[data-variant='danger'] {
+    --altum-btn-border: var(--altum-field-group-stroke, var(--altum-color-button-border-danger));
+    --altum-btn-text: var(--altum-color-danger-text);
+    --altum-btn-bg: var(--altum-color-danger-bg-solid);
+    --altum-btn-bg-hover: var(--altum-color-danger-bg-hover);
+    --altum-btn-bg-active: var(--altum-color-danger-bg-active);
+    --altum-btn-shadow: var(--altum-field-group-shadow, var(--altum-color-danger-shadow));
+  }
+
+  &[data-variant='danger_tinted'] {
+    --altum-btn-border: var(--altum-field-group-stroke, var(--altum-color-button-border-danger-tinted));
+    --altum-btn-text: var(--altum-color-danger-tint-text);
+    --altum-btn-text-hover: var(--altum-color-danger-text-secondary-hover);
+    --altum-btn-bg: var(--altum-color-danger-tint-bg);
+    --altum-btn-bg-hover: var(--altum-color-danger-tint-bg-hover);
+    --altum-btn-bg-active: var(--altum-color-danger-tint-bg-active);
+  }
+
+  &:is([data-variant='danger'], [data-variant='danger_tinted']) {
+    --altum-btn-focus-ring: var(--altum-color-danger-bg-solid);
+  }
+
+  &[data-variant='ghost'] {
+    /* Сброс primary-дефолтов с `.btn` (data-variant у primary опущен). */
+    --altum-btn-border: var(--altum-field-group-stroke, transparent);
+    --altum-btn-text: var(--altum-color-button-ghost-text);
+    --altum-btn-text-hover: var(--altum-color-button-ghost-text-hover);
+    --altum-btn-bg: transparent;
+    --altum-btn-bg-hover: var(--altum-color-button-ghost-hover-bg);
+    --altum-btn-bg-active: var(--altum-color-button-ghost-active-bg);
+    /* Не `none`: иначе составной box-shadow на :focus-visible невалиден. */
+    --altum-btn-shadow: var(--altum-field-group-shadow, 0 0 0 0 transparent);
+  }
+
+  &[data-variant='link'] {
+    --altum-btn-border: transparent;
+    --altum-btn-text: var(--altum-color-link-color);
+    --altum-btn-text-hover: var(--altum-color-link-color-hover);
+    --altum-btn-bg: transparent;
+    --altum-btn-bg-hover: transparent;
+    --altum-btn-bg-active: transparent;
+    --altum-btn-shadow: 0 0 0 0 transparent;
+    --altum-btn-radius: var(--altum-g-radius-sm);
+
+    align-self: center;
+
+    height: auto;
+
+    padding: 0;
+
+    border: none;
+
+    font-weight: var(--altum-g-font-weight-normal);
+
+    &:not(:disabled, [aria-disabled='true']):active {
+      color: var(--altum-color-link-color-hover);
+    }
+  }
+
+  &[aria-pressed='false'] {
+    border-color: var(--altum-field-group-stroke, transparent);
+
+    opacity: 0.75;
+    background-color: transparent;
+    box-shadow: var(--altum-field-group-shadow, none);
+
+    &:not(:disabled, [aria-disabled='true']):hover {
+      opacity: 1;
+    }
+  }
+
+  &[data-icon-only] {
+    --altum-btn-pad-x: 0;
+
+    width: auto;
+    aspect-ratio: 1;
+
+    & svg {
+      transform: translateY(0.5px);
+    }
+  }
+
+  &[data-full-width] {
+    display: flex;
+
+    width: 100%;
+  }
+
+  &[data-loading] {
+    pointer-events: none;
+  }
+
+  &[data-shape='circle'] {
+    --altum-btn-radius: 50%;
+    --altum-btn-pad-x: 0;
+
+    width: auto;
+    aspect-ratio: 1;
+  }
+
+  &[data-icon-only] {
+    --altum-btn-pad-x: 0;
+
+    width: auto;
+    aspect-ratio: 1;
+
+    & svg {
+      transform: translateY(0.5px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &[aria-busy='true']::before {
+      border-right-color: currentColor;
+
+      opacity: 0.55;
+
+      animation: none;
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

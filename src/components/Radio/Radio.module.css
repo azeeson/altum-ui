@@ -28,3 +28,27 @@
     transform: translate(-50%, -50%) scale(1);
   }
 }
+
+.group {
+  display: flex;
+
+  flex-direction: column;
+  gap: var(--altum-toggle-stack-gap);
+
+  width: 100%;
+
+  &[data-orientation='horizontal'] {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+.label {
+  flex: 1 0 100%;
+
+  font-size: var(--altum-form-legend-size, var(--altum-g-font-size-base));
+  font-weight: var(--altum-form-legend-weight, var(--altum-g-font-weight-semibold));
+  line-height: var(--altum-form-legend-line-height, var(--altum-g-line-height-base));
+
+  color: var(--altum-color-input-text);
+}

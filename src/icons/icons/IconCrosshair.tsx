@@ -1,3 +1,3 @@
-import {createIcon} from '../createIcon';
-
-export const IconCrosshair = createIcon('M46.1,0C46.1,0,46.1,0,46.1,0C46,0,46,0,46.1,0C46,0,46,0,46.1,0C20.6,0,0,20.6,0,46 c0,25.3,20.6,46,45.9,46c0,0,0,0,0,0c0,0,0,0,0,0c0,0,0,0,0,0c25.4,0,46-20.6,46-46C92,20.7,71.4,0,46.1,0z M50,83.8V73.5 c0-2.2-1.8-4-4-4s-4,1.8-4,4v10.3C24,81.9,10.1,67.7,8.2,50h10.3c2.2,0,4-1.8,4-4s-1.8-4-4-4H8.2C10.1,24.2,24,10.1,42,8.2v10.3 c0,2.2,1.8,4,4,4s4-1.8,4-4V8.2c18,1.9,31.9,16,33.8,33.8H73.5c-2.2,0-4,1.8-4,4s1.8,4,4,4h10.3C81.9,67.8,68,81.9,50,83.8z');
+import {IconBase, type IconProps} from '../IconBase';
+import {ICON_PATHS} from '../registry';
+export const IconCrosshair = (p: IconProps) => <IconBase d={ICON_PATHS.crosshair} {...p} />;

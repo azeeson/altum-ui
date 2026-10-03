@@ -2,10 +2,9 @@ import type {Meta} from '@storybook/react';
 import React from 'react';
 import {Avatar, AvatarGroup, AvatarProps} from './Avatar';
 import {Card} from '../Card/Card';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Title} from '../Title/Title';
-import {Badge} from '../Badge/Badge';
 import {demoThumb} from '../../storybook/demoImages';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
@@ -156,16 +155,11 @@ export const UsageExample: Story<AvatarProps> = {
 		<div style={{maxWidth: 360}}>
 			<Card>
 				<Inline gap='md' align='center'>
-					<Badge
-						dot
-						variant='success'
-					>
-						<Avatar
-							name='Алексей Иванов'
-							size='lg'
-							status='online'
-						/>
-					</Badge>
+					<Avatar
+						name='Алексей Иванов'
+						size='lg'
+						status='online'
+					/>
 					<Stack gap='none'>
 						<Title level={4}>
 							Алексей Иванов

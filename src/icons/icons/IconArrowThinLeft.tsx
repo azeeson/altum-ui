@@ -1,3 +1,3 @@
-import {createIcon} from '../createIcon';
-
-export const IconArrowThinLeft = createIcon('M84,46c0,2.2-1.8,4-4,4H21.6l18.1,18.2c1.6,1.6,1.6,4.1,0,5.7C39,74.6,38,75,36.9,75c-1,0-2.1-0.4-2.8-1.2 l-24.9-25c-1.6-1.6-1.6-4.1,0-5.6l24.9-25c1.6-1.6,4.1-1.6,5.7,0c1.6,1.6,1.6,4.1,0,5.7L21.6,42H80C82.2,42,84,43.8,84,46z');
+import {IconBase, type IconProps} from '../IconBase';
+import {ICON_PATHS} from '../registry';
+export const IconArrowThinLeft = (p: IconProps) => <IconBase d={ICON_PATHS.arrowThinLeft} {...p} />;

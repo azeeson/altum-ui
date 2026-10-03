@@ -8,19 +8,18 @@ export type {
 	ThemeProviderProps,
 } from './ThemeProvider.types';
 
+import {useRequiredContext} from '../../hooks/useRequiredContext';
 import React, {
 	createContext,
-	forwardRef,
 	useCallback,
-	useContext,
 	useLayoutEffect,
 	useMemo,
 	useRef,
 	useState,
 } from 'react';
 import styles from './ThemeProvider.module.css';
-import {cn} from '../../utils/cn';
-import {composeRefs} from '../../utils/composeRefs';
+import {cn} from '../../core/utils/cn';
+import {uRef} from '../../core/utils/bundle';
 
 interface ThemeContextProps {
 	theme: Theme;
@@ -28,40 +27,26 @@ interface ThemeContextProps {
 	toggleTheme: () => void;
 }
 
-const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
+const ThemeContext = createContext<ThemeContextProps | null>(null);
 
 /**
  * Доступ к текущей теме и методам переключения.
  * Должен вызываться внутри {@link ThemeProvider}.
- *
- * @returns Объект с `theme`, `setTheme` и `toggleTheme`.
- * @throws Error, если провайдер не найден в дереве компонентов.
- *
- * @example
- * const { theme, toggleTheme } = useTheme();
  */
-export const useTheme = () => {
-	const context = useContext(ThemeContext);
-	if (!context) {
-		throw new Error('useTheme должен вызываться внутри ThemeProvider');
-	}
-	return context;
-};
-
-const THEME_CLASSES = [styles.light, styles.dark] as const;
+export const useTheme = () => useRequiredContext(
+	ThemeContext,
+	'useTheme должен вызываться внутри ThemeProvider',
+);
 
 function applyThemeToElement(el: Element, theme: Theme): void {
 	el.classList.add(styles.themeProvider);
-	for (const cls of THEME_CLASSES) {
-		el.classList.toggle(cls, cls === styles[theme]);
-	}
 	if (el instanceof HTMLElement) {
 		el.dataset.theme = theme;
 	}
 }
 
 function clearThemeFromElement(el: Element): void {
-	el.classList.remove(styles.themeProvider, ...THEME_CLASSES);
+	el.classList.remove(styles.themeProvider);
 	if (el instanceof HTMLElement) {
 		delete el.dataset.theme;
 	}
@@ -82,50 +67,27 @@ function clearThemeFromDocument(): void {
 }
 
 /**
- * Корневой провайдер темы light/dark: прокидывает CSS-переменные дизайн-системы
- * на обёртку и опционально на `document.documentElement` / `document.body`.
- * Сохраняет тему в React-контексте для {@link useTheme}.
- *
- * По умолчанию (`applyTo="wrapper"`) тема локальна для поддерева провайдера.
- * Для глобальных порталов на `document.body` передайте `applyTo="document"`.
+ * Корневой провайдер темы light/dark: CSS-переменные через `data-theme`.
  *
  * @component
- * @example
- * <ThemeProvider initialTheme="dark">
- *   <App />
- * </ThemeProvider>
- * @example
- * // Контролируемый режим (например, после чтения localStorage)
- * <ThemeProvider theme={theme} onThemeChange={setTheme}>
- *   <App />
- * </ThemeProvider>
- * @example
- * // Легаси: токены на html/body для порталов, смонтированных на body
- * <ThemeProvider applyTo="document" initialTheme="dark">
- *   <App />
- * </ThemeProvider>
  */
-export const ThemeProvider = forwardRef<HTMLDivElement, ThemeProviderProps>(function ThemeProvider(
-	{
-		initialTheme = 'light',
-		theme: themeProp,
-		onThemeChange,
-		applyTo = 'wrapper',
-		children,
-		className,
-		...rest
-	},
-	ref,
-) {
+export const ThemeProvider = ({
+	initialTheme = 'light',
+	theme: themeProp,
+	onThemeChange,
+	applyTo = 'wrapper',
+	children,
+	className,
+	rootRef,
+	...rest
+}: ThemeProviderProps) => {
 	const isControlled = themeProp !== undefined;
 	const [uncontrolledTheme, setUncontrolledTheme] = useState<Theme>(initialTheme);
 	const theme = isControlled ? themeProp : uncontrolledTheme;
 	const wrapperRef = useRef<HTMLDivElement>(null);
 
 	const setTheme = useCallback((newTheme: Theme) => {
-		if (!isControlled) {
-			setUncontrolledTheme(newTheme);
-		}
+		if (!isControlled) setUncontrolledTheme(newTheme);
 		onThemeChange?.(newTheme);
 	}, [isControlled, onThemeChange]);
 
@@ -139,39 +101,33 @@ export const ThemeProvider = forwardRef<HTMLDivElement, ThemeProviderProps>(func
 		toggleTheme,
 	}), [theme, setTheme, toggleTheme]);
 
-	// Применить до отрисовки, чтобы первый кадр совпадал с темой.
 	useLayoutEffect(() => {
 		if (applyTo === 'document') {
 			applyThemeToDocument(theme);
+			return;
 		}
 		const wrapper = wrapperRef.current;
-		if (wrapper) {
-			applyThemeToElement(wrapper, theme);
-		}
+		if (wrapper) applyThemeToElement(wrapper, theme);
 	}, [applyTo, theme]);
 
 	useLayoutEffect(() => () => {
-		if (applyTo === 'document') {
-			clearThemeFromDocument();
-		}
+		if (applyTo === 'document') clearThemeFromDocument();
 		const wrapper = wrapperRef.current;
-		if (wrapper) {
-			clearThemeFromElement(wrapper);
-		}
+		if (wrapper) clearThemeFromElement(wrapper);
 	}, [applyTo]);
+
+	const themeOnWrapper = applyTo !== 'document';
 
 	return (
 		<ThemeContext.Provider value={value}>
 			<div
-				ref={composeRefs(ref, wrapperRef)}
-				className={cn(styles.themeProvider, styles[theme], className)}
-				data-theme={theme}
+				ref={uRef(rootRef, wrapperRef)}
+				className={cn(themeOnWrapper && styles.themeProvider, className)}
+				data-theme={themeOnWrapper ? theme : undefined}
 				{...rest}
 			>
 				{children}
 			</div>
 		</ThemeContext.Provider>
 	);
-});
-
-ThemeProvider.displayName = 'ThemeProvider';
+};

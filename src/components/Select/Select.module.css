@@ -1,22 +1,26 @@
-.chipsRow {
-  display: flex;
-  box-sizing: border-box;
-  overflow: hidden;
+.filterWrapper {
+  padding: var(--altum-g-space-2);
 
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--altum-g-space-1);
-
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
+  border-bottom: 1px solid var(--altum-color-border);
 }
 
-.chip {
-  overflow: hidden;
+.arrow {
+  flex-shrink: 0;
 
-  flex: 0 1 auto;
+  color: var(--altum-field-label);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 
-  min-width: 0;
-  max-width: 100%;
+  transition: transform 0.2s ease;
+
+  :global([data-field]:has([aria-expanded='true'])) & {
+    transform: rotate(180deg);
+  }
+
+  &[data-readonly] {
+    opacity: var(--altum-opacity-disabled);
+  }
 }

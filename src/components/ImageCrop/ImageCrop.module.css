@@ -1,28 +1,36 @@
 .panel {
-  position: relative;
   z-index: var(--altum-g-z-raised);
-
-  display: flex;
-  box-sizing: border-box;
-
-  flex-direction: column;
 
   width: min(100%, var(--altum-image-crop-panel-max));
 
-  border-radius: var(--altum-g-radius);
-
-  color: var(--altum-color-fill-floating-fg);
-  background-color: var(--altum-color-fill-floating-bg);
-
   pointer-events: auto;
 
-  & .hint {
-    margin: 0;
+  & .container {
+    display: flex;
 
-    font-size: var(--altum-g-font-size-sm);
-    line-height: 1.4;
+    flex-direction: column;
+    gap: var(--altum-g-space-4);
 
-    color: var(--altum-color-muted);
+    padding: var(--altum-g-space-4);
+  }
+
+  & .header {
+    display: flex;
+
+    flex-direction: column;
+    gap: var(--altum-g-space-1);
+  }
+
+  & .content {
+    min-width: 0;
+  }
+
+  & .footer {
+    display: flex;
+
+    justify-content: flex-end;
+    align-items: center;
+    gap: var(--altum-g-space-3);
   }
 
   & .stage {
@@ -53,6 +61,8 @@
     left: 50%;
 
     cursor: grab;
+
+    transform: translate3d(-50%, -50%, 0);
 
     will-change: transform;
 
@@ -107,6 +117,10 @@
     z-index: calc(var(--altum-g-z-raised) + 1);
 
     pointer-events: none;
+
+    transform: translate3d(-50%, -50%, 0);
+
+    will-change: transform;
   }
 
   & .handle {
@@ -125,7 +139,6 @@
     box-shadow: var(--altum-shadow-brand);
 
     pointer-events: auto;
-    appearance: none;
 
     transform: translate(-50%, -50%);
 

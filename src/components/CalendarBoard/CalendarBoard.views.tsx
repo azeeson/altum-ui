@@ -1,10 +1,9 @@
-import React, {forwardRef} from 'react';
 import {useCalendarBoard} from './CalendarBoard.context';
 import {CalendarBoardMonth} from './CalendarBoard.MonthView';
 import {CalendarBoardWeek, CalendarBoardDay} from './CalendarBoard.ScheduleView';
 import {CalendarBoardYear} from './CalendarBoard.YearView';
 import styles from './CalendarBoard.module.css';
-import {cn} from '../../utils/cn';
+import {cn} from '../../core/utils/cn';
 import type {CalendarBoardBodyProps} from './CalendarBoard.types';
 
 export type {CalendarBoardMonthProps} from './CalendarBoard.types';
@@ -16,24 +15,23 @@ export {CalendarBoardMonth} from './CalendarBoard.MonthView';
 export {CalendarBoardWeek, CalendarBoardDay} from './CalendarBoard.ScheduleView';
 export {CalendarBoardYear} from './CalendarBoard.YearView';
 
-export const CalendarBoardBody = forwardRef<HTMLDivElement, CalendarBoardBodyProps>(function CalendarBoardBody(
-	{
-		className,
-		monthProps,
-		weekProps,
-		dayProps,
-		yearProps,
-		...rest
-	},
-	ref,
-) {
+export const CalendarBoardBody = ({
+	className,
+	monthProps,
+	weekProps,
+	dayProps,
+	yearProps,
+	rootRef,
+	...rest
+}: CalendarBoardBodyProps) => {
 	const {view} = useCalendarBoard('CalendarBoard.Body');
 
 	return (
 		<div
-			ref={ref}
-			className={cn(styles.body, className)}
 			{...rest}
+			ref={rootRef}
+			className={cn(styles.body, className)}
+			data-view={view}
 		>
 			{view === 'month' && <CalendarBoardMonth {...monthProps} />}
 			{view === 'week' && <CalendarBoardWeek {...weekProps} />}
@@ -41,6 +39,4 @@ export const CalendarBoardBody = forwardRef<HTMLDivElement, CalendarBoardBodyPro
 			{view === 'year' && <CalendarBoardYear {...yearProps} />}
 		</div>
 	);
-});
-
-CalendarBoardBody.displayName = 'CalendarBoard.Body';
+};

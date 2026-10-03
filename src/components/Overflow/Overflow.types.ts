@@ -2,6 +2,7 @@ import type {
 	ButtonHTMLAttributes,
 	ComponentPropsWithoutRef,
 	ReactNode,
+	Ref,
 } from 'react';
 import type {DropdownAlign} from '../Dropdown/Dropdown';
 import type {ControlSize, GroupGap} from '../../types';
@@ -40,9 +41,9 @@ export type OverflowItemProps = {
 export type OverflowGap = GroupGap;
 
 /**
- * Как считать ширину корня в режиме измерения (произвольные children).
- * - `content` — по видимым children;
- * - `container` — на всю ширину родителя, ⋯ справа.
+ * Как считать ширину корня.
+ * - `content` — по видимым children (Measure);
+ * - `container` — на всю ширину: Measure — fitCount+RO; Actions — equal-width CQ.
  */
 export type OverflowFit = 'content' | 'container';
 
@@ -57,7 +58,8 @@ export interface OverflowProps extends Omit<ComponentPropsWithoutRef<'div'>, 'ch
 	/**
 	 * Сколько `Overflow.Item` показывать снаружи.
 	 * `0` — все только в меню ⋯.
-	 * Не задано / `Infinity` — показать все (⋯ не нужен).
+	 * Не задано / `Infinity` — показать все (⋯ не нужен),
+	 * либо при `fit="container"` — equal-width CQ auto-hide.
 	 */
 	visibleCount?: number;
 	/**
@@ -90,7 +92,7 @@ export interface OverflowProps extends Omit<ComponentPropsWithoutRef<'div'>, 'ch
 	/** Промежуток между измеряемыми children. @default 'md' */
 	gap?: OverflowGap;
 	/**
-	 * Ширина корня в режиме измерения.
+	 * Ширина корня: измерение children, либо Actions equal-width CQ (`container`).
 	 * @default 'content'
 	 */
 	fit?: OverflowFit;
@@ -100,4 +102,6 @@ export interface OverflowProps extends Omit<ComponentPropsWithoutRef<'div'>, 'ch
 	align?: DropdownAlign;
 	/** Подпись кнопки ⋯ в режиме измерения. */
 	moreLabel?: string;
+	/** Корень панели. При `longPress` — хост `ActionSheetTrigger`. */
+	rootRef?: Ref<HTMLDivElement>;
 }

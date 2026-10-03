@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {Dropdown, type DropdownProps} from './Dropdown';
 import {Button} from '../Button/Button';
 import {Text} from '../Text/Text';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {ActionList} from '../ActionList/ActionList';
 import type {ActionListItem} from '../ActionList/ActionList.types';
 import {componentParameters, story, Story} from '../../storybook/meta';
@@ -30,11 +30,11 @@ export default {
 	component: Dropdown,
 	tags: ['autodocs'],
 	parameters: {
-		...componentParameters('Выпадающая панель, привязанная к renderTrigger. На экранах ≤768px — Sheet.'),
+		...componentParameters('Список или меню у кнопки. Выбор пункта закрывает панель. На экранах ≤768px — Sheet.'),
 		controls: {
 			exclude: [
 				'children',
-				'renderTrigger',
+				'trigger',
 				'onOpenChange',
 				'boxProps'
 			],
@@ -85,11 +85,11 @@ export const Playground: Story<DropdownProps> = {
 			popupRole={args.popupRole}
 			panelScroll={args.panelScroll}
 			mobileTitle={args.mobileTitle ?? 'Меню'}
-			renderTrigger={(props, ref) => (
+			trigger={(props, ref) => (
 				<Button
 					variant='primary'
 					{...props}
-					ref={ref}
+					rootRef={ref}
 				>
 					Открыть ▼
 				</Button>
@@ -121,11 +121,11 @@ export const WithWidthModes: Story<DropdownProps> = {
 				</Text>
 				<Dropdown
 					widthMode='content'
-					renderTrigger={(props, ref) => (
+					trigger={(props, ref) => (
 						<Button
 							variant='primary'
 							{...props}
-							ref={ref}
+							rootRef={ref}
 						>
 							Узкая кнопка и широкий контент ▼
 						</Button>
@@ -144,11 +144,11 @@ export const WithWidthModes: Story<DropdownProps> = {
 				</Text>
 				<Dropdown
 					widthMode='trigger'
-					renderTrigger={(props, ref) => (
+					trigger={(props, ref) => (
 						<Button
 							variant='secondary'
 							{...props}
-							ref={ref}
+							rootRef={ref}
 						>
 							Широкий элемент-триггер ▼
 						</Button>
@@ -174,11 +174,11 @@ export const Alignments: Story<DropdownProps> = {
 					key={align}
 					align={align}
 					widthMode='content'
-					renderTrigger={(props, ref) => (
+					trigger={(props, ref) => (
 						<Button
 							variant='secondary'
 							{...props}
-							ref={ref}
+							rootRef={ref}
 						>
 							align=
 							{align}
@@ -204,43 +204,39 @@ export const Alignments: Story<DropdownProps> = {
 };
 
 export const Opened: Story<DropdownProps> = {
-	render: function OpenedRender() {
-		const [open, setOpen] = useState(true);
-		return (
-			<Dropdown
-				open={open}
-				onOpenChange={setOpen}
-				widthMode='content'
-				mobileTitle='Меню'
-				renderTrigger={(props, ref) => (
-					<Button
-						variant='primary'
-						{...props}
-						ref={ref}
-					>
-						Панель открыта
-					</Button>
-				)}
-			>
-				<div style={{padding: 12}}>
-					<Text size='sm'>
-						Состояние open для визуальной регрессии.
-					</Text>
-				</div>
-			</Dropdown>
-		);
-	},
-	parameters: story('Контролируемый `open` — панель сразу видна.'),
+	render: () => (
+		<Dropdown
+			defaultOpen
+			widthMode='content'
+			mobileTitle='Меню'
+			trigger={(props, ref) => (
+				<Button
+					variant='primary'
+					{...props}
+					rootRef={ref}
+				>
+					Панель открыта
+				</Button>
+			)}
+		>
+			<div style={{padding: 12}}>
+				<Text size='sm'>
+					Состояние open для визуальной регрессии.
+				</Text>
+			</div>
+		</Dropdown>
+	),
+	parameters: story('`defaultOpen` — панель сразу видна.'),
 };
 
 export const Disabled: Story<DropdownProps> = {
 	render: () => (
 		<Dropdown
-			renderTrigger={(props, ref) => (
+			trigger={(props, ref) => (
 				<Button
 					variant='secondary'
 					{...props}
-					ref={ref}
+					rootRef={ref}
 					disabled
 				>
 					Недоступно
@@ -261,11 +257,11 @@ export const OverflowText: Story<DropdownProps> = {
 	render: () => (
 		<Dropdown
 			widthMode='trigger'
-			renderTrigger={(props, ref) => (
+			trigger={(props, ref) => (
 				<Button
 					variant='secondary'
 					{...props}
-					ref={ref}
+					rootRef={ref}
 				>
 					Короткий триггер
 				</Button>
@@ -291,11 +287,11 @@ export const UsageExample: Story<DropdownProps> = {
 					popupRole='menu'
 					widthMode='content'
 					mobileTitle='Действия'
-					renderTrigger={(props, ref) => (
+					trigger={(props, ref) => (
 						<Button
 							variant='secondary'
 							{...props}
-							ref={ref}
+							rootRef={ref}
 						>
 							Действия
 						</Button>
@@ -322,11 +318,11 @@ export const Interaction: Story<DropdownProps> = {
 		<Dropdown
 			widthMode='content'
 			mobileTitle='Меню'
-			renderTrigger={(props, ref) => (
+			trigger={(props, ref) => (
 				<Button
 					variant='primary'
 					{...props}
-					ref={ref}
+					rootRef={ref}
 				>
 					Открыть меню
 				</Button>

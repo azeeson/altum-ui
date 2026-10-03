@@ -37,4 +37,3 @@ export function ChartYGrid({
 		</>
 	);
 }
-ChartYGrid.displayName = 'ChartYGrid';

@@ -16,13 +16,11 @@
 }
 
 .media {
+  /* display/align/justify — `utilities.fCenter`; здесь inline-flex override + well. */
   display: inline-flex;
-  box-sizing: border-box;
   overflow: hidden;
 
   flex-shrink: 0;
-  justify-content: center;
-  align-items: center;
 
   & img {
     display: block;
@@ -34,10 +32,8 @@
 }
 
 .content {
-  display: flex;
-
+  /* column stack — `utilities.fColumn` в TSX. */
   flex: 1 1 auto;
-  flex-direction: column;
   gap: calc(var(--altum-g-space-1) + var(--altum-control-inset));
 
   min-width: 0;

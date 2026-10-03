@@ -8,7 +8,7 @@ const docsSource = {
 	excludeDecorators: true,
 };
 
-/** Общие Controls для полей на `FieldBase`. */
+/** Общие Controls для полей на `TextField`. */
 export const fieldArgTypes = {
 	label: {
 		control: 'text',
@@ -28,13 +28,6 @@ export const fieldArgTypes = {
 		},
 		description: 'Ширина оболочки: `md` или `full`',
 	},
-	labelPlacement: {
-		control: {
-			type: 'select',
-			options: ['inline', 'outside', 'none'],
-		},
-		description: 'Расположение лейбла: inline / outside / none',
-	},
 	disabled: {
 		control: 'boolean',
 		description: 'Заблокированное состояние',
@@ -47,13 +40,13 @@ export const fieldArgTypes = {
 		control: 'text',
 		description: 'Текст ошибки валидации',
 	},
-	helperText: {
+	description: {
 		control: 'text',
 		description: 'Подсказка под полем',
 	},
 	placeholder: {
 		control: 'text',
-		description: 'Подсказка в поле (вне inline)',
+		description: 'Подсказка в поле (без `label`)',
 	},
 	onChange: {
 		action: 'onChange',

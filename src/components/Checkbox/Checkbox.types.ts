@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 import type {ControlSize, LabelSide} from '../../types';
 
@@ -48,6 +49,8 @@ export interface CheckboxProps extends Omit<ComponentPropsWithoutRef<'input'>, '
 	 * Native `onChange` сохраняется.
 	 */
 	onCheckedChange?: (checked: boolean) => void;
+	/** Нативный `<input type="checkbox">`. */
+	inputRef?: Ref<HTMLInputElement>;
 }
 
 /**
@@ -67,4 +70,6 @@ export interface CheckboxGroupProps extends Omit<ComponentPropsWithoutRef<'field
 	disabled?: boolean;
 	size?: ControlSize;
 	labelSide?: LabelSide;
+	/** Fieldset группы. */
+	rootRef?: Ref<HTMLFieldSetElement>;
 }

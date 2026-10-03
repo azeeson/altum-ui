@@ -1,7 +1,7 @@
 import {test, expect} from '@playwright/test';
 import {visitStory} from '../helpers/storybook';
 
-test.describe('FieldBase', () => {
+test.describe('TextField', () => {
 	test('очищает введённое значение через Clear', async ({page}) => {
 		await visitStory(page, 'altum-test-base--field-base-clear');
 		const input = page.getByLabel('Сумма');
@@ -13,15 +13,6 @@ test.describe('FieldBase', () => {
 	});
 });
 
-test.describe('ButtonBase', () => {
-	test('отдаёт недоступную кнопку и ссылку', async ({page}) => {
-		await visitStory(page, 'altum-test-base--button-base-states');
-		await expect(page.getByRole('button', {name: 'Действие'})).toBeEnabled();
-		await expect(page.getByRole('button', {name: 'Недоступно'})).toBeDisabled();
-		await expect(page.getByRole('link', {name: 'Ссылка'})).toHaveAttribute('href', '#base-link');
-	});
-});
-
 test.describe('ToggleControlBase', () => {
 	test('переключает нативный input с лейбла', async ({page}) => {
 		await visitStory(page, 'altum-test-base--toggle-control-base-label');
@@ -29,15 +20,6 @@ test.describe('ToggleControlBase', () => {
 		await expect(checkbox).not.toBeChecked();
 		await page.getByText('Согласен').click();
 		await expect(checkbox).toBeChecked();
-	});
-});
-
-test.describe('DialogBase', () => {
-	test('закрывается кнопкой Close в Header', async ({page}) => {
-		await visitStory(page, 'altum-test-base--dialog-base-chrome');
-		await expect(page.getByRole('heading', {name: 'Заголовок'})).toBeVisible();
-		await page.getByRole('button', {name: /Закрыть|Close/i}).click();
-		await expect(page.getByText('Диалог закрыт')).toBeVisible();
 	});
 });
 

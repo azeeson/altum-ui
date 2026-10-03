@@ -53,8 +53,12 @@
   display: inline-block;
   box-sizing: border-box;
 
+  flex-shrink: 0;
+
   width: var(--altum-toggle-box-size);
+  min-width: var(--altum-toggle-box-size);
   height: var(--altum-toggle-box-size);
+  min-height: var(--altum-toggle-box-size);
 
   border: 1px solid var(--altum-color-control-border);
 

@@ -1,19 +1,21 @@
-import React, {forwardRef, useMemo} from 'react';
+import {useMemo, type Ref} from 'react';
+import {Text} from '../Text/Text';
 import {
 	addDays,
 	formatMonthYear,
-	startOfWeek,
+	getWeekStart,
 	weekdayLabelFor,
 } from '../Calendar/Calendar.utils';
+import {ButtonIcon} from '../ButtonIcon/ButtonIcon';
+import {IconChevronLeft} from '../../icons/icons/IconChevronLeft';
+import {IconChevronRight} from '../../icons/icons/IconChevronRight';
 import {SegmentedControl} from '../SegmentedControl/SegmentedControl';
-import {ChevronButton} from '../../base/ChevronButton';
 import {
 	useCalendarBoard,
 	type CalendarBoardView,
 } from './CalendarBoard.context';
 import styles from './CalendarBoard.module.css';
-import {cn} from '../../utils/cn';
-import unstyled from '../../styles/unstyledControl.module.css';
+import {cn} from '../../core/utils/cn';
 import {useLocale} from '../../locales/localeContext';
 import type {
 	CalendarBoardViewSwitchProps,
@@ -22,6 +24,13 @@ import type {
 	CalendarBoardTitleProps,
 	CalendarBoardNavProps,
 } from './CalendarBoard.types';
+import {ruSlice as ru_calendar} from '../../locales/slices/calendar.ru';
+import {ruSlice as ru_calendarBoard} from '../../locales/slices/calendarBoard.ru';
+
+const localeFallback = {
+	calendar: ru_calendar,
+	calendarBoard: ru_calendarBoard,
+};
 
 export type {
 	CalendarBoardRootProps,
@@ -30,55 +39,55 @@ export type {
 	CalendarBoardNavProps,
 } from './CalendarBoard.types';
 
-export const CalendarBoardRoot = forwardRef<HTMLDivElement, CalendarBoardRootProps>(function CalendarBoardRoot(
-	{
-		children,
-		className,
-		'aria-label': ariaLabel,
-		...rest
-	},
-	ref,
-) {
-	const {messages} = useLocale();
+export const CalendarBoardRoot = ({
+	children,
+	className,
+	style,
+	rootRef,
+	'aria-label': ariaLabel,
+	...rest
+}: CalendarBoardRootProps) => {
+	const {messages} = useLocale(localeFallback);
 
 	return (
 		<div
-			ref={ref}
+			{...rest}
+			ref={rootRef}
 			className={cn(styles.root, className)}
+			style={{
+				color: 'var(--altum-color-input-text)',
+				...style,
+			}}
 			role='region'
 			aria-label={ariaLabel ?? messages.calendarBoard.ariaLabel}
-			{...rest}
 		>
 			{children}
 		</div>
 	);
-});
+};
 
-CalendarBoardRoot.displayName = 'CalendarBoard.Root';
+export const CalendarBoardHeader = ({
+	children,
+	className,
+	rootRef,
+	...rest
+}: CalendarBoardHeaderProps) => (
+	<div
+		{...rest}
+		ref={rootRef}
+		className={cn(styles.header, className)}
+	>
+		{children}
+	</div>
+);
 
-export const CalendarBoardHeader = forwardRef<HTMLDivElement, CalendarBoardHeaderProps>(function CalendarBoardHeader(
-	{children, className, ...rest},
-	ref,
-) {
-	return (
-		<div
-			ref={ref}
-			className={cn(styles.header, className)}
-			{...rest}
-		>
-			{children}
-		</div>
-	);
-});
-
-CalendarBoardHeader.displayName = 'CalendarBoard.Header';
-
-export const CalendarBoardTitle = forwardRef<HTMLDivElement, CalendarBoardTitleProps>(function CalendarBoardTitle(
-	{className, ...rest},
-	ref,
-) {
+export const CalendarBoardTitle = ({
+	className,
+	rootRef,
+	...rest
+}: CalendarBoardTitleProps) => {
 	const {view, viewDate, weekStartsOn} = useCalendarBoard('CalendarBoard.Title');
-	const {messages} = useLocale();
+	const {messages} = useLocale(localeFallback);
 	const {months, monthsShort, weekdaysShort} = messages.calendar;
 
 	const label = useMemo(() => {
@@ -88,7 +97,7 @@ export const CalendarBoardTitle = forwardRef<HTMLDivElement, CalendarBoardTitleP
 			const weekday = weekdayLabelFor(viewDate, weekStartsOn, weekdaysShort);
 			return `${weekday}, ${viewDate.getDate()} ${formatMonthYear(viewDate, months)}`;
 		}
-		const start = startOfWeek(viewDate, weekStartsOn);
+		const start = getWeekStart(viewDate, weekStartsOn);
 		const end = addDays(start, 6);
 		if (start.getMonth() === end.getMonth()) {
 			return `${start.getDate()}–${end.getDate()} ${formatMonthYear(start, months)}`;
@@ -106,24 +115,24 @@ export const CalendarBoardTitle = forwardRef<HTMLDivElement, CalendarBoardTitleP
 	]);
 
 	return (
-		<div
-			ref={ref}
-			className={cn(styles.title, className)}
+		<Text
 			{...rest}
+			as='div'
+			rootRef={rootRef as Ref<HTMLElement>}
+			className={cn(styles.title, className)}
 		>
 			{label}
-		</div>
+		</Text>
 	);
-});
+};
 
-CalendarBoardTitle.displayName = 'CalendarBoard.Title';
-
-export const CalendarBoardNav = forwardRef<HTMLDivElement, CalendarBoardNavProps>(function CalendarBoardNav(
-	{className, ...rest},
-	ref,
-) {
+export const CalendarBoardNav = ({
+	className,
+	rootRef,
+	...rest
+}: CalendarBoardNavProps) => {
 	const {view, viewDate, setViewDate} = useCalendarBoard('CalendarBoard.Nav');
-	const {messages} = useLocale();
+	const {messages} = useLocale(localeFallback);
 
 	const shift = (direction: -1 | 1) => {
 		if (view === 'year') {
@@ -141,44 +150,42 @@ export const CalendarBoardNav = forwardRef<HTMLDivElement, CalendarBoardNavProps
 		setViewDate(addDays(viewDate, direction));
 	};
 
+	const goPrev = () => shift(-1);
+	const goNext = () => shift(1);
+
 	return (
 		<div
-			ref={ref}
-			className={cn(styles.nav, className)}
 			{...rest}
+			ref={rootRef}
+			className={cn(styles.nav, className)}
 		>
-			<ChevronButton
-				direction='prev'
-				className={cn(unstyled.control, styles.navBtn)}
+			<ButtonIcon
+				variant='secondary'
+				size='sm'
+				icon={<IconChevronLeft size={16} aria-hidden />}
 				aria-label={messages.calendarBoard.prevPeriod}
-				onClick={() => shift(-1)}
+				onClick={goPrev}
 			/>
-			<ChevronButton
-				direction='next'
-				className={cn(unstyled.control, styles.navBtn)}
+			<ButtonIcon
+				variant='secondary'
+				size='sm'
+				icon={<IconChevronRight size={16} aria-hidden />}
 				aria-label={messages.calendarBoard.nextPeriod}
-				onClick={() => shift(1)}
+				onClick={goNext}
 			/>
 		</div>
 	);
-});
+};
 
-CalendarBoardNav.displayName = 'CalendarBoard.Nav';
-
-export const CalendarBoardViewSwitch = forwardRef<
-	HTMLDivElement,
-	CalendarBoardViewSwitchProps
->(function CalendarBoardViewSwitch(
-	{
-		className,
-		variant = 'tinted',
-		size = 'sm',
-		...rest
-	},
-	ref,
-) {
+export const CalendarBoardViewSwitch = ({
+	className,
+	variant = 'tinted',
+	size = 'sm',
+	rootRef,
+	...rest
+}: CalendarBoardViewSwitchProps) => {
 	const {view, setView} = useCalendarBoard('CalendarBoard.ViewSwitch');
-	const {messages} = useLocale();
+	const {messages} = useLocale(localeFallback);
 	const viewOptions: Array<{
 		label: string;
 		value: CalendarBoardView
@@ -203,9 +210,9 @@ export const CalendarBoardViewSwitch = forwardRef<
 
 	return (
 		<div
-			ref={ref}
-			className={cn(styles.viewSwitch, className)}
 			{...rest}
+			ref={rootRef}
+			className={cn(styles.viewSwitch, className)}
 		>
 			<SegmentedControl
 				aria-label={messages.calendarBoard.viewSwitchAria}
@@ -217,6 +224,4 @@ export const CalendarBoardViewSwitch = forwardRef<
 			/>
 		</div>
 	);
-});
-
-CalendarBoardViewSwitch.displayName = 'CalendarBoard.ViewSwitch';
+};

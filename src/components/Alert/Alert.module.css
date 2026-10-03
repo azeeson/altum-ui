@@ -1,4 +1,7 @@
 .alert {
+  --altum-status-bg: color-mix(in srgb, var(--altum-status-fill) var(--altum-status-bg-amt, 11%), var(--altum-status-bg-base, transparent));
+  --altum-status-border: color-mix(in srgb, var(--altum-status-fill) var(--altum-status-border-amt, 34%), transparent);
+
   align-items: flex-start;
 
   padding: var(--altum-g-space-3) var(--altum-g-space-4);
@@ -9,6 +12,28 @@
   color: var(--altum-status-fg);
   background-color: var(--altum-status-bg);
 
+  &[data-variant='info'] {
+    --altum-status-fill: var(--altum-color-status-info);
+    --altum-status-fg: var(--altum-status-fill);
+  }
+
+  &[data-variant='success'] {
+    --altum-status-fill: var(--altum-color-status-success);
+    --altum-status-fg: var(--altum-color-status-success-strong);
+  }
+
+  &[data-variant='warning'] {
+    --altum-status-fill: var(--altum-color-status-warning);
+    --altum-status-fg: var(--altum-color-status-warning-strong);
+    --altum-status-bg-amt: var(--altum-status-warning-bg-amt, 12%);
+    --altum-status-border-amt: var(--altum-status-warning-border-amt, 36%);
+  }
+
+  &[data-variant='error'] {
+    --altum-status-fill: var(--altum-color-status-error);
+    --altum-status-fg: var(--altum-status-fill);
+  }
+
   & .icon {
     margin-top: var(--altum-g-space-1);
 
@@ -17,7 +42,7 @@
 
   & .title {
     font-size: var(--altum-g-font-size-sm);
-    font-weight: var(--altum-g-font-weight-semibold, 600);
+    font-weight: var(--altum-g-font-weight-semibold);
     line-height: var(--altum-g-line-height-xs);
 
     color: inherit;
@@ -34,11 +59,9 @@
     flex-wrap: wrap;
     align-items: flex-start;
     gap: var(--altum-g-space-2);
-
-    margin-top: var(--altum-g-space-2);
   }
 
-  &.sm {
+  &[data-size='sm'] {
     gap: var(--altum-g-space-2);
 
     padding: var(--altum-g-space-2) var(--altum-g-space-3);
@@ -49,7 +72,7 @@
     }
   }
 
-  &.lg {
+  &[data-size='lg'] {
     padding: var(--altum-g-space-4) var(--altum-g-space-5);
 
     & .title {
@@ -57,18 +80,13 @@
     }
   }
 
-  &.inline {
+  &[data-layout='inline'] {
     display: inline-flex;
 
     width: auto;
     max-width: 100%;
 
     vertical-align: middle;
-
-    & .actions {
-      margin-top: 0;
-      margin-left: var(--altum-g-space-2);
-    }
 
     & .body {
       flex-direction: row;

@@ -1,5 +1,6 @@
 .root {
   --altum-box-border-color: var(--altum-color-border);
+
   box-sizing: border-box;
 
   border: 1px solid transparent;
@@ -7,149 +8,113 @@
 
   color: var(--altum-color-input-text);
 
-  &.outlined {
-    --altum-box-border-color: var(--altum-color-border);
-
+  &:is(
+    [data-variant='outlined'],
+    [data-variant='floating'],
+    [data-variant='tinted'],
+    [data-variant='secondary'],
+    [data-variant='glass'],
+    [data-variant='overlay']
+  ) {
     border-color: var(--altum-box-border-color);
-
-    background-color: var(--altum-color-surface);
   }
 
-  &.elevated {
-    --altum-box-border-color: var(--altum-color-border);
-
-    background-color: var(--altum-color-surface-elevated);
+  &:is([data-variant='elevated'], [data-variant='glass']) {
     box-shadow: var(--altum-shadow-surface);
   }
 
-  &.floating {
-    --altum-box-border-color: var(--altum-color-dropdown-border);
+  &[data-variant='outlined'] {
+    background-color: var(--altum-color-surface);
+  }
 
-    border-color: var(--altum-box-border-color);
+  &[data-variant='elevated'] {
+    background-color: var(--altum-color-surface-elevated);
+  }
+
+  &[data-variant='floating'] {
+    --altum-box-border-color: var(--altum-color-dropdown-border);
 
     color: var(--altum-color-fill-floating-fg);
     background-color: var(--altum-color-fill-floating-bg);
     box-shadow: var(--altum-shadow-dropdown);
   }
 
-  &.tinted {
+  &[data-variant='tinted'] {
     --altum-box-border-color: var(--altum-color-brand-tint-border);
-
-    border-color: var(--altum-box-border-color);
 
     color: var(--altum-color-brand-tint-text);
     background-color: var(--altum-color-brand-tint);
   }
 
-  &.secondary {
-    --altum-box-border-color: var(--altum-color-border);
-
-    border-color: var(--altum-box-border-color);
-
+  &[data-variant='secondary'] {
     color: var(--altum-color-text-secondary);
     background-color: color-mix(in srgb, var(--altum-color-text-secondary) 10%, var(--altum-color-surface));
   }
 
-  &.muted {
-    --altum-box-border-color: var(--altum-color-border);
-
-    color: var(--altum-color-input-text);
+  &[data-variant='muted'] {
     background-color: var(--altum-color-surface-active);
   }
 
-  &.glass {
+  &[data-variant='glass'] {
     --altum-box-border-color: color-mix(in srgb, var(--altum-color-border) 55%, transparent);
 
-    border-color: var(--altum-box-border-color);
-
-    color: var(--altum-color-input-text);
     background-color: color-mix(in srgb, var(--altum-color-surface) 62%, transparent);
-    box-shadow: var(--altum-shadow-surface);
     -webkit-backdrop-filter: blur(var(--altum-backdrop-blur, 12px));
     backdrop-filter: blur(var(--altum-backdrop-blur, 12px));
   }
 
-  &.overlay {
+  &[data-variant='overlay'] {
     --altum-box-border-color: var(--altum-overlay-content-border);
-
-    border-color: var(--altum-box-border-color);
 
     color: var(--altum-overlay-on-scrim);
     background-color: var(--altum-overlay-content-bg);
   }
 
-  &.ghost {
-    --altum-box-border-color: var(--altum-color-border);
-
-    background-color: transparent;
-  }
-
-  &.plain {
+  &[data-variant='plain'] {
     --altum-box-border-color: transparent;
+
     border: none;
     border-radius: 0;
-
-    background-color: transparent;
   }
 
-  &.bordered {
+  &[data-border] {
     border-width: 1px;
     border-color: var(--altum-box-border-color);
   }
 
-  &.unbordered {
+  &[data-border='false'] {
     border-color: transparent;
   }
 
-  &.dashed {
+  &[data-border-style='dashed'] {
     border-style: dashed;
   }
 
-  &.noShadow {
+  &[data-shadow='none'] {
     box-shadow: none;
   }
 
-  &.shadow_sm {
+  &[data-shadow='sm'] {
     box-shadow: var(--altum-shadow-surface);
   }
 
-  &.shadow_md {
+  &[data-shadow='md'] {
     box-shadow: var(--altum-shadow-dropdown);
   }
 
-  &.shadow_lg {
+  &[data-shadow='lg'] {
     box-shadow: var(--altum-shadow-lg);
   }
 
-  &.radius_none {
+  &[data-radius='none'] {
     border-radius: 0;
   }
 
-  &.radius_sm {
+  &[data-radius='sm'] {
     border-radius: var(--altum-g-radius-sm);
   }
 
-  &.radius_lg {
+  &[data-radius='lg'] {
     border-radius: var(--altum-g-radius-lg, 12px);
-  }
-
-  &.pad_xs {
-    padding: var(--altum-g-space-1);
-  }
-
-  &.pad_sm {
-    padding: var(--altum-g-space-2);
-  }
-
-  &.pad_md {
-    padding: var(--altum-g-space-3);
-  }
-
-  &.pad_lg {
-    padding: var(--altum-g-space-4);
-  }
-
-  &.pad_xl {
-    padding: var(--altum-g-space-6);
   }
 }

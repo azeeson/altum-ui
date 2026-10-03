@@ -1,74 +1,82 @@
-import {forwardRef, type CSSProperties} from 'react';
-import {As} from '../../base/As';
-import {cn} from '../../utils/cn';
-import {mergeStyles} from '../../utils/mergeStyles';
-import styles from './Layout.module.css';
-import {ControlRow} from './ControlRow';
-import {Inline} from './Inline';
-import {LayoutItem} from './LayoutItem';
-import {Split} from './Split';
+import type {ComponentPropsWithoutRef, CSSProperties, ElementType, ReactNode} from 'react';
 import type {
 	LayoutContentProps,
 	LayoutFooterAlign,
 	LayoutFooterProps,
 	LayoutHeaderProps,
 	LayoutRootProps,
+	LayoutSpacing,
 } from './Layout.types';
-
 export type {
-	LayoutAlign,
 	LayoutContentProps,
 	LayoutFooterAlign,
 	LayoutFooterProps,
-	LayoutGap,
 	LayoutHeaderProps,
-	LayoutJustify,
 	LayoutRootProps,
+	LayoutSpacing,
 } from './Layout.types';
-export {LayoutItem} from './LayoutItem';
-export type {LayoutItemProps} from './Layout.types';
-export {Stack} from './Stack';
-export type {StackProps} from './Layout.types';
-export {Inline} from './Inline';
-export type {InlineProps} from './Layout.types';
-export {Split} from './Split';
-export type {SplitProps} from './Layout.types';
-export {ControlRow} from './ControlRow';
-export type {ControlRowProps} from './Layout.types';
 
-const FOOTER_JUSTIFY: Record<LayoutFooterAlign, CSSProperties['justifyContent']> = {
-	start: 'flex-start',
-	center: 'center',
-	end: 'flex-end',
-	'space-between': 'space-between',
-};
+import {cn} from '../../core/utils/cn';
+import styles from './Layout.module.css';
+
+interface SlotProps extends Omit<ComponentPropsWithoutRef<'div'>, 'align'> {
+	as?: ElementType;
+	sticky?: boolean;
+	align?: LayoutFooterAlign;
+	padding?: LayoutSpacing;
+	gap?: LayoutSpacing;
+	rootRef?: LayoutRootProps['rootRef'];
+	className?: string;
+	style?: CSSProperties;
+	children?: ReactNode;
+}
+
+function renderSlot(
+	slotClass: string,
+	{
+		as = 'div',
+		className,
+		sticky,
+		align,
+		padding,
+		gap,
+		style,
+		rootRef,
+		...rest
+	}: SlotProps,
+) {
+	const Component = as as ElementType;
+	return (
+		<Component
+			ref={rootRef}
+			{...rest}
+			className={cn(slotClass, className)}
+			data-padding={padding}
+			data-gap={gap}
+			data-sticky={sticky ? '' : undefined}
+			data-align={align}
+			style={style}
+		/>
+	);
+}
 
 /**
  * Корневая колонка панели: `Header` / `Content` / `Footer`.
  * Скролл живёт на корне (`overflow-y: auto`); Content не создаёт свой scrollport.
  * Закрепление шапки/подвала — через `sticky` на `Header` / `Footer`.
+ * `padding` — отступ секций (не scrollport: при скролле контент не заезжает в поле).
+ * `gap` — промежуток между секциями; у `sticky` он остаётся и при скролле. Оба через data-атрибуты.
  *
  * @component
+ *
  * @example
- * <Layout>
+ * <Layout padding="md" gap="md">
  *   <Layout.Header sticky>Заголовок</Layout.Header>
  *   <Layout.Content>Контент</Layout.Content>
  *   <Layout.Footer sticky>Действия</Layout.Footer>
  * </Layout>
  */
-export const LayoutRoot = forwardRef<HTMLElement, LayoutRootProps>(function LayoutRoot(
-	{as = 'div', className, ...rest},
-	ref,
-) {
-	return (
-		<As
-			ref={ref}
-			as={as}
-			className={cn(styles.root, className)}
-			{...rest}
-		/>
-	);
-});
+export const LayoutRoot = (props: LayoutRootProps) => renderSlot(styles.root, props);
 
 /**
  * Шапка панели. `sticky` — остаётся у верхнего края при скролле `Layout`.
@@ -77,18 +85,12 @@ export const LayoutRoot = forwardRef<HTMLElement, LayoutRootProps>(function Layo
  * @example
  * <Layout.Header sticky as="header">Заголовок</Layout.Header>
  */
-export const LayoutHeader = forwardRef<HTMLElement, LayoutHeaderProps>(function LayoutHeader(
-	{as = 'header', className, sticky = false, ...rest},
-	ref,
-) {
-	return (
-		<As
-			ref={ref}
-			as={as}
-			className={cn(styles.header, sticky && styles.sticky, className)}
-			{...rest}
-		/>
-	);
+export const LayoutHeader = ({
+	as = 'header',
+	...props
+}: LayoutHeaderProps) => renderSlot(styles.header, {
+	as,
+	...props,
 });
 
 /**
@@ -98,22 +100,10 @@ export const LayoutHeader = forwardRef<HTMLElement, LayoutHeaderProps>(function 
  * @example
  * <Layout.Content as="main">…</Layout.Content>
  */
-export const LayoutContent = forwardRef<HTMLElement, LayoutContentProps>(function LayoutContent(
-	{as = 'div', className, ...rest},
-	ref,
-) {
-	return (
-		<As
-			ref={ref}
-			as={as}
-			className={cn(styles.content, className)}
-			{...rest}
-		/>
-	);
-});
+export const LayoutContent = (props: LayoutContentProps) => renderSlot(styles.content, props);
 
 /**
- * Подвал панели (действия, статус). `sticky` — у нижнего края при скролле `Layout`.
+ * Подвал панели (действия, статус). `sticky` — у нижнем края при скролле `Layout`.
  *
  * @component
  * @example
@@ -121,43 +111,25 @@ export const LayoutContent = forwardRef<HTMLElement, LayoutContentProps>(functio
  *   <Button>Сохранить</Button>
  * </Layout.Footer>
  */
-export const LayoutFooter = forwardRef<HTMLElement, LayoutFooterProps>(function LayoutFooter(
-	{
-		as = 'footer',
-		className,
-		sticky = false,
-		align = 'start',
-		style,
-		...rest
-	},
-	ref,
-) {
-	return (
-		<As
-			ref={ref}
-			as={as}
-			className={cn(styles.footer, sticky && styles.sticky, className)}
-			style={mergeStyles({justifyContent: FOOTER_JUSTIFY[align]}, style)}
-			{...rest}
-		/>
-	);
+export const LayoutFooter = ({
+	as = 'footer',
+	align = 'start',
+	...props
+}: LayoutFooterProps) => renderSlot(styles.footer, {
+	as,
+	align,
+	...props,
 });
 
-LayoutRoot.displayName = 'Layout';
-LayoutHeader.displayName = 'Layout.Header';
-LayoutContent.displayName = 'Layout.Content';
-LayoutFooter.displayName = 'Layout.Footer';
-
 /**
- * Панель Header / Content / Footer. Примитивы `Stack` / `Grid` — отдельные экспорты.
+ * Панель Header / Content / Footer.
+ * `Stack`, `Inline`, `Split`, `ControlRow`, `LayoutItem` — отдельные компоненты.
  *
  * @component
  * @example
  * <Layout>
  *   <Layout.Header sticky>Заголовок</Layout.Header>
- *   <Layout.Content>
- *     <Stack gap="md">…</Stack>
- *   </Layout.Content>
+ *   <Layout.Content>Контент</Layout.Content>
  *   <Layout.Footer sticky>Действия</Layout.Footer>
  * </Layout>
  */
@@ -165,8 +137,4 @@ export const Layout = Object.assign(LayoutRoot, {
 	Header: LayoutHeader,
 	Content: LayoutContent,
 	Footer: LayoutFooter,
-	Inline,
-	Split,
-	ControlRow,
-	Item: LayoutItem,
 });

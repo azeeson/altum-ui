@@ -1,21 +1,38 @@
 import type React from 'react';
-import type {ComponentPropsWithoutRef} from 'react';
-import {Box} from '../Box/Box';
-import {type DropdownAlign, type DropdownPanelScroll, type DropdownWidthMode} from '../Overlay/Overlay';
-import type {RenderChildrenFn} from '../../utils/renderChildren';
+import type {ComponentPropsWithoutRef, Ref} from 'react';
+import type {AnchorAlign} from '../../types';
+import type {BoxProps} from '../Box/Box.types';
+import type {PopoverTriggerSlotProps} from '../Popover/Popover.types';
+import type {RenderChildrenFn} from '../../core/utils/renderChildren';
+
+/** Императивное открытие панели: `showPopover` / `hidePopover`. */
+export type DropdownPopup = {
+	show: () => void;
+	hide: () => void;
+};
 
 export type DropdownPopupRole = 'menu' | 'listbox' | 'none' | 'dialog';
 
 export type DropdownTriggerMode = 'toggle' | 'combobox';
 
-export type {DropdownAlign, DropdownWidthMode, DropdownPanelScroll};
+/**
+ * Выравнивание панели относительно триггера.
+ * `start` / `center` / `end` — вдоль стороны; `auto` — старт с flip.
+ * `left` / `right` — алиасы `start` / `end`.
+ */
+export type DropdownAlign = AnchorAlign | 'auto' | 'left' | 'right';
+/** Ширина панели относительно триггера. */
+export type DropdownWidthMode = 'trigger' | 'content' | 'trigger-fit';
+/** Кто скроллит панель: оболочка или контент. */
+export type DropdownPanelScroll = 'overlay' | 'content';
 
 export type DropdownTriggerAttrs = Pick<
 	React.HTMLAttributes<HTMLElement>,
 	'onKeyDown' | 'onClick'
 > & {
 	'aria-haspopup'?: 'true' | 'listbox' | 'menu' | 'dialog';
-	'aria-expanded': boolean;
+	/** Ставит браузер вместе с `popovertarget`. */
+	'aria-expanded'?: boolean;
 	'aria-controls'?: string;
 	tabIndex?: number;
 	className?: string;
@@ -23,23 +40,37 @@ export type DropdownTriggerAttrs = Pick<
 	type?: 'button';
 };
 
-/** Slot-пропсы триггера: `renderTrigger(props, ref)`. */
-export type DropdownTriggerSlotProps = DropdownTriggerAttrs;
+/** Slot-пропсы, которые `renderChildren` вешает на `trigger`. */
+export type DropdownTriggerSlotProps = DropdownTriggerAttrs & PopoverTriggerSlotProps;
+
+/** Состояние панели для render-prop `children`. */
+export type DropdownPanelState = {
+	open: boolean;
+};
 
 /**
- * Свойства `Dropdown` — панель через `children`, якорь через `renderTrigger`.
+ * Свойства `Dropdown` — панель через `children`, якорь через `trigger`.
  */
 export interface DropdownProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
-	/** Содержимое панели. */
-	children?: React.ReactNode;
 	/**
-	 * Якорь. Навесьте `props` и `ref` на фокусируемый хост.
-	 * @example
-	 * renderTrigger={(props, ref) => <Button {...props} ref={ref}>Меню</Button>}
+	 * Содержимое панели.
+	 * Функция получает `{open}` — активность поповера без отдельного стейта у вызывающего кода.
 	 */
-	renderTrigger: RenderChildrenFn<DropdownTriggerSlotProps>;
-	open?: boolean;
+	children?: React.ReactNode | ((state: DropdownPanelState) => React.ReactNode);
+	/**
+	 * Якорь: элемент или `(props, ref) => …`. Слот навешивает `renderChildren`.
+	 * @example
+	 * <Dropdown trigger={<Button>Меню</Button>}>Пункты</Dropdown>
+	 */
+	trigger: React.ReactElement | RenderChildrenFn<DropdownTriggerSlotProps>;
+	/** Показать панель после монтирования. */
+	defaultOpen?: boolean;
+	/** Нативное `toggle`. Не источник видимости. */
 	onOpenChange?: (open: boolean) => void;
+	/** `show` / `hide` без React-стейта. */
+	popupRef?: Ref<DropdownPopup | null>;
+	/** Корень. */
+	rootRef?: Ref<HTMLDivElement>;
 	/**
 	 * Роль панели. `'none'` — без `role` на панели (роль у внутреннего Listbox/ActionList);
 	 * триггер получает `aria-haspopup="listbox"` (не `"menu"`).
@@ -47,12 +78,12 @@ export interface DropdownProps extends Omit<ComponentPropsWithoutRef<'div'>, 'ch
 	popupRole?: DropdownPopupRole;
 	/** combobox: фокус остаётся на input-триггере, панель открывается не перехватывая его */
 	triggerMode?: DropdownTriggerMode;
-	boxProps?: React.ComponentProps<typeof Box>;
+	boxProps?: BoxProps;
 	/** @default 'auto' */
 	align?: DropdownAlign;
 	/** @default 'content' */
 	widthMode?: DropdownWidthMode;
-	/** Заголовок Sheet на мобильных экранах */
+	/** Заголовок панели на узком экране. На десктопе шапка скрыта. */
 	mobileTitle?: React.ReactNode;
 	mobileLeftControls?: React.ReactNode;
 	mobileRightControls?: React.ReactNode;
@@ -60,15 +91,4 @@ export interface DropdownProps extends Omit<ComponentPropsWithoutRef<'div'>, 'ch
 	panelScroll?: DropdownPanelScroll;
 	/** className панели (не корня). */
 	panelClassName?: string;
-}
-
-export interface DropdownMobileSheetProps {
-	sheetRef: React.Ref<HTMLDivElement>;
-	open: boolean;
-	onOpenChange: (open: boolean) => void;
-	zIndex?: string | number;
-	mobileTitle?: React.ReactNode;
-	mobileLeftControls?: React.ReactNode;
-	mobileRightControls?: React.ReactNode;
-	children: React.ReactNode;
 }

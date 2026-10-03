@@ -8,20 +8,20 @@ export type {
 	LinkProps,
 } from './Link.types';
 
-import {Children, createElement, forwardRef, isValidElement} from 'react';
+import {cloneElement, isValidElement} from 'react';
+import {Typography} from '../../base/Typography';
+import {mergeSlotProps} from '../../core/utils/slot';
 import unstyled from '../../styles/unstyledControl.module.css';
 import textLink from '../../styles/textLink.module.css';
-import typeStyles from '../../styles/type.module.css';
 import styles from './Link.module.css';
-import {cn} from '../../utils/cn';
-import {Slot} from '../../utils/slot';
+import {cn} from '../../core/utils/cn';
 
 /**
  * Стилизованная текстовая ссылка с вариантами, размерами и hover/focus дизайн-системы.
  * Цвета читают `--altum-color-link-*`.
  *
- * Единственный элемент-child получает стили через Slot (роутерный `Link` / кастомный `<a>`).
- * Текст и смешанные дети рендерятся в нативный `<a>`.
+ * Единственный элемент-child — Slot: пропсы проксируются на роутерный `Link` / кастомный `<a>`.
+ * Текст и смешанные дети рендерятся в нативный `<a>` через Typography.
  *
  * @component
  * @example
@@ -31,43 +31,45 @@ import {Slot} from '../../utils/slot';
  *   <RouterLink to="/docs">Документация</RouterLink>
  * </Link>
  */
-export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
-	{
-		variant = 'primary',
-		status = 'default',
-		size,
-		weight,
-		className,
-		children,
-		target,
-		rel,
-		...props
-	},
-	ref,
-) {
-	const slotChild = isValidElement(children) && Children.count(children) === 1;
+export const Link = ({
+	variant = 'primary',
+	status = 'default',
+	size,
+	weight,
+	className,
+	children,
+	target,
+	rel,
+	rootRef,
+	...props
+}: LinkProps) => {
 	const resolvedRel = target === '_blank' ? (rel ?? 'noopener noreferrer') : rel;
 
-	return createElement(
-		slotChild ? Slot : 'a',
-		{
-			ref,
-			className: cn(
-				unstyled.control,
-				textLink.link,
-				styles.link,
-				styles[variant],
-				status === 'danger' && styles.danger,
-				size && typeStyles[size],
-				weight && typeStyles[weight],
-				className,
-			),
-			target,
-			rel: resolvedRel,
-			...props,
-		},
-		children,
-	);
-});
+	const slotProps = {
+		className: cn(unstyled.control, textLink.link, styles.link, className),
+		target,
+		rel: resolvedRel,
+		'data-variant': variant,
+		'data-status': status === 'danger' ? 'danger' as const : undefined,
+		'data-size': size || undefined,
+		'data-weight': weight || undefined,
+		...props,
+	};
 
-Link.displayName = 'Link';
+	if (isValidElement(children)) {
+		return cloneElement(
+			children,
+			mergeSlotProps(slotProps, children, rootRef),
+		);
+	}
+
+	return (
+		<Typography
+			as='a'
+			rootRef={rootRef}
+			{...slotProps}
+		>
+			{children}
+		</Typography>
+	);
+};

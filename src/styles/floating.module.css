@@ -1,0 +1,24 @@
+/**
+ * Общие правила CSS Anchor для плавающих панелей (popover / dropdown).
+ */
+.panel {
+  position: fixed;
+  position-anchor: var(--altum-popover-anchor);
+  position-area: var(--altum-popover-area);
+  position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  inset: unset;
+
+  overflow: initial;
+
+  max-width: calc(100vw - var(--altum-g-space-4));
+  max-height: calc(100vh - var(--altum-g-space-4));
+  max-height: calc(100dvh - var(--altum-g-space-4));
+
+  margin: 0;
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+  box-shadow: var(--altum-shadow-dropdown);
+}

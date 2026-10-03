@@ -1,86 +1,199 @@
-import {useState} from 'react';
+import {useEffect, useRef, useState, type Dispatch, type SetStateAction} from 'react';
 
-function isEmptyFormValue(value: unknown): boolean {
-	return value === undefined || value === null || value === '';
-}
+import {omit} from '../core/utils/object';
+import type {FormRule} from '../shared/form/formRules';
+import {formValuesEqual} from '../shared/form/formValues';
 
 /**
- * Правила валидации поля формы для `useForm.register`.
- * При нескольких правилах ошибка берётся по приоритету: required → pattern → validate.
+ * Ошибки полей: ключ есть только там, где есть текст.
  */
-export interface ValidationRules {
-	/** Текст ошибки, если значение пустое (`undefined` / `null` / `''`; `0` — не пустое) */
-	required?: string;
-	pattern?: {
-		value: RegExp;
-		message: string;
-	};
+export type FormErrors<T extends Record<string, unknown>> = Partial<Record<keyof T, string>>;
+
+/**
+ * Проверка поля. Строка — ошибка, `undefined` — значение годится.
+ * `values` — форма после текущего изменения.
+ */
+export type FieldValidate<T extends Record<string, unknown>, K extends keyof T> = (
+	value: T[K],
+	values: T,
+) => string | undefined;
+
+/**
+ * Как прочитать аргумент `onChange` и чем проверить поле.
+ * Хук не знает про обязательность и шаблоны — это `validate` снаружи.
+ */
+export interface RegisterOptions<T extends Record<string, unknown>, K extends keyof T> {
 	/**
-	 * Верните строку ошибки, `true` (ок) или `false`.
-	 * `false` — провал: текст `required`, иначе `'Invalid'`.
+	 * Достаёт значение из аргумента `onChange`.
+	 * Без опции: `target.value` у события, иначе аргумент как есть.
 	 */
-	validate?: (val: unknown) => string | boolean;
+	getValue?: (payload: unknown) => T[K];
+	/** Синхронная проверка. Сохраняется и для `handleSubmit`. */
+	validate?: FieldValidate<T, K>;
+}
+
+function readEventValue(payload: unknown): unknown {
+	const eventLike = payload as {target?: {value?: unknown}} | null;
+	if (eventLike && typeof eventLike === 'object' && eventLike.target) {
+		return eventLike.target.value;
+	}
+	return payload;
+}
+
+function omitError<T extends Record<string, unknown>>(
+	errors: FormErrors<T>,
+	name: keyof T,
+): FormErrors<T> {
+	if (!(name in errors)) return errors;
+	return omit(errors, [name]) as FormErrors<T>;
 }
 
 /**
- * Лёгкий хелпер контролируемых форм: хранит values/errors и фабрику `register`.
- * Не делает submit — только локальный стейт и валидацию на change.
+ * Контролируемая форма: значения, ошибки и `register`.
+ * Валидация на change — только если у поля передали `validate`.
+ * `handleSubmit` прогоняет сохранённые проверки и зовёт `onValid`, когда ошибок нет.
+ * Вложенные пути хук не пишет: обновите их через `setValues` и `set` из `altum/utils`.
  *
  * @template T - Форма как объект полей (ключи → значения).
- * @param initialValues - Начальные значения; ключи = имена полей.
- * @returns `values`, `errors`, `register`, `hasErrors`, `setValues`.
+ * @param initialValues - Начальные значения; ключи = имена полей. Это чистый снимок: `isDirty` сравнивает с ним. `reset(next)` подменяет снимок.
+ * @returns Стейт, `isDirty`, `register` и команды `setValue` / `setError` / `clearErrors` / `reset` / `handleSubmit`.
  *
  * @example
- * import {useForm} from 'altum/hooks';
+ * import {compose, pattern, required, useForm} from 'altum/hooks';
  *
- * const {values, errors, register, hasErrors} = useForm({email: ''});
- * <TextField {...register('email', {required: 'Обязательно'})} error={errors.email} />
+ * const {errors, register, handleSubmit} = useForm({email: ''});
+ * const email = register('email', {
+ *   validate: compose(required('Обязательно'), pattern(/@/, 'Не почта')),
+ * });
+ * <form onSubmit={handleSubmit((values) => save(values))}>
+ *   <TextField {...email} error={errors.email} />
+ * </form>
  */
 export function useForm<T extends Record<string, unknown>>(initialValues: T) {
-	const [values, setValues] = useState<T>(initialValues);
-	const [errors, setErrors] = useState<Record<string, string>>({});
+	const [values, setValuesState] = useState<T>(initialValues);
+	const [errors, setErrors] = useState<FormErrors<T>>({});
+	const [baseline, setBaseline] = useState<T>(initialValues);
+	const valuesRef = useRef(values);
+	const validatorsRef = useRef<Partial<Record<keyof T, FormRule<T>>>>({});
+	const [registered] = useState(() => new Set<keyof T>());
+	registered.clear();
 
-	const register = (name: keyof T, rules?: ValidationRules) => {
+	useEffect(() => {
+		(Object.keys(validatorsRef.current) as (keyof T)[]).forEach((name) => {
+			if (!registered.has(name)) delete validatorsRef.current[name];
+		});
+	});
+
+	const commitError = (name: keyof T, error: string | undefined) => {
+		setErrors((prev) => {
+			if (error) {
+				if (prev[name] === error) return prev;
+				return {
+					...prev,
+					[name]: error
+				};
+			}
+			return omitError(prev, name);
+		});
+	};
+
+	const writeValue = <K extends keyof T>(name: K, value: T[K]) => {
+		const next = {
+			...valuesRef.current,
+			[name]: value
+		} as T;
+		valuesRef.current = next;
+		setValuesState(next);
+		return next;
+	};
+
+	const register = <K extends keyof T>(name: K, options?: RegisterOptions<T, K>) => {
+		registered.add(name);
+		if (options?.validate) {
+			validatorsRef.current[name] = options.validate as FormRule<T>;
+		} else {
+			delete validatorsRef.current[name];
+		}
+
 		return {
 			value: values[name],
-			onChange: (val: unknown) => {
-				const eventLike = val as {target?: {value?: unknown}} | null;
-				const value = eventLike?.target ? eventLike.target.value : val;
-				setValues((prev) => ({
-					...prev,
-					[name]: value,
-				}));
-
-				if (rules) {
-					let error = '';
-					if (rules.required && isEmptyFormValue(value)) {
-						error = rules.required;
-					} else if (rules.pattern && !rules.pattern.value.test(String(value ?? ''))) {
-						error = rules.pattern.message;
-					} else if (rules.validate) {
-						const extra = rules.validate(value);
-						if (typeof extra === 'string') {
-							error = extra;
-						} else if (extra === false) {
-							error = rules.required || 'Invalid';
-						}
-					}
-					setErrors((prev) => ({
-						...prev,
-						[name as string]: error,
-					}));
-				}
+			onChange: (payload: unknown) => {
+				const value = (options?.getValue ?? readEventValue)(payload) as T[K];
+				const next = writeValue(name, value);
+				commitError(name, validatorsRef.current[name]?.(value, next));
 			},
 		};
 	};
 
-	const hasErrors = Object.values(errors).some((error) => !!error);
+	const setValues: Dispatch<SetStateAction<T>> = (action) => {
+		setValuesState((prev) => {
+			const next = typeof action === 'function' ? action(prev) : action;
+			valuesRef.current = next;
+			return next;
+		});
+	};
+
+	const setValue = <K extends keyof T>(name: K, value: T[K]) => {
+		const next = writeValue(name, value);
+		const validate = validatorsRef.current[name];
+		if (validate) commitError(name, validate(value, next));
+	};
+
+	const setError = (name: keyof T, message: string) => {
+		setErrors((prev) => (prev[name] === message ? prev : {
+			...prev,
+			[name]: message
+		}));
+	};
+
+	const clearErrors = (name?: keyof T) => {
+		if (name === undefined) {
+			setErrors({});
+			return;
+		}
+		setErrors((prev) => omitError(prev, name));
+	};
+
+	const reset = (next?: T) => {
+		const resolved = next ?? baseline;
+		valuesRef.current = resolved;
+		setValuesState(resolved);
+		setErrors({});
+		if (next !== undefined) setBaseline(resolved);
+	};
+
+	const isDirty = !formValuesEqual(values, baseline);
+
+	const handleSubmit = (onValid: (values: T) => void) => {
+		return (event?: {preventDefault?: () => void}) => {
+			event?.preventDefault?.();
+			const current = valuesRef.current;
+			const nextErrors: FormErrors<T> = {};
+			(Object.keys(validatorsRef.current) as (keyof T)[]).forEach((name) => {
+				const error = validatorsRef.current[name]?.(current[name], current);
+				if (error) nextErrors[name] = error;
+			});
+			setErrors(nextErrors);
+			if (Object.keys(nextErrors).length === 0) onValid(current);
+		};
+	};
+
+	const hasErrors = Object.keys(errors).length > 0;
 
 	return {
 		values,
 		errors,
+		isDirty,
 		register,
 		hasErrors,
 		setValues,
+		setValue,
+		setError,
+		clearErrors,
+		reset,
+		handleSubmit,
 	};
 }
+
+/** Всё, что возвращает `useForm`. Этот же набор кладётся в `FormProvider`. */
+export type UseFormReturn<T extends Record<string, unknown>> = ReturnType<typeof useForm<T>>;

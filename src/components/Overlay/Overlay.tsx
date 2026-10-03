@@ -1,415 +1,150 @@
-/* eslint-disable react-hooks/refs -- Ref'ы передаются непрозрачно в рендереры слотов и не читаются во время render. */
-import React, {useCallback, useRef} from 'react';
-import {Backdrop} from '../Backdrop/Backdrop';
-import {FocusTrap} from '../FocusTrap/FocusTrap';
-import {usePresence} from '../../hooks/usePresence';
-import {
-	elevateAboveOverlayStack,
-	OverlayStackProvider,
-	useOverlayStackZIndex,
-} from '../../utils/overlayStack';
-import {
-	OVERLAY_Z_INDEX_DEFAULT,
-	resolveStackedOverlayZIndex,
-} from '../../utils/overlayZIndex';
-import {
-	resolveOverlayPurposeSideOffset,
-	resolveOverlayPurposeZIndex,
-} from '../../utils/overlayPurpose';
-import {createLibraryPortal} from '../../utils/portal';
-import {composeRefs} from '../../utils/composeRefs';
-import {cn} from '../../utils/cn';
-import {renderChildren} from '../../utils/renderChildren';
-import {useAnchorTrigger, useScrimLayerDismiss} from './Overlay.Dismiss';
-import {AnchorLayer} from './Overlay.Positioner';
-import type {
-	OverlayDropdownProps,
-	OverlayFloatingProps,
-	OverlayModalProps,
-	OverlayPopoverProps,
-	OverlayProps,
-	OverlaySheetProps,
-	OverlaySheetSide,
-	OverlayVariant,
-	OverlayChildren,
-	OverlayContentProps,
-} from './Overlay.types';
-import {
-	HOVER_CLOSE_DELAY,
-	HOVER_OPEN_DELAY,
-	PRESENCE_MS,
-	resolveOverlayDismiss,
-} from './Overlay.types';
+import {useEffect, useRef, type MouseEvent, type SyntheticEvent} from 'react';
+import {cn} from '../../core/utils/cn';
+import {uRef} from '../../core/utils/bundle';
+import type {OverlayProps} from './Overlay.types';
 import styles from './Overlay.module.css';
+import overlayTransition from '../../styles/overlayTransition.module.css';
 
 export type {
 	OverlayVariant,
 	OverlaySheetSide,
-	OverlayTriggerMode,
-	OverlayWidthMode,
-	DropdownWidthMode,
-	DropdownAlign,
-	DropdownPanelScroll,
-	OverlayPurpose,
-	OverlayContentProps,
-	OverlayChildren,
 	OverlayBaseProps,
 	OverlayModalProps,
 	OverlayFloatingProps,
 	OverlaySheetProps,
-	OverlayPopoverProps,
-	OverlayDropdownProps,
 	OverlayProps,
-	OverlayDismiss,
 } from './Overlay.types';
 
-const PURPOSE_BY_VARIANT: Record<OverlayVariant, 'modal' | 'sheet' | 'dropdown' | 'popover'> = {
-	modal: 'modal',
-	floating: 'modal',
-	sheet: 'sheet',
-	dropdown: 'dropdown',
-	popover: 'popover',
-};
-
-type ScrimKind = 'modal' | 'floating' | 'sheet';
-
-type ScrimLayerProps = {
-	kind: ScrimKind;
-	side?: OverlaySheetSide;
-	open: boolean;
-	presented: boolean;
-	onClose: () => void;
-	children: OverlayChildren;
-	className?: string;
-	style?: React.CSSProperties;
-	layerStyle?: React.CSSProperties;
-	backdrop?: boolean;
-	backdropVariant?: OverlayModalProps['backdropVariant'];
-	backdropBlur?: OverlayModalProps['backdropBlur'];
-	closeOnOutsideClick?: boolean;
-	closeOnEscape?: boolean;
-	lockScroll?: boolean;
-	trapFocus?: boolean;
-	contentRef: React.Ref<HTMLElement | null>;
-	'aria-label'?: string;
-	'aria-labelledby'?: string;
-	'aria-describedby'?: string;
-	role?: string;
-};
-
-function stopBubble(event: React.MouseEvent) {
-	event.stopPropagation();
-}
-
-function ScrimLayer({
-	kind,
-	side,
-	open,
-	presented,
-	onClose,
-	children,
-	className,
-	style,
-	layerStyle,
-	backdrop = false,
-	backdropVariant = 'default',
-	backdropBlur = 'sm',
-	closeOnOutsideClick,
-	closeOnEscape = true,
-	lockScroll,
-	trapFocus = true,
-	contentRef,
-	'aria-label': ariaLabel,
-	'aria-labelledby': ariaLabelledBy,
-	'aria-describedby': ariaDescribedBy,
-	role: contentRole = 'dialog',
-}: ScrimLayerProps) {
-	const rootRef = useRef<HTMLDivElement>(null);
-	const localContentRef = useRef<HTMLElement | null>(null);
-	const mergedContentRef = composeRefs(
-		contentRef,
-		localContentRef,
-	) as React.RefCallback<HTMLElement>;
-
-	const {resolvedCloseOnOutside} = useScrimLayerDismiss({
-		open,
-		onClose,
-		contentRef: localContentRef,
-		rootRef,
-		backdrop: kind === 'modal' || backdrop,
-		closeOnOutsideClick: kind === 'modal' ? true : closeOnOutsideClick,
-		closeOnEscape: kind === 'modal' ? true : closeOnEscape,
-		lockScroll: kind === 'modal' ? true : kind === 'sheet' ? backdrop : lockScroll,
-	});
-
-	const showBackdrop = kind === 'modal' || backdrop;
-	const wrap = kind !== 'floating' || showBackdrop || trapFocus;
-	const panelStyle = kind === 'floating'
-		? (showBackdrop ? style : {
-			...layerStyle,
-			...style
-		})
-		: undefined;
-
-	const contentProps: OverlayContentProps = {
-		className: cn(styles.panel, className),
-		style: panelStyle,
-		role: contentRole,
-		'aria-modal': kind === 'modal' || showBackdrop || (kind === 'floating' && (lockScroll ?? backdrop))
-			? true
-			: undefined,
-		'aria-label': ariaLabel,
-		'aria-labelledby': ariaLabelledBy,
-		'aria-describedby': ariaDescribedBy,
-		'data-kind': kind,
-		'data-side': side,
-		'data-presented': presented ? '' : undefined,
-		onClick: stopBubble,
-	};
-
-	const panel = renderChildren({
-		children,
-		props: contentProps,
-		contentRef: mergedContentRef,
-	});
-
-	if (!wrap) return panel;
-
-	const trap = kind === 'sheet' ? open && backdrop : kind === 'modal' ? open : open && trapFocus;
-
-	return (
-		<div
-			ref={rootRef}
-			className={styles.scrim}
-			style={showBackdrop || kind !== 'floating' ? layerStyle : undefined}
-			role='presentation'
-			data-kind={kind}
-			data-side={side}
-			data-open={open ? '' : undefined}
-			data-presented={presented ? '' : undefined}
-		>
-			{showBackdrop && (
-				<Backdrop
-					position='absolute'
-					variant={backdropVariant}
-					blur={backdropBlur}
-					onClick={open && (kind === 'modal' || resolvedCloseOnOutside) ? onClose : undefined}
-					className={styles.fade}
-				/>
-			)}
-			{kind === 'floating' && !trapFocus ? panel : (
-				<FocusTrap
-					active={!!trap}
-					restoreFocus={false}
-					className={styles.trap}
-				>
-					{panel}
-				</FocusTrap>
-			)}
-		</div>
-	);
-}
-
 /**
- * Примитив позиционирования без собственного chrome: portal + presence + placement.
- *
- * Варианты: `modal` (Backdrop + FocusTrap), `floating` (свободные x/y, опциональный Backdrop),
- * `sheet` (выезд с края), `popover` / `dropdown` (якорь `targetRef`, flip, triggerMode).
- *
- * `purpose` задаёт z-index и sideOffset из CSS-токенов ThemeProvider
- * (`--altum-g-z-*`, `--altum-overlay-offset-*`); по умолчанию выводится из `variant`.
- *
- * `children` — render-prop `(props, contentRef) => ReactNode` или единственный элемент
- * (slot-пропсы мержатся через `mergeSlotProps`).
- *
- * Держите `Overlay` смонтированным и управляйте через `open`
- * (`{open && <Overlay>}` убивает exit-анимацию).
+ * Слепой донор Top Layer: нативный `<dialog>` (`showModal`) или `popover="auto"`.
+ * Фокус, Escape и scroll lock у modal/sheet — браузер (`showModal`); отдельный FocusTrap не нужен.
+ * Без иконок закрытия, шапок и Box — поверхность и chrome у потребителей (`Modal`, `Sheet`, `Popover`, …).
+ * Floating: `open` опционален — без него показ через `popovertarget` / `showPopover`.
+ * Визуальный `::backdrop` — `hostClassName` + `overlayScrim` у потребителей.
+ * Появление и уход — CSS `@starting-style`, без таймера присутствия.
  *
  * @component
  * @example
- * <Overlay variant="modal" purpose="lightbox" open={open} onOpenChange={setOpen}>
- *   <div>Контент</div>
+ * <Overlay open={open} onOpenChange={setOpen} aria-label="Диалог">
+ *   <p>Содержимое</p>
  * </Overlay>
  */
-export const Overlay = React.forwardRef<HTMLElement, OverlayProps>(function Overlay(props, ref) {
+export function Overlay(props: OverlayProps) {
 	const {
-		variant,
 		open,
 		onOpenChange,
-		className,
-		purpose: purposeProp,
+		variant = 'modal',
 		children,
+		className,
+		hostClassName,
+		style,
+		role = 'dialog',
+		rootRef,
+		'aria-label': ariaLabel,
+		'aria-labelledby': ariaLabelledBy,
+		'aria-describedby': ariaDescribedBy,
 	} = props;
-	const parentOverlayZ = useOverlayStackZIndex();
-	const purpose = purposeProp ?? PURPOSE_BY_VARIANT[variant];
-	const duration = purpose === 'tooltip' ? 0 : PRESENCE_MS;
-	const {shouldRender, presented} = usePresence(open, duration);
+	const nodeRef = useRef<HTMLElement | null>(null);
+	const onOpenChangeRef = useRef(onOpenChange);
+	onOpenChangeRef.current = onOpenChange;
+	const side = props.variant === 'sheet' ? (props.side ?? 'bottom') : undefined;
+	const floatingId = props.variant === 'floating' ? props.id : undefined;
+	const floatingDataSide = props.variant === 'floating' ? props['data-side'] : undefined;
+	const floatingDataWidthMode = props.variant === 'floating' ? props['data-width-mode'] : undefined;
 
-	const isAnchor = variant === 'popover' || variant === 'dropdown';
-	const anchorProps = isAnchor ? (props as OverlayPopoverProps | OverlayDropdownProps) : null;
-	const targetRef = anchorProps?.targetRef;
-	const triggerMode = anchorProps?.triggerMode ?? 'manual';
-	const contentRef = useRef<HTMLElement | null>(null);
-	const mergedContentRef = composeRefs(ref, contentRef) as React.RefCallback<HTMLElement>;
-	const fallbackTargetRef = useRef<HTMLElement | null>(null);
+	useEffect(() => {
+		const node = nodeRef.current;
+		if (!node) return;
 
-	const requestOpen = useCallback((next: boolean) => {
-		onOpenChange(next);
-	}, [onOpenChange]);
-	const onClose = useCallback(() => {
-		onOpenChange(false);
-	}, [onOpenChange]);
+		if (node instanceof HTMLDialogElement) {
+			// showModal(): native focus move into dialog, focus restore on close, Escape, top layer.
+			if (open) {
+				if (!node.open) node.showModal();
+			} else if (node.open) {
+				node.close();
+			}
+			return;
+		}
 
-	const {pointerRef, clearTimers, closeTimerRef, openHover} = useAnchorTrigger({
-		enabled: isAnchor,
-		open,
-		targetRef: targetRef ?? fallbackTargetRef,
-		contentRef,
-		triggerMode,
-		purpose,
-		openDelay: anchorProps?.openDelay ?? HOVER_OPEN_DELAY,
-		closeDelay: anchorProps?.closeDelay ?? HOVER_CLOSE_DELAY,
-		requestOpen,
-	});
+		// Без controlled `open` показ ведёт popovertarget / showPopover снаружи.
+		if (open === undefined) return;
 
-	const resolvedRootZIndex = resolveStackedOverlayZIndex(
-		undefined,
-		props.zIndex ?? resolveOverlayPurposeZIndex(purpose),
-		parentOverlayZ,
-	);
-	const elevated = isAnchor
-		? (elevateAboveOverlayStack(parentOverlayZ) ?? resolvedRootZIndex)
-		: resolvedRootZIndex;
-	const layerStyle: React.CSSProperties | undefined = elevated != null
-		? {zIndex: elevated}
-		: undefined;
+		if (open) {
+			if (!node.matches(':popover-open')) node.showPopover();
+		} else if (node.matches(':popover-open')) {
+			node.hidePopover();
+		}
+	}, [open, variant]);
 
-	if (!shouldRender) return null;
+	const hasOpenChange = onOpenChange != null;
 
-	const floatingProps = props as OverlayFloatingProps;
-	const sheetProps = props as OverlaySheetProps;
-	const floatingDismiss = resolveOverlayDismiss(floatingProps.dismiss, {
-		outside: !!floatingProps.backdrop,
-		escape: true,
-	});
-	const sheetDismiss = resolveOverlayDismiss(sheetProps.dismiss, {
-		outside: !!sheetProps.backdrop,
-		escape: true,
-	});
-	const anchorDismiss = resolveOverlayDismiss(anchorProps?.dismiss, {
-		outside: triggerMode === 'click',
-		escape: triggerMode !== 'hover',
-	});
-	const aria = {
-		'aria-label': props['aria-label'],
-		'aria-labelledby': props['aria-labelledby'],
-		'aria-describedby': props['aria-describedby'],
-		role: props.role,
+	useEffect(() => {
+		if (variant !== 'floating' || !hasOpenChange) return;
+		const node = nodeRef.current;
+		if (!node) return;
+		const onToggle = (event: Event) => {
+			const next = (event as ToggleEvent).newState === 'open';
+			onOpenChangeRef.current?.(next);
+		};
+		node.addEventListener('toggle', onToggle);
+		return () => node.removeEventListener('toggle', onToggle);
+	}, [variant, hasOpenChange]);
+
+	const handleCancel = (event: SyntheticEvent) => {
+		event.preventDefault();
+		onOpenChange?.(false);
 	};
 
-	let layer: React.ReactNode = null;
-	if (variant === 'modal') {
-		const modal = props as OverlayModalProps;
-		layer = (
-			<ScrimLayer
-				kind='modal'
-				open={open}
-				onClose={onClose}
-				presented={presented}
-				className={className}
-				layerStyle={layerStyle}
-				backdropVariant={modal.backdropVariant ?? (purpose === 'lightbox' ? 'strong' : undefined)}
-				backdropBlur={modal.backdropBlur ?? (purpose === 'lightbox' ? 'md' : undefined)}
-				contentRef={mergedContentRef}
-				{...aria}
+	const handleLightDismiss = (event: MouseEvent<HTMLDialogElement>) => {
+		if (event.target === event.currentTarget) onOpenChange?.(false);
+	};
+
+	if (variant === 'floating') {
+		return (
+			<div
+				id={floatingId}
+				ref={uRef(rootRef, nodeRef)}
+				popover='auto'
+				className={cn(styles.panel, overlayTransition.fadeScale, hostClassName, className)}
+				style={style}
+				data-kind='floating'
+				data-side={floatingDataSide}
+				data-width-mode={floatingDataWidthMode}
+				role={role}
+				aria-label={ariaLabel}
+				aria-labelledby={ariaLabelledBy}
+				aria-describedby={ariaDescribedBy}
 			>
 				{children}
-			</ScrimLayer>
-		);
-	} else if (variant === 'floating') {
-		layer = (
-			<ScrimLayer
-				kind='floating'
-				open={open}
-				onClose={onClose}
-				presented={presented}
-				className={className}
-				style={floatingProps.style}
-				layerStyle={layerStyle}
-				backdrop={floatingProps.backdrop}
-				backdropVariant={floatingProps.backdropVariant}
-				backdropBlur={floatingProps.backdropBlur}
-				closeOnOutsideClick={floatingDismiss.outside}
-				closeOnEscape={floatingDismiss.escape}
-				lockScroll={floatingProps.lockScroll}
-				trapFocus={floatingProps.trapFocus}
-				contentRef={mergedContentRef}
-				{...aria}
-			>
-				{children}
-			</ScrimLayer>
-		);
-	} else if (variant === 'sheet') {
-		layer = (
-			<ScrimLayer
-				kind='sheet'
-				side={sheetProps.side ?? 'bottom'}
-				open={open}
-				presented={presented}
-				onClose={onClose}
-				className={className}
-				layerStyle={layerStyle}
-				backdrop={sheetProps.backdrop}
-				backdropVariant={sheetProps.backdropVariant}
-				backdropBlur={sheetProps.backdropBlur}
-				closeOnOutsideClick={sheetDismiss.outside}
-				closeOnEscape={sheetDismiss.escape}
-				contentRef={mergedContentRef}
-				{...aria}
-			>
-				{children}
-			</ScrimLayer>
-		);
-	} else if (isAnchor && targetRef) {
-		layer = (
-			<AnchorLayer
-				variant={variant}
-				purpose={purpose}
-				open={open}
-				targetRef={targetRef}
-				contentRef={mergedContentRef}
-				triggerMode={triggerMode}
-				side={anchorProps?.side ?? 'bottom'}
-				align={anchorProps?.align ?? 'start'}
-				sideOffset={resolveOverlayPurposeSideOffset(purpose)}
-				widthMode={
-					variant === 'dropdown'
-						? ((props as OverlayDropdownProps).widthMode ?? 'trigger-fit')
-						: 'content'
-				}
-				presented={presented}
-				className={className}
-				layerStyle={layerStyle}
-				closeDelay={anchorProps?.closeDelay ?? HOVER_CLOSE_DELAY}
-				closeOnOutsideClick={anchorDismiss.outside}
-				closeOnEscape={anchorDismiss.escape}
-				clearTimers={clearTimers}
-				closeTimerRef={closeTimerRef}
-				pointerRef={pointerRef}
-				requestOpen={requestOpen}
-				openHover={openHover}
-				{...aria}
-			>
-				{children}
-			</AnchorLayer>
+			</div>
 		);
 	}
 
-	return createLibraryPortal(
-		<OverlayStackProvider value={elevated ?? OVERLAY_Z_INDEX_DEFAULT}>
-			{layer}
-		</OverlayStackProvider>,
+	return (
+		<dialog
+			ref={uRef(rootRef, nodeRef)}
+			className={cn(styles.scrim, hostClassName)}
+			data-kind={variant}
+			data-side={side}
+			onCancel={handleCancel}
+			onClick={handleLightDismiss}
+			role={role}
+			aria-label={ariaLabel}
+			aria-labelledby={ariaLabelledBy}
+			aria-describedby={ariaDescribedBy}
+		>
+			<div
+				className={cn(
+					styles.panel,
+					variant === 'modal' && overlayTransition.fadeScale,
+					className,
+				)}
+				style={style}
+				data-kind={variant}
+				data-side={side}
+			>
+				{children}
+			</div>
+		</dialog>
 	);
-});
-
-Overlay.displayName = 'Overlay';
+}

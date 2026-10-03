@@ -9,7 +9,9 @@ import {IconSearch} from 'altum/icons';
 <ButtonIcon aria-label="Поиск" icon={<IconSearch />} />
 ```
 
-Набор **не** входит в главный barrel — только `altum/icons`. Просмотр: Storybook → **Icons**. Каталог собран через `createIcon` (`IconProps` тот же: `size`, `color`).
+Набор **не** входит в главный barrel — только `altum/icons`. Просмотр: Storybook → **Icons**.
+Каталог: `ICON_PATHS` + `<IconBase d={…} />` (тонкие `Icon*` обёртки). `IconProps`: `size`, `color`.
+Кастомный path: `<IconBase d="M…" />` (или несколько `d` массивом).
 
 ### Контракт для кастомных SVG
 

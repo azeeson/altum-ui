@@ -2,7 +2,7 @@ import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {Steps, StepsProps} from './Steps';
 import {Button} from '../Button/Button';
-import {Inline, Stack} from '../Layout/Layout';
+import {Inline, Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {TextField} from '../TextField/TextField';
 import {Card} from '../Card/Card';

@@ -25,7 +25,7 @@ import {Fieldset} from '../Fieldset/Fieldset';
 import {FileList} from '../FileList/FileList';
 import type {FileListItemProps} from '../FileList/FileList';
 import {ImageGallery} from '../ImageGallery/ImageGallery';
-import {Inline, Split, Stack} from '../Layout/Layout';
+import {Inline, Split, Stack} from '../Layout';
 import {Modal} from '../Modal/Modal';
 import {NotificationContainer} from '../Notification/Notification';
 import type {NotificationItem} from '../Notification/Notification';
@@ -39,7 +39,7 @@ import {TextareaField} from '../TextareaField/TextareaField';
 import {Timeline} from '../Timeline/Timeline';
 import {Title} from '../Title/Title';
 import {UploadZone} from '../UploadZone/UploadZone';
-import {addDays, startOfDay, startOfWeek} from '../Calendar/Calendar.utils';
+import {addDays, getWeekStart, startOfDay} from '../Calendar/Calendar.utils';
 import type {ActionListGroup, ActionListItem} from '../ActionList/ActionList.types';
 import {IconBell} from '../../icons/icons/IconBell';
 import {IconBriefcase} from '../../icons/icons/IconBriefcase';
@@ -228,7 +228,7 @@ function DemoFilterBar({
 									key={item.id}
 									size='sm'
 									variant={item.active ? 'tinted' : 'secondary'}
-									as={item.active ? 'toggle' : 'chip'}
+									mode={item.active ? 'toggle' : 'chip'}
 									onClick={onFilterChange
 										? () => onFilterChange(item.id, !item.active)
 										: undefined}
@@ -450,7 +450,7 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 				header: 'Статус',
 				render: (row) => (
 					<Chip
-						as='tag'
+						mode='tag'
 						size='sm'
 						variant={STATUS_TAG[row.status].variant}
 					>
@@ -517,7 +517,6 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 							<Sidebar.Title>
 								Altum CRM
 							</Sidebar.Title>
-							<Sidebar.Collapse />
 						</Sidebar.Header>
 						<Sidebar.Content>
 							<Sidebar.Group>
@@ -594,7 +593,7 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 									<Button
 										variant='primary'
 										size='sm'
-										iconStart={<IconPlus size={16} />}
+										prefix={<IconPlus size={16} />}
 										onClick={() => setCreateOpen(true)}
 									>
 										Сделка
@@ -871,13 +870,12 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 					onOpenChange={(open) => { if (!open) setSelected(null); }}
 					mode='sidebar'
 					direction='end'
-					backdrop
 				>
 					{selected?.company ? (
 						<Sheet.Header showClose>
-							<Sheet.Title>
+							<Title level={3}>
 								{selected.company}
-							</Sheet.Title>
+							</Title>
 						</Sheet.Header>
 					) : null}
 					{selected && (
@@ -885,7 +883,7 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 							<div className={styles.detailStack}>
 								<Inline gap='sm'>
 									<Chip
-										as='tag'
+										mode='tag'
 										size='sm'
 										variant={STATUS_TAG[selected.status].variant}
 									>
@@ -957,9 +955,9 @@ export const SalesCrmConsole: Story<Record<string, never>> = {
 
 				<Modal open={createOpen} onOpenChange={setCreateOpen}>
 					<Modal.Header>
-						<Modal.Title>
+						<Title level={3}>
 							Новая сделка
-						</Modal.Title>
+						</Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Stack gap='md'>
@@ -1260,14 +1258,14 @@ export const SupportDeskApp: Story<Record<string, never>> = {
 
 		return (
 			<div className={styles.splitApp}>
-				<Box variant='outlined' padding='sm'>
+				<Box variant='outlined' style={{padding: 'var(--altum-g-space-2)'}}>
 					<Split align='center'>
 						<Inline gap='sm' align='center'>
 							<strong>
 								Служба поддержки
 							</strong>
 							<Chip
-								as='tag'
+								mode='tag'
 								size='sm'
 								variant='tinted'
 							>
@@ -1343,7 +1341,7 @@ export const SupportDeskApp: Story<Record<string, never>> = {
 													</Badge>
 												)}
 												<Chip
-													as='tag'
+													mode='tag'
 													size='sm'
 													variant={ticket.status === 'resolved' ? 'success' : 'secondary'}
 												>
@@ -1372,7 +1370,7 @@ export const SupportDeskApp: Story<Record<string, never>> = {
 									</Inline>
 									<Inline gap='sm'>
 										<Chip
-											as='tag'
+											mode='tag'
 											size='sm'
 											variant={active.priority === 'high' ? 'error' : 'secondary'}
 										>
@@ -1440,12 +1438,11 @@ export const SupportDeskApp: Story<Record<string, never>> = {
 					onOpenChange={setDetailOpen}
 					mode='sidebar'
 					direction='end'
-					backdrop
 				>
 					<Sheet.Header showClose>
-						<Sheet.Title>
+						<Title level={3}>
 							Тикет
-						</Sheet.Title>
+						</Title>
 					</Sheet.Header>
 					<Sheet.Body>
 						<div className={styles.detailStack}>
@@ -1510,7 +1507,7 @@ export const SupportDeskApp: Story<Record<string, never>> = {
 /* ---------- 3. Студия проектов (календарь + тулбар) ---------- */
 
 function studioTasks(anchor = new Date()): CalendarBoardTask[] {
-	const weekStart = startOfWeek(anchor, 1);
+	const weekStart = getWeekStart(anchor, 1);
 	return [
 		{
 			id: 'kickoff',
@@ -1661,7 +1658,7 @@ export const ProjectStudioApp: Story<Record<string, never>> = {
 								<Button
 									size='sm'
 									variant='primary'
-									iconStart={<IconPlus size={16} />}
+									prefix={<IconPlus size={16} />}
 									onClick={() => push('Событие', 'success')}
 								>
 									Событие
@@ -1675,7 +1672,7 @@ export const ProjectStudioApp: Story<Record<string, never>> = {
 									key={chip.id}
 									size='sm'
 									variant={chip.active ? 'tinted' : 'secondary'}
-									as={chip.active ? 'toggle' : 'chip'}
+									mode={chip.active ? 'toggle' : 'chip'}
 									onClick={() => {
 										setChips((prev) => prev.map((c) => (c.id === chip.id ? {
 											...c,
@@ -1737,7 +1734,7 @@ export const ProjectStudioApp: Story<Record<string, never>> = {
 													{task.title}
 												</Text>
 												<Chip
-													as='tag'
+													mode='tag'
 													size='sm'
 													variant='secondary'
 												>
@@ -1763,18 +1760,17 @@ export const ProjectStudioApp: Story<Record<string, never>> = {
 					onOpenChange={setDrawerOpen}
 					mode='sidebar'
 					direction='end'
-					backdrop
 				>
 					<Sheet.Header showClose>
-						<Sheet.Title>
+						<Title level={3}>
 							{selected?.title ?? 'Событие'}
-						</Sheet.Title>
+						</Title>
 					</Sheet.Header>
 					{selected ? (
 						<Sheet.Body>
 							<div className={styles.detailStack}>
 								<Chip
-									as='tag'
+									mode='tag'
 									size='sm'
 									variant='tinted'
 								>
@@ -1991,7 +1987,7 @@ export const MediaLibraryApp: Story<Record<string, never>> = {
 										<Inline gap='sm' align='center'>
 											<IconFolder size={16} />
 											<Chip
-												as='tag'
+												mode='tag'
 												size='sm'
 												variant='tinted'
 											>
@@ -2043,9 +2039,9 @@ export const MediaLibraryApp: Story<Record<string, never>> = {
 
 				<Modal open={preview} onOpenChange={setPreview}>
 					<Modal.Header>
-						<Modal.Title>
+						<Title level={3}>
 							Превью
-						</Modal.Title>
+						</Title>
 					</Modal.Header>
 					<Modal.Body>
 						<ImageGallery

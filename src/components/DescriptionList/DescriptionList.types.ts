@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 /**
@@ -25,4 +26,6 @@ export interface DescriptionListProps extends Omit<ComponentPropsWithoutRef<'dl'
 	layout?: 'stacked' | 'inline';
 	/** Число колонок (CSS columns) для stacked. @default 1 */
 	columns?: 1 | 2 | 3;
+	/** DOM-узел корня. */
+	rootRef?: Ref<HTMLDListElement>;
 }

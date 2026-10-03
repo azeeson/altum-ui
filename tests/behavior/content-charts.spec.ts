@@ -65,14 +65,6 @@ test.describe('Alert', () => {
 	});
 });
 
-test.describe('FocusTrap', () => {
-	test('активирует ловушку из playground', async ({page}) => {
-		await visitStory(page, 'altum-utilities-focustrap--playground');
-		await page.getByRole('button', {name: /Включить FocusTrap/i}).click();
-		await expect(page.getByRole('button', {name: /Выключить FocusTrap/i})).toBeVisible();
-	});
-});
-
 test.describe('BarChart', () => {
 	test('рендерит график', async ({page}) => {
 		await visitStory(page, 'altum-components-barchart--playground');

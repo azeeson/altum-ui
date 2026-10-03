@@ -17,9 +17,57 @@
   font-family: var(--altum-g-font-family-ui);
 
   background-color: var(--altum-color-option-hover);
+
+  &[data-size='sm'] {
+    --altum-stat-value-size: var(--altum-g-font-size-3xs);
+    --altum-stat-label-size: var(--altum-g-font-size-3xs);
+
+    flex-direction: row;
+
+    min-width: 0;
+    height: var(--altum-g-space-4);
+
+    padding: 0 var(--altum-g-space-2);
+
+    border-radius: var(--altum-g-radius-sm);
+
+    &::after {
+      font-weight: var(--altum-g-font-weight-semibold);
+      white-space: nowrap;
+    }
+  }
+
+  &[data-variant='success'],
+  &[data-variant='warning'],
+  &[data-variant='error'] {
+    --altum-status-bg: color-mix(in srgb, var(--altum-status-fill) var(--altum-status-bg-amt, 11%), var(--altum-status-bg-base, transparent));
+
+    background-color: var(--altum-status-bg);
+  }
+
+  &[data-variant='success'] {
+    --altum-status-fill: var(--altum-color-status-success);
+    --altum-status-strong: var(--altum-color-status-success-strong);
+  }
+
+  &[data-variant='warning'] {
+    --altum-status-fill: var(--altum-color-status-warning);
+    --altum-status-strong: var(--altum-color-status-warning-strong);
+    --altum-status-bg-amt: var(--altum-status-warning-bg-amt, 12%);
+  }
+
+  &[data-variant='error'] {
+    --altum-status-fill: var(--altum-color-status-error);
+    --altum-status-strong: var(--altum-color-danger-text-secondary);
+  }
 }
 
-.value {
+.statBadge::before,
+.statBadge::after {
+  content: attr(data-value);
+}
+
+.statBadge::before {
   font-size: var(--altum-stat-value-size);
   font-weight: var(--altum-g-font-weight-bold);
   line-height: 1.2;
@@ -27,30 +75,13 @@
   color: var(--altum-status-strong, var(--altum-color-input-text));
 }
 
-.label {
+.statBadge::after {
+  content: attr(data-label);
+
   font-size: var(--altum-stat-label-size);
   font-weight: var(--altum-g-font-weight-medium);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 
   color: var(--altum-color-text-secondary);
-}
-
-.sm {
-  --altum-stat-value-size: var(--altum-g-font-size-3xs);
-  --altum-stat-label-size: var(--altum-g-font-size-3xs);
-
-  flex-direction: row;
-
-  min-width: 0;
-  height: var(--altum-g-space-4);
-
-  padding: 0 var(--altum-g-space-2);
-
-  border-radius: var(--altum-g-radius-sm);
-
-  & .label {
-    font-weight: var(--altum-g-font-weight-semibold);
-    white-space: nowrap;
-  }
 }

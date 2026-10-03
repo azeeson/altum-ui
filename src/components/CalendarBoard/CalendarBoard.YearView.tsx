@@ -1,4 +1,4 @@
-import React, {forwardRef, useMemo} from 'react';
+import {useMemo, type MouseEvent} from 'react';
 import {
 	addDays,
 	isToday,
@@ -13,17 +13,29 @@ import {
 import {buildMonthWeeks, calendarDateKey} from './CalendarBoard.utils';
 import styles from './CalendarBoard.module.css';
 import unstyled from '../../styles/unstyledControl.module.css';
-import {cn} from '../../utils/cn';
+import utilities from '../../styles/utilities.module.css';
+import {cn} from '../../core/utils/cn';
 import {useLocale} from '../../locales/localeContext';
 import type {CalendarBoardYearProps} from './CalendarBoard.types';
+import {ruSlice as ru_calendar} from '../../locales/slices/calendar.ru';
+import {ruSlice as ru_calendarBoard} from '../../locales/slices/calendarBoard.ru';
+
+const localeFallback = {
+	calendar: ru_calendar,
+	calendarBoard: ru_calendarBoard,
+};
+
+
+
 
 export type {CalendarBoardYearProps} from './CalendarBoard.types';
 
-export const CalendarBoardYear = forwardRef<HTMLDivElement, CalendarBoardYearProps>(function CalendarBoardYear(
-	{className, ...rest},
-	ref,
-) {
-	const {messages, t} = useLocale();
+export const CalendarBoardYear = ({
+	className,
+	rootRef,
+	...rest
+}: CalendarBoardYearProps) => {
+	const {messages, t} = useLocale(localeFallback);
 	const {months, weekdaysShort} = messages.calendar;
 	const {
 		viewDate,
@@ -56,11 +68,27 @@ export const CalendarBoardYear = forwardRef<HTMLDivElement, CalendarBoardYearPro
 
 	const labels = weekdayLabels(weekdaysShort, weekStartsOn).map((name) => name[0] ?? '');
 
+	const openTarget = (event: MouseEvent<HTMLDivElement>) => {
+		const button = (event.target as HTMLElement).closest('button');
+		if (!(button instanceof HTMLButtonElement) || button.disabled) return;
+		if (button.dataset.month != null) {
+			setViewDate(new Date(year, Number(button.dataset.month), 1));
+			setView('month');
+			return;
+		}
+		if (!button.dataset.date) return;
+		const date = new Date(button.dataset.date);
+		if (Number.isNaN(date.getTime())) return;
+		setViewDate(date);
+		setView('day');
+	};
+
 	return (
 		<div
-			ref={ref}
-			className={cn(styles.year, className)}
 			{...rest}
+			ref={rootRef}
+			className={cn(styles.year, className)}
+			onClick={openTarget}
 		>
 			{Array.from({length: 12}, (_, monthIndex) => {
 				const monthDate = new Date(year, monthIndex, 1);
@@ -87,15 +115,13 @@ export const CalendarBoardYear = forwardRef<HTMLDivElement, CalendarBoardYearPro
 				return (
 					<div
 						key={monthIndex}
-						className={cn(styles.yearMonth, styles.yearMonthCard, isCurrentMonth ? styles.yearMonthCurrent : '')}
+						className={cn(styles.yearMonth, styles.yearMonthCard)}
+						data-current={isCurrentMonth ? '' : undefined}
 					>
 						<button
 							type='button'
 							className={cn(unstyled.control, styles.yearMonthLabelBtn)}
-							onClick={() => {
-								setViewDate(monthDate);
-								setView('month');
-							}}
+							data-month={monthIndex}
 						>
 							{months[monthIndex]}
 						</button>
@@ -120,21 +146,14 @@ export const CalendarBoardYear = forwardRef<HTMLDivElement, CalendarBoardYearPro
 												key={date.toISOString()}
 												type='button'
 												disabled={!inMonth}
-												className={cn(
-													unstyled.control,
-													styles.yearDay,
-													!inMonth ? styles.yearDayOutside : '',
-													today ? styles.yearDayToday : '',
-													hasTask ? styles.yearDayHasTask : '',
-												)}
+												className={cn(unstyled.control, utilities.fCenter, styles.yearDay)}
+												data-date={inMonth ? date.toISOString() : undefined}
+												data-outside={!inMonth ? '' : undefined}
+												data-today={today ? '' : undefined}
+												data-has-task={hasTask ? '' : undefined}
 												title={inMonth && hasTask
 													? dayTasks.map((task) => task.title).join('\n')
 													: undefined}
-												onClick={() => {
-													if (!inMonth) return;
-													setViewDate(date);
-													setView('day');
-												}}
 												aria-label={inMonth
 													? hasTask
 														? t('calendarBoard.dayWithTasks', {
@@ -160,6 +179,4 @@ export const CalendarBoardYear = forwardRef<HTMLDivElement, CalendarBoardYearPro
 			})}
 		</div>
 	);
-});
-
-CalendarBoardYear.displayName = 'CalendarBoard.Year';
+};

@@ -47,6 +47,7 @@ export {IconChevronDown} from './IconChevronDown';
 export {IconChevronLeft} from './IconChevronLeft';
 export {IconChevronRight} from './IconChevronRight';
 export {IconChevronUp} from './IconChevronUp';
+export {IconChevronUpDown} from './IconChevronUpDown';
 export {IconClipboard} from './IconClipboard';
 export {IconClock} from './IconClock';
 export {IconClockwise} from './IconClockwise';

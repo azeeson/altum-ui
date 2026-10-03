@@ -1,80 +1,86 @@
+import type {ReactNode} from 'react';
 import type {CardProps} from './Card.types';
 export type {
 	CardVariant,
 	CardProps,
 } from './Card.types';
 
-import {forwardRef} from 'react';
 import {Box} from '../Box/Box';
+import {Spinner} from '../Spinner/Spinner';
+import {Text} from '../Text/Text';
 import styles from './Card.module.css';
-import {cn} from '../../utils/cn';
-import {implicitAs} from '../../utils/implicitAs';
+import utilities from '../../styles/utilities.module.css';
+import {cn} from '../../core/utils/cn';
+import {implicitAs} from '../../core/utils/implicitAs';
+
+function asText(node: ReactNode, weight?: 'semibold') {
+	if (typeof node === 'string' || typeof node === 'number') {
+		return (
+			<Text weight={weight}>
+				{node}
+			</Text>
+		);
+	}
+	return node;
+}
 
 /**
- * Карточка на базе `Box`: `variant`, `header` / `media` / `children` / `actions`, `loading`.
- * Радиус по умолчанию — `lg` (поверхность, не контрол).
- * При `onClick` без `as` корень — `<button type="button">`.
+ * Карточка-поверхность на `Box`: заголовок, медиа, тело и действия.
+ * Клик без `as` поднимает корень до `button` (`implicitAs`).
+ * Загрузка — `aria-busy` и `Spinner` поверх контента.
  *
  * @component
  * @example
  * <Card variant="elevated" header="Заголовок" loading={isLoading}>
- *   Контент
+ *   Содержимое
  * </Card>
  */
-export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
-	{
-		children,
-		header,
-		media,
-		actions,
-		hoverable = false,
-		variant = 'outlined',
-		loading = false,
-		className,
-		as,
-		onClick,
-		role,
-		radius = 'lg',
-		...rest
-	},
-	ref,
-) {
+export const Card = ({
+	children,
+	header,
+	media,
+	actions,
+	hoverable = false,
+	variant = 'outlined',
+	loading = false,
+	className,
+	as,
+	onClick,
+	role,
+	radius = 'lg',
+	rootRef,
+	...rest
+}: CardProps) => {
 	const resolvedAs = implicitAs(as, onClick, role);
 
 	if (
 		process.env.NODE_ENV !== 'production'
-		&& onClick != null
+		&& onClick
 		&& resolvedAs !== 'button'
 		&& resolvedAs !== 'a'
 		&& role !== 'button'
 	) {
 		console.warn(
-			'Card: onClick на корне, который не является кнопкой. '
-			+ 'Передайте as="button" или вложите Button вместо onClick на div.',
+			'Card: onClick на неинтерактивном корне. Передайте role="button" или as="a".',
 		);
 	}
 
 	return (
 		<Box
-			ref={ref}
+			rootRef={rootRef}
 			as={resolvedAs}
 			variant={variant}
 			radius={radius}
-			className={cn(
-				styles.card,
-				variant === 'ghost' && styles.ghost,
-				hoverable && styles.hoverable,
-				loading && styles.loading,
-				className,
-			)}
-			aria-busy={loading || undefined}
+			className={cn(utilities.fColumn, styles.card, className)}
 			{...rest}
+			data-hoverable={hoverable ? '' : undefined}
 			onClick={onClick}
 			role={role}
+			aria-busy={loading || undefined}
 		>
 			{header != null && (
 				<div className={styles.header}>
-					{header}
+					{asText(header, 'semibold')}
 				</div>
 			)}
 			{media != null && (
@@ -84,7 +90,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
 			)}
 			{children != null && (
 				<div className={styles.body}>
-					{children}
+					{asText(children)}
 				</div>
 			)}
 			{actions != null && (
@@ -93,10 +99,10 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
 				</div>
 			)}
 			{loading && (
-				<div className={styles.loadingOverlay} aria-hidden />
+				<span className={cn(utilities.fCenter, styles.busy)}>
+					<Spinner aria-hidden />
+				</span>
 			)}
 		</Box>
 	);
-});
-
-Card.displayName = 'Card';
+};

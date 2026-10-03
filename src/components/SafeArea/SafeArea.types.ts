@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
+	Ref,
 } from 'react';
 
 /**
@@ -24,4 +25,6 @@ export interface SafeAreaProps extends ComponentPropsWithoutRef<'div'> {
 	/** Корневой HTML-тег. @default 'div' */
 	as?: 'div' | 'main' | 'section' | 'header' | 'footer';
 	children?: React.ReactNode;
+	/** DOM-узел. */
+	rootRef?: Ref<HTMLElement>;
 }

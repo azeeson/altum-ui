@@ -3,11 +3,10 @@ import React from 'react';
 import {
 	Grid,
 	GridItem,
-	GRID_BREAKPOINTS,
 	type GridProps,
 } from './Grid';
 import {Card} from '../Card/Card';
-import {Stack} from '../Layout/Layout';
+import {Stack} from '../Layout';
 import {Text} from '../Text/Text';
 import {Title} from '../Title/Title';
 
@@ -43,25 +42,17 @@ function DemoKpiCard({
 import {componentParameters, story, Story} from '../../storybook/meta';
 import styles from './Grid.stories.module.css';
 
-const breakpointHint = [
-	`xs (<${GRID_BREAKPOINTS.sm}px)`,
-	`sm (${GRID_BREAKPOINTS.sm}+)`,
-	`md (${GRID_BREAKPOINTS.md}+)`,
-	`lg (${GRID_BREAKPOINTS.lg}+)`,
-	`xl (${GRID_BREAKPOINTS.xl}+)`,
-].join(' · ');
-
 export default {
 	title: 'altum/Components/Grid',
 	component: Grid,
 	tags: ['autodocs'],
 	parameters: componentParameters(
-		'CSS Grid-контейнер с адаптивными колонками, `GridItem` для span и auto-fit карточных сеток.',
+		'CSS Grid-контейнер с колонками, `GridItem` для span и auto-fit карточных сеток.',
 	),
 	argTypes: {
 		columns: {
 			control: 'number',
-			description: 'Число колонок, шаблон или объект по breakpoints',
+			description: 'Число колонок или CSS-шаблон',
 		},
 		gap: {
 			control: {
@@ -126,27 +117,13 @@ export const Playground: Story<GridProps> = {
 	parameters: story('Используйте панель Controls для настройки колонок и gap.'),
 };
 
-export const AdaptiveGrid: Story<GridProps> = {
+export const FourColumnGrid: Story<GridProps> = {
 	render: () => (
 		<div className={styles.sectionBlock}>
 			<Text weight='bold'>
-				1 → 2 → 4 колонки (xs / md / lg)
+				4 колонки
 			</Text>
-			<Text className={styles.caption}>
-				{breakpointHint}
-			</Text>
-			<Grid
-				columns={{
-					xs: 1,
-					md: 2,
-					lg: 4,
-				}}
-				gap={{
-					xs: 'sm',
-					md: 'md',
-					lg: 'lg',
-				}}
-			>
+			<Grid columns={4} gap='md'>
 				{[
 					'A',
 					'B',
@@ -154,7 +131,7 @@ export const AdaptiveGrid: Story<GridProps> = {
 					'D'
 				].map((label) => (
 					<div key={label} className={styles.cell}>
-						Блок 
+						Блок
 						{' '}
 						{label}
 					</div>
@@ -162,28 +139,16 @@ export const AdaptiveGrid: Story<GridProps> = {
 			</Grid>
 		</div>
 	),
-	parameters: story('Адаптивное число колонок и отступов по брейкпоинтам.'),
+	parameters: story('Фиксированная сетка из четырёх колонок.'),
 };
 
-export const ResponsiveMetrics: Story<GridProps> = {
+export const MetricsRow: Story<GridProps> = {
 	render: () => (
 		<div className={styles.sectionBlock}>
 			<Text weight='bold'>
-				KPI: 1 → 2 → 3 → 4 → 6 колонок
+				KPI: 6 колонок
 			</Text>
-			<Text className={styles.caption}>
-				{breakpointHint}
-			</Text>
-			<Grid
-				columns={{
-					xs: 1,
-					sm: 2,
-					md: 3,
-					lg: 4,
-					xl: 6,
-				}}
-				gap='md'
-			>
+			<Grid columns={6} gap='md'>
 				<DemoKpiCard
 					label='Выручка'
 					value='₽1.2M'
@@ -220,7 +185,7 @@ export const ResponsiveMetrics: Story<GridProps> = {
 			</Grid>
 		</div>
 	),
-	parameters: story('Шесть KPI Card на xl, меньше колонок на узких экранах.'),
+	parameters: story('Шесть KPI Card в фиксированной сетке.'),
 };
 
 export const TwelveColumnDashboard: Story<GridProps> = {
@@ -230,53 +195,31 @@ export const TwelveColumnDashboard: Story<GridProps> = {
 				12-колоночный dashboard с GridItem span
 			</Text>
 			<Text className={styles.caption}>
-				Sidebar 3 + main 9 на lg; виджеты по 4 колонки
+				Sidebar 3 + main 9; виджеты по 4 колонки
 			</Text>
 			<div className={styles.dashboardShell}>
 				<Grid columns={12} gap='md'>
-					<GridItem span={{
-						xs: 12,
-						lg: 3
-					}}
-					>
+					<GridItem span={3}>
 						<div className={styles.sidebar}>
 							Боковая панель
 						</div>
 					</GridItem>
-					<GridItem span={{
-						xs: 12,
-						lg: 9
-					}}
-					>
+					<GridItem span={9}>
 						<div className={styles.main}>
 							Основной контент
 						</div>
 					</GridItem>
-					<GridItem span={{
-						xs: 12,
-						md: 6,
-						lg: 4
-					}}
-					>
+					<GridItem span={4}>
 						<div className={styles.widget}>
 							Виджет A
 						</div>
 					</GridItem>
-					<GridItem span={{
-						xs: 12,
-						md: 6,
-						lg: 4
-					}}
-					>
+					<GridItem span={4}>
 						<div className={styles.widget}>
 							Виджет B
 						</div>
 					</GridItem>
-					<GridItem span={{
-						xs: 12,
-						lg: 4
-					}}
-					>
+					<GridItem span={4}>
 						<div className={styles.widget}>
 							Виджет C
 						</div>
@@ -285,7 +228,7 @@ export const TwelveColumnDashboard: Story<GridProps> = {
 			</div>
 		</div>
 	),
-	parameters: story('12-col сетка: sidebar, main и три виджета с адаптивным span.'),
+	parameters: story('12-col сетка: sidebar, main и три виджета со скалярным span.'),
 };
 
 export const AutoFitGallery: Story<GridProps> = {
@@ -361,7 +304,7 @@ export const HeroAndTiles: Story<GridProps> = {
 				Hero + три плитки
 			</Text>
 			<Text className={styles.caption}>
-				Hero на всю ширину; плитки 1 → 3 колонки
+				Hero на всю ширину; плитки по 4 колонки
 			</Text>
 			<Grid columns={12} gap='md'>
 				<GridItem span={12}>
@@ -369,29 +312,17 @@ export const HeroAndTiles: Story<GridProps> = {
 						Баннер — span 12
 					</div>
 				</GridItem>
-				<GridItem span={{
-					xs: 12,
-					md: 4
-				}}
-				>
+				<GridItem span={4}>
 					<div className={styles.tile}>
 						Плитка 1
 					</div>
 				</GridItem>
-				<GridItem span={{
-					xs: 12,
-					md: 4
-				}}
-				>
+				<GridItem span={4}>
 					<div className={styles.tile}>
 						Плитка 2
 					</div>
 				</GridItem>
-				<GridItem span={{
-					xs: 12,
-					md: 4
-				}}
-				>
+				<GridItem span={4}>
 					<div className={styles.tile}>
 						Плитка 3
 					</div>
@@ -399,7 +330,7 @@ export const HeroAndTiles: Story<GridProps> = {
 			</Grid>
 		</div>
 	),
-	parameters: story('Hero на всю ширину и три равные плитки на md+.'),
+	parameters: story('Hero на всю ширину и три равные плитки.'),
 };
 
 export const ColumnVariations: Story<GridProps> = {
@@ -477,13 +408,7 @@ export const LayoutNamespace: Story<GridProps> = {
 			<Text weight='bold'>
 				Grid + GridItem
 			</Text>
-			<Grid
-				columns={{
-					xs: 1,
-					md: 2
-				}}
-				gap='md'
-			>
+			<Grid columns={2} gap='md'>
 				<GridItem>
 					<div className={styles.cell}>
 						Отдельный экспорт
@@ -517,13 +442,7 @@ export const UsageExample: Story<GridProps> = {
 			<Text weight='bold'>
 				Карточки в сетке
 			</Text>
-			<Grid
-				columns={{
-					xs: 1,
-					md: 3
-				}}
-				gap='md'
-			>
+			<Grid columns={3} gap='md'>
 				<DemoKpiCard
 					label='Выручка'
 					value='₽1.2M'
@@ -544,6 +463,5 @@ export const UsageExample: Story<GridProps> = {
 			</Grid>
 		</div>
 	),
-	parameters: story('KPI Card внутри адаптивной Grid — типичный дашборд.'),
+	parameters: story('KPI Card внутри Grid — типичный дашборд.'),
 };
-

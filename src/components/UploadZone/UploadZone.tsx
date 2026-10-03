@@ -5,13 +5,20 @@ export type {
 	UploadZoneProps,
 } from './UploadZone.types';
 
-import {forwardRef, useRef, useState} from 'react';
+import {useRef, useState} from 'react';
 import styles from './UploadZone.module.css';
-import srOnly from '../../styles/srOnly.module.css';
-import {cn} from '../../utils/cn';
+import visuallyHidden from '../../styles/visuallyHidden.module.css';
+import {cn} from '../../core/utils/cn';
 import {useFallbackId} from '../../hooks/useFallbackId';
 import {useFileDrop} from '../../hooks/useFileDrop';
 import {useLocale} from '../../locales/localeContext';
+import {ruSlice as ru_upload} from '../../locales/slices/upload.ru';
+
+const localeFallback = {
+	upload: ru_upload,
+};
+
+
 
 /**
  * Зона загрузки файлов drag-and-drop с скрытым input и render-prop для кастомного триггера.
@@ -22,20 +29,18 @@ import {useLocale} from '../../locales/localeContext';
  *   Перетащите файл или нажмите для выбора
  * </UploadZone>
  */
-export const UploadZone = forwardRef<HTMLDivElement, UploadZoneProps>(function UploadZone(
-	{
-		onChange,
-		multiple = true,
-		className,
-		children,
-		readOnly = false,
-		disabled = false,
-		id,
-		...rest
-	},
-	ref,
-) {
-	const {t} = useLocale();
+export const UploadZone = ({
+	onChange,
+	multiple = true,
+	className,
+	children,
+	readOnly = false,
+	disabled = false,
+	id,
+	rootRef,
+	...rest
+}: UploadZoneProps) => {
+	const {t} = useLocale(localeFallback);
 	const inputId = useFallbackId(id ? `${id}-file` : undefined);
 	const [selectedText, setSelectedText] = useState('');
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -48,25 +53,17 @@ export const UploadZone = forwardRef<HTMLDivElement, UploadZoneProps>(function U
 	};
 
 	const {over, ...drop} = useFileDrop(isInteractive ? processFiles : undefined);
-
-	const openFileDialog = () => {
-		if (!isInteractive) return;
-		fileInputRef.current?.click();
-	};
-
 	const isCustom = children != null;
 
 	return (
 		<div
-			ref={ref}
+			ref={rootRef}
 			id={id}
-			className={cn(
-				styles.container,
-				isCustom ? styles.custom : styles.default,
-				readOnly && !disabled && styles.readOnly,
-				disabled && styles.disabled,
-				className,
-			)}
+			className={cn(styles.container, className)}
+			data-custom={isCustom ? '' : undefined}
+			data-readonly={readOnly && !disabled ? '' : undefined}
+			data-disabled={disabled ? '' : undefined}
+			data-over={over ? '' : undefined}
 			aria-readonly={readOnly && !disabled || undefined}
 			aria-disabled={disabled || undefined}
 			{...drop}
@@ -77,14 +74,14 @@ export const UploadZone = forwardRef<HTMLDivElement, UploadZoneProps>(function U
 				type='file'
 				multiple={multiple}
 				disabled={!isInteractive}
-				className={srOnly.srOnly}
+				className={visuallyHidden.root}
 				ref={fileInputRef}
 				onChange={(e) => {
 					if (e.target.files) processFiles(e.target.files);
 				}}
 			/>
 			{isCustom
-				? (typeof children === 'function' ? children(openFileDialog) : children)
+				? (typeof children === 'function' ? children(() => fileInputRef.current?.click()) : children)
 				: (
 					<label htmlFor={inputId} className={styles.uploadLabel}>
 						<span className={styles.uploadIcon} aria-hidden>
@@ -113,6 +110,4 @@ export const UploadZone = forwardRef<HTMLDivElement, UploadZoneProps>(function U
 			)}
 		</div>
 	);
-});
-
-UploadZone.displayName = 'UploadZone';
+};

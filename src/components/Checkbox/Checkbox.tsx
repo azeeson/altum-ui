@@ -9,13 +9,12 @@ export type {
 	CheckboxGroupProps,
 } from './Checkbox.types';
 
-import {useEffect, forwardRef} from 'react';
+import {useRef, type ChangeEvent} from 'react';
 import {ToggleControlBase} from '../../base/ToggleControlBase';
 import {ToggleGroupBase} from '../../base/ToggleGroupBase';
 import box from '../../styles/toggleBox.module.css';
 import styles from './Checkbox.module.css';
-import {cn} from '../../utils/cn';
-import {composeRefs} from '../../utils/composeRefs';
+import {cn} from '../../core/utils/cn';
 
 /**
  * Чекбокс: `size`, `labelSide`, `indeterminate`, `mode` (`default` | `task`),
@@ -26,48 +25,48 @@ import {composeRefs} from '../../utils/composeRefs';
  * <Checkbox label="Выбрать всё" indeterminate checked={false} onChange={...} />
  * <Checkbox labelVisibility="hidden" aria-label="Выполнено" mode="task" checked={done} onChange={...} />
  */
-export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Checkbox(
-	{
-		label,
-		labelVisibility = 'visible',
-		className,
-		disabled,
-		readOnly,
-		size = 'md',
-		labelSide = 'end',
-		indeterminate = false,
-		mode = 'default',
-		align: alignProp,
-		checked,
-		onChange,
-		onCheckedChange,
-		'aria-label': ariaLabel,
-		'aria-labelledby': ariaLabelledBy,
-		...props
-	},
-	ref,
-) {
+export const Checkbox = ({
+	label,
+	labelVisibility = 'visible',
+	className,
+	disabled,
+	readOnly,
+	size = 'md',
+	labelSide = 'end',
+	indeterminate = false,
+	mode = 'default',
+	align: alignProp,
+	checked,
+	onChange,
+	onCheckedChange,
+	'aria-label': ariaLabel,
+	'aria-labelledby': ariaLabelledBy,
+	inputRef,
+	...props
+}: CheckboxProps) => {
 	const isTask = mode === 'task';
 	const hideLabel = labelVisibility === 'hidden';
+	const warnedRef = useRef(false);
+	const missingName = hideLabel && !ariaLabel && !ariaLabelledBy;
 
-	useEffect(() => {
-		if (
-			process.env.NODE_ENV !== 'production'
-			&& hideLabel
-			&& !ariaLabel
-			&& !ariaLabelledBy
-		) {
+	if (process.env.NODE_ENV !== 'production') {
+		if (missingName && !warnedRef.current) {
+			warnedRef.current = true;
 			console.warn(
 				'[Checkbox] labelVisibility="hidden" требует aria-label или aria-labelledby.',
 			);
 		}
-	}, [hideLabel, ariaLabel, ariaLabelledBy]);
+		if (!missingName) warnedRef.current = false;
+	}
+
+	const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+		onChange?.(event);
+		onCheckedChange?.(event.target.checked);
+	};
 
 	return (
 		<ToggleControlBase
-			ref={composeRefs(ref, (node) => {
-				if (node) node.indeterminate = indeterminate;
-			})}
+			inputRef={inputRef}
 			type='checkbox'
 			size={size}
 			align={alignProp ?? (isTask ? 'start' : 'center')}
@@ -75,30 +74,23 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
 			readOnly={readOnly}
 			disabled={disabled}
 			checked={checked}
-			className={cn(
-				box.root,
-				styles.root,
-				isTask ? styles.task : '',
-				isTask && checked ? styles.checked : '',
-				className,
-			)}
+			className={cn(box.root, styles.root, className)}
 			inputClassName={cn(box.input, styles.input)}
 			boxClassName={cn(box.box, styles.box)}
 			label={label}
 			labelHidden={hideLabel}
 			{...props}
+			labelProps={{
+				'data-mode': mode !== 'default' ? mode : undefined,
+				'data-indeterminate': indeterminate ? '' : undefined,
+			}}
 			aria-label={ariaLabel}
 			aria-labelledby={ariaLabelledBy}
 			aria-checked={indeterminate ? 'mixed' : checked}
-			onChange={(event) => {
-				onChange?.(event);
-				onCheckedChange?.(event.target.checked);
-			}}
+			onChange={handleChange}
 		/>
 	);
-});
-
-Checkbox.displayName = 'Checkbox';
+};
 
 /**
  * Группа чекбоксов с общим value-массивом и roving focus (стрелки).
@@ -112,48 +104,55 @@ Checkbox.displayName = 'Checkbox';
  *   onChange={setSelected}
  * />
  */
-export const CheckboxGroup = forwardRef<HTMLFieldSetElement, CheckboxGroupProps>(function CheckboxGroup(
-	{
-		label,
-		options,
-		value,
-		onChange,
-		orientation = 'vertical',
-		readOnly = false,
-		disabled = false,
-		size = 'md',
-		labelSide = 'end',
-		...rest
-	},
-	ref,
-) {
+export const CheckboxGroup = ({
+	label,
+	options,
+	value,
+	onChange,
+	orientation = 'vertical',
+	readOnly = false,
+	disabled = false,
+	size = 'md',
+	labelSide = 'end',
+	rootRef,
+	...rest
+}: CheckboxGroupProps) => {
+	const onChangeRef = useRef(onChange);
+	onChangeRef.current = onChange;
+	const valueRef = useRef(value);
+	valueRef.current = value;
+
+	const handleChange = (event: ChangeEvent<HTMLFieldSetElement>) => {
+		if (readOnly || disabled) return;
+		const target = event.target;
+		if (!(target instanceof HTMLInputElement)) return;
+		const current = valueRef.current;
+		if (target.checked) onChangeRef.current([...current, target.value]);
+		else onChangeRef.current(current.filter((item) => item !== target.value));
+	};
+
 	return (
 		<ToggleGroupBase
-			ref={ref}
+			rootRef={rootRef}
 			label={label}
 			orientation={orientation}
 			readOnly={readOnly}
 			disabled={disabled}
 			{...rest}
+			onChange={handleChange}
 		>
 			{options.map((option) => (
 				<Checkbox
 					key={option.value}
+					value={option.value}
 					label={option.label}
 					checked={value.includes(option.value)}
 					disabled={disabled}
 					readOnly={readOnly}
 					size={size}
 					labelSide={labelSide}
-					onChange={(event) => {
-						if (readOnly || disabled) return;
-						if (event.target.checked) onChange([...value, option.value]);
-						else onChange(value.filter((item) => item !== option.value));
-					}}
 				/>
 			))}
 		</ToggleGroupBase>
 	);
-});
-
-CheckboxGroup.displayName = 'CheckboxGroup';
+};

@@ -1,5 +1,4 @@
-import type {ReactNode} from 'react';
-import type {ComponentPropsWithoutRef} from 'react';
+import type {ComponentPropsWithoutRef, ReactNode, Ref} from 'react';
 import {type BoxAs, type BoxVariant} from '../Box/Box';
 
 /**
@@ -35,6 +34,12 @@ export interface ItemProps extends Omit<ComponentPropsWithoutRef<'div'>, 'title'
 	 */
 	interactive?: boolean;
 	/**
+	 * Перенос `title` и `description` на несколько строк.
+	 * Без пропа длинный текст обрезается ellipsis.
+	 * @default false
+	 */
+	wrap?: boolean;
+	/**
 	 * HTML-тег поверхности (`Box`).
 	 * @default `onClick` + `interactive` → `'button'`, иначе `'div'`
 	 */
@@ -49,4 +54,6 @@ export interface ItemProps extends Omit<ComponentPropsWithoutRef<'div'>, 'title'
 	descriptionClassName?: string;
 	actions?: ReactNode;
 	actionsClassName?: string;
+	/** DOM-узел строки. */
+	rootRef?: Ref<HTMLElement>;
 }

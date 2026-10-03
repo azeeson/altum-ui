@@ -1,7 +1,7 @@
 import type {Meta} from '@storybook/react';
 import React, {useState} from 'react';
 import {TextField, TextFieldProps} from './TextField';
-import {FieldBaseButton, FieldBaseIcon} from '../../base/FieldBase';
+import {FieldBaseButton, FieldBaseIcon} from './TextField';
 import {IconUser} from '../../icons/icons/IconUser';
 import {IconCamera} from '../../icons/icons/IconCamera';
 import {IconPencil} from '../../icons/icons/IconPencil';
@@ -9,7 +9,7 @@ import {IconClock} from '../../icons/icons/IconClock';
 import {Button} from '../Button/Button';
 import {Dropdown} from '../Dropdown/Dropdown';
 import {Fieldset} from '../Fieldset/Fieldset';
-import {Stack, Inline} from '../Layout/Layout';
+import {Stack, Inline} from '../Layout';
 import {
 	componentParameters,
 	fieldArgTypes,
@@ -31,7 +31,6 @@ export default {
 		label: 'Электронная почта',
 		size: 'md',
 		width: 'md',
-		labelPlacement: 'inline',
 	},
 	argTypes: fieldArgTypes,
 } satisfies Meta<typeof TextField>;
@@ -91,33 +90,39 @@ export const Sizes: Story<TextFieldProps> = {
 
 export const LabelPlacement: Story<TextFieldProps> = {
 	render: function LabelPlacementRender() {
-		const [val, setVal] = useState('');
+		const [withLabel, setWithLabel] = useState('');
+		const [withoutLabel, setWithoutLabel] = useState('');
 		return (
 			<Stack gap='md'>
-				{(['inline', 'outside', 'none'] as const).map((placement) => (
-					<Inline
-						key={placement}
-						gap='sm'
-						align={placement === 'outside' ? 'end' : 'center'}
-					>
-						<TextField
-							label='Поиск'
-							labelPlacement={placement}
-							size='md'
-							value={val}
-							onChange={(e) => setVal(e.target.value)}
-							placeholder='Введите запрос'
-							width='md'
-						/>
-						<Button size='md'>
-							Найти
-						</Button>
-					</Inline>
-				))}
+				<Inline gap='sm' align='center'>
+					<TextField
+						label='Поиск'
+						size='md'
+						value={withLabel}
+						onChange={(e) => setWithLabel(e.target.value)}
+						width='md'
+					/>
+					<Button size='md'>
+						Найти
+					</Button>
+				</Inline>
+				<Inline gap='sm' align='center'>
+					<TextField
+						aria-label='Поиск'
+						placeholder='Введите запрос'
+						size='md'
+						value={withoutLabel}
+						onChange={(e) => setWithoutLabel(e.target.value)}
+						width='md'
+					/>
+					<Button size='md'>
+						Найти
+					</Button>
+				</Inline>
 			</Stack>
 		);
 	},
-	parameters: story('`labelPlacement`: inline (floating) / outside / none. Высота chrome одинакова.'),
+	parameters: story('С `label` — floating-лейбл внутри поля; без `label` — placeholder и `aria-label`.'),
 };
 
 export const Disabled: Story<TextFieldProps> = {
@@ -154,10 +159,10 @@ export const Error: Story<TextFieldProps> = {
 export const Empty: Story<TextFieldProps> = {
 	args: {
 		label: 'Электронная почта',
-		helperText: 'Мы не передаём адрес третьим лицам',
+		description: 'Мы не передаём адрес третьим лицам',
 		width: 'full',
 	},
-	parameters: story('Пустое поле с `helperText`.'),
+	parameters: story('Пустое поле с `description`.'),
 };
 
 export const OverflowText: Story<TextFieldProps> = {
@@ -169,7 +174,7 @@ export const OverflowText: Story<TextFieldProps> = {
 					label={STORY_OVERFLOW_LABEL}
 					value={val}
 					onChange={(e) => setVal(e.target.value)}
-					helperText='Длинные подписи лучше выносить в outside / helperText'
+					description='Длинные подписи лучше выносить в FieldLabel / description'
 					prefix={(
 						<FieldBaseIcon>
 							<IconUser />
@@ -180,7 +185,7 @@ export const OverflowText: Story<TextFieldProps> = {
 			</Stack>
 		);
 	},
-	parameters: story('Длинный floating label + длинное значение + prefix.'),
+	parameters: story('Длинный label + длинное значение + prefix.'),
 };
 
 export const AllVariants: Story<TextFieldProps> = {
@@ -221,12 +226,12 @@ export const AllVariants: Story<TextFieldProps> = {
 					label='Инпут с кнопкой вначале'
 					prefix={(
 						<Dropdown
-							renderTrigger={(props, ref) => (
+							trigger={(props, ref) => (
 								<FieldBaseButton
 									aria-label='Редактировать'
 									icon={<IconPencil />}
 									{...props}
-									ref={ref}
+									rootRef={ref}
 								/>
 							)}
 						>
@@ -277,7 +282,7 @@ export const LongFloatingLabelWithPrefix: Story<TextFieldProps> = {
 					label={STORY_OVERFLOW_LABEL}
 					value={val}
 					onChange={(e) => setVal(e.target.value)}
-					helperText='Длинные подписи лучше выносить в outside / helperText'
+					description='Длинные подписи лучше выносить в FieldLabel / description'
 					prefix={(
 						<span aria-hidden style={{fontSize: 14}}>
 							#
@@ -288,7 +293,7 @@ export const LongFloatingLabelWithPrefix: Story<TextFieldProps> = {
 			</div>
 		);
 	},
-	parameters: story('Floating label ellipsis + prefix gap; value остаётся читаемым.'),
+	parameters: story('Длинный label ellipsis + prefix gap; value остаётся читаемым.'),
 };
 
 export const Focused: Story<TextFieldProps> = {
@@ -360,7 +365,7 @@ export const UsageExample: Story<TextFieldProps> = {
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
 						onClear={() => setEmail('')}
-						helperText='На этот адрес придёт письмо подтверждения'
+						description='На этот адрес придёт письмо подтверждения'
 						width='full'
 					/>
 				</Fieldset>

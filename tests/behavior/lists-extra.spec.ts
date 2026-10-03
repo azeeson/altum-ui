@@ -31,7 +31,7 @@ test.describe('ActionList', () => {
 
 	test('стрелка вниз подсвечивает первый пункт', async ({page}) => {
 		await visitStory(page, 'altum-components-actionlist--playground');
-		await page.getByRole('searchbox').focus();
+		await page.getByRole('combobox', {name: /Фильтр команд/i}).focus();
 		await page.keyboard.press('ArrowDown');
 		await expect(page.getByRole('listbox')).toHaveAttribute('aria-activedescendant', /.+/);
 	});

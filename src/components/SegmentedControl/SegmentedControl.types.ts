@@ -1,14 +1,25 @@
-import type {ComponentPropsWithoutRef} from 'react';
+import type {ComponentPropsWithoutRef, ReactNode, Ref} from 'react';
 import type {SurfaceVariant} from '../../types';
-import type {ButtonGroupItemFit} from '../ButtonGroup/ButtonGroup.types';
+import type {ButtonGroupItemFit, ButtonGroupOrientation} from '../ButtonGroup/ButtonGroup.types';
 
 export interface SegmentOption<T = string> {
-	label: string;
+	label: ReactNode;
 	value: T;
+	/** Пункт недоступен, даже если контрол включён. */
+	disabled?: boolean;
+	id?: string;
+	/** `aria-controls` — панель, которой управляет сегмент. */
+	controls?: string;
 }
 
 /** Алиас `ButtonGroupItemFit`: `equal` | `content`. */
 export type SegmentedItemFit = ButtonGroupItemFit;
+
+/**
+ * Вариант трека. `pill` — скруглённый трек (бывший default `secondary`);
+ * остальные — `SurfaceVariant` / `ButtonGroup`.
+ */
+export type SegmentedControlVariant = 'pill' | SurfaceVariant;
 
 export interface SegmentedControlProps<T = string> extends Omit<
 	ComponentPropsWithoutRef<'div'>,
@@ -17,8 +28,8 @@ export interface SegmentedControlProps<T = string> extends Omit<
 	options: SegmentOption<T>[];
 	value: T;
 	onChange: (value: T) => void;
-	/** @default 'secondary' */
-	variant?: SurfaceVariant;
+	/** @default 'pill' */
+	variant?: SegmentedControlVariant;
 	size?: 'sm' | 'md' | 'lg';
 	/**
 	 * Ширина сегментов:
@@ -27,11 +38,23 @@ export interface SegmentedControlProps<T = string> extends Omit<
 	 * @default 'equal'
 	 */
 	itemFit?: SegmentedItemFit;
+	/**
+	 * Ряд или колонка. Бегунок едет по той же оси.
+	 * @default 'horizontal'
+	 */
+	orientation?: ButtonGroupOrientation;
 	readOnly?: boolean;
 	disabled?: boolean;
 	/**
-	 * Без рамки у трека.
-	 * @default false
+	 * `full` — на ширину колонки. `auto` — по содержимому.
+	 * @default 'full'
 	 */
-	borderless?: boolean;
+	width?: 'auto' | 'full';
+	/**
+	 * Роль пункта. `tab` — список вкладок поверх сегментов.
+	 * Без неё пункт — `radio`.
+	 */
+	itemRole?: 'tab';
+	/** Корень трека. */
+	rootRef?: Ref<HTMLDivElement>;
 }
