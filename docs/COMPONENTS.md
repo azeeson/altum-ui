@@ -61,13 +61,13 @@
 | Компонент | Описание |
 |-----------|----------|
 | **DialogLayout** | Поверхность `Box` с крестиком в правом верхнем углу поверх контента. `onClose`, `showClose`. |
-| **Modal** | Составной диалог: корень — **`DialogLayout`**, шапка / тело / футер — **`Layout`**. `Header` / `Body` / `Footer`. Заголовок — **`Title`**. Ряд действий — **`ControlRow`** внутри `Footer`. `open` / `onOpenChange`, `showClose`, `size` `sm` / `md` / `lg` на корне. |
+| **Modal** | Составной диалог: корень — **`DialogLayout`**, шапка — **`Header`** внутри **`Layout.Header`**, тело и футер — **`Layout`**. `Header` / `Header.Title` / `Header.Subtitle` / `Header.Tabs` / `Body` / `Footer`. Ряд действий — **`ControlRow`** внутри `Footer`. `open` / `onOpenChange`, `showClose`, `size` `sm` / `md` / `lg` на корне. |
 | **ConfirmDialog** | Готовый диалог на **`Modal`**: отмена + подтверждение, `confirmLabel`, `secondaryAction`, `status="danger"`, `onOpenChange`. |
 | **Sheet** | Панель: поверхность **`Box`**, шапка / тело / футер — **`Layout`**. `Header` / `Body` / `Footer`. Заголовок — **`Title`**. Крестик — `showClose` на `Header`. `mode` / `direction` / `showHandle`. Слой — нативный `<dialog>`. |
 | **ImageLightbox** | Полноэкранный просмотр; `open` / `onOpenChange`. |
 | **Dropdown** | Список или меню у кнопки, на базе **`Popover`** (`popover="auto"`). Якорь — `trigger`. Выбор пункта закрывает панель, клик снаружи и Escape — браузер. Стрелки — у списка внутри. `align`, `widthMode`, `triggerMode` `toggle` \| `combobox`. На узком экране та же панель — нижняя шторка на CSS. Узел — `rootRef`. Форма и календарь — **`Popover`**. |
 | **Menu** | Меню действий: клик по `trigger` (**`Dropdown`** + **`ActionList`**) или `trigger="context"` (ПКМ / Shift+F10 у курсора). Пункты — **`ActionListItem`** (`id`) и `{ type: 'separator' }`, как в **`Listbox`**. Программный показ — `popupRef`. |
-| **Tooltip** | Текстовая подсказка. Ховер и фокус — CSS (`:hover`, `:focus-within`), позиция — CSS Anchor. `side`, `openDelay` / `closeDelay` как задержки CSS, без JS-таймера. |
+| **Tooltip** | Текстовая подсказка. Ховер и клавиатурный фокус — CSS (`:hover`, `:focus-visible`), позиция — CSS Anchor. Пузырь — `popover="manual"` в top layer, `overflow` предка не режет. Клик мышью не оставляет подсказку. `side`, `openDelay` / `closeDelay` как задержки CSS, без JS-таймера. |
 | **Popover** | Немодальная панель: текст, форма, фильтры, календарь. Открытие — `popovertarget`, закрытие по клику снаружи и Escape — `popover="auto"`. Клик внутри не закрывает, фокус не запирается. Якорь — `trigger`. Позиция — CSS Anchor (`side` / `align`, `positionArea()`). Подсказки — **Tooltip**. |
 | **CommandPalette** | Палитра Cmd+K: поверхность **`Box`**, подпись **`Text`**. `items` / `groups`, фильтр — **`ActionList`** с `filterable`. Ширина как у **`Modal`** `md`. |
 
@@ -80,7 +80,7 @@
 | **Pagination** | Постраничная навигация. Без `children` — `Controls`; опционально `totalItems` / `pageSize` / `onPageSizeChange`. Составной: `Summary`, `Controls`, `PageSize`. |
 | **Sidebar** | Составной: `Root`, `Header`, `Title`, `Content`, `Group`, `GroupLabel`, `Item`, `Footer`, `MobileTrigger`. Шапка, меню и футер — `Layout`. Кнопка сворачивания — на корне, по центру правой границы. `value` / `onChange`; десктопный rail + мобильный Sheet. |
 | **Steps** | Мастер: горизонтальный/вертикальный, статус шага. `onStepClick` слушает список. Узел — `rootRef`. Ориентация, размер, соединители и статус — `data-*`. |
-| **Tabs** | Список — **`SegmentedControl`** (`itemRole="tab"`): `Tabs.List` принимает `items` (`value`, `label`, `badge`, `badgeDot`, `disabled`), панели — `Tabs.Panel`; `value` / `defaultValue` / `onChange`. `pill` — заливка выбранной вкладки, `line` — черта у выбранной. |
+| **Tabs** | Список — **`SegmentedControl`** (`itemRole="tab"`): `items` на корне (`value`, `label`, `badge`, `badgeDot`, `disabled`). Панель — `Tabs.Panel` с тем же `rootRef` в `tabsRef`, без контекста. `value` / `defaultValue` / `onChange`. `pill` — заливка выбранной вкладки, `line` — черта у выбранной. |
 
 ---
 
@@ -120,7 +120,8 @@
 
 | Компонент | Описание |
 |-----------|----------|
-| **Layout** | Панель: скролл на корне; `Header` / `Footer` sticky; алиасы `Inline` / `Split` / `ControlRow` / `Item`. |
+| **Header** | Шапка страницы: `Title`, `Subtitle` и вкладки `Tabs` в одной колонке. |
+| **Layout** | Панель: скролл на корне; `Header` / `Footer` sticky. `padding` 12 / 20 / 28px. У sticky `variant` красит фон после сдвига скролла. |
 | **Stack** / **Inline** / **Split** / **ControlRow** / **LayoutItem** | Flex-примитивы (вертикаль / чипы / края / ряд контролов / `grow`). |
 | **Grid** / **GridItem** | CSS Grid; скалярные `columns` / `span`, `mode` autoFit/autoFill. |
 | **Container** / **Page** | Колонка с max-width (`sm`…`xl` / `full`) и оболочка страницы. |

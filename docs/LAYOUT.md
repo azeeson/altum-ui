@@ -60,12 +60,18 @@ import {
 
 | Часть | Роль | Ключевые пропсы |
 |-------|------|-----------------|
-| `Layout` | Корень-scrollport (`overflow-y: auto`, flex-колонка) | `as`, `padding` (отступ корня), `gap` (между секциями). Оба: `sm` 12px, `md` 16px, `lg` 24px |
-| `Layout.Header` | Шапка | `sticky`, `as="header"` |
+| `Layout` | Корень-scrollport (`overflow-y: auto`, flex-колонка) | `as`, `padding` (`sm` 12px, `md` 20px, `lg` 28px), `gap` (12 / 16 / 24px) |
+| `Layout.Header` | Шапка | `sticky`, `variant` (`primary` \| `tinted` \| `secondary`), `as="header"` |
 | `Layout.Content` | Середина (без собственного overflow) | `as` |
-| `Layout.Footer` | Низ с действиями | `sticky`, `align` (`start` \| `center` \| `end` \| `space-between`), `as="footer"` |
+| `Layout.Footer` | Низ с действиями | `sticky`, `variant`, `align` (`start` \| `center` \| `end` \| `space-between`), `as="footer"` |
 
 `sticky` — элемент остаётся у края при скролле **`Layout`**. Без `sticky` Header/Footer уезжают вместе с контентом.
+
+`variant` вместе со `sticky` красит шапку, когда скролл ушёл от верха, и подвал, пока список не докручен до низа. Без `variant` фон не появляется.
+
+`gap` делится пополам. Нижнее поле `Layout.Header` и верхнее поле `Layout.Footer` — половина `gap`, вторая половина остаётся зазором между секциями. Сверху и по бокам остаётся `padding`.
+
+**`Header`** внутри `Layout.Header`: черта вкладок на всю ширину панели и совпадает с нижним краем шапки. До контента остаётся полный `gap`, фон липкой шапки под черту не заходит.
 
 ### Когда использовать
 

@@ -1,6 +1,6 @@
 /* eslint-disable @stylistic/indent -- Существующее форматирование фикстуры раскладки сохраняет примеры inline-вёрстки. */
 import type {Meta} from '@storybook/react';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {Accordion} from '../Accordion/Accordion';
 import {Alert} from '../Alert/Alert';
 import {AspectRatio} from '../AspectRatio/AspectRatio';
@@ -470,6 +470,7 @@ export const TeamPermissionsSettings: Story<Record<string, never>> = {
 	name: 'Права команды',
 	render: function TeamPermissionsSettingsRender() {
 		const [tab, setTab] = useState('roles');
+		const tabsRef = useRef<HTMLDivElement>(null);
 		const [role, setRole] = useState('editor');
 		const [perms, setPerms] = useState(['read', 'comment', 'export']);
 		const [notif, setNotif] = useState({
@@ -667,45 +668,57 @@ label: 'Журнал аудита'
 					description='Tabs + CheckboxGroup + Fieldset/Switch + Accordion'
 				/>
 
-				<Tabs
-					orientation='vertical'
-					value={tab}
-					onChange={setTab}
+				<div style={{
+					display: 'flex',
+					alignItems: 'flex-start',
+					gap: 'var(--altum-g-space-4)',
+				}}
 				>
-					<Tabs.List items={[
-						{
-value: 'roles',
-label: 'Роли'
-},
-						{
-value: 'security',
-label: 'Безопасность',
-badge: 1
-},
-						{
-value: 'notifications',
-label: 'Уведомления'
-},
-						{
-value: 'billing',
-label: 'Биллинг',
-disabled: true
-},
-					]}
+					<Tabs
+						rootRef={tabsRef}
+						orientation='vertical'
+						value={tab}
+						onChange={setTab}
+						items={[
+							{
+								value: 'roles',
+								label: 'Роли',
+							},
+							{
+								value: 'security',
+								label: 'Безопасность',
+								badge: 1,
+							},
+							{
+								value: 'notifications',
+								label: 'Уведомления',
+							},
+							{
+								value: 'billing',
+								label: 'Биллинг',
+								disabled: true,
+							},
+						]}
 					/>
-					<Tabs.Panel value='roles'>
-						{rolesContent}
-					</Tabs.Panel>
-					<Tabs.Panel value='security'>
-						{securityContent}
-					</Tabs.Panel>
-					<Tabs.Panel value='notifications'>
-						{notificationsContent}
-					</Tabs.Panel>
-					<Tabs.Panel value='billing'>
-						{null}
-					</Tabs.Panel>
-				</Tabs>
+					<div style={{
+						flex: '1 1 auto',
+						minWidth: 0,
+					}}
+					>
+						<Tabs.Panel tabsRef={tabsRef} value='roles'>
+							{rolesContent}
+						</Tabs.Panel>
+						<Tabs.Panel tabsRef={tabsRef} value='security'>
+							{securityContent}
+						</Tabs.Panel>
+						<Tabs.Panel tabsRef={tabsRef} value='notifications'>
+							{notificationsContent}
+						</Tabs.Panel>
+						<Tabs.Panel tabsRef={tabsRef} value='billing'>
+							{null}
+						</Tabs.Panel>
+					</div>
+				</div>
 			</div>
 		);
 	},
@@ -1066,28 +1079,26 @@ export const MobileHomeShell: Story<Record<string, never>> = {
 						value={tab}
 						onChange={setTab}
 						variant='pill'
-					>
-						<Tabs.List items={[
+						items={[
 							{
-value: 'home',
-label: 'Главная'
-},
+								value: 'home',
+								label: 'Главная',
+							},
 							{
-value: 'wallet',
-label: 'Кошелёк',
-badge: 2
-},
+								value: 'wallet',
+								label: 'Кошелёк',
+								badge: 2,
+							},
 							{
-value: 'profile',
-label: 'Профиль'
-},
+								value: 'profile',
+								label: 'Профиль',
+							},
 							{
-value: 'more',
-label: 'Ещё'
-},
+								value: 'more',
+								label: 'Ещё',
+							},
 						]}
-						/>
-					</Tabs>
+					/>
 				</nav>
 			</div>
 		);
@@ -1483,6 +1494,7 @@ export const ProductDetailScreen: Story<Record<string, never>> = {
 	render: function ProductDetailScreenRender() {
 		const [qty, setQty] = useState<number | undefined>(1);
 		const [tab, setTab] = useState('desc');
+		const productTabsRef = useRef<HTMLDivElement>(null);
 
 		return (
 			<div className={styles.shell}>
@@ -1547,40 +1559,39 @@ export const ProductDetailScreen: Story<Record<string, never>> = {
 							/>
 						</FieldLabel>
 						<Tabs
+							rootRef={productTabsRef}
 							value={tab}
 							onChange={setTab}
-						>
-							<Tabs.List items={[
+							items={[
 								{
-value: 'desc',
-label: 'Описание'
-},
-{
-value: 'specs',
-label: 'Характеристики'
-},
+									value: 'desc',
+									label: 'Описание',
+								},
+								{
+									value: 'specs',
+									label: 'Характеристики',
+								},
 							]}
-							/>
-							<Tabs.Panel value='desc'>
-								<Text size='sm' color='muted'>
-									Алюминиевый корпус, диммирование, сенсорный управление.
-								</Text>
-							</Tabs.Panel>
-							<Tabs.Panel value='specs'>
-								<Accordion>
-									<Accordion.Item value='p' title='Питание'>
-										<Text size='sm'>
-											USB-C 20W
-										</Text>
-									</Accordion.Item>
-									<Accordion.Item value='s' title='Размеры'>
-										<Text size='sm'>
-											42 × 18 см
-										</Text>
-									</Accordion.Item>
-								</Accordion>
-							</Tabs.Panel>
-						</Tabs>
+						/>
+						<Tabs.Panel tabsRef={productTabsRef} value='desc'>
+							<Text size='sm' color='muted'>
+								Алюминиевый корпус, диммирование, сенсорный управление.
+							</Text>
+						</Tabs.Panel>
+						<Tabs.Panel tabsRef={productTabsRef} value='specs'>
+							<Accordion>
+								<Accordion.Item value='p' title='Питание'>
+									<Text size='sm'>
+										USB-C 20W
+									</Text>
+								</Accordion.Item>
+								<Accordion.Item value='s' title='Размеры'>
+									<Text size='sm'>
+										42 × 18 см
+									</Text>
+								</Accordion.Item>
+							</Accordion>
+						</Tabs.Panel>
 					</Stack>
 				</div>
 

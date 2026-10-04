@@ -224,7 +224,7 @@ export const OverflowText: TooltipStory = {
 	parameters: story('Длинный content с переносом строк.'),
 };
 
-/** Tooltip в портале; не должен обрезаться внутри предков с overflow:auto. */
+/** Пузырь в top layer: предок с overflow:auto не должен его обрезать. */
 export const InsideOverflowCard: TooltipStory = {
 	render: () => (
 		<div
@@ -255,7 +255,7 @@ export const InsideOverflowCard: TooltipStory = {
 			</Tooltip>
 		</div>
 	),
-	parameters: story('Tooltip в portal, свой визуал поверх plain-панели.'),
+	parameters: story('Пузырь в top layer: карточка с `overflow: auto` его не обрезает.'),
 };
 
 /** Не больше одной подсказки при наведении на плотный вертикальный стек иконок. */
@@ -317,7 +317,7 @@ export const Interaction: TooltipStory = {
 	play: async ({canvasElement}) => {
 		await playFocus(canvasElement, 'button');
 	},
-	parameters: story('Play: фокус на триггере открывает подсказку (`focusin`).'),
+	parameters: story('Play: клавиатурный фокус (`:focus-visible`) открывает подсказку.'),
 };
 
 export const UsageExample: TooltipStory = {

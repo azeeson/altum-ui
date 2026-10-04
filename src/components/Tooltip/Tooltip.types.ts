@@ -45,7 +45,8 @@ type TooltipBaseProps = {
 
 /**
  * Свойства `Tooltip`.
- * Ховер и фокус — CSS (`:hover`, `:focus-within`) и CSS Anchor Positioning.
+ * Ховер и клавиатурный фокус — CSS (`:hover`, `:focus-visible`) и CSS Anchor Positioning.
+ * Пузырь — `popover="manual"` в top layer: `overflow` предка его не обрезает.
  * Триггер: элемент-child (slot) или render-prop.
  */
 export type TooltipProps = WithEnrichedChildren<TooltipBaseProps, TooltipTriggerProps>;

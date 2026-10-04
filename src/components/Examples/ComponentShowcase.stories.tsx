@@ -1,6 +1,6 @@
 /* eslint-disable @stylistic/jsx-closing-bracket-location -- Существующее форматирование фикстуры Storybook сохранено для читаемого вложенного JSX. */
 import type {Meta} from '@storybook/react';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {Accordion} from '../Accordion/Accordion';
 import {Alert} from '../Alert/Alert';
 import {AspectRatio} from '../AspectRatio/AspectRatio';
@@ -282,6 +282,7 @@ const COMMAND_ITEMS = [
 
 const ComponentShowcaseDemo = () => {
 	const [activeTab, setActiveTab] = useState('layout');
+	const tabsRef = useRef<HTMLDivElement>(null);
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [modalOpen, setModalOpen] = useState(false);
 	const [sheetOpen, setSheetOpen] = useState(false);
@@ -1339,20 +1340,23 @@ const ComponentShowcaseDemo = () => {
 
 			<div style={{padding: '0 var(--altum-g-space-5) var(--altum-g-space-5)'}}>
 				<Tabs
+					rootRef={tabsRef}
 					value={activeTab}
 					onChange={setActiveTab}
 					variant='pill'
-				>
-					<Tabs.List items={tabItems.map((item) => ({
+					items={tabItems.map((item) => ({
 						value: item.id,
 						label: item.label,
-					}))} />
-					{tabItems.map((item) => (
-						<Tabs.Panel key={item.id} value={item.id}>
-							{item.content}
-						</Tabs.Panel>
-					))}
-				</Tabs>
+					}))}
+				/>
+				{tabItems.map((item) => (
+					<Tabs.Panel
+						key={item.id}
+						tabsRef={tabsRef}
+						value={item.id}>
+						{item.content}
+					</Tabs.Panel>
+				))}
 			</div>
 
 			<Sheet

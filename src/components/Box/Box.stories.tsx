@@ -1,5 +1,5 @@
 import type {Meta} from '@storybook/react';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {Box, type BoxProps, type BoxVariant, type BoxShadow} from './Box';
 import {Text} from '../Text/Text';
 import {Stack, Inline} from '../Layout';
@@ -129,6 +129,7 @@ function SurfaceControls() {
 	const [page, setPage] = useState(2);
 	const [range, setRange] = useState<RangeValue>([20, 70]);
 	const [tab, setTab] = useState('one');
+	const tabsRef = useRef<HTMLDivElement>(null);
 	const [chipActive, setChipActive] = useState(true);
 
 	return (
@@ -368,21 +369,24 @@ function SurfaceControls() {
 					Панели / прочее
 				</SectionLabel>
 				<Tabs
+					rootRef={tabsRef}
 					value={tab}
 					onChange={setTab}
 					variant='pill'
-				>
-					<Tabs.List items={TAB_ITEMS.map((item) => ({
+					items={TAB_ITEMS.map((item) => ({
 						value: item.id,
 						label: item.label,
 					}))}
-					/>
-					{TAB_ITEMS.map((item) => (
-						<Tabs.Panel key={item.id} value={item.id}>
-							{item.content}
-						</Tabs.Panel>
-					))}
-				</Tabs>
+				/>
+				{TAB_ITEMS.map((item) => (
+					<Tabs.Panel
+						key={item.id}
+						tabsRef={tabsRef}
+						value={item.id}
+					>
+						{item.content}
+					</Tabs.Panel>
+				))}
 				<Slider
 					value={range}
 					onChange={setRange}

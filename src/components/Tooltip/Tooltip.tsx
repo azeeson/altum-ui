@@ -6,14 +6,22 @@ export type {
 } from './Tooltip.types';
 
 import {
+	useEffect,
 	useId,
+	useRef,
 	type CSSProperties,
 	type ReactNode,
 	type Ref,
 	type RefCallback,
 } from 'react';
 import {cn} from '../../core/utils/cn';
-import {anchorNameFor, popoverDomId, positionArea} from '../../core/utils/popover';
+import {
+	anchorNameFor,
+	hidePopover,
+	popoverDomId,
+	positionArea,
+	showPopover,
+} from '../../core/utils/popover';
 import styles from './Tooltip.module.css';
 
 function assignRef(ref: Ref<HTMLElement> | undefined, node: HTMLElement | null) {
@@ -49,8 +57,9 @@ function renderTrigger(
 
 /**
  * Текстовая подсказка при наведении или фокусе.
- * Показ — CSS `:hover` / `:focus-within` на общем хосте. Позиция — CSS Anchor Positioning.
- * JS не ставит таймеры и не слушает pointer.
+ * Пузырь — `popover="manual"` в top layer, его не режет `overflow` предка.
+ * Показ — CSS `:hover` и `:has(:focus-visible)`. Позиция — CSS Anchor Positioning.
+ * JS не ставит таймеры и не слушает pointer: popover открыт с маунта, видимость решает CSS.
  *
  * Триггер: render-prop `(props, ref) => …` или любой children (оборачивается в `span`).
  *
@@ -83,7 +92,16 @@ export const Tooltip = ({
 }: TooltipProps) => {
 	const tipId = popoverDomId(useId());
 	const anchorName = anchorNameFor(tipId);
+	const bubbleRef = useRef<HTMLSpanElement>(null);
 	const hidden = disabled || content == null || content === '';
+
+	useEffect(() => {
+		if (hidden) return;
+		const node = bubbleRef.current;
+		if (!node) return;
+		showPopover(node);
+		return () => hidePopover(node);
+	}, [hidden]);
 
 	if (hidden) {
 		return renderTrigger(children, {}, rootRef, 'fragment');
@@ -111,7 +129,9 @@ export const Tooltip = ({
 				'span',
 			)}
 			<span
+				ref={bubbleRef}
 				id={tipId}
+				popover='manual'
 				role='tooltip'
 				className={cn(styles.bubble, className)}
 				data-side={side}

@@ -19,7 +19,7 @@ import {cn} from '../../core/utils/cn';
  */
 export const Title = ({
 	level = 2,
-	weight = 'bold',
+	weight = 'medium',
 	className,
 	rootRef,
 	...rest

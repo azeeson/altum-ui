@@ -1,4 +1,5 @@
-import {useEffect, useRef, type MouseEvent, type SyntheticEvent} from 'react';
+import {useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type SyntheticEvent} from 'react';
+import {createPortal} from 'react-dom';
 import {cn} from '../../core/utils/cn';
 import {uRef} from '../../core/utils/bundle';
 import type {OverlayProps} from './Overlay.types';
@@ -15,8 +16,18 @@ export type {
 	OverlayProps,
 } from './Overlay.types';
 
+/** Куда вынести слой: тема предка, иначе `document.body`. */
+function overlayPortalParent(from: HTMLElement | null): HTMLElement | null {
+	if (typeof document === 'undefined') return null;
+	const themed = from?.closest('[data-theme]');
+	if (themed instanceof HTMLElement && themed.tagName !== 'HTML') return themed;
+	return document.body;
+}
+
 /**
  * Слепой донор Top Layer: нативный `<dialog>` (`showModal`) или `popover="auto"`.
+ * Узел слоя — портал в ближайший `[data-theme]` или в `document.body`: стили обёртки
+ * не наследуются содержимым, токены темы остаются.
  * Фокус, Escape и scroll lock у modal/sheet — браузер (`showModal`); отдельный FocusTrap не нужен.
  * Без иконок закрытия, шапок и Box — поверхность и chrome у потребителей (`Modal`, `Sheet`, `Popover`, …).
  * Floating: `open` опционален — без него показ через `popovertarget` / `showPopover`.
@@ -45,6 +56,8 @@ export function Overlay(props: OverlayProps) {
 		'aria-describedby': ariaDescribedBy,
 	} = props;
 	const nodeRef = useRef<HTMLElement | null>(null);
+	const anchorRef = useRef<HTMLSpanElement>(null);
+	const [portalParent, setPortalParent] = useState<HTMLElement | null>(null);
 	const onOpenChangeRef = useRef(onOpenChange);
 	onOpenChangeRef.current = onOpenChange;
 	const side = props.variant === 'sheet' ? (props.side ?? 'bottom') : undefined;
@@ -52,9 +65,14 @@ export function Overlay(props: OverlayProps) {
 	const floatingDataSide = props.variant === 'floating' ? props['data-side'] : undefined;
 	const floatingDataWidthMode = props.variant === 'floating' ? props['data-width-mode'] : undefined;
 
-	useEffect(() => {
+	useLayoutEffect(() => {
+		if (portalParent) return;
+		setPortalParent(overlayPortalParent(anchorRef.current));
+	}, [portalParent]);
+
+	useLayoutEffect(() => {
 		const node = nodeRef.current;
-		if (!node) return;
+		if (!node || !portalParent) return;
 
 		if (node instanceof HTMLDialogElement) {
 			// showModal(): native focus move into dialog, focus restore on close, Escape, top layer.
@@ -74,12 +92,12 @@ export function Overlay(props: OverlayProps) {
 		} else if (node.matches(':popover-open')) {
 			node.hidePopover();
 		}
-	}, [open, variant]);
+	}, [open, variant, portalParent]);
 
 	const hasOpenChange = onOpenChange != null;
 
 	useEffect(() => {
-		if (variant !== 'floating' || !hasOpenChange) return;
+		if (variant !== 'floating' || !hasOpenChange || !portalParent) return;
 		const node = nodeRef.current;
 		if (!node) return;
 		const onToggle = (event: Event) => {
@@ -88,7 +106,7 @@ export function Overlay(props: OverlayProps) {
 		};
 		node.addEventListener('toggle', onToggle);
 		return () => node.removeEventListener('toggle', onToggle);
-	}, [variant, hasOpenChange]);
+	}, [variant, hasOpenChange, portalParent]);
 
 	const handleCancel = (event: SyntheticEvent) => {
 		event.preventDefault();
@@ -99,28 +117,24 @@ export function Overlay(props: OverlayProps) {
 		if (event.target === event.currentTarget) onOpenChange?.(false);
 	};
 
-	if (variant === 'floating') {
-		return (
-			<div
-				id={floatingId}
-				ref={uRef(rootRef, nodeRef)}
-				popover='auto'
-				className={cn(styles.panel, overlayTransition.fadeScale, hostClassName, className)}
-				style={style}
-				data-kind='floating'
-				data-side={floatingDataSide}
-				data-width-mode={floatingDataWidthMode}
-				role={role}
-				aria-label={ariaLabel}
-				aria-labelledby={ariaLabelledBy}
-				aria-describedby={ariaDescribedBy}
-			>
-				{children}
-			</div>
-		);
-	}
-
-	return (
+	const layer = variant === 'floating' ? (
+		<div
+			id={floatingId}
+			ref={uRef(rootRef, nodeRef)}
+			popover='auto'
+			className={cn(styles.panel, overlayTransition.fadeScale, hostClassName, className)}
+			style={style}
+			data-kind='floating'
+			data-side={floatingDataSide}
+			data-width-mode={floatingDataWidthMode}
+			role={role}
+			aria-label={ariaLabel}
+			aria-labelledby={ariaLabelledBy}
+			aria-describedby={ariaDescribedBy}
+		>
+			{children}
+		</div>
+	) : (
 		<dialog
 			ref={uRef(rootRef, nodeRef)}
 			className={cn(styles.scrim, hostClassName)}
@@ -146,5 +160,12 @@ export function Overlay(props: OverlayProps) {
 				{children}
 			</div>
 		</dialog>
+	);
+
+	return (
+		<>
+			{portalParent == null ? <span ref={anchorRef} hidden /> : null}
+			{portalParent ? createPortal(layer, portalParent) : null}
+		</>
 	);
 }

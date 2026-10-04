@@ -239,8 +239,6 @@ export type {
 	TabsVariant,
 	TabsOrientation,
 	TabsItem,
-	TabsListProps,
-	TabsTriggerProps,
 	TabsPanelProps,
 } from './components/Tabs';
 
@@ -293,6 +291,9 @@ export type {
 	DeepPartialMessages,
 	TranslationParams,
 } from './components/LocaleProvider';
+
+export {Header, HeaderRoot, HeaderTitle, HeaderSubtitle, HeaderTabs} from './components/Header';
+export type {HeaderProps} from './components/Header';
 
 export {Title} from './components/Title';
 export type {TitleProps} from './components/Title';
@@ -450,6 +451,7 @@ export type {
 	LayoutJustify,
 	LayoutFooterAlign,
 	LayoutSpacing,
+	LayoutChromeVariant,
 	LayoutRootProps,
 	LayoutHeaderProps,
 	LayoutContentProps,

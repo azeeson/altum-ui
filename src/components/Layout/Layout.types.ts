@@ -24,8 +24,11 @@ export type LayoutJustify =
 	| 'around'
 	| 'evenly';
 
-/** Шаг `padding` и `gap` у `Layout`: `sm` 12px, `md` 16px, `lg` 24px. */
+/** Шаг `padding` у `Layout`: `sm` 12px, `md` 20px, `lg` 28px. `gap` — 12 / 16 / 24. */
 export type LayoutSpacing = 'sm' | 'md' | 'lg';
+
+/** Заливка липкой шапки или подвала после сдвига скролла. */
+export type LayoutChromeVariant = 'primary' | 'tinted' | 'secondary';
 
 export interface LayoutRootProps extends ComponentPropsWithoutRef<'div'> {
 	children?: ReactNode;
@@ -34,7 +37,7 @@ export interface LayoutRootProps extends ComponentPropsWithoutRef<'div'> {
 	as?: ElementType;
 	/** Отступ панели. На секциях, не на scrollport — при скролле контент не вылезает к краям. */
 	padding?: LayoutSpacing;
-	/** Промежуток между `Header`, `Content` и `Footer`. */
+	/** Промежуток между секциями. Половина — нижнее поле шапки и верхнее поле подвала, вторая половина — зазор. */
 	gap?: LayoutSpacing;
 }
 
@@ -44,6 +47,11 @@ export interface LayoutHeaderProps extends ComponentPropsWithoutRef<'header'> {
 	rootRef?: LayoutNodeRef;
 	/** Закрепить у верхнего края scrollport `Layout` (`position: sticky; top: 0`). Без пропа шапка уезжает со скроллом. */
 	sticky?: boolean;
+	/**
+	 * Фон после сдвига скролла от верха. Без пропа шапка остаётся прозрачной.
+	 * Действует только вместе с `sticky`.
+	 */
+	variant?: LayoutChromeVariant;
 	as?: ElementType;
 }
 
@@ -63,6 +71,11 @@ export interface LayoutFooterProps extends Omit<ComponentPropsWithoutRef<'footer
 	rootRef?: LayoutNodeRef;
 	/** Закрепить у нижнего края scrollport `Layout` (`position: sticky; bottom: 0`). Без пропа футер уезжает со скроллом. */
 	sticky?: boolean;
+	/**
+	 * Фон, пока скролл не у нижнего края. Без пропа подвал остаётся прозрачным.
+	 * Действует только вместе с `sticky`.
+	 */
+	variant?: LayoutChromeVariant;
 	/**
 	 * Выравнивание действий по главной оси.
 	 * @default 'start'

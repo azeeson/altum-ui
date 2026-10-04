@@ -1,6 +1,6 @@
 {
 	"name": "altum",
-	"version": "0.0.11",
+	"version": "0.0.12",
 	"description": "Библиотека React + TypeScript UI-компонентов: CSS Modules, токены ThemeProvider, адаптация overlay/sheet.",
 	"license": "MIT",
 	"author": "Alexander <azeeson@gmail.com>",

@@ -28,6 +28,16 @@ export {
 export {useLongPress} from '../hooks/useLongPress';
 export type {UseLongPressOptions, UseLongPressHandlers} from '../hooks/useLongPress';
 
+export {useStickyChrome} from '../hooks/useStickyChrome';
+export type {
+	StickyChromeEasing,
+	StickyChromeEdge,
+	StickyChromeProgress,
+	StickyChromeScrollbarSize,
+	StickyChromeTarget,
+	UseStickyChromeOptions,
+} from '../hooks/useStickyChrome';
+
 export {useForm} from '../hooks/useForm';
 export type {FieldValidate, FormErrors, RegisterOptions, UseFormReturn} from '../hooks/useForm';
 export {useFormContext, useFormProvider} from '../hooks/useFormProvider';

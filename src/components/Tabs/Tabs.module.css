@@ -1,24 +1,25 @@
-.tabsContainer {
-  display: flex;
-
-  flex-direction: column;
-
+.tabs {
   width: 100%;
+  min-width: 0;
 
   font-family: var(--altum-g-font-family-ui);
 
-  &[data-orientation='vertical'] {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: var(--altum-g-space-4);
-  }
-
-  &[data-variant='line'] .tabsHeader {
+  &:not([data-variant='pill']) .tabsHeader {
     --altum-button-group-gap: var(--altum-g-space-4);
+    --altum-button-group-height: auto;
+    --altum-button-group-pad: 0;
+    --altum-btn-height: auto;
+    --altum-btn-pad-x: 0;
+    --altum-btn-shadow: 0 0 0 0 transparent;
+    --altum-bg-thumb: transparent;
+    --altum-bg-thumb-shadow: none;
 
     overflow-x: auto;
 
+    align-items: flex-end;
+
     width: 100%;
+    height: auto;
 
     margin-bottom: var(--altum-g-space-4);
     padding: 0;
@@ -30,19 +31,43 @@
     background: transparent;
     box-shadow: none;
 
-    & button {
+    & button,
+    & button:hover:not(:disabled) {
+      --altum-btn-height: auto;
+
       flex: 0 0 auto;
+
+      height: auto;
+      min-height: 0;
+
+      margin-bottom: -1px;
+      padding: var(--altum-g-space-3) var(--altum-g-space-1);
+
+      border: 0 solid transparent;
+      border-bottom-width: 2px;
+      border-radius: 0;
+
+      line-height: 1.3;
+
+      background: transparent;
+      background-color: transparent;
+      box-shadow: none;
     }
 
     & button[aria-selected='true'],
     & button[aria-selected='true']:hover:not(:disabled) {
+      border-bottom-color: var(--altum-color-tabs-indicator);
+
+      color: var(--altum-color-type);
       background-color: transparent;
-      box-shadow: inset 0 -2px 0 var(--altum-color-tabs-indicator);
+      box-shadow: none;
     }
   }
 
-  &[data-orientation='vertical'][data-variant='line'] .tabsHeader {
+  &[data-orientation='vertical']:not([data-variant='pill']) .tabsHeader {
     overflow: visible;
+
+    align-items: stretch;
 
     width: max-content;
     min-width: 140px;
@@ -52,10 +77,35 @@
     border-right: 1px solid var(--altum-color-panel-border);
     border-bottom: none;
 
+    & button,
+    & button:hover:not(:disabled) {
+      margin-bottom: 0;
+      margin-inline-end: -1px;
+      padding: var(--altum-g-space-2) var(--altum-g-space-3);
+
+      border-bottom-width: 0;
+      border-inline-end-width: 2px;
+    }
+
     & button[aria-selected='true'],
     & button[aria-selected='true']:hover:not(:disabled) {
-      box-shadow: inset -2px 0 0 var(--altum-color-tabs-indicator);
+      border-bottom-color: transparent;
+      border-inline-end-color: var(--altum-color-tabs-indicator);
+
+      box-shadow: none;
     }
+  }
+
+  /* В шапке Layout черта на всю ширину панели, подписи остаются на линии заголовка. */
+  &[data-chrome]:not([data-variant='pill']) .tabsHeader {
+    box-sizing: border-box;
+
+    width: calc(100% + 2 * var(--altum-layout-pad, 0px));
+    max-width: none;
+
+    margin-bottom: 0;
+    margin-inline: calc(-1 * var(--altum-layout-pad, 0px));
+    padding-inline: var(--altum-layout-pad, 0px);
   }
 }
 

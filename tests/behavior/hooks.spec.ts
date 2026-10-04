@@ -16,6 +16,43 @@ test.describe('media query constants', () => {
 	});
 });
 
+test.describe('useStickyChrome', () => {
+	test('делит порог флага и прогресс заливки', async ({page}) => {
+		await visitStory(page, 'altum-hooks-usestickychrome--task-list');
+		const shell = page.getByTestId('chrome-shell');
+		const scroll = page.getByTestId('chrome-scroll');
+		const readProgress = () => scroll.evaluate((node) => (
+			getComputedStyle(node).getPropertyValue('--demo-chrome-progress').trim()
+		));
+
+		await expect.poll(readProgress).toBe('0');
+		await expect(shell).not.toHaveAttribute('data-workspace-scrolled');
+		const size = await shell.evaluate((node) => (
+			getComputedStyle(node).getPropertyValue('--demo-scrollbar-size').trim()
+		));
+		expect(size).toMatch(/^\d+px$/);
+
+		await scroll.evaluate((node) => {
+			node.scrollTop = 2;
+		});
+		await expect.poll(readProgress).not.toBe('0');
+		await expect(shell).not.toHaveAttribute('data-workspace-scrolled');
+
+		await scroll.evaluate((node) => {
+			node.scrollTop = 80;
+		});
+		await expect(shell).toHaveAttribute('data-workspace-scrolled', '');
+		const mid = Number(await readProgress());
+		expect(mid).toBeGreaterThan(0);
+		expect(mid).toBeLessThan(1);
+
+		await scroll.evaluate((node) => {
+			node.scrollTop = 120;
+		});
+		await expect.poll(readProgress).toBe('1');
+	});
+});
+
 test.describe('useForm', () => {
 	test('показывает ошибку шаблона для неверного email', async ({page}) => {
 		await visitStory(page, 'altum-hooks-useform--playground');

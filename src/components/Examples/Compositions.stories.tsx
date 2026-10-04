@@ -1,5 +1,5 @@
 import type {Meta} from '@storybook/react';
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {VirtualList} from '../VirtualList/VirtualList';
 import {SwipeToAction} from '../SwipeToAction/SwipeToAction';
 import type {SwipeAction} from '../SwipeToAction/SwipeToAction.types';
@@ -815,6 +815,7 @@ export const CommandWorkspace: Story<Record<string, never>> = {
 	render: function CommandWorkspaceRender() {
 		const [paletteOpen, setPaletteOpen] = useState(false);
 		const [tab, setTab] = useState('inbox');
+		const tabsRef = useRef<HTMLDivElement>(null);
 		const [todos, setTodos] = useState([
 			{
 				id: '1',
@@ -920,67 +921,66 @@ export const CommandWorkspace: Story<Record<string, never>> = {
 				</header>
 
 				<Tabs
+					rootRef={tabsRef}
 					variant='pill'
 					value={tab}
 					onChange={setTab}
-				>
-					<Tabs.List items={[
+					items={[
 						{
 							value: 'inbox',
-							label: 'Обзор'
+							label: 'Обзор',
 						},
 						{
 							value: 'tasks',
 							label: `Задачи (${todos.filter((item) => !item.done).length})`,
 						},
 					]}
-					/>
-					<Tabs.Panel value='inbox'>
-						<div className={styles.panel}>
-							<Text size='sm'>
-								Здесь мог бы быть InboxVirtualSwipe. Палитра переключает табы
-								и добавляет задачи.
-							</Text>
-							<Button variant='secondary' onClick={() => setPaletteOpen(true)}>
-								Открыть ⌘K
-							</Button>
-						</div>
-					</Tabs.Panel>
-					<Tabs.Panel value='tasks'>
-						<Stack gap='sm'>
-							{todos.map((todo) => (
-								<div key={todo.id} className={`${styles.panel} ${styles.taskItem}`}>
-									<Checkbox
-										mode='task'
-										checked={todo.done}
-										onChange={(event) => {
-											const done = event.target.checked;
-											setTodos((prev) => prev.map((item) => (
-												item.id === todo.id ? {
-													...item,
-													done
-												} : item
-											)));
-										}}
-										aria-label={todo.title}
-									/>
-									<span className={styles.taskTitle}>
-										{todo.title}
-									</span>
-									{todo.done && (
-										<Chip
-											mode='tag'
-											variant='success'
-											size='sm'
-										>
-											done
-										</Chip>
-									)}
-								</div>
-							))}
-						</Stack>
-					</Tabs.Panel>
-				</Tabs>
+				/>
+				<Tabs.Panel tabsRef={tabsRef} value='inbox'>
+					<div className={styles.panel}>
+						<Text size='sm'>
+							Здесь мог бы быть InboxVirtualSwipe. Палитра переключает табы
+							и добавляет задачи.
+						</Text>
+						<Button variant='secondary' onClick={() => setPaletteOpen(true)}>
+							Открыть ⌘K
+						</Button>
+					</div>
+				</Tabs.Panel>
+				<Tabs.Panel tabsRef={tabsRef} value='tasks'>
+					<Stack gap='sm'>
+						{todos.map((todo) => (
+							<div key={todo.id} className={`${styles.panel} ${styles.taskItem}`}>
+								<Checkbox
+									mode='task'
+									checked={todo.done}
+									onChange={(event) => {
+										const done = event.target.checked;
+										setTodos((prev) => prev.map((item) => (
+											item.id === todo.id ? {
+												...item,
+												done
+											} : item
+										)));
+									}}
+									aria-label={todo.title}
+								/>
+								<span className={styles.taskTitle}>
+									{todo.title}
+								</span>
+								{todo.done && (
+									<Chip
+										mode='tag'
+										variant='success'
+										size='sm'
+									>
+										done
+									</Chip>
+								)}
+							</div>
+						))}
+					</Stack>
+				</Tabs.Panel>
 
 				<CommandPalette
 					open={paletteOpen}

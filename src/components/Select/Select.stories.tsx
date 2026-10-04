@@ -29,6 +29,11 @@ const options = [
 	},
 ];
 
+const LONG_LIST = Array.from({length: 180}, (_, index) => ({
+	label: `Пункт ${index + 1}`,
+	value: `item-${index + 1}`,
+}));
+
 const LONG_OPTIONS = [
 	...options,
 	{
@@ -266,6 +271,25 @@ export const OverflowText: Story<Record<string, never>> = {
 		);
 	},
 	parameters: story('Длинный лейбл и длинный пункт в триггере.'),
+};
+
+export const LongList: Story<Record<string, never>> = {
+	name: 'Длинный список',
+	render: function LongListRender() {
+		const [value, setValue] = useState('item-1');
+		return (
+			<div style={{maxWidth: 320}}>
+				<Select
+					options={LONG_LIST}
+					value={value}
+					onChange={(next) => setValue(next as string)}
+					label='Список'
+					width='full'
+				/>
+			</div>
+		);
+	},
+	parameters: story('Больше 100 пунктов: окно виртуального списка заполнено до скролла.'),
 };
 
 export const Focused: Story<Record<string, never>> = {

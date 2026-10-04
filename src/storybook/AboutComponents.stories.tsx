@@ -54,6 +54,7 @@ const ICONS: Record<string, FC<IconProps>> = {
 	FormMessage: icons.IconInformation,
 	Gap: icons.IconMove,
 	Grid: icons.IconViewThumb,
+	Header: icons.IconBox,
 	ImageCrop: icons.IconCrop,
 	ImageGallery: icons.IconPhotoGroup,
 	ImageLightbox: icons.IconPhoto,

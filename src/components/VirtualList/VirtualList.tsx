@@ -503,6 +503,13 @@ export const VirtualList = <T,>({
 				scrollNode.addEventListener('scroll', onExternalScroll, {passive: true});
 			}
 
+			// Попап открывается без scroll/resize окна: высота scrollport была 0.
+			let resizeObserver: ResizeObserver | undefined;
+			if (typeof ResizeObserver !== 'undefined' && target && target !== window) {
+				resizeObserver = new ResizeObserver(() => pull(false));
+				resizeObserver.observe(target);
+			}
+
 			const store = scrollMetricsStoreRef.current;
 			const unsubscribe = scrollMetricsRef.current == null && store
 				? store.subscribe(() => {
@@ -513,12 +520,14 @@ export const VirtualList = <T,>({
 			removeListeners = () => {
 				scrollNode?.removeEventListener('scroll', onExternalScroll);
 				window.removeEventListener('resize', onResize);
+				resizeObserver?.disconnect();
 				unsubscribe?.();
 			};
 			return true;
 		};
 
-		if (!attach()) {
+		if (attach()) pull(false);
+		else {
 			retryRaf = window.requestAnimationFrame(() => {
 				if (disposed) return;
 				if (attach()) pull(false);

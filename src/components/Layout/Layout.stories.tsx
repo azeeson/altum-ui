@@ -1,6 +1,8 @@
 import type {Meta} from '@storybook/react';
-import React from 'react';
-import {Layout, type LayoutRootProps, type LayoutSpacing} from './Layout';
+import React, {useRef} from 'react';
+import {Layout, type LayoutChromeVariant, type LayoutRootProps, type LayoutSpacing} from './Layout';
+import {Header} from '../Header/Header';
+import {Tabs} from '../Tabs/Tabs';
 import {ControlRow} from './ControlRow';
 import {Inline} from './Inline';
 import {LayoutItem} from './LayoutItem';
@@ -18,16 +20,6 @@ const panelShellStyle: React.CSSProperties = {
 	background: 'var(--altum-color-surface)',
 };
 
-const headerStyle: React.CSSProperties = {
-	borderBottom: '1px solid var(--altum-color-border)',
-	background: 'var(--altum-color-surface)',
-};
-
-const footerStyle: React.CSSProperties = {
-	borderTop: '1px solid var(--altum-color-border)',
-	background: 'var(--altum-color-surface)',
-};
-
 const SPACING = ['sm', 'md', 'lg'] as const satisfies readonly LayoutSpacing[];
 
 const contentLines = (count: number) => (
@@ -42,13 +34,17 @@ const contentLines = (count: number) => (
 	</Stack>
 );
 
-function scrollPanel(args: LayoutRootProps, sticky: boolean) {
+function scrollPanel(
+	args: LayoutRootProps,
+	sticky: boolean,
+	variant: LayoutChromeVariant = 'primary',
+) {
 	return (
 		<div style={panelShellStyle}>
 			<Layout padding={args.padding} gap={args.gap}>
 				<Layout.Header
 					sticky={sticky}
-					style={headerStyle}
+					variant={sticky ? variant : undefined}
 				>
 					<Text size='md'>
 						{sticky ? 'Header (sticky)' : 'Header (в потоке)'}
@@ -59,8 +55,8 @@ function scrollPanel(args: LayoutRootProps, sticky: boolean) {
 				</Layout.Content>
 				<Layout.Footer
 					sticky={sticky}
+					variant={sticky ? variant : undefined}
 					align='end'
-					style={footerStyle}
 				>
 					<Button size='sm' variant='secondary'>
 						Отмена
@@ -92,7 +88,7 @@ export default {
 				type: 'select',
 				options: SPACING,
 			},
-			description: 'Отступ панели: `sm` 12px, `md` 16px, `lg` 24px',
+			description: 'Отступ панели: `sm` 12px, `md` 20px, `lg` 28px',
 		},
 		gap: {
 			control: {
@@ -122,6 +118,84 @@ export const StickyChrome: Story<LayoutRootProps> = {
 	parameters: story(
 		'Скролл у `Layout`. `Header` / `Footer` с `sticky` остаются у краёв viewport панели.',
 	),
+};
+
+export const ChromeVariants: Story<LayoutRootProps> = {
+	name: 'Фон sticky по variant',
+	render: () => (
+		<Stack gap='md'>
+			{(['primary', 'tinted', 'secondary'] as const).map((variant) => (
+				<Stack key={variant} gap='xs'>
+					<Text size='sm' color='muted'>
+						{variant}
+					</Text>
+					{scrollPanel({
+						padding: 'md',
+						gap: 'sm'
+					}, true, variant)}
+				</Stack>
+			))}
+		</Stack>
+	),
+	parameters: story(
+		'До скролла шапка и подвал прозрачные. Фон шапки — когда `scrollTop > 0`, фон подвала — пока список не у нижнего края.',
+	),
+};
+
+export const PageHeader: Story<LayoutRootProps> = {
+	name: 'Header внутри Layout',
+	render: function PageHeaderRender() {
+		const tabsRef = useRef<HTMLDivElement>(null);
+		return (
+			<div style={{
+				...panelShellStyle,
+				height: 360,
+			}}
+			>
+				<Layout padding='md' gap='md'>
+					<Layout.Header sticky variant='primary'>
+						<Header>
+							<Header.Title>
+								Настройки
+							</Header.Title>
+							<Header.Subtitle>
+								Профиль и доступ
+							</Header.Subtitle>
+							<Header.Tabs
+								rootRef={tabsRef}
+								items={[
+									{
+										value: 'profile',
+										label: 'Профиль',
+									},
+									{
+										value: 'team',
+										label: 'Команда',
+									},
+								]}
+							/>
+						</Header>
+					</Layout.Header>
+					<Layout.Content>
+						<Stack gap='md'>
+							<Tabs.Panel tabsRef={tabsRef} value='profile'>
+								<Text size='sm'>
+									Имя, почта и язык интерфейса.
+								</Text>
+							</Tabs.Panel>
+							<Tabs.Panel tabsRef={tabsRef} value='team'>
+								<Text size='sm'>
+									Участники рабочей области.
+								</Text>
+							</Tabs.Panel>
+							{contentLines(14)}
+						</Stack>
+					</Layout.Content>
+				</Layout>
+			</div>
+		);
+	},
+	parameters: story('`Header` в липкой шапке `Layout`. Фон шапки появляется после прокрутки.'),
 };
 
 export const FlowScroll: Story<LayoutRootProps> = {
@@ -154,7 +228,7 @@ export const FooterAlign: Story<LayoutRootProps> = {
 					}}
 				>
 					<Layout padding='sm' gap='sm'>
-						<Layout.Header style={headerStyle}>
+						<Layout.Header>
 							<Text size='sm'>
 								align=
 								{align}
@@ -165,10 +239,7 @@ export const FooterAlign: Story<LayoutRootProps> = {
 								Контент
 							</Text>
 						</Layout.Content>
-						<Layout.Footer
-							align={align}
-							style={footerStyle}
-						>
+						<Layout.Footer align={align}>
 							<Button size='sm' variant='secondary'>
 								Отмена
 							</Button>

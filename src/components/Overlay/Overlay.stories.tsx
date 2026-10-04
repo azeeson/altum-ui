@@ -35,7 +35,7 @@ export default {
 	tags: ['autodocs'],
 	parameters: {
 		...componentParameters(
-			'Слой без chrome: modal и sheet — нативный dialog (showModal), floating — popover="auto".',
+			'Слой без chrome в портале: modal и sheet — нативный dialog (showModal), floating — popover="auto".',
 		),
 		controls: {
 			exclude: ['children', 'onOpenChange'],

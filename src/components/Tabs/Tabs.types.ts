@@ -1,8 +1,8 @@
-import type React from 'react';
 import type {
 	ComponentPropsWithoutRef,
 	ReactNode,
 	Ref,
+	RefObject,
 } from 'react';
 
 /** Вариант оформления вкладок. */
@@ -20,38 +20,24 @@ export interface TabsItem {
 	badgeDot?: boolean;
 }
 
-/** Свойства корня `Tabs`. */
-export interface TabsProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'onChange' | 'defaultValue'> {
+/** Свойства списка `Tabs`. Панели к нему не вложены: связь через `rootRef`. */
+export interface TabsProps extends Omit<ComponentPropsWithoutRef<'div'>, 'onChange' | 'defaultValue'> {
+	items: TabsItem[];
 	value?: string;
 	defaultValue?: string;
 	onChange?: (id: string) => void;
 	variant?: TabsVariant;
 	orientation?: TabsOrientation;
-	children: React.ReactNode;
-	/** Корень вкладок. */
+	/** Узел списка. На нём `data-value` — его читает `Tabs.Panel`. */
 	rootRef?: Ref<HTMLDivElement>;
-}
-
-/** Свойства списка триггеров `Tabs.List`. */
-export interface TabsListProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
-	items: TabsItem[];
-	/** Корень списка. */
-	rootRef?: Ref<HTMLDivElement>;
-}
-
-/** Свойства кнопки вкладки `Tabs.Trigger`. Список задаётся `items` у `Tabs.List`. */
-export interface TabsTriggerProps extends Omit<
-	React.ButtonHTMLAttributes<HTMLButtonElement>,
-	'value'
-> {
-	value: string;
-	badge?: React.ReactNode;
-	badgeDot?: boolean;
 }
 
 /** Свойства панели `Tabs.Panel`. */
-export interface TabsPanelProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface TabsPanelProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
+	children?: ReactNode;
 	value: string;
+	/** Тот же ref, что `rootRef` у `Tabs`. */
+	tabsRef: RefObject<HTMLDivElement | null>;
 	forceMount?: boolean;
 	/** Корень панели. */
 	rootRef?: Ref<HTMLDivElement>;

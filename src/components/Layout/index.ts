@@ -7,6 +7,7 @@ export type {
 	InlineProps,
 	SplitProps,
 	ControlRowProps,
+	LayoutChromeVariant,
 	LayoutRootProps,
 	LayoutHeaderProps,
 	LayoutContentProps,

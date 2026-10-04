@@ -8,7 +8,6 @@ export type {
 
 import {Button} from '../Button/Button';
 import {Modal} from '../Modal/Modal';
-import {Title} from '../Title/Title';
 import {useFallbackId} from '../../hooks/useFallbackId';
 import {useLocale} from '../../locales/localeContext';
 import {ruSlice as ru_confirmDialog} from '../../locales/slices/confirmDialog.ru';
@@ -72,12 +71,12 @@ export function ConfirmDialog({
 			showClose={false}
 		>
 			<Modal.Header>
-				<Title
-					level={3}
+				<Modal.Header.Title
+					level={4}
 					id={titleId}
 				>
 					{title}
-				</Title>
+				</Modal.Header.Title>
 			</Modal.Header>
 			<Modal.Body id={messageId}>
 				{message}

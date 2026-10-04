@@ -6,16 +6,18 @@
   vertical-align: middle;
 }
 
-.bubble {
+/* [popover] бьёт UA: иначе inset:0 и margin:auto центрируют панель. */
+.bubble[popover] {
   position: fixed;
   position-anchor: var(--altum-tooltip-anchor);
   position-area: var(--altum-tooltip-area);
   position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
-  inset: auto;
+  inset: unset;
   z-index: var(--altum-g-z-dropdown);
 
   visibility: hidden;
   box-sizing: border-box;
+  overflow: visible;
 
   width: max-content;
   max-width: min(var(--altum-popover-tooltip-max-width), calc(100vw - var(--altum-g-space-4)));
@@ -23,6 +25,7 @@
   margin: 0;
   padding: var(--altum-g-space-1) var(--altum-g-space-3);
 
+  border: none;
   border-radius: var(--altum-g-radius-sm);
 
   font-size: var(--altum-g-font-size-2xs);
@@ -59,7 +62,8 @@
   }
 }
 
-.host:is(:hover, :focus-within, [data-open]) .bubble {
+/* Клик мышью фокусирует кнопку, но не :focus-visible — подсказка не залипает. */
+.host:is(:hover, :has(:focus-visible), [data-open]) .bubble {
   visibility: visible;
 
   opacity: 1;

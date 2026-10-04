@@ -17,6 +17,7 @@ import {cn} from '../../core/utils/cn';
 import {useLocale} from '../../locales/localeContext';
 import {ruSlice as ru_modal} from '../../locales/slices/modal.ru';
 import {DialogLayout} from '../DialogLayout/DialogLayout';
+import {Header} from '../Header/Header';
 import {Layout} from '../Layout/Layout';
 import {Overlay} from '../Overlay/Overlay';
 import styles from './Modal.module.css';
@@ -26,12 +27,21 @@ const localeFallback = {
 	modal: ru_modal,
 };
 
-const ModalHeader = ({rootRef, ...props}: ModalHeaderProps) => (
+const ModalHeader = ({
+	rootRef,
+	children,
+	...props
+}: ModalHeaderProps) => (
 	<Layout.Header
 		rootRef={rootRef}
+		variant='primary'
 		sticky
 		{...props}
-	/>
+	>
+		<Header>
+			{children}
+		</Header>
+	</Layout.Header>
 );
 
 const ModalBody = ({className, rootRef, ...props}: ModalBodyProps) => (
@@ -45,6 +55,7 @@ const ModalBody = ({className, rootRef, ...props}: ModalBodyProps) => (
 const ModalFooter = ({align = 'end', rootRef, ...props}: ModalFooterProps) => (
 	<Layout.Footer
 		rootRef={rootRef}
+		variant='primary'
 		sticky
 		align={align}
 		{...props}
@@ -84,7 +95,7 @@ const ModalRoot = ({
 				data-size={size !== 'md' ? size : undefined}
 				onClose={() => onOpenChange(false)}
 			>
-				<Layout padding='md' gap='md'>
+				<Layout padding='md' gap='lg'>
 					{children}
 				</Layout>
 			</DialogLayout>
@@ -94,13 +105,13 @@ const ModalRoot = ({
 
 /**
  * Модальное окно на базе `Overlay` (`variant="modal"`).
- * Корень — `DialogLayout`, шапка, тело и футер — `Layout`.
+ * Корень — `DialogLayout`, шапка — `Header` внутри `Layout.Header`, тело и футер — `Layout`.
  *
  * @component
  * @example
  * <Modal open={open} onOpenChange={setOpen}>
  *   <Modal.Header>
- *     <Title level={3}>Заголовок</Title>
+ *     <Modal.Header.Title level={3}>Заголовок</Modal.Header.Title>
  *   </Modal.Header>
  *   <Modal.Body>…</Modal.Body>
  *   <Modal.Footer>
@@ -109,7 +120,11 @@ const ModalRoot = ({
  * </Modal>
  */
 export const Modal = Object.assign(ModalRoot, {
-	Header: ModalHeader,
+	Header: Object.assign(ModalHeader, {
+		Title: Header.Title,
+		Subtitle: Header.Subtitle,
+		Tabs: Header.Tabs,
+	}),
 	Body: ModalBody,
 	Footer: ModalFooter,
 });

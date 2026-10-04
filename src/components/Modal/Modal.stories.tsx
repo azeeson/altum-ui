@@ -4,7 +4,6 @@ import {Modal, ModalProps} from './Modal';
 import {Button} from '../Button/Button';
 import {Text} from '../Text/Text';
 import {TextField} from '../TextField/TextField';
-import {Title} from '../Title/Title';
 import {ControlRow, Stack, Inline} from '../Layout';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
@@ -13,7 +12,7 @@ export default {
 	component: Modal,
 	tags: ['autodocs'],
 	parameters: componentParameters(
-		'Модальное окно: корень DialogLayout, шапка / тело / футер — Layout. Крестик поверх контента. Header и Footer — sticky.',
+		'Модальное окно: корень DialogLayout, шапка — Header внутри Layout. Крестик поверх контента. Header и Footer — sticky.',
 	),
 	argTypes: {
 		open: {control: 'boolean'},
@@ -36,9 +35,9 @@ export const Playground: Story<ModalProps> = {
 				</Button>
 				<Modal open={isOpen} onOpenChange={setIsOpen}>
 					<Modal.Header>
-						<Title level={3}>
+						<Modal.Header.Title level={3}>
 							Системное оповещение
-						</Title>
+						</Modal.Header.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Text size='md'>
@@ -58,7 +57,7 @@ export const Playground: Story<ModalProps> = {
 			</>
 		);
 	},
-	parameters: story('Составной API: Modal + Header/Title/Body/Footer.'),
+	parameters: story('Составной API: `Modal.Header` рендерит `Header` (`Title`, `Subtitle`, `Tabs`).'),
 };
 
 export const Sizes: Story<ModalProps> = {
@@ -85,9 +84,9 @@ export const Sizes: Story<ModalProps> = {
 					}}
 				>
 					<Modal.Header>
-						<Title level={3}>
+						<Modal.Header.Title level={3}>
 							{`Размер ${size ?? 'md'}`}
-						</Title>
+						</Modal.Header.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Text size='md'>
@@ -120,9 +119,9 @@ export const WithFooter: Story<ModalProps> = {
 				</Button>
 				<Modal open={isOpen} onOpenChange={setIsOpen}>
 					<Modal.Header>
-						<Title level={3}>
+						<Modal.Header.Title level={3}>
 							Редактировать профиль
-						</Title>
+						</Modal.Header.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Text size='md'>
@@ -162,9 +161,9 @@ export const FooterAlignment: Story<ModalProps> = {
 				</Button>
 				<Modal open={isOpen} onOpenChange={setIsOpen}>
 					<Modal.Header>
-						<Title level={3}>
+						<Modal.Header.Title level={3}>
 							Удалить аккаунт
-						</Title>
+						</Modal.Header.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Text size='md'>
@@ -204,9 +203,9 @@ export const StickySections: Story<ModalProps> = {
 				</Button>
 				<Modal open={isOpen} onOpenChange={setIsOpen}>
 					<Modal.Header>
-						<Title level={3}>
+						<Modal.Header.Title level={3}>
 							Длинный список
-						</Title>
+						</Modal.Header.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<div style={{
@@ -277,9 +276,9 @@ export const FormFooter: Story<ModalProps> = {
 				</Button>
 				<Modal open={isOpen} onOpenChange={setIsOpen}>
 					<Modal.Header>
-						<Title level={3}>
+						<Modal.Header.Title level={3}>
 							Настройки профиля
-						</Title>
+						</Modal.Header.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Text size='md'>
@@ -344,9 +343,9 @@ export const Opened: Story<ModalProps> = {
 	render: () => (
 		<Modal open onOpenChange={() => undefined}>
 			<Modal.Header>
-				<Title level={3}>
+				<Modal.Header.Title level={3}>
 					Системное оповещение
-				</Title>
+				</Modal.Header.Title>
 			</Modal.Header>
 			<Modal.Body>
 				<Text size='md'>
@@ -367,9 +366,9 @@ export const OverflowText: Story<ModalProps> = {
 	render: () => (
 		<Modal open onOpenChange={() => undefined}>
 			<Modal.Header>
-				<Title level={3}>
+				<Modal.Header.Title level={3}>
 					Очень длинный заголовок модального окна про уточнение юридических условий обработки данных
-				</Title>
+				</Modal.Header.Title>
 			</Modal.Header>
 			<Modal.Body>
 				<Text size='md'>
@@ -398,9 +397,9 @@ export const UsageExample: Story<ModalProps> = {
 				</Button>
 				<Modal open={open} onOpenChange={setOpen}>
 					<Modal.Header>
-						<Title level={3}>
+						<Modal.Header.Title level={3}>
 							Профиль
-						</Title>
+						</Modal.Header.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Stack gap='md'>
@@ -450,9 +449,9 @@ export const Interaction: Story<ModalProps> = {
 				</Button>
 				<Modal open={open} onOpenChange={setOpen}>
 					<Modal.Header>
-						<Title level={3}>
+						<Modal.Header.Title level={3}>
 							Системное оповещение
-						</Title>
+						</Modal.Header.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Text size='md'>

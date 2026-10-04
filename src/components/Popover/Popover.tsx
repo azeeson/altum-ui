@@ -72,6 +72,8 @@ export function Popover({
 	const setPanelRefs = (node: HTMLElement | null) => {
 		localPanelRef.current = node;
 		assignRef(panelRef, node);
+		if (!node || !defaultOpen || disabled || node.matches(':popover-open')) return;
+		node.showPopover();
 	};
 
 	useLayoutEffect(() => {

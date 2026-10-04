@@ -20,11 +20,11 @@
   }
 
   &[data-padding='md'] {
-    --altum-layout-pad: var(--altum-g-space-4);
+    --altum-layout-pad: var(--altum-g-space-5);
   }
 
   &[data-padding='lg'] {
-    --altum-layout-pad: var(--altum-g-space-6);
+    --altum-layout-pad: var(--altum-g-space-7);
   }
 
   &[data-gap='sm'] {
@@ -39,8 +39,9 @@
     --altum-layout-gap: var(--altum-g-space-6);
   }
 
+  /* Половина gap — поле хрома у контента, вторая половина — зазор между секциями. */
   &[data-gap] {
-    gap: var(--altum-layout-gap);
+    gap: calc(var(--altum-layout-gap) / 2);
   }
 
   &[data-padding] > :is(.header, .content, .footer) {
@@ -49,11 +50,34 @@
     padding-inline: var(--altum-layout-pad);
   }
 
-  &[data-padding] > :is(.header, .footer:first-child, .content:first-child) {
+  /* Снаружи — padding. К контенту — половина gap, чтобы низ шапки и верх подвала были короче. */
+  &[data-padding] > :is(.header, .footer) {
+    padding-block: var(--altum-layout-pad);
+  }
+
+  &[data-gap] > .header {
+    padding-bottom: calc(var(--altum-layout-gap) / 2);
+  }
+
+  /* Вкладки: черта — нижний край шапки. До контента — полный gap, не половина. */
+  &[data-gap] > .header:has([data-page-header]) {
+    margin-bottom: calc(var(--altum-layout-gap) / -2);
+    padding-bottom: 0;
+  }
+
+  &[data-gap] > .header:has([data-page-header]) + .content {
+    padding-top: var(--altum-layout-gap);
+  }
+
+  &[data-gap] > .footer {
+    padding-top: calc(var(--altum-layout-gap) / 2);
+  }
+
+  &[data-padding] > .content:first-child {
     padding-block-start: var(--altum-layout-pad);
   }
 
-  &[data-padding] > :is(.footer, .header:last-child, .content:last-child) {
+  &[data-padding] > .content:last-child {
     padding-block-end: var(--altum-layout-pad);
   }
 
@@ -96,43 +120,23 @@
 
   & .header[data-sticky] {
     top: 0;
-
-    &::after {
-      position: absolute;
-      top: 100%;
-      right: calc(-1 * var(--altum-layout-pad));
-      left: calc(-1 * var(--altum-layout-pad));
-
-      content: '';
-
-      height: var(--altum-layout-gap);
-
-      margin-top: 1px;
-
-      background-color: inherit;
-
-      pointer-events: none;
-    }
   }
 
   & .footer[data-sticky] {
     bottom: 0;
+  }
 
-    &::before {
-      position: absolute;
-      right: calc(-1 * var(--altum-layout-pad));
-      bottom: 100%;
-      left: calc(-1 * var(--altum-layout-pad));
+  & :is(.header, .footer)[data-sticky][data-scrolled] {
+    &[data-variant='primary'] {
+      background-color: color-mix(in srgb, var(--altum-color-bg) 42%, var(--altum-color-surface));
+    }
 
-      content: '';
+    &[data-variant='secondary'] {
+      background-color: var(--altum-color-bg);
+    }
 
-      height: var(--altum-layout-gap);
-
-      margin-bottom: 1px;
-
-      background-color: inherit;
-
-      pointer-events: none;
+    &[data-variant='tinted'] {
+      background-color: color-mix(in srgb, var(--altum-color-brand) 10%, var(--altum-color-surface));
     }
   }
 }

@@ -10,7 +10,7 @@ export type OverlaySheetSide = 'top' | 'bottom' | 'left' | 'right';
 export type OverlayBaseProps = {
 	children: React.ReactNode;
 	/**
-	 * Видимость слоя. Узел остаётся в DOM:
+	 * Видимость слоя. Узел остаётся в DOM, в портале вне обёртки:
 	 * закрытие снимает `open` у `<dialog>` или прячет popover, а не размонтирует слой.
 	 */
 	open: boolean;

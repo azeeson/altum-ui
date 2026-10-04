@@ -1,22 +1,12 @@
-import type {
-	TabsProps,
-	TabsListProps,
-	TabsPanelProps,
-} from './Tabs.types';
-export type {
-	TabsVariant,
-	TabsOrientation,
-	TabsItem,
-	TabsProps,
-	TabsListProps,
-	TabsPanelProps,
-} from './Tabs.types';
+import type {RefObject} from 'react';
+import type {TabsPanelProps, TabsProps} from './Tabs.types';
+export type {TabsVariant, TabsOrientation, TabsItem, TabsProps, TabsPanelProps} from './Tabs.types';
 
 import {
-	createContext,
-	useContext,
 	useId,
+	useLayoutEffect,
 	useMemo,
+	useState,
 } from 'react';
 import styles from './Tabs.module.css';
 import utilities from '../../styles/utilities.module.css';
@@ -25,28 +15,110 @@ import {cn} from '../../core/utils/cn';
 import {useControlledStateWithCallback} from '../../hooks/useControlledState';
 import {tabPanelDomId, tabTriggerDomId} from './Tabs.utils';
 
-type TabsContextValue = {
-	tabsId: string;
+interface TabsLink {
 	value: string;
-	onChange: (value: string) => void;
-	orientation: 'horizontal' | 'vertical';
-	variant: 'line' | 'pill';
-};
-
-const TabsContext = createContext<TabsContextValue | null>(null);
-
-function useTabsContext(): TabsContextValue | null {
-	return useContext(TabsContext);
+	id: string;
 }
 
-const TabsList = ({
+/** Активная вкладка и id списка читаются с DOM-узла `Tabs`, без контекста. */
+function useTabsLink(tabsRef: RefObject<HTMLDivElement | null>): TabsLink {
+	const [link, setLink] = useState<TabsLink>({
+		value: '',
+		id: ''
+	});
+
+	useLayoutEffect(() => {
+		let observer: MutationObserver | undefined;
+		let frame = 0;
+		const bind = () => {
+			const node = tabsRef.current;
+			if (!node) {
+				frame = requestAnimationFrame(bind);
+				return;
+			}
+			const sync = () => {
+				setLink({
+					value: node.getAttribute('data-value') ?? '',
+					id: node.id,
+				});
+			};
+			sync();
+			observer = new MutationObserver(sync);
+			observer.observe(node, {
+				attributes: true,
+				attributeFilter: ['data-value'],
+			});
+		};
+		bind();
+		return () => {
+			cancelAnimationFrame(frame);
+			observer?.disconnect();
+		};
+	}, [tabsRef]);
+
+	return link;
+}
+
+const TabsPanel = ({
+	value,
+	tabsRef,
 	className,
-	items,
+	children,
+	forceMount: _forceMount,
+	hidden,
 	rootRef,
 	...rest
-}: TabsListProps) => {
-	const ctx = useTabsContext();
-	const tabsId = ctx?.tabsId ?? '';
+}: TabsPanelProps) => {
+	const link = useTabsLink(tabsRef);
+	const inactive = link.value !== value;
+
+	return (
+		<div
+			ref={rootRef}
+			className={cn(styles.tabPanel, className)}
+			tabIndex={0}
+			{...rest}
+			hidden={hidden != null ? hidden : inactive}
+			role='tabpanel'
+			id={link.id ? tabPanelDomId(link.id, value) : undefined}
+			aria-labelledby={link.id ? tabTriggerDomId(link.id, value) : undefined}
+		>
+			{children}
+		</div>
+	);
+};
+
+/**
+ * Список вкладок. Панели — отдельные `Tabs.Panel` с тем же `rootRef`.
+ * `line` — черта у выбранной вкладки, `pill` — заливка сегмента.
+ * Активное значение лежит в `data-value` на корне, без контекста.
+ *
+ * @component
+ * @example
+ * const tabsRef = useRef<HTMLDivElement>(null);
+ * <Tabs rootRef={tabsRef} items={[{value: 'info', label: 'Инфо'}]} />
+ * <Tabs.Panel tabsRef={tabsRef} value="info"><InfoTab /></Tabs.Panel>
+ */
+const TabsRoot = ({
+	items,
+	value: valueProp,
+	defaultValue,
+	onChange,
+	variant = 'line',
+	orientation = 'horizontal',
+	className,
+	rootRef,
+	id: idProp,
+	...rest
+}: TabsProps) => {
+	const autoId = useId();
+	const tabsId = idProp ?? autoId;
+	const fallback = items.find((item) => !item.disabled)?.value ?? '';
+	const [value, setValue] = useControlledStateWithCallback(
+		valueProp,
+		defaultValue ?? fallback,
+		onChange,
+	);
 	const options = useMemo(() => items.map((item) => ({
 		value: item.value,
 		disabled: item.disabled,
@@ -69,108 +141,31 @@ const TabsList = ({
 		),
 	})), [items, tabsId]);
 
-	if (ctx == null) return null;
-
-	return (
-		<SegmentedControl
-			{...rest}
-			rootRef={rootRef}
-			className={cn(styles.tabsHeader, className)}
-			options={options}
-			value={ctx.value}
-			onChange={ctx.onChange}
-			orientation={ctx.orientation}
-			variant={ctx.variant === 'pill' ? 'pill' : 'plain'}
-			width='auto'
-			itemRole='tab'
-			aria-orientation={ctx.orientation}
-		/>
-	);
-};
-
-const TabsPanel = ({
-	value,
-	className,
-	children,
-	forceMount: _forceMount,
-	hidden,
-	rootRef,
-	...rest
-}: TabsPanelProps) => {
-	const ctx = useTabsContext();
-	const tabsId = ctx?.tabsId ?? '';
-	const inactive = ctx != null && ctx.value !== value;
-
 	return (
 		<div
-			ref={rootRef}
-			className={cn(styles.tabPanel, className)}
-			tabIndex={0}
 			{...rest}
-			hidden={hidden != null ? hidden : (ctx == null ? undefined : inactive)}
-			role='tabpanel'
-			id={tabPanelDomId(tabsId, value)}
-			aria-labelledby={tabTriggerDomId(tabsId, value)}
+			ref={rootRef}
+			id={tabsId}
+			className={cn(styles.tabs, className)}
+			data-value={value}
+			data-orientation={orientation !== 'horizontal' ? orientation : undefined}
+			data-variant={variant !== 'line' ? variant : undefined}
 		>
-			{children}
+			<SegmentedControl
+				className={styles.tabsHeader}
+				options={options}
+				value={value}
+				onChange={setValue}
+				orientation={orientation}
+				variant={variant === 'pill' ? 'pill' : 'plain'}
+				width='auto'
+				itemRole='tab'
+				aria-orientation={orientation}
+			/>
 		</div>
 	);
 };
 
-/**
- * Вкладки: список — `SegmentedControl`, панели остаются здесь.
- * `line` — черта у выбранной вкладки, `pill` — заливка сегмента.
- * Активная вкладка — CSS `button[aria-selected="true"]` (без JS-трекинга бегунка).
- *
- * @component
- * @example
- * <Tabs defaultValue="info">
- *   <Tabs.List items={[{value: 'info', label: 'Инфо'}]} />
- *   <Tabs.Panel value="info"><InfoTab /></Tabs.Panel>
- * </Tabs>
- */
-const TabsRoot = ({
-	value: valueProp,
-	defaultValue,
-	onChange,
-	variant = 'line',
-	orientation = 'horizontal',
-	className,
-	children,
-	rootRef,
-	...rest
-}: TabsProps) => {
-	const tabsId = useId();
-	const [value, setValue] = useControlledStateWithCallback(
-		valueProp,
-		defaultValue ?? '',
-		onChange,
-	);
-
-	return (
-		<TabsContext.Provider value={{
-			tabsId,
-			value,
-			onChange: setValue,
-			orientation,
-			variant,
-		}}
-		>
-			<div
-				ref={rootRef}
-				{...rest}
-				className={cn(styles.tabsContainer, className)}
-				data-orientation={orientation}
-				data-variant={variant}
-			>
-				{children}
-			</div>
-		</TabsContext.Provider>
-	);
-};
-
 export const Tabs = Object.assign(TabsRoot, {
-	Root: TabsRoot,
-	List: TabsList,
 	Panel: TabsPanel,
 });

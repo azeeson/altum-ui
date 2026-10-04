@@ -4,7 +4,5 @@ export type {
 	TabsOrientation,
 	TabsItem,
 	TabsProps,
-	TabsListProps,
-	TabsTriggerProps,
 	TabsPanelProps,
 } from './Tabs.types';

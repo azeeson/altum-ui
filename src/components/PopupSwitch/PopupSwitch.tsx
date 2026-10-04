@@ -8,11 +8,11 @@ export type {
 } from './PopupSwitch.types';
 
 import {
+	useEffect,
 	useLayoutEffect,
 	useRef,
 	useState,
 	type CSSProperties,
-	type HTMLAttributes,
 	type KeyboardEvent,
 	type MouseEvent,
 } from 'react';
@@ -31,14 +31,17 @@ import {
 } from '../../core/utils/popover';
 import styles from './PopupSwitch.module.css';
 
+function fadeDuration(node: HTMLElement): number {
+	const raw = getComputedStyle(node).transitionDuration.split(',')[0]?.trim() ?? '0s';
+	if (raw.endsWith('ms')) return parseFloat(raw);
+	if (raw.endsWith('s')) return parseFloat(raw) * 1000;
+	return 0;
+}
+
 function optionIndex(node: Element | null): number | null {
 	if (!(node instanceof HTMLElement)) return null;
 	const index = Number(node.dataset.index);
 	return Number.isInteger(index) ? index : null;
-}
-
-function openFromToggle(event: {nativeEvent: Event}): boolean {
-	return (event.nativeEvent as ToggleEvent).newState === 'open';
 }
 
 /**
@@ -74,27 +77,27 @@ export function PopupSwitch<T extends string | number = string>({
 	const anchorName = anchorNameFor(listId);
 	const triggerRef = useRef<HTMLButtonElement>(null);
 	const panelRef = useRef<HTMLDivElement>(null);
-	const selectedIndex = options.findIndex((option) => option.value === value);
-	const selected = selectedIndex >= 0 ? options[selectedIndex] : undefined;
-	const resolvedSelectedIndex = selectedIndex >= 0 ? selectedIndex : 0;
-	// translateY: значение-driven, но при закрытии после выбора замораживаем старый
-	// индекс до конца fade — иначе резкий сдвиг + opacity = дёрганье. Синк после
-	// анимации (пока скрыт), чтобы следующее открытие уже было со смещением.
-	const [panelSelectedIndex, setPanelSelectedIndex] = useState(resolvedSelectedIndex);
-	const selectedIndexRef = useRef(resolvedSelectedIndex);
+	// Пока панель гаснет, в списке остаётся прежний пункт — иначе ряд сдвигается.
+	// Кнопка показывает новое значение сразу.
+	const [visibleValue, setVisibleValue] = useState(value);
+	const valueRef = useRef(value);
 	const pendingCloseSyncRef = useRef(false);
 	const closeSyncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-	selectedIndexRef.current = resolvedSelectedIndex;
+	valueRef.current = value;
+	const visibleIndex = options.findIndex((option) => option.value === visibleValue);
+	const panelSelectedIndex = visibleIndex >= 0 ? visibleIndex : 0;
+	const selectedIndex = options.findIndex((option) => option.value === value);
+	const selected = selectedIndex >= 0 ? options[selectedIndex] : undefined;
 	const stableWidth = width === 'options';
 	const reserveIcon = stableWidth && options.some((option) => option.icon != null);
 
-	const syncPanelSelectedIndex = () => {
+	const syncVisibleValue = () => {
 		pendingCloseSyncRef.current = false;
 		if (closeSyncTimerRef.current != null) {
 			clearTimeout(closeSyncTimerRef.current);
 			closeSyncTimerRef.current = null;
 		}
-		setPanelSelectedIndex(selectedIndexRef.current);
+		setVisibleValue(valueRef.current);
 	};
 
 	useLayoutEffect(() => {
@@ -114,8 +117,8 @@ export function PopupSwitch<T extends string | number = string>({
 	useLayoutEffect(() => {
 		if (pendingCloseSyncRef.current) return;
 		if (panelRef.current?.matches(':popover-open')) return;
-		setPanelSelectedIndex(resolvedSelectedIndex);
-	}, [resolvedSelectedIndex]);
+		setVisibleValue(value);
+	}, [value]);
 
 	useLayoutEffect(() => () => {
 		if (closeSyncTimerRef.current != null) clearTimeout(closeSyncTimerRef.current);
@@ -124,6 +127,7 @@ export function PopupSwitch<T extends string | number = string>({
 	const selectAt = (index: number) => {
 		const option = options[index];
 		if (!option) return;
+		pendingCloseSyncRef.current = true;
 		onChange(option.value);
 		hidePopover(panelRef.current);
 	};
@@ -157,36 +161,51 @@ export function PopupSwitch<T extends string | number = string>({
 		selectAt(index);
 	};
 
-	const onToggle = (event: {nativeEvent: Event}) => {
-		const open = openFromToggle(event);
-		triggerRef.current?.setAttribute('aria-expanded', open ? 'true' : 'false');
-		if (open) {
-			if (pendingCloseSyncRef.current) syncPanelSelectedIndex();
-			const panel = panelRef.current;
-			const current = panel?.querySelector<HTMLElement>('[aria-selected="true"]')
-				?? panel?.querySelector<HTMLElement>('[role="option"]');
-			current?.focus();
-			return;
-		}
+	const optionsRef = useRef(options);
+	optionsRef.current = options;
 
-		// Закрытие: не трогаем translate до конца opacity-fade.
-		pendingCloseSyncRef.current = true;
+	useEffect(() => {
 		const panel = panelRef.current;
+		if (!panel) return;
 		const finish = () => {
 			if (!pendingCloseSyncRef.current) return;
-			panel?.removeEventListener('transitionend', onTransitionEnd);
-			syncPanelSelectedIndex();
+			panel.removeEventListener('transitionend', onTransitionEnd);
+			syncVisibleValue();
 		};
 		const onTransitionEnd = (transitionEvent: TransitionEvent) => {
 			if (transitionEvent.target !== panel) return;
 			if (transitionEvent.propertyName !== 'opacity') return;
 			finish();
 		};
-		panel?.addEventListener('transitionend', onTransitionEnd);
-		if (closeSyncTimerRef.current != null) clearTimeout(closeSyncTimerRef.current);
-		// --altum-motion-overlay = 0.2s; fallback для reduced-motion / пропущенного transitionend
-		closeSyncTimerRef.current = setTimeout(finish, 250);
-	};
+		const onToggle = (event: Event) => {
+			const open = (event as ToggleEvent).newState === 'open';
+			triggerRef.current?.setAttribute('aria-expanded', open ? 'true' : 'false');
+			if (open) {
+				if (pendingCloseSyncRef.current) syncVisibleValue();
+				const nextIndex = optionsRef.current.findIndex((option) => option.value === valueRef.current);
+				const current = panel.querySelector<HTMLElement>(
+					nextIndex >= 0 ? `[data-index="${nextIndex}"]` : '[role="option"]',
+				);
+				current?.focus();
+				return;
+			}
+
+			pendingCloseSyncRef.current = true;
+			if (closeSyncTimerRef.current != null) clearTimeout(closeSyncTimerRef.current);
+			const wait = fadeDuration(panel);
+			if (wait <= 0) {
+				finish();
+				return;
+			}
+			panel.addEventListener('transitionend', onTransitionEnd);
+			closeSyncTimerRef.current = setTimeout(finish, wait + 40);
+		};
+		panel.addEventListener('toggle', onToggle);
+		return () => {
+			panel.removeEventListener('toggle', onToggle);
+			panel.removeEventListener('transitionend', onTransitionEnd);
+		};
+	}, []);
 
 	const triggerPrefix = reserveIcon
 		? (
@@ -273,7 +292,6 @@ export function PopupSwitch<T extends string | number = string>({
 				data-align={align === 'start' ? undefined : align}
 				onKeyDown={onListKeyDown}
 				onClick={onOptionClick}
-				{...({onToggle} as unknown as HTMLAttributes<HTMLDivElement>)}
 			>
 				{options.map((option, index) => (
 					<PopupOption
@@ -281,8 +299,8 @@ export function PopupSwitch<T extends string | number = string>({
 						option={option}
 						optionId={`${listId}-option-${index}`}
 						index={index}
-						selected={option.value === value}
-						tabIndex={index === (selectedIndex >= 0 ? selectedIndex : 0) ? 0 : -1}
+						selected={visibleIndex >= 0 && index === visibleIndex}
+						tabIndex={index === panelSelectedIndex ? 0 : -1}
 						size={size}
 						variant={variant}
 					/>

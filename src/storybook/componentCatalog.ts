@@ -12,7 +12,7 @@ export const componentCatalog = [
 	},
 	{
 		name: 'ActionList',
-		bytes: 6173,
+		bytes: 6632,
 		description: 'Список действий с поиском, группами и клавиатурной навигацией.',
 	},
 	{
@@ -117,7 +117,7 @@ export const componentCatalog = [
 	},
 	{
 		name: 'CommandPalette',
-		bytes: 3861,
+		bytes: 3912,
 		description: 'Модальная палитра команд на Overlay (variant="modal").',
 	},
 	{
@@ -211,6 +211,11 @@ export const componentCatalog = [
 		description: 'CSS Grid-контейнер с адаптивными колонками и отступами через breakpoints.',
 	},
 	{
+		name: 'Header',
+		bytes: 989,
+		description: 'Шапка страницы: заголовок, подзаголовок и вкладки в одной колонке.',
+	},
+	{
 		name: 'ImageCrop',
 		bytes: 9359,
 		description: 'Модальное окно обрезки изображения с pan/zoom и экспортом в файл.',
@@ -237,7 +242,7 @@ export const componentCatalog = [
 	},
 	{
 		name: 'Layout',
-		bytes: 3586,
+		bytes: 4470,
 		description: 'Корневая колонка панели: Header / Content / Footer.',
 	},
 	{
@@ -252,7 +257,7 @@ export const componentCatalog = [
 	},
 	{
 		name: 'Listbox',
-		bytes: 8477,
+		bytes: 8497,
 		description: 'Список опций с roving focus или highlight-навигацией для Select и CommandPalette.',
 	},
 	{
@@ -287,7 +292,7 @@ export const componentCatalog = [
 	},
 	{
 		name: 'Modal',
-		bytes: 1349,
+		bytes: 1611,
 		description: 'Модальное окно на базе Overlay (variant="modal").',
 	},
 	{
@@ -462,8 +467,8 @@ export const componentCatalog = [
 	},
 	{
 		name: 'Tabs',
-		bytes: 3603,
-		description: 'Вкладки: список — SegmentedControl, line или pill. List, Trigger, Panel.',
+		bytes: 3869,
+		description: 'Вкладки: список SegmentedControl (line или pill) и панели через rootRef.',
 	},
 	{
 		name: 'Text',
@@ -482,7 +487,7 @@ export const componentCatalog = [
 	},
 	{
 		name: 'ThemeProvider',
-		bytes: 28747,
+		bytes: 28809,
 		description: 'Провайдер светлой и тёмной темы: CSS-переменные на обёртку или на document.',
 	},
 	{
@@ -527,4 +532,4 @@ export const componentCatalog = [
 	},
 ] as const;
 
-export const componentCatalogBytes = 443169;
+export const componentCatalogBytes = 446162;

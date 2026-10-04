@@ -3,7 +3,7 @@
  * Docs отключены — сериализация autodocs/source в Storybook зависает на больших JSX-деревьях.
  */
 import type {Meta} from '@storybook/react';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Alert} from '../Alert/Alert';
 import {Accordion} from '../Accordion/Accordion';
 import {Avatar} from '../Avatar/Avatar';
@@ -338,6 +338,7 @@ function VisualGalleryDemo() {
 	const [rating, setRating] = useState(3);
 	const [page, setPage] = useState(2);
 	const [tab, setTab] = useState('a');
+	const tabsRef = useRef<HTMLDivElement>(null);
 	const [modalOpen, setModalOpen] = useState(false);
 	const [sheetOpen, setSheetOpen] = useState(false);
 	const [date, setDate] = useState<Date | undefined>(new Date());
@@ -1250,40 +1251,42 @@ function VisualGalleryDemo() {
 					hint='Tabs / Steps / Pagination'
 				>
 					<Panel title='Tabs + бейдж'>
-						<Tabs value={tab} onChange={setTab}>
-							<Tabs.List items={[
+						<Tabs
+							rootRef={tabsRef}
+							value={tab}
+							onChange={setTab}
+							items={[
 								{
 									value: 'a',
 									label: 'Обзор',
-									badge: 3
+									badge: 3,
 								},
 								{
 									value: 'b',
-									label: 'Детали'
+									label: 'Детали',
 								},
 								{
 									value: 'c',
 									label: 'Активность',
-									badgeDot: true
+									badgeDot: true,
 								},
 							]}
-							/>
-							<Tabs.Panel value='a'>
-								<Text size='sm'>
-									Контент вкладки «Обзор».
-								</Text>
-							</Tabs.Panel>
-							<Tabs.Panel value='b'>
-								<Text size='sm'>
-									Контент вкладки «Детали».
-								</Text>
-							</Tabs.Panel>
-							<Tabs.Panel value='c'>
-								<Text size='sm'>
-									Контент вкладки «Активность».
-								</Text>
-							</Tabs.Panel>
-						</Tabs>
+						/>
+						<Tabs.Panel tabsRef={tabsRef} value='a'>
+							<Text size='sm'>
+								Контент вкладки «Обзор».
+							</Text>
+						</Tabs.Panel>
+						<Tabs.Panel tabsRef={tabsRef} value='b'>
+							<Text size='sm'>
+								Контент вкладки «Детали».
+							</Text>
+						</Tabs.Panel>
+						<Tabs.Panel tabsRef={tabsRef} value='c'>
+							<Text size='sm'>
+								Контент вкладки «Активность».
+							</Text>
+						</Tabs.Panel>
 					</Panel>
 					<div className={styles.grid2}>
 						<Panel title='Steps'>
