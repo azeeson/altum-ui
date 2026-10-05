@@ -8,7 +8,7 @@ import {type BoxAs, type BoxRadius, type BoxVariant} from '../Box/Box';
 /**
  * Вариант оформления карточки (subset `BoxVariant`).
  */
-export type CardVariant = Extract<BoxVariant, 'outlined' | 'elevated' | 'ghost'>;
+export type CardVariant = Extract<BoxVariant, 'outlined' | 'elevated'>;
 
 /**
  * Свойства `Card`.

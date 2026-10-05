@@ -35,7 +35,7 @@
   line-height: 1;
   vertical-align: middle;
 
-  color: var(--altum-color-brand-text);
+  color: var(--altum-badge-on-fill, var(--altum-color-brand-text));
   background-color: var(--altum-status-fill);
 
   translate: 0 var(--altum-badge-digit-nudge);
@@ -88,16 +88,6 @@
     background-color: var(--altum-color-text-secondary);
   }
 
-  &:is(
-    [data-variant='success'],
-    [data-variant='info'],
-    [data-variant='warning'],
-    [data-variant='error']
-  ) {
-    --altum-status-bg: color-mix(in srgb, var(--altum-status-fill) var(--altum-status-bg-amt, 11%), var(--altum-status-bg-base, transparent));
-    --altum-status-border: color-mix(in srgb, var(--altum-status-fill) var(--altum-status-border-amt, 34%), transparent);
-  }
-
   &[data-variant='success'] {
     --altum-status-fill: var(--altum-color-status-success);
     --altum-status-strong: var(--altum-color-status-success-strong);
@@ -113,9 +103,7 @@
   &[data-variant='warning'] {
     --altum-status-fill: var(--altum-color-status-warning);
     --altum-status-strong: var(--altum-color-status-warning-strong);
-    --altum-status-fg: var(--altum-status-strong);
-    --altum-status-bg-amt: var(--altum-status-warning-bg-amt, 12%);
-    --altum-status-border-amt: var(--altum-status-warning-border-amt, 36%);
+    --altum-status-fg: var(--altum-status-fill);
   }
 
   &[data-variant='error'] {
@@ -124,16 +112,15 @@
     --altum-status-fg: var(--altum-status-fill);
   }
 
-  &:is([data-variant='error'], [data-variant='success'], [data-variant='info']),
-  &[data-variant='warning'][data-dot] {
-    color: var(--altum-color-brand-text);
+  &:is(
+    [data-variant='success'],
+    [data-variant='info'],
+    [data-variant='warning'],
+    [data-variant='error']
+  ) {
+    border-color: var(--altum-color-surface);
+
+    color: var(--altum-badge-on-fill, var(--altum-color-brand-text));
     background-color: var(--altum-status-fill);
-  }
-
-  &[data-variant='warning']:not([data-dot]) {
-    border-color: var(--altum-status-border);
-
-    color: var(--altum-status-fg);
-    background-color: var(--altum-status-bg);
   }
 }

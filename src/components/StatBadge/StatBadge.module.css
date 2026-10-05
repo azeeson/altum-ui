@@ -16,7 +16,7 @@
 
   font-family: var(--altum-g-font-family-ui);
 
-  background-color: var(--altum-color-option-hover);
+  background-color: transparent;
 
   &[data-size='sm'] {
     --altum-stat-value-size: var(--altum-g-font-size-3xs);
@@ -40,9 +40,7 @@
   &[data-variant='success'],
   &[data-variant='warning'],
   &[data-variant='error'] {
-    --altum-status-bg: color-mix(in srgb, var(--altum-status-fill) var(--altum-status-bg-amt, 11%), var(--altum-status-bg-base, transparent));
-
-    background-color: var(--altum-status-bg);
+    background-color: transparent;
   }
 
   &[data-variant='success'] {

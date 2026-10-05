@@ -63,6 +63,8 @@
   }
 
   & td {
+    font-variant-numeric: tabular-nums;
+
     color: var(--altum-color-field-text);
   }
 

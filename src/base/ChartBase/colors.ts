@@ -1,6 +1,6 @@
 const DEFAULT_COLORS = [
 	'var(--altum-color-brand)',
-	'var(--altum-color-status-info)',
+	'var(--altum-color-chart-neutral)',
 	'var(--altum-color-status-success)',
 	'var(--altum-color-status-warning)',
 	'var(--altum-color-status-error)',

@@ -35,10 +35,10 @@
   }
 
   &:has(.input[aria-readonly='true']:checked) .switchTrack {
-    border-style: solid;
-    border-color: var(--altum-color-brand);
+    border-style: dashed;
+    border-color: var(--altum-color-control-border-readonly);
 
-    background-color: var(--altum-color-brand);
+    background-color: var(--altum-color-control-bg-readonly);
   }
 
   & .input:checked ~ .switchTrack {
@@ -96,5 +96,12 @@
 
     background-color: var(--altum-color-control-bg-readonly);
     box-shadow: inset 0 0 0 1px var(--altum-color-control-border-readonly);
+  }
+
+  &:has(.input:disabled) .switchTrack,
+  &:has(.input:disabled:checked) .switchTrack {
+    border-color: var(--altum-color-disabled-border);
+
+    background-color: var(--altum-color-disabled-bg);
   }
 }

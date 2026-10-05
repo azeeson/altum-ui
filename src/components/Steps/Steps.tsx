@@ -84,9 +84,13 @@ export const Steps = ({
 			{items.map((item, index) => {
 				const status = resolveStatus(item, index, currentStep);
 				const clickable = !!onStepClick && !item.disabled;
-				const mark = item.icon ?? (
-					status === 'complete' ? '✓' : status === 'error' ? '!' : index + 1
-				);
+				const mark = status === 'complete'
+					? '✓'
+					: status === 'error'
+						? '!'
+						: status === 'current'
+							? index + 1
+							: (item.icon ?? index + 1);
 				const body = (
 					<>
 						<span className={cn(utilities.fCenter, styles.circle)} aria-hidden>

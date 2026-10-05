@@ -34,7 +34,52 @@
   color: var(--altum-color-tooltip-fg);
   opacity: 0;
   background-color: var(--altum-color-tooltip-bg);
-  box-shadow: var(--altum-shadow-surface);
+  box-shadow: var(--altum-shadow-dropdown);
+
+  &::after {
+    position: absolute;
+
+    content: '';
+
+    border: 5px solid transparent;
+  }
+
+  /* Стрелка по фактической стороне: flip двигает пузырь, data-side остаётся запрошенным. */
+  &[data-arrow='top']::after {
+    bottom: -9px;
+    left: 50%;
+
+    border-top-color: var(--altum-color-tooltip-bg);
+
+    transform: translateX(-50%);
+  }
+
+  &[data-arrow='bottom']::after {
+    top: -9px;
+    left: 50%;
+
+    border-bottom-color: var(--altum-color-tooltip-bg);
+
+    transform: translateX(-50%);
+  }
+
+  &[data-arrow='left']::after {
+    top: 50%;
+    right: -9px;
+
+    border-left-color: var(--altum-color-tooltip-bg);
+
+    transform: translateY(-50%);
+  }
+
+  &[data-arrow='right']::after {
+    top: 50%;
+    left: -9px;
+
+    border-right-color: var(--altum-color-tooltip-bg);
+
+    transform: translateY(-50%);
+  }
 
   pointer-events: none;
 

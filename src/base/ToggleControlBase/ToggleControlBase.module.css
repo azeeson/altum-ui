@@ -47,9 +47,16 @@
   }
 
   &:has(.input:disabled) {
-    opacity: var(--altum-opacity-disabled);
+    color: var(--altum-color-disabled-fg);
 
     cursor: not-allowed;
+
+    & .box,
+    & .switchTrack {
+      border-color: var(--altum-color-disabled-border);
+
+      background-color: var(--altum-color-disabled-bg);
+    }
   }
 
   & .box {

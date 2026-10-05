@@ -1,16 +1,43 @@
 .alert {
-  --altum-status-bg: color-mix(in srgb, var(--altum-status-fill) var(--altum-status-bg-amt, 11%), var(--altum-status-bg-base, transparent));
-  --altum-status-border: color-mix(in srgb, var(--altum-status-fill) var(--altum-status-border-amt, 34%), transparent);
+  --altum-alert-bg-amt: calc(var(--altum-status-bg-hover-amt, 18%) * 0.65);
+
+  position: relative;
 
   align-items: flex-start;
 
   padding: var(--altum-g-space-3) var(--altum-g-space-4);
 
-  border: 1px solid var(--altum-status-border);
+  /* Тонкая статусная рамка — инлайн-блок, не нейтральная карточка тоста. */
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--altum-status-fill, var(--altum-color-status-info)) 48%,
+      var(--altum-color-border)
+    );
   border-radius: var(--altum-g-radius);
 
-  color: var(--altum-status-fg);
-  background-color: var(--altum-status-bg);
+  color: var(--altum-color-text);
+  /* Чуть бледнее hover статуса: на ширине баннера заливка читается, но не спорит с текстом. */
+  background-color: color-mix(
+    in srgb,
+    var(--altum-status-fill, var(--altum-color-status-info)) var(--altum-alert-bg-amt),
+    var(--altum-status-bg-base, var(--altum-color-surface))
+  );
+
+  &::before {
+    position: absolute;
+    top: var(--altum-g-radius);
+    bottom: var(--altum-g-radius);
+    left: 0;
+
+    content: '';
+
+    width: var(--altum-g-space-1);
+
+    border-radius: 0 var(--altum-g-radius) var(--altum-g-radius) 0;
+
+    background-color: var(--altum-status-fill, var(--altum-color-status-info));
+  }
 
   &[data-variant='info'] {
     --altum-status-fill: var(--altum-color-status-info);
@@ -25,19 +52,19 @@
   &[data-variant='warning'] {
     --altum-status-fill: var(--altum-color-status-warning);
     --altum-status-fg: var(--altum-color-status-warning-strong);
-    --altum-status-bg-amt: var(--altum-status-warning-bg-amt, 12%);
-    --altum-status-border-amt: var(--altum-status-warning-border-amt, 36%);
+    --altum-alert-bg-amt: calc(var(--altum-status-warning-bg-hover-amt, 20%) * 0.65);
   }
 
   &[data-variant='error'] {
     --altum-status-fill: var(--altum-color-status-error);
     --altum-status-fg: var(--altum-status-fill);
+    --altum-alert-bg-amt: calc(var(--altum-status-danger-bg-hover-amt, 18%) * 0.65);
   }
 
   & .icon {
     margin-top: var(--altum-g-space-1);
 
-    color: inherit;
+    color: var(--altum-status-fg, var(--altum-status-fill));
   }
 
   & .title {
@@ -45,14 +72,14 @@
     font-weight: var(--altum-g-font-weight-semibold);
     line-height: var(--altum-g-line-height-xs);
 
-    color: inherit;
+    color: var(--altum-status-fg, var(--altum-status-fill));
   }
 
   & .content {
     font-size: var(--altum-g-font-size-sm);
     line-height: var(--altum-g-line-height-base);
 
-    color: var(--altum-color-muted);
+    color: var(--altum-color-text);
   }
 
   & .actions {

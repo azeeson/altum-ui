@@ -21,7 +21,7 @@ export default {
 		variant: {
 			control: {
 				type: 'select',
-				options: ['outlined', 'elevated', 'ghost'],
+				options: ['outlined', 'elevated'],
 			},
 			description: 'Вариант поверхности',
 		},
@@ -129,21 +129,9 @@ export const Variants: Story<CardProps> = {
 					Приподнятая карточка с тенью.
 				</Text>
 			</Card>
-			<Card
-				variant='ghost'
-				header={(
-					<Text weight='bold'>
-						Ghost
-					</Text>
-				)}
-			>
-				<Text size='sm'>
-					Без рамки и фона — только контент.
-				</Text>
-			</Card>
 		</Stack>
 	),
-	parameters: story('Варианты: outlined / elevated / ghost.'),
+	parameters: story('Варианты: outlined — рамка, elevated — тень.'),
 };
 
 export const Compound: Story<CardProps> = {

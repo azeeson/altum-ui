@@ -10,11 +10,6 @@
 
   color: var(--altum-color-input-text);
 
-  &[data-variant='ghost'] {
-    --altum-card-px: 0;
-    --altum-card-hover-shadow: none;
-  }
-
   &[data-hoverable] {
     cursor: pointer;
 

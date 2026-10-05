@@ -6,6 +6,39 @@
 
 Оверлеи: кнопки — в `Modal.Footer` / `Sheet.Footer`, sibling к `Body`, не внутри скролла. Статус и кнопки в одном ряду — `ControlRow` внутри футера.
 
+## Когда что брать
+
+Одна фраза на жест. `tinted` и `danger_tinted` у **Button** остаются: это ступень между solid и нейтральным `secondary`.
+
+| Жест | Берите | Не берите |
+| --- | --- | --- |
+| Главное действие | **Button** `primary` | `tinted` или `secondary` вместо единственного CTA |
+| Действие акцента, но не единственное | **Button** `tinted` | второй `primary` |
+| Нейтральное действие | **Button** `secondary` | `tinted`, если связи с акцентом нет |
+| Тихое действие | **Button** `ghost` | **Button** `link` (это подчёркнутая ссылка-действие) |
+| Необратимое подтверждение | **Button** `danger` в **ConfirmDialog** | `danger` в каждой строке |
+| Опасное действие на странице | **Button** `danger_tinted` | второй solid `danger` рядом с primary |
+| Одно значение из списка | **Select** | **SuggestField**, если нельзя печатать своё |
+| Своя строка или пункт списка | **SuggestField** / **AutocompleteField** | ещё один **Select** |
+| Несколько значений | **MultiSelect** | несколько **Select** |
+| Свободная вёрстка опций | **CustomSelect** | **Select**, если хватает `options` |
+| Меню у кнопки | **Dropdown** | **Menu**, если это не команды |
+| Команды по клику или ПКМ | **Menu** | **Dropdown** для выбора значения |
+| Длинный список команд с поиском | **ActionList** | **Menu** без фильтра |
+| Long-press | **Overflow** / **ActionSheetTrigger** | **Menu** на тач без долгого нажатия |
+| Cmd+K | **CommandPalette** | **Dropdown** на весь экран |
+| Текущее значение в тулбаре | **PopupSwitch** | **Select**, если нужно поле с подписью |
+| Список внутри Select или Menu | **Listbox** | публичный выбор значения — это **Select** |
+| Переключение вида на странице | **SegmentedControl** (`tinted` — акцент выбранного) | **Tabs** `pill` как второй segmented |
+| Разделы одной страницы | **Tabs** `line` | нижняя навигация приложения |
+| Нижняя навигация | кнопки с иконкой и подписью, не **Tabs** | **Tabs** `pill` |
+| Фильтр или тег | **Chip** (`toggle` / `tag`) | **Badge** как кликабельный фильтр |
+| Счётчик или короткий статус-текст | **Badge** | разноцветная цифра без слова |
+| Число и подпись без своей плашки | **StatBadge** | отдельный хром, если хватает **Text** |
+| Заметка в ленте | **Marker** | **Chip** или **Badge** |
+
+**SegmentedControl** `plain` — сегменты без трека. `ghost` — тихий трек. Это не дубль **ButtonGroup**: группа не выбирает пункт, segmented выбирает один.
+
 ---
 
 ## Действия
@@ -13,7 +46,7 @@
 | Компонент | Описание |
 |-----------|----------|
 | **Button** | Кнопка: `variant` (`primary` / `tinted` / `secondary` / `danger` / `danger_tinted` / `ghost` / `link`), `prefix` / `postfix`, `loading`, `fullWidth`. Icon-only: `data-icon-only` (+ `data-shape="circle"`); закрытие overlay: `overlayClose.close` + `data-appearance="diskClose"`. |
-| **ButtonGroup** | Коробка для независимых **`Button`**: `orientation` `horizontal` / `vertical`, `itemFit` `equal` \| `content`, `width` `auto` \| `full`, `size`. `variant` как у **Button**, кроме `link`: `primary` / `tinted` / `secondary` / `danger` / `danger_tinted` / `ghost`. Группа снимает chrome кнопки и не рисует выбранный пункт. Выбор — **SelectionGroup**. |
+| **ButtonGroup** | Коробка для независимых **`Button`**: `orientation` `horizontal` / `vertical`, `itemFit` `equal` \| `content`, `width` `auto` \| `full`, `size`. `variant` как у **Button**, кроме `link`: `primary` / `tinted` / `secondary` / `danger` / `danger_tinted` / `ghost`. Группа снимает chrome кнопки. Нажатый пункт — `active` на **Button** (`aria-pressed`), значение хранит вызывающий код. Список с выбором — **SelectionGroup**. |
 | **SegmentedControl** | Один сегмент: **`SelectionGroup`** `radio`. Выбранный пункт — заливка кнопки, без бегунка. `options` + `value` / `onChange`; `orientation` `horizontal` / `vertical`; `itemFit` `equal` \| `content`; варианты `primary` / `tinted` / `secondary` (по умолчанию) / `ghost` / `plain`. |
 | **Overflow** | Лишние пункты за ⋯. `Overflow.Item` открывает **`Menu`**; прочие дети измеряются по ширине и уходят в **`Dropdown`**. `longPress` открывает меню долгим нажатием (хост — **`ActionSheetTrigger`**). |
 | **ActionList** | Список действий: `items` / `groups` (`groupId`), `filterable`, `onAction`. Подпись пункта — **`ActionItem`**. |
@@ -26,7 +59,7 @@
 
 | Компонент | Описание |
 |-----------|----------|
-| **TextField** | Примитив поля: chrome + `as` (`input` / `textarea` / `button` / `div`). `label` — floating-лейбл внутри chrome (центр → вверх при фокусе/значении); без `label` — поле без подписи (`aria-label` / `placeholder`). `description` — подсказка или слот под chrome. `keepPlaceholder` — не скрывать placeholder при фокусе пустого поля. |
+| **TextField** | Примитив поля: chrome + `as` (`input` / `textarea` / `button` / `div`). `label` — floating-лейбл внутри chrome (на `sm` — над полем, значение не перекрывается); без `label` — `aria-label` / `placeholder`. Длинная форма: внешний **FieldLabel**. `description` — подсказка или слот под chrome. `keepPlaceholder` — не скрывать placeholder при фокусе пустого поля. |
 | **PasswordField** | Пароль на базе TextField: показать/скрыть, опциональный индикатор сложности. |
 | **SearchField** | Обёртка над `TextField` с иконкой поиска (`onClear` от TextField). Без `label` — тулбарный вид. |
 | **TextareaField** | Многострочное поле на **TextField** `as="textarea"`; авто-рост высоты. |
@@ -90,12 +123,12 @@
 |-----------|----------|
 | **Table** | Один компонент: `columns` / `data` / `rowKey`, плюс `toolbar`, `loading`, `empty` (`title` / `description` / `action`) и `footer` (пагинация). Сортировка (клиент/сервер), выбор строк, раскрытие, липкие колонки, `density`, resize и `rowActions` (`ActionListItem[]`). |
 | **Timeline** | Вертикальный/горизонтальный, сворачиваемые подробности (`<details>`), `currentId`. |
-| **Card** | `variant` outlined/elevated/ghost; радиус по умолчанию `lg`; `header` / `media` / `actions` (ReactNode), `children` — body; `loading`. |
+| **Card** | `variant` `outlined` (рамка) / `elevated` (тень). `ghost` снят: поверхность без хрома — **Box**. Радиус по умолчанию `lg`; `header` / `media` / `actions`, `children` — body; `loading`. |
 | **Accordion** | `Accordion.Item` с `title` и содержимым в `children`; секция — `<details>`. `flush` (по умолчанию) / `bordered`; `multiple`, отключённый пункт. Начальное открытие — `defaultOpenIds`. |
 | **Badge** | `size` sm/md, `position` overlay/standalone, `variant` включая `error`; overlay — `--altum-badge-overhang`. Числовой `label` ограничивается через `max`; `children` — якорь overlay. |
 | **Avatar** / **AvatarGroup** | Размеры `xs`…`xl`, кольцо статуса, запасная иконка; группа с наложением. |
 | **Chip** | Тег / фильтр: `mode` `chip` \| `tag` \| `toggle`, `size`, `onRemove` / `onClick`. **`ChipGroup`**: `mode` `chip` \| `tag`, `gap`. |
-| **StatBadge** | Компактный блок статистики: число + подпись; `variant` `default` / `success` / `warning` / `error`; `size` `md` / `sm`. Узел — `rootRef`. Размер и статус — `data-size` и `data-variant`. |
+| **StatBadge** | Число + подпись без своей плашки. `variant` красит только число. Счётчик и статус-слово — **Badge**. |
 | **EmptyState** | Пустое состояние: иконка (`--altum-color-empty-icon`), заголовок, описание, действие; `size` для вложенных панелей. |
 | **DescriptionList** | Список «ключ — значение» (`stacked` / `inline`, колонки). |
 | **RelativeTime** | Относительное время («2 ч назад»). |
@@ -107,8 +140,27 @@
 
 ## Типографика
 
+На экране, который собираете сами, берите **Type**: роль задаёт кегль, вес и тег. `Text` и `Title` — если нужен свой размер. У **Header**, **Modal.Header**, **Accordion**, **Alert** и **EmptyState** заголовок уже свой, поверх него `Type` не кладут.
+
+Тег заголовка зашит в роль, снаружи его не передают. На странице один `page` (`h1`). Секции под ним — `section` (`h2`). В диалоге заголовок — `modal` (`h2`), внутри карточки — `card` (`h3`).
+
+| Роль | Где | Тег | Кегль / вес |
+| --- | --- | --- | --- |
+| `page` | Заголовок экрана | `h1` | 24 / medium |
+| `lead` | Один абзац под заголовком экрана | `p` | 16 / normal, вторичный цвет |
+| `section` | Блок на странице: «Оплата», группа настроек | `h2` | 16 / medium |
+| `modal` | Заголовок диалога, шторки, подтверждения | `h2` | 20 / medium |
+| `card` | Карточка, аккордеон, заголовок строки | `h3` | 14 / semibold |
+| `subtitle` | Пояснение сразу под заголовком | `p` | 14 / normal, вторичный цвет |
+| `body` | Основной текст | `p` | 14 / normal |
+| `label` | Подпись группы или подпись снаружи поля | `span` | 14 / medium |
+| `caption` | Дата, счётчик, хинт | `p` | 12 / normal, приглушённый |
+
+Меньше 12px в интерфейсе нет. Число с подписью — **StatBadge**, не отдельная роль.
+
 | Компонент | Описание |
 |-----------|----------|
+| **Type** | Роль текста. Заголовки — **Title**, остальное — **Text**. Кегль, вес и тег задаёт `type`: `page` — `h1`, `modal` / `section` — `h2`, `card` — `h3`. |
 | **Title** | Заголовки уровней `h1`–`h4`; цвет `--altum-color-type`. |
 | **Text** | Текстовый примитив (`--altum-type-*`). Дефолт `as="span"` (inline); для блочного copy — `as="p"` / `as="div"`, иначе соседние `Text` склеятся в одну строку. |
 | **Link** | Ссылка: `variant` `primary`\|`secondary`\|`muted`, `status` `danger`, `size` `xs`–`xl` (или inherit), `--altum-color-link-*`. Единственный элемент-child — Slot (роутерный Link). |

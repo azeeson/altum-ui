@@ -91,6 +91,11 @@ export function ActionSheetTrigger({
 				onPointerDown?.(e);
 				const L = live.current;
 				if (L.disabled || e.button > 0 || e.defaultPrevented) return;
+				/*
+				 * Меню — портал. React доводит pointerdown до хоста, хотя цель вне DOM хоста.
+				 * Захват указателя тогда уводит mouseup/click с пункта на карточку.
+				 */
+				if (!(e.target instanceof Node) || !e.currentTarget.contains(e.target)) return;
 				/* ⋯ — нативный popovertarget; capture на хосте съедает click. */
 				if (e.target instanceof Element && e.target.closest('[data-overflow-trigger]')) return;
 				stop(); fired.current = false; xy.current = {

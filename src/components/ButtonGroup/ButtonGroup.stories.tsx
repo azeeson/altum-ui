@@ -29,7 +29,7 @@ export default {
 	tags: ['autodocs'],
 	parameters: {
 		...componentParameters(
-			'Коробка для независимых кнопок: внутрь кладётся `Button`. Склейка и `orientation`. Варианты как у `Button`, кроме `link`. Выбранного пункта нет.',
+			'Коробка для независимых кнопок: внутрь кладётся `Button`. Склейка и `orientation`. Варианты как у `Button`, кроме `link`. Нажатый пункт — `active` на кнопке.',
 		),
 	},
 	argTypes: {
@@ -290,16 +290,19 @@ export const Interaction: Story<ButtonGroupRootProps> = {
 					<Button
 						prefix={<IconAlignLeft />}
 						aria-label='Слева'
+						active={pressed === 'left'}
 						onClick={() => setPressed('left')}
 					/>
 					<Button
 						prefix={<IconAlignCenter />}
 						aria-label='По центру'
+						active={pressed === 'center'}
 						onClick={() => setPressed('center')}
 					/>
 					<Button
 						prefix={<IconAlignRight />}
 						aria-label='Справа'
+						active={pressed === 'right'}
 						onClick={() => setPressed('right')}
 					/>
 				</ButtonGroup>
@@ -314,7 +317,7 @@ export const Interaction: Story<ButtonGroupRootProps> = {
 		center?.click();
 		center?.focus();
 	},
-	parameters: story('Play жмёт «По центру». Группа выбор не хранит: подпись снаружи.'),
+	parameters: story('Play жмёт «По центру». Нажатая кнопка — `active`, подпись снаружи.'),
 };
 
 export const UsageExample: Story<ButtonGroupRootProps> = {
@@ -338,11 +341,13 @@ export const UsageExample: Story<ButtonGroupRootProps> = {
 							<Button
 								prefix={<IconViewList />}
 								aria-label='Список'
+								active={view === 'list'}
 								onClick={() => setView('list')}
 							/>
 							<Button
 								prefix={<IconMenu />}
 								aria-label='Сетка'
+								active={view === 'menu'}
 								onClick={() => setView('menu')}
 							/>
 						</ButtonGroup>
@@ -357,5 +362,5 @@ export const UsageExample: Story<ButtonGroupRootProps> = {
 			</Card>
 		);
 	},
-	parameters: story('Кнопки вида в шапке карточки. Какая включена — пишет текст, не группа.'),
+	parameters: story('Кнопки вида в шапке карточки. Нажатая — `active`.'),
 };

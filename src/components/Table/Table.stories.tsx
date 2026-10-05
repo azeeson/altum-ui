@@ -1,6 +1,7 @@
 import type {Meta} from '@storybook/react';
 import React, {useMemo, useState} from 'react';
 import {Table, type TableProps, type TableSortDirection, type Column} from './Table';
+import {Badge} from '../Badge/Badge';
 import {Chip} from '../Chip/Chip';
 import {Text} from '../Text/Text';
 import {Stack} from '../Layout';
@@ -121,7 +122,14 @@ const ORDER_COLUMNS: Column<OrderRow>[] = [
 	{
 		key: 'status',
 		header: 'Статус',
-		sortable: true
+		sortable: true,
+		render: (row) => (
+			<Badge
+				position='standalone'
+				variant={row.status === 'Закрыт' ? 'success' : row.status === 'В работе' ? 'warning' : 'info'}
+				label={row.status}
+			/>
+		),
 	},
 	{
 		key: 'amount',
@@ -233,7 +241,8 @@ export const WithToolbar: Story<Record<string, never>> = {
 					},
 					{
 						id: 'delete',
-						label: 'Удалить'
+						label: 'Удалить',
+						tone: 'danger',
 					},
 				]}
 				empty={{

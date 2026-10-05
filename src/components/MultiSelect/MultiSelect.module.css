@@ -1,9 +1,33 @@
+/* Чипы сидят в полосе значения. Высота хрома — стандарт контрола, не растёт. */
+.field:has(.chipsRow)[data-field-label] .trigger {
+  align-content: end;
+
+  padding-top: calc(var(--altum-g-space-4) + var(--altum-control-inset));
+  padding-bottom: var(--altum-control-inset);
+}
+
+.field[data-size='sm']:has(.chipsRow) .trigger {
+  align-content: center;
+
+  padding-block: 0;
+}
+
+.field[data-size='lg']:has(.chipsRow)[data-field-label] .trigger {
+  padding-top: var(--altum-g-space-4);
+}
+
+.trigger {
+  overflow: hidden;
+
+  height: 100%;
+}
+
 .chipsRow {
   display: flex;
   box-sizing: border-box;
   overflow: hidden;
 
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: var(--altum-g-space-1);
 
@@ -13,10 +37,20 @@
 }
 
 .chip {
+  --altum-chip-remove-size: var(--altum-g-space-4);
+  --altum-chip-remove-icon: var(--altum-g-space-2);
+
   overflow: hidden;
 
   flex: 0 1 auto;
 
   min-width: 0;
   max-width: 100%;
+  height: var(--altum-g-space-5);
+  min-height: 0;
+
+  padding: 0 var(--altum-g-space-1) 0 var(--altum-g-space-2);
+
+  font-size: var(--altum-g-font-size-xs);
+  line-height: 1;
 }

@@ -150,6 +150,50 @@
   flex-shrink: 0;
 
   margin-top: auto;
+  padding:
+    var(--altum-g-space-2)
+    var(--altum-g-space-2)
+    calc(env(safe-area-inset-bottom, 0px) + var(--altum-g-space-2));
+
+  border-top: 1px solid var(--altum-color-border);
+
+  background: var(--altum-color-surface);
+}
+
+.tabBar {
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.tabItem {
+  display: flex;
+
+  flex-direction: column;
+  align-items: center;
+  gap: var(--altum-g-space-1);
+
+  min-width: 0;
+
+  padding: var(--altum-g-space-1);
+
+  border: 0;
+
+  font: inherit;
+
+  color: var(--altum-color-text-secondary);
+  background: transparent;
+
+  cursor: pointer;
+
+  &[data-current] {
+    color: var(--altum-color-brand);
+  }
+
+  & span {
+    font-size: var(--altum-g-font-size-xs);
+    line-height: var(--altum-g-line-height-xs);
+  }
 }
 
 .feedCard {

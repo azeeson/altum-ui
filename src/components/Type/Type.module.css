@@ -1,0 +1,27 @@
+/*
+ * Роль перебивает кегль Title: у Title `level` одновременно тег и размер.
+ * Два класса — чтобы перевесить `.title[data-level]`.
+ */
+.role.role[data-type='page'] {
+  font-size: var(--altum-g-font-size-3xl);
+  font-weight: var(--altum-g-font-weight-medium);
+  line-height: 1.25;
+}
+
+.role.role[data-type='modal'] {
+  font-size: var(--altum-g-font-size-2xl);
+  font-weight: var(--altum-g-font-weight-medium);
+  line-height: var(--altum-g-line-height-xl);
+}
+
+.role.role[data-type='section'] {
+  font-size: var(--altum-g-font-size-lg);
+  font-weight: var(--altum-g-font-weight-medium);
+  line-height: var(--altum-g-line-height-lg);
+}
+
+.role.role[data-type='card'] {
+  font-size: var(--altum-g-font-size-base);
+  font-weight: var(--altum-g-font-weight-semibold);
+  line-height: var(--altum-g-line-height-sm);
+}

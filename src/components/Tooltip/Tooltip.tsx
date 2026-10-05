@@ -1,4 +1,4 @@
-import type {TooltipProps, TooltipTriggerProps} from './Tooltip.types';
+import type {TooltipProps, TooltipSide, TooltipTriggerProps} from './Tooltip.types';
 export type {
 	TooltipSide,
 	TooltipTriggerProps,
@@ -6,9 +6,10 @@ export type {
 } from './Tooltip.types';
 
 import {
-	useEffect,
 	useId,
+	useLayoutEffect,
 	useRef,
+	useState,
 	type CSSProperties,
 	type ReactNode,
 	type Ref,
@@ -23,6 +24,24 @@ import {
 	showPopover,
 } from '../../core/utils/popover';
 import styles from './Tooltip.module.css';
+
+/**
+ * Сторона, которой пузырь реально прижат к якорю после `position-try` flip.
+ * Меньший неотрицательный зазор — грань со стрелкой.
+ */
+function placedSide(bubble: DOMRect, anchor: DOMRect): TooltipSide {
+	const gaps: Array<[TooltipSide, number]> = [
+		['top', anchor.top - bubble.bottom],
+		['bottom', bubble.top - anchor.bottom],
+		['left', anchor.left - bubble.right],
+		['right', bubble.left - anchor.right],
+	];
+	const touching = gaps
+		.filter(([, gap]) => gap >= -2)
+		.sort((a, b) => a[1] - b[1]);
+	if (touching.length > 0) return touching[0][0];
+	return gaps.sort((a, b) => b[1] - a[1])[0][0];
+}
 
 function assignRef(ref: Ref<HTMLElement> | undefined, node: HTMLElement | null) {
 	if (typeof ref === 'function') {
@@ -59,7 +78,7 @@ function renderTrigger(
  * Текстовая подсказка при наведении или фокусе.
  * Пузырь — `popover="manual"` в top layer, его не режет `overflow` предка.
  * Показ — CSS `:hover` и `:has(:focus-visible)`. Позиция — CSS Anchor Positioning.
- * JS не ставит таймеры и не слушает pointer: popover открыт с маунта, видимость решает CSS.
+ * Popover открыт с маунта, видимость решает CSS. Стрелка после flip берётся из фактической стороны пузыря.
  *
  * Триггер: render-prop `(props, ref) => …` или любой children (оборачивается в `span`).
  *
@@ -92,16 +111,37 @@ export const Tooltip = ({
 }: TooltipProps) => {
 	const tipId = popoverDomId(useId());
 	const anchorName = anchorNameFor(tipId);
+	const hostRef = useRef<HTMLSpanElement | null>(null);
 	const bubbleRef = useRef<HTMLSpanElement>(null);
+	const [arrow, setArrow] = useState<TooltipSide>(side);
 	const hidden = disabled || content == null || content === '';
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (hidden) return;
-		const node = bubbleRef.current;
-		if (!node) return;
-		showPopover(node);
-		return () => hidePopover(node);
-	}, [hidden]);
+		const host = hostRef.current;
+		const bubble = bubbleRef.current;
+		if (!host || !bubble) return;
+		showPopover(bubble);
+
+		const sync = () => {
+			const next = placedSide(bubble.getBoundingClientRect(), host.getBoundingClientRect());
+			setArrow((current) => (current === next ? current : next));
+		};
+
+		sync();
+		const frame = requestAnimationFrame(sync);
+		const observer = new ResizeObserver(sync);
+		observer.observe(host);
+		window.addEventListener('resize', sync);
+		window.addEventListener('scroll', sync, true);
+		return () => {
+			cancelAnimationFrame(frame);
+			observer.disconnect();
+			window.removeEventListener('resize', sync);
+			window.removeEventListener('scroll', sync, true);
+			hidePopover(bubble);
+		};
+	}, [hidden, side]);
 
 	if (hidden) {
 		return renderTrigger(children, {}, rootRef, 'fragment');
@@ -117,7 +157,10 @@ export const Tooltip = ({
 
 	return (
 		<span
-			ref={rootRef}
+			ref={(node) => {
+				hostRef.current = node;
+				assignRef(rootRef, node);
+			}}
 			className={styles.host}
 			style={hostStyle}
 			data-open={open || defaultOpen ? '' : undefined}
@@ -135,6 +178,7 @@ export const Tooltip = ({
 				role='tooltip'
 				className={cn(styles.bubble, className)}
 				data-side={side}
+				data-arrow={arrow}
 			>
 				{content}
 			</span>

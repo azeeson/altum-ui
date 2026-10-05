@@ -505,7 +505,7 @@ export const VirtualList = <T,>({
 
 			// Попап открывается без scroll/resize окна: высота scrollport была 0.
 			let resizeObserver: ResizeObserver | undefined;
-			if (typeof ResizeObserver !== 'undefined' && target && target !== window) {
+			if (typeof ResizeObserver !== 'undefined' && target instanceof HTMLElement) {
 				resizeObserver = new ResizeObserver(() => pull(false));
 				resizeObserver.observe(target);
 			}

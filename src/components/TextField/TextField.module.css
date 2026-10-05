@@ -28,7 +28,7 @@
 
   font-family: var(--altum-g-font-family-ui);
 
-  &:hover:not([data-disabled]):not([data-readonly]) {
+  &:hover:not([data-disabled]):not([data-readonly]):not([data-error]) {
     --altum-field-control-border: var(--altum-color-border-hover);
   }
 
@@ -59,7 +59,7 @@
 
   /* Floating label: токены подъёма / вертикальный pad. */
   &[data-field-label] {
-    --altum-field-label-raised-top: calc(var(--altum-g-space-2) - 3px);
+    --altum-field-label-raised-top: var(--altum-g-space-1);
     --altum-field-pad-top: var(--altum-field-pad-top-md);
     --altum-field-pad-bottom: var(--altum-field-pad-bottom-md);
   }
@@ -71,7 +71,7 @@
   }
 
   &[data-field-label][data-size='lg'] {
-    --altum-field-label-raised-top: var(--altum-g-space-2);
+    --altum-field-label-raised-top: calc(var(--altum-g-space-2) - 3px);
     --altum-field-pad-top: var(--altum-field-pad-top-lg);
     --altum-field-pad-bottom: var(--altum-field-pad-bottom-lg);
   }
@@ -87,8 +87,14 @@
     --altum-field-control-border: var(--altum-color-status-error);
     --altum-field-label-color: var(--altum-color-status-error);
 
+    &:hover:not([data-disabled]):not([data-readonly]) {
+      --altum-field-control-border: var(--altum-color-status-error);
+    }
+
     &:is(:focus-within, [data-active], :has([aria-expanded='true'])) {
+      --altum-field-control-border: var(--altum-color-status-error);
       --altum-field-control-shadow: 0 0 0 1px var(--altum-color-status-error);
+      --altum-field-label-color: var(--altum-color-status-error);
     }
   }
 
@@ -98,8 +104,8 @@
     --altum-field-control-opacity: var(--altum-field-disabled-opacity);
     --altum-field-label-color: var(--altum-field-label);
 
-    & :is(.label, .prefix, .postfix) {
-      opacity: var(--altum-opacity-disabled);
+    & :is(.prefix, .postfix) {
+      color: var(--altum-color-disabled-fg);
     }
   }
 
@@ -150,20 +156,38 @@
   transition: var(--altum-transition-smooth);
 }
 
-/* Пустое без фокуса — лейбл по центру; focus / value / open — вверх. */
+/* Пустое без фокуса — лейбл по центру; focus / value / open — вверх. sm — лейбл снаружи, значение не перекрывается. */
 .root:is(
   :focus-within,
   [data-has-value],
   [data-active],
   :has([aria-expanded='true']),
   :has(:is(input, textarea):not(:placeholder-shown))
-)[data-field-label] .label {
+)[data-field-label]:not([data-size='sm']) .label {
   top: var(--altum-field-label-raised-top);
   right: auto;
 
   max-width: calc((100% - 2 * var(--altum-field-padding-inline)) / 0.78);
 
   transform: translate3d(0, 0, 0) scale(0.78);
+}
+
+.root[data-size='sm'][data-field-label] {
+  --altum-field-pad-top: 0;
+  --altum-field-pad-bottom: 0;
+
+  padding-top: calc(var(--altum-g-font-size-xs) * var(--altum-g-line-height-xs) + var(--altum-g-space-1));
+
+  & .label {
+    top: auto;
+    right: 0;
+    bottom: calc(100% + var(--altum-g-space-1));
+    left: 0;
+
+    max-width: 100%;
+
+    transform: none;
+  }
 }
 
 .chrome {

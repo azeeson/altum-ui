@@ -14,6 +14,11 @@ export interface ActionListItem {
 	icon?: ReactNode;
 	shortcut?: ReactNode;
 	disabled?: boolean;
+	/**
+	 * `danger` — вес `danger_tinted`: опасное действие в меню строки,
+	 * не solid-кнопка подтверждения.
+	 */
+	tone?: 'danger';
 	keywords?: string[];
 	onSelect?: () => void;
 	buttonProps?: ListboxOption['buttonProps'];

@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"target": "ES2020",
+		"lib": ["ES2020", "DOM", "DOM.Iterable"],
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"jsx": "react-jsx",
+		"strict": true,
+		"skipLibCheck": true,
+		"noEmit": true,
+		"isolatedModules": true,
+		"resolveJsonModule": true,
+		"types": ["vite/client"],
+		"paths": {
+			"altum": ["../types/index.d.ts"],
+			"altum/hooks": ["../types/entries/hooks.d.ts"],
+			"altum/utils": ["../types/entries/utils.d.ts"],
+			"altum/icons": ["../types/entries/icons.d.ts"],
+			"altum/locales": ["../types/entries/locales.d.ts"]
+		}
+	},
+	"include": ["src", "vite.config.ts"]
+}

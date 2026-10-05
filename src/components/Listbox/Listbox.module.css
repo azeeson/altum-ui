@@ -85,6 +85,18 @@
       color: var(--altum-color-selection-fill-fg);
       background-color: var(--altum-color-selection-fill);
     }
+
+    &[data-tone='danger'] {
+      color: var(--altum-color-danger-tint-text);
+      background-color: var(--altum-color-danger-tint-bg);
+    }
+
+    &[data-tone='danger']:hover:not(:disabled),
+    &[data-tone='danger']:focus-visible:not(:disabled),
+    &[data-tone='danger'][data-highlighted]:not(:disabled) {
+      color: var(--altum-color-danger-text-secondary-hover);
+      background-color: var(--altum-color-danger-tint-bg-hover);
+    }
   }
 
   & .label {

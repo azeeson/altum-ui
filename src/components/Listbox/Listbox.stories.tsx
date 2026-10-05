@@ -347,6 +347,38 @@ export const Separators: Story<ListboxProps> = {
 	parameters: story('Линия в начале, между пунктами и в конце; внутри группы — по `groupId`.'),
 };
 
+export const Danger: Story<ListboxProps> = {
+	render: function DangerRender() {
+		const [value, setValue] = useState<string[]>(['edit']);
+		return (
+			<div style={frameStyle}>
+				<Listbox
+					aria-label='Действия'
+					options={[
+						{
+							value: 'edit',
+							label: 'Редактировать',
+						},
+						{
+							value: 'duplicate',
+							label: 'Дублировать',
+						},
+						{type: 'separator'},
+						{
+							value: 'delete',
+							label: 'Удалить',
+							buttonProps: {'data-tone': 'danger'},
+						},
+					]}
+					value={value}
+					onSelect={(optionValue) => setValue([optionValue])}
+				/>
+			</div>
+		);
+	},
+	parameters: story('Пункт с `buttonProps` `data-tone="danger"` — вес danger_tinted.'),
+};
+
 export const HighlightNavigation: Story<ListboxProps> = {
 	render: function HighlightRender() {
 		const listRef = useRef<ListboxHandle | null>(null);

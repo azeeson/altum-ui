@@ -59,6 +59,7 @@ export function buildActionListOptions(items: readonly ActionListEntry[]): Listb
 			buttonProps: {
 				...item.buttonProps,
 				[ACTION_LIST_FILTER_ATTR]: text.toLowerCase(),
+				...(item.tone === 'danger' ? {'data-tone': 'danger' as const} : {}),
 			},
 		};
 	});

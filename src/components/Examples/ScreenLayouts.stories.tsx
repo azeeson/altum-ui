@@ -47,7 +47,11 @@ import {Timeline} from '../Timeline/Timeline';
 import {Title} from '../Title/Title';
 import {IconBell} from '../../icons/icons/IconBell';
 import {IconCard} from '../../icons/icons/IconCard';
+import {IconDots2} from '../../icons/icons/IconDots2';
+import {IconHome} from '../../icons/icons/IconHome';
 import {IconPlus} from '../../icons/icons/IconPlus';
+import {IconUser} from '../../icons/icons/IconUser';
+import {IconWallet} from '../../icons/icons/IconWallet';
 import {demoImage} from '../../storybook/demoImages';
 import {Story} from '../../storybook/meta';
 import styles from './ScreenLayouts.stories.module.css';
@@ -98,10 +102,10 @@ function DemoKpiCard({
 				</Title>
 				{delta != null && (
 					<Text size='sm' color={deltaColor}>
-						{delta}
+						{description != null ? `${delta} ${description}` : delta}
 					</Text>
 				)}
-				{description != null && (
+				{description != null && delta == null && (
 					<Text size='xs' color='muted'>
 						{description}
 					</Text>
@@ -289,9 +293,9 @@ export const AnalyticsDashboard: Story<Record<string, never>> = {
 				<DemoHeader
 					crumbs='Продукт / Аналитика'
 					title='Аналитика продукта'
-					description='Карточки KPI + SearchField/Chip + DateRangeField + BarChart/Donut + Alert'
+					description='Сессии, конверсия и источники за выбранный период'
 					actions={(
-						<Inline gap='sm'>
+						<Inline gap='sm' align='end'>
 							<DateRangeField
 								label='Период'
 								size='sm'
@@ -310,7 +314,7 @@ export const AnalyticsDashboard: Story<Record<string, never>> = {
 					size='sm'
 					title='Аномалия трафика'
 					actions={(
-						<Button size='sm' variant='ghost'>
+						<Button size='sm' variant='tinted'>
 							Разбор
 						</Button>
 					)}
@@ -337,23 +341,25 @@ export const AnalyticsDashboard: Story<Record<string, never>> = {
 						})));
 					}}
 					end={(
-						<Select
-							value='sessions'
-							options={[
-								{
-									label: 'Сессии',
-									value: 'sessions'
-								},
-								{
-									label: 'Выручка',
-									value: 'revenue'
-								},
-							]}
-							onChange={() => undefined}
-							label='Метрика'
-							size='sm'
-							width='md'
-						/>
+						<div style={{minWidth: 148}}>
+							<Select
+								value='sessions'
+								options={[
+									{
+										label: 'Сессии',
+										value: 'sessions'
+									},
+									{
+										label: 'Выручка',
+										value: 'revenue'
+									},
+								]}
+								onChange={() => undefined}
+								label='Метрика'
+								size='sm'
+								width='full'
+							/>
+						</div>
 					)}
 				/>
 
@@ -401,27 +407,27 @@ export const AnalyticsDashboard: Story<Record<string, never>> = {
 							datasets={[
 								{
 									name: 'Web',
-									data: [
-										12,
-										18,
-										15,
-										22,
-										19,
-										24,
-										21
-									]
+							data: [
+								12000,
+								18000,
+								15000,
+								22000,
+								19000,
+								24000,
+								21000
+							]
 								},
 								{
 									name: 'iOS',
-									data: [
-										8,
-										10,
-										9,
-										14,
-										12,
-										15,
-										13
-									]
+							data: [
+								8000,
+								10000,
+								9000,
+								14000,
+								12000,
+								15000,
+								13000
+							]
 								},
 							]}
 						/>
@@ -432,8 +438,8 @@ export const AnalyticsDashboard: Story<Record<string, never>> = {
 						</p>
 						<DonutChart
 							size={150}
-							centerLabel='трафик'
-							centerValue='100%'
+							centerLabel='органика'
+							centerValue='42%'
 							segments={[
 								{
 									label: 'Органика',
@@ -665,7 +671,7 @@ label: 'Журнал аудита'
 				<DemoHeader
 					crumbs='Рабочая область / Настройки'
 					title='Настройки рабочей области'
-					description='Tabs + CheckboxGroup + Fieldset/Switch + Accordion'
+					description='Роли, доступ и уведомления команды'
 				/>
 
 				<div style={{
@@ -742,7 +748,7 @@ export const CheckoutFlow: Story<Record<string, never>> = {
 			<div className={styles.shell}>
 				<DemoHeader
 					title='Оформление заказа'
-					description='Steps + Select + RadioGroup + Slider (диапазон) + панель сводки'
+					description='Адрес, способ оплаты и подтверждение'
 				/>
 
 				<Steps
@@ -765,45 +771,50 @@ export const CheckoutFlow: Story<Record<string, never>> = {
 					<div className={styles.panel}>
 						{step === 0 && (
 							<Stack gap='md'>
-								<Select
-									options={[
-										{
-											value: 'msk',
-											label: 'Москва'
-										},
-										{
-											value: 'spb',
-											label: 'Санкт-Петербург'
-										},
-										{
-											value: 'ala',
-											label: 'Алматы'
-										},
-										{
-											value: 'ast',
-											label: 'Астана'
-										},
-									]}
-									value={region}
-									onChange={(next) => {
-										if (!Array.isArray(next) && next != null) setRegion(String(next));
-									}}
-									label='Регион / город'
-									width='full'
-									onClear={() => setRegion('')}
-								/>
-								<TextField
-									label='Улица и дом'
-									placeholder='ул. Примерная, 1'
-									width='full'
-								/>
-								<MaskedField
-									label='Телефон'
-									mask='+7 (999) 999-99-99'
-									value={phone}
-									onChange={setPhone}
-									width='full'
-								/>
+								<FieldLabel label='Регион / город'>
+									<Select
+										options={[
+											{
+												value: 'msk',
+												label: 'Москва'
+											},
+											{
+												value: 'spb',
+												label: 'Санкт-Петербург'
+											},
+											{
+												value: 'ala',
+												label: 'Алматы'
+											},
+											{
+												value: 'ast',
+												label: 'Астана'
+											},
+										]}
+										value={region}
+										onChange={(next) => {
+											if (!Array.isArray(next) && next != null) setRegion(String(next));
+										}}
+										aria-label='Регион / город'
+										width='full'
+									/>
+								</FieldLabel>
+								<FieldLabel label='Улица и дом'>
+									<TextField
+										aria-label='Улица и дом'
+										placeholder='ул. Примерная, 1'
+										width='full'
+									/>
+								</FieldLabel>
+								<FieldLabel label='Телефон'>
+									<MaskedField
+										aria-label='Телефон'
+										mask='+7 (999) 999-99-99'
+										value={phone}
+										onChange={setPhone}
+										width='full'
+									/>
+								</FieldLabel>
 								<Button variant='primary' onClick={() => setStep(1)}>
 									Далее
 								</Button>
@@ -979,12 +990,14 @@ export const MobileHomeShell: Story<Record<string, never>> = {
 							title={tab === 'home' ? 'Сегодня' : tab === 'wallet' ? 'Кошелёк' : tab === 'profile' ? 'Профиль' : 'Ещё'}
 							level={4}
 							actions={(
-								<ButtonIcon
-									variant='ghost'
-									size='sm'
-									aria-label='Уведомления'
-									icon={<IconBell size={18} />}
-								/>
+								<Badge label={2} size='sm'>
+									<ButtonIcon
+										variant='ghost'
+										size='sm'
+										aria-label='Уведомления'
+										icon={<IconBell size={18} />}
+									/>
+								</Badge>
 							)}
 						/>
 					</div>
@@ -1005,15 +1018,18 @@ export const MobileHomeShell: Story<Record<string, never>> = {
 								{[
 									{
 										title: 'Подписка Pro',
-										when: Date.now() - 3600_000 * 5
+										when: Date.now() - 3600_000 * 5,
+										amount: '−₽499'
 									},
 									{
 										title: 'Перевод · Анна',
-										when: Date.now() - 3600_000 * 26
+										when: Date.now() - 3600_000 * 26,
+										amount: '−₽1 200'
 									},
 									{
 										title: 'Кафе · чек',
-										when: Date.now() - 3600_000 * 50
+										when: Date.now() - 3600_000 * 50,
+										amount: '−₽640'
 									},
 								].map((item) => (
 									<div key={item.title} className={styles.feedCard}>
@@ -1024,13 +1040,9 @@ export const MobileHomeShell: Story<Record<string, never>> = {
 												</Text>
 												<RelativeTime date={new Date(item.when)} />
 											</Stack>
-											<Chip
-												mode='tag'
-												size='sm'
-												variant='secondary'
-											>
-												−₽
-											</Chip>
+											<Text size='sm' weight='medium'>
+												{item.amount}
+											</Text>
 										</Split>
 									</div>
 								))}
@@ -1069,36 +1081,55 @@ export const MobileHomeShell: Story<Record<string, never>> = {
 						)}
 						{tab === 'more' && (
 							<Text size='sm' color='muted'>
-								Tabs держат 4 раздела в SafeArea-фрейме.
+								Настройки, справка и выход.
 							</Text>
 						)}
 					</div>
 				</SafeArea>
 				<nav className={styles.mobileNav} aria-label='Разделы'>
-					<Tabs
-						value={tab}
-						onChange={setTab}
-						variant='pill'
-						items={[
+					<div className={styles.tabBar}>
+						{[
 							{
 								value: 'home',
 								label: 'Главная',
+								icon: <IconHome size={18} aria-hidden />
 							},
 							{
 								value: 'wallet',
 								label: 'Кошелёк',
-								badge: 2,
+								icon: <IconWallet size={18} aria-hidden />,
+								badge: 2
 							},
 							{
 								value: 'profile',
 								label: 'Профиль',
+								icon: <IconUser size={18} aria-hidden />
 							},
 							{
 								value: 'more',
 								label: 'Ещё',
+								icon: <IconDots2 size={18} aria-hidden />
 							},
-						]}
-					/>
+						].map((item) => (
+							<button
+								key={item.value}
+								type='button'
+								className={styles.tabItem}
+								aria-current={tab === item.value ? 'page' : undefined}
+								data-current={tab === item.value ? '' : undefined}
+								onClick={() => setTab(item.value)}
+							>
+								{item.badge != null ? (
+									<Badge label={item.badge} size='sm'>
+										{item.icon}
+									</Badge>
+								) : item.icon}
+								<span>
+									{item.label}
+								</span>
+							</button>
+						))}
+					</div>
 				</nav>
 			</div>
 		);
@@ -1118,7 +1149,7 @@ export const ApiPlaygroundScreen: Story<Record<string, never>> = {
 			<div className={styles.shell}>
 				<DemoHeader
 					title='API событий'
-					description='Сниппет + ScrollArea + Accordion'
+					description='Пример запроса и описание полей'
 				/>
 				<div className={styles.splitHost}>
 					<div className={styles.editorPane}>
@@ -1233,7 +1264,7 @@ export const ProjectBoardScreen: Story<Record<string, never>> = {
 			<div className={styles.shell}>
 				<DemoHeader
 					title='Доска спринта'
-					description='Колонки + Card + Modal создания'
+					description='Задачи по стадиям'
 					actions={(
 						<Button
 							size='sm'
@@ -1359,7 +1390,7 @@ export const OnboardingWizard: Story<Record<string, never>> = {
 			<div className={styles.shell}>
 				<DemoHeader
 					title='Онбординг'
-					description='Steps + PinInput + формы'
+					description='Профиль, подтверждение и рабочее пространство'
 				/>
 				<Steps
 					currentStep={step}
@@ -1501,7 +1532,7 @@ export const ProductDetailScreen: Story<Record<string, never>> = {
 				<DemoHeader
 					crumbs='Каталог / Освещение / Студийная лампа'
 					title='Студийная лампа · дуб'
-					description='AspectRatio + ImageGallery + Rating + Accordion + липкая панель покупки'
+					description='Фото, характеристики и покупка'
 				/>
 
 				<div className={styles.productHero}>
@@ -1650,7 +1681,7 @@ export const RecruitingPipelineScreen: Story<Record<string, never>> = {
 			<div className={styles.shell}>
 				<DemoHeader
 					title='Интервью сегодня'
-					description='DayStripCalendar + этапы Steps + навыки Select + Timeline'
+					description='Календарь собеседований и этапы кандидата'
 					actions={(
 						<Chip size='sm' variant='tinted'>
 							{candidates.length}

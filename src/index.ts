@@ -298,6 +298,9 @@ export type {HeaderProps} from './components/Header';
 export {Title} from './components/Title';
 export type {TitleProps} from './components/Title';
 
+export {Type} from './components/Type';
+export type {TypeName, TypeProps} from './components/Type';
+
 export {Tooltip} from './components/Tooltip';
 export type {
 	TooltipProps,

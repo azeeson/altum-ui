@@ -33,7 +33,7 @@ export interface ListboxOption {
 		| 'onMouseDown'
 		| 'onMouseEnter'
 		| 'onFocus'
-	>;
+	> & Record<`data-${string}`, string | number | boolean | undefined>;
 }
 
 /**

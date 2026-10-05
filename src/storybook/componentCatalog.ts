@@ -258,7 +258,7 @@ export const componentCatalog = [
 	{
 		name: 'Listbox',
 		bytes: 8497,
-		description: 'Список опций с roving focus или highlight-навигацией для Select и CommandPalette.',
+		description: 'Примитив списка внутри Select и Menu, не поле выбора.',
 	},
 	{
 		name: 'LiveRegion',
@@ -343,7 +343,7 @@ export const componentCatalog = [
 	{
 		name: 'PopupSwitch',
 		bytes: 7300,
-		description: 'Кнопка текущего значения и список, который открывается поверх неё.',
+		description: 'Тулбар: кнопка показывает текущее значение и открывает список поверх себя.',
 	},
 	{
 		name: 'Progress',
@@ -509,6 +509,11 @@ export const componentCatalog = [
 		name: 'Tooltip',
 		bytes: 2474,
 		description: 'Текстовая подсказка: ховер и фокус через CSS, позиция через CSS Anchor Positioning.',
+	},
+	{
+		name: 'Type',
+		bytes: 0,
+		description: 'Роль текста: Title или Text с фиксированным кеглем для экрана, диалога, секции и карточки.',
 	},
 	{
 		name: 'UploadZone',

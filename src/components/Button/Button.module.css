@@ -61,15 +61,16 @@
   }
 
   &:is([data-disabled], :disabled) {
-    color: color-mix(in srgb, var(--altum-btn-text) 48%, var(--altum-color-bg));
+    /* Чуть темнее общего disabled-fg: заливка бледная, подпись должна читаться как неактивная. */
+    color: color-mix(in srgb, var(--altum-color-disabled-fg) 72%, var(--altum-g-color-slate-800));
 
     cursor: not-allowed;
 
     &:not([data-variant='ghost'], [data-variant='link']) {
-      border-color: var(--altum-field-group-stroke, transparent);
+      border-color: var(--altum-color-disabled-border);
 
-      background: color-mix(in srgb, var(--altum-btn-bg) 36%, var(--altum-color-surface));
-      box-shadow: var(--altum-field-group-shadow, none);
+      background: var(--altum-color-disabled-bg);
+      box-shadow: none;
     }
   }
 

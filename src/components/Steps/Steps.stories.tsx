@@ -7,7 +7,6 @@ import {Text} from '../Text/Text';
 import {TextField} from '../TextField/TextField';
 import {Card} from '../Card/Card';
 import {IconUser} from '../../icons/icons/IconUser';
-import {IconCheckmark} from '../../icons/icons/IconCheckmark';
 import {componentParameters, story, Story} from '../../storybook/meta';
 
 const STEPS = [{title: 'Авторизация'}, {title: 'Загрузка документов'}, {title: 'Подписание договора'},];
@@ -137,16 +136,15 @@ export const WithIcons: Story<StepsProps> = {
 				items={[
 					{
 						title: 'Профиль',
-						icon: <IconUser size={14} aria-hidden />,
 						status: 'complete',
 					},
 					{
 						title: 'Подтверждение',
-						icon: <IconCheckmark size={14} aria-hidden />,
 						status: 'current',
 					},
 					{
 						title: 'Готово',
+						icon: <IconUser size={14} aria-hidden />,
 						status: 'pending'
 					},
 				]}

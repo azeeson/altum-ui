@@ -63,7 +63,7 @@ export const Sizes: Story<EmptyStateProps> = {
 					description='Размер влияет на плотность иконки и типографику.'
 					action={(
 						<Button
-							variant='secondary'
+							variant='primary'
 							size='sm'
 						>
 							Создать
@@ -88,7 +88,7 @@ export const WithoutIcon: Story<EmptyStateProps> = {
 		title: 'Ничего не найдено',
 		description: 'Попробуйте изменить фильтры или поисковый запрос.',
 		action: (
-			<Button variant='secondary' size='sm'>
+			<Button variant='primary' size='sm'>
 				Сбросить фильтры
 			</Button>
 		),
@@ -104,7 +104,7 @@ export const OverflowText: Story<EmptyStateProps> = {
 				title={LONG_TITLE}
 				description={LONG_DESCRIPTION}
 				action={(
-					<Button variant='secondary' size='sm'>
+					<Button variant='primary' size='sm'>
 						Сбросить длинный фильтр поиска
 					</Button>
 				)}
@@ -149,7 +149,7 @@ export const UsageExample: Story<EmptyStateProps> = {
 				title='Писем нет'
 				description='Новые сообщения появятся здесь.'
 				action={(
-					<Button variant='tinted' size='sm'>
+					<Button variant='primary' size='sm'>
 						Написать
 					</Button>
 				)}

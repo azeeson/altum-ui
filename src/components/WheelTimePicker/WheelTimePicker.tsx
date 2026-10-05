@@ -22,8 +22,6 @@ const localeFallback = {
 
 
 const ROW_HEIGHT = 36;
-const PROGRAMMATIC_AUTO_MS = 40;
-const PROGRAMMATIC_SMOOTH_MS = 280;
 const HOURS = Array.from({length: 24}, (_, index) => index);
 const MINUTES = Array.from({length: 60}, (_, index) => index);
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
@@ -48,92 +46,143 @@ function WheelColumn({
 	);
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const programmaticRef = useRef(false);
-	const userScrollRef = useRef(false);
-	const targetIndexRef = useRef<number | null>(null);
+	const userDrivingRef = useRef(false);
+	const fromUserRef = useRef<number | null>(null);
+	const pendingBehaviorRef = useRef<ScrollBehavior>('auto');
+	const alignGenRef = useRef(0);
 	const lockTimerRef = useRef(0);
 	const settleTimerRef = useRef(0);
 
 	const selectedIndex = items.indexOf(value);
 	const index = selectedIndex < 0 ? 0 : selectedIndex;
 
-	const unlockProgrammatic = useCallback(() => {
-		programmaticRef.current = false;
-		targetIndexRef.current = null;
-	}, []);
+	const rowSize = (scroller: HTMLElement) => {
+		const item = scroller.querySelector<HTMLElement>('button[data-index]');
+		const height = item?.getBoundingClientRect().height ?? 0;
+		return height > 0 ? height : ROW_HEIGHT;
+	};
 
-	const scrollToIndex = useCallback((nextIndex: number, behavior: ScrollBehavior) => {
+	/** Индекс пункта, чей центр ближе всего к середине полосы выбора. */
+	const indexUnderHighlight = () => {
 		const scroller = scrollRef.current;
-		if (!scroller) return;
-		targetIndexRef.current = nextIndex;
+		if (!scroller) return 0;
+		const root = scroller.closest(`.${styles.root}`);
+		const band = root?.querySelector(`.${styles.highlight}`)?.getBoundingClientRect();
+		const scrollerRect = scroller.getBoundingClientRect();
+		const mid = band
+			? band.top + band.height / 2
+			: scrollerRect.top + scroller.clientHeight / 2;
+		const buttons = scroller.querySelectorAll<HTMLButtonElement>('button[data-index]');
+		let best = 0;
+		let bestDist = Infinity;
+		buttons.forEach((button) => {
+			const rect = button.getBoundingClientRect();
+			const dist = Math.abs(rect.top + rect.height / 2 - mid);
+			if (dist < bestDist) {
+				bestDist = dist;
+				best = Number(button.dataset.index);
+			}
+		});
+		return Number.isInteger(best) ? best : 0;
+	};
+
+	const emitIfChanged = (nextIndex: number) => {
+		const clamped = Math.min(Math.max(nextIndex, 0), items.length - 1);
+		const next = items[clamped];
+		if (next == null || next === value) return;
+		fromUserRef.current = clamped;
+		onChange(next);
+	};
+
+	const alignTo = useCallback((nextIndex: number, behavior: ScrollBehavior) => {
+		const scroller = scrollRef.current;
+		if (!scroller) return false;
+		const top = nextIndex * rowSize(scroller);
+		const gen = alignGenRef.current + 1;
+		alignGenRef.current = gen;
 		programmaticRef.current = true;
-		userScrollRef.current = false;
 		window.clearTimeout(lockTimerRef.current);
-		const top = nextIndex * ROW_HEIGHT;
 		if (behavior === 'auto') {
 			scroller.scrollTop = top;
-		} else {
-			scroller.scrollTo({
-				top,
-				behavior,
-			});
+			const reached = Math.abs(scroller.scrollTop - top) <= 1;
+			if (reached) {
+				requestAnimationFrame(() => {
+					if (alignGenRef.current === gen) programmaticRef.current = false;
+				});
+			}
+			return reached;
 		}
-		const delay = behavior === 'smooth' ? PROGRAMMATIC_SMOOTH_MS : PROGRAMMATIC_AUTO_MS;
-		const startedAt = Date.now();
-		const tryUnlock = () => {
-			if (!scrollRef.current) return;
-			const reached = Math.abs(scrollRef.current.scrollTop - top) <= 1;
-			const timedOut = Date.now() - startedAt > delay + 200;
-			if (reached || timedOut) {
-				unlockProgrammatic();
+		scroller.scrollTo({
+			top,
+			behavior,
+		});
+		const started = Date.now();
+		const finish = () => {
+			const node = scrollRef.current;
+			if (!node || alignGenRef.current !== gen || !programmaticRef.current) return;
+			const done = Math.abs(node.scrollTop - top) <= 1 || Date.now() - started > 400;
+			if (!done) {
+				lockTimerRef.current = window.setTimeout(finish, 16);
 				return;
 			}
-			lockTimerRef.current = window.setTimeout(tryUnlock, 16);
+			programmaticRef.current = false;
 		};
-		lockTimerRef.current = window.setTimeout(tryUnlock, delay);
-	}, [unlockProgrammatic]);
+		lockTimerRef.current = window.setTimeout(finish, 16);
+		return true;
+	}, []);
 
 	useLayoutEffect(() => {
-		if (!active) return;
-		if (targetIndexRef.current === index) return;
-		scrollToIndex(index, 'auto');
-	}, [active, index, scrollToIndex]);
+		if (!active || userDrivingRef.current) return;
+		if (fromUserRef.current === index) {
+			fromUserRef.current = null;
+			return;
+		}
+		const behavior = pendingBehaviorRef.current;
+		pendingBehaviorRef.current = 'auto';
+		let frames = 0;
+		let frameId = 0;
+		let cancelled = false;
+		const tryAlign = () => {
+			if (cancelled || userDrivingRef.current) return;
+			const reached = alignTo(index, frames === 0 ? behavior : 'auto');
+			if (reached) return;
+			frames += 1;
+			if (frames > 30) {
+				programmaticRef.current = false;
+				return;
+			}
+			frameId = requestAnimationFrame(tryAlign);
+		};
+		tryAlign();
+		return () => {
+			cancelled = true;
+			cancelAnimationFrame(frameId);
+		};
+	}, [active, alignTo, index]);
 
 	useEffect(() => () => {
 		window.clearTimeout(lockTimerRef.current);
 		window.clearTimeout(settleTimerRef.current);
 	}, []);
 
-	const emitIfChanged = (nextIndex: number) => {
-		const clamped = Math.min(Math.max(nextIndex, 0), items.length - 1);
-		const next = items[clamped];
-		if (next !== value) onChange(next);
-	};
-
-	const readIndex = (scrollTop: number) => (
-		Math.min(Math.max(Math.round(scrollTop / ROW_HEIGHT), 0), items.length - 1)
-	);
-
 	const markUserScroll = () => {
-		if (programmaticRef.current) return;
-		userScrollRef.current = true;
+		programmaticRef.current = false;
+		userDrivingRef.current = true;
+		window.clearTimeout(lockTimerRef.current);
 	};
 
 	const onScroll = () => {
-		if (programmaticRef.current || !userScrollRef.current) return;
-		const scroller = scrollRef.current;
-		if (!scroller) return;
-		const raw = scroller.scrollTop / ROW_HEIGHT;
-		const nextIndex = readIndex(scroller.scrollTop);
-		if (Math.abs(raw - nextIndex) < 0.05) {
-			emitIfChanged(nextIndex);
-		}
+		if (programmaticRef.current) return;
+		userDrivingRef.current = true;
+		emitIfChanged(indexUnderHighlight());
 		window.clearTimeout(settleTimerRef.current);
 		settleTimerRef.current = window.setTimeout(() => {
-			if (programmaticRef.current || !userScrollRef.current || !scrollRef.current) {
-				return;
-			}
-			emitIfChanged(readIndex(scrollRef.current.scrollTop));
-			userScrollRef.current = false;
+			if (!scrollRef.current) return;
+			const next = indexUnderHighlight();
+			const clamped = Math.min(Math.max(next, 0), items.length - 1);
+			const same = items[clamped] === value;
+			userDrivingRef.current = false;
+			if (!same) emitIfChanged(clamped);
 		}, 80);
 	};
 
@@ -145,8 +194,9 @@ function WheelColumn({
 		if (!Number.isInteger(itemIndex)) return;
 		const item = items[itemIndex];
 		if (item == null) return;
+		userDrivingRef.current = false;
+		pendingBehaviorRef.current = reduceMotion ? 'auto' : 'smooth';
 		onChange(item);
-		scrollToIndex(itemIndex, reduceMotion ? 'auto' : 'smooth');
 	};
 
 	return (

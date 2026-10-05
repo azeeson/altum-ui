@@ -77,18 +77,35 @@ export const Playground: Story<BadgeProps> = {
 
 export const Variants: Story<BadgeProps> = {
 	render: () => (
-		<Inline gap='md' wrap>
-			{VARIANTS.map((variant) => (
-				<Badge
-					key={variant}
-					label={3}
-					variant={variant}
-					position='standalone'
-				/>
-			))}
+		<Inline
+			gap='md'
+			wrap
+			align='center'
+		>
+			<Badge label={3} position='standalone' />
+			<Badge
+				label='Готово'
+				variant='success'
+				position='standalone'
+			/>
+			<Badge
+				label='Инфо'
+				variant='info'
+				position='standalone'
+			/>
+			<Badge
+				label='Внимание'
+				variant='warning'
+				position='standalone'
+			/>
+			<Badge
+				label='Ошибка'
+				variant='error'
+				position='standalone'
+			/>
 		</Inline>
 	),
-	parameters: story('Цветовые варианты (standalone).'),
+	parameters: story('Счётчик один. Статус — слово, не разноцветная цифра.'),
 };
 
 export const Sizes: Story<BadgeProps> = {

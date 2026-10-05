@@ -151,8 +151,9 @@
     }
 
     &[aria-current='page'] {
-      color: var(--altum-color-brand-text);
-      background-color: var(--altum-color-brand);
+      color: var(--altum-color-brand-tint-text);
+      background-color: var(--altum-color-brand-tint);
+      box-shadow: inset 3px 0 0 var(--altum-color-brand);
     }
 
     &:disabled {

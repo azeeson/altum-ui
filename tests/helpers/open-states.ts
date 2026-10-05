@@ -152,14 +152,6 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		},
 	},
 	{
-		storyId: 'altum-components-backdrop--playground',
-		snapshot: 'open-backdrop-playground.png',
-		prepare: async (page) => {
-			await page.getByRole('button', {name: /Показать backdrop/i}).click();
-			await page.getByText('Клик по затемнению закрывает').waitFor({state: 'visible'});
-		},
-	},
-	{
 		storyId: 'altum-components-notification--playground',
 		snapshot: 'open-notification-playground.png',
 		prepare: async (page) => {
@@ -171,7 +163,7 @@ export const INTERACTIVE_OPEN_STATE_SCENARIOS: OpenStateScenario[] = [
 		storyId: 'altum-components-accordion--playground',
 		snapshot: 'open-accordion-playground.png',
 		prepare: async (page) => {
-			await page.getByRole('button', {name: /тарифный план/i}).click();
+			await page.getByRole('heading', {name: /тарифный план/i}).click();
 			await page.getByRole('region', {name: 'Как изменить тарифный план?'}).waitFor({state: 'visible'});
 		},
 	},

@@ -121,7 +121,7 @@
     --altum-btn-text-hover: var(--altum-fg-item-on);
     --altum-btn-bg: transparent;
     --altum-btn-bg-hover: var(--altum-bg-item-hover);
-    --altum-btn-bg-active: var(--altum-bg-item-hover);
+    --altum-btn-bg-active: var(--altum-bg-thumb);
     --altum-btn-shadow: 0 0 0 0 transparent;
     --altum-btn-height: 100%;
     --altum-btn-pad-x: var(--altum-button-group-item-pad);
@@ -160,6 +160,28 @@
     &:hover:not(:disabled) {
       color: var(--altum-fg-item-on);
       background-color: var(--altum-bg-item-hover);
+    }
+
+    /* Зажатие темнее hover: та же заливка, что у выбранного пункта трека. */
+    &:active:not(:disabled) {
+      color: var(--altum-fg-item-on);
+      background-color: var(--altum-bg-thumb);
+      box-shadow: var(--altum-bg-thumb-shadow);
+
+      transform: scale(0.98);
+    }
+
+    /* `Button active` → aria-pressed. Группа значение не хранит, только рисует нажатый пункт. */
+    &[aria-pressed='false'] {
+      opacity: 1;
+    }
+
+    &[aria-pressed='true'],
+    &[aria-pressed='true']:hover:not(:disabled),
+    &[aria-pressed='true']:active:not(:disabled) {
+      color: var(--altum-fg-item-on);
+      background-color: var(--altum-bg-thumb);
+      box-shadow: var(--altum-bg-thumb-shadow);
     }
 
     &:disabled {
@@ -237,6 +259,12 @@
 
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .group :is(button, a, [role='button']):active {
+    transform: none;
   }
 }
 

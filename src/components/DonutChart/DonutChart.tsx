@@ -170,7 +170,7 @@ export const DonutChart = ({
 						name: arc.label,
 						color: arc.color,
 						active: hoverExpand && hoveredKey === arc.key,
-						detail: total > 0 ? `${arc.value} · ${arc.percent}%` : String(arc.value),
+						detail: total > 0 ? `${arc.percent}%` : String(arc.value),
 					}))}
 				/>
 			)}

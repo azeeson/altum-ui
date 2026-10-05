@@ -114,6 +114,7 @@ const ICONS: Record<string, FC<IconProps>> = {
 	Timeline: icons.IconFeed,
 	Title: icons.IconBold,
 	Tooltip: icons.IconHelp,
+	Type: icons.IconArticle,
 	UploadZone: icons.IconUpload,
 	VirtualList: icons.IconViewList,
 	VisuallyHidden: icons.IconPreviewOff,

@@ -37,6 +37,28 @@
     }
   }
 
+  &:has(.input[aria-readonly='true']:checked) .box {
+    border-style: dashed;
+    border-color: var(--altum-color-control-border-readonly);
+
+    background-color: var(--altum-color-control-bg-readonly);
+
+    &::after {
+      border-color: var(--altum-color-brand);
+    }
+  }
+
+  &:has(.input:disabled:checked) .box {
+    border-style: solid;
+    border-color: var(--altum-color-disabled-border);
+
+    background-color: var(--altum-color-disabled-bg);
+
+    &::after {
+      border-color: var(--altum-color-disabled-fg);
+    }
+  }
+
   & .input:focus-visible ~ .box {
     outline: var(--altum-focus-ring-width) solid var(--altum-focus-ring-color);
     outline-offset: var(--altum-focus-ring-offset);

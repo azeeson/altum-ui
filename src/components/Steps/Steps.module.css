@@ -121,8 +121,8 @@
     & .circle {
       border-color: var(--altum-color-brand);
 
-      color: var(--altum-color-brand-text);
-      background-color: var(--altum-color-brand);
+      color: var(--altum-color-brand);
+      background-color: var(--altum-color-surface);
     }
 
     &::after {
@@ -134,8 +134,9 @@
     & .circle {
       border-color: var(--altum-color-brand);
 
-      color: var(--altum-color-brand);
-      box-shadow: 0 0 0 var(--altum-g-space-1) color-mix(in srgb, var(--altum-color-brand) 12%, transparent);
+      color: var(--altum-color-brand-text);
+      background-color: var(--altum-color-brand);
+      box-shadow: 0 0 0 var(--altum-g-space-1) color-mix(in srgb, var(--altum-color-brand) 18%, transparent);
     }
 
     & .stepLabel {

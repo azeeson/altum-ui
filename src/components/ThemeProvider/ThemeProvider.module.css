@@ -12,20 +12,20 @@
   --altum-g-font-weight-semibold: 600;
   --altum-g-font-weight-bold: 700;
 
-  --altum-g-font-size-3xs: 10px;
-  --altum-g-line-height-3xs: 1.1;
+  /* Монотонная шкала, ничего ниже 12px. xs не меньше 2xs. */
+  --altum-g-font-size-3xs: 12px;
+  --altum-g-line-height-3xs: 1.2;
   --altum-g-font-size-2xs: 12px;
   --altum-g-line-height-2xs: 1.2;
-  /* Шкала подписей: xs (11) намеренно меньше, чем 2xs (12). */
-  --altum-g-font-size-xs: 11px;
+  --altum-g-font-size-xs: 12px;
   --altum-g-line-height-xs: 1.35;
-  --altum-g-font-size-sm: 13px;
+  --altum-g-font-size-sm: 14px;
   --altum-g-line-height-sm: 1.35;
   --altum-g-font-size-base: 14px;
   --altum-g-line-height-base: 1.45;
   --altum-g-font-size-lg: 16px;
   --altum-g-line-height-lg: 1.4;
-  --altum-g-font-size-xl: 18px;
+  --altum-g-font-size-xl: 20px;
   --altum-g-line-height-xl: 1.35;
   --altum-g-font-size-2xl: 20px;
   --altum-g-font-size-3xl: 24px;
@@ -57,6 +57,7 @@
   --altum-g-color-amber-600: #d97706;
   --altum-g-color-violet-500: #8b5cf6;
   --altum-g-color-teal-500: #14b8a6;
+  /* Primary — прежний steel (slate-600), не индиго. */
   --altum-g-color-brand: var(--altum-g-color-slate-600);
   --altum-g-color-brand-hover: var(--altum-g-color-slate-700);
   --altum-g-color-brand-active: var(--altum-g-color-slate-800);
@@ -104,6 +105,10 @@
   --altum-button-focus-inner: 1px;
   --altum-button-focus-outer: 3px;
   --altum-opacity-disabled: 0.55;
+  /* Disabled — отдельная заливка, не opacity поверх accent (иначе CTA ≈ disabled). */
+  --altum-color-disabled-bg: #e8edf3;
+  --altum-color-disabled-fg: #475569;
+  --altum-color-disabled-border: #d5dde6;
   /* У отключённых полей контент остаётся читаемее. */
   --altum-field-disabled-opacity: 0.8;
   --altum-overlay-close-size: 28px;
@@ -180,10 +185,10 @@
    * Высоты контролов — сетка 4pt; согласованы с chrome FieldBase,
    * чтобы Button стоял вровень с полями.
    */
-  --altum-control-height-xs: 28px;
-  --altum-control-height-sm: 32px;
-  --altum-control-height-md: 44px;
-  --altum-control-height-lg: 52px;
+  --altum-control-height-xs: 32px;
+  --altum-control-height-sm: 36px;
+  --altum-control-height-md: 40px;
+  --altum-control-height-lg: 48px;
 
   /*
    * Трек / бегунок Switch — из toggle-box + control-inset.
@@ -258,7 +263,7 @@
 
   /* Рамки кнопок — светлая тема (чуть акцентнее общих токенов) */
   --altum-color-button-border-primary: rgba(30, 41, 59, 0.45);
-  --altum-color-button-border-secondary: var(--altum-g-color-slate-300);
+  --altum-color-button-border-secondary: var(--altum-g-color-slate-400);
   --altum-color-button-border-tinted: color-mix(in srgb, var(--altum-color-brand) 28%, transparent);
   --altum-color-button-border-danger: rgba(153, 27, 27, 0.35);
   --altum-color-button-border-danger-secondary: var(--altum-g-color-red-300);
@@ -268,10 +273,10 @@
   --altum-color-surface-elevated: var(--altum-g-color-white);
   --altum-color-surface-hover: var(--altum-g-color-slate-50);
   --altum-color-surface-active: var(--altum-g-color-slate-100);
-  --altum-color-text-secondary: var(--altum-g-color-slate-600);
+  --altum-color-text-secondary: #334155;
   /* Рамки панелей совпадают с рамками полей (slate-200). */
   --altum-color-border: var(--altum-g-color-slate-200);
-  --altum-shadow-surface: 0 1px 2px rgba(15, 23, 42, 0.06), 0 4px 12px rgba(15, 23, 42, 0.04);
+  --altum-shadow-surface: 0 1px 2px rgba(15, 23, 42, 0.08), 0 10px 28px rgba(15, 23, 42, 0.14);
   --altum-shadow-lg: 0 16px 48px color-mix(in srgb, var(--altum-color-input-text) 16%, transparent);
 
   /* Опасность — пыльный red-700, не Tailwind-600; AA на белом тексте. */
@@ -295,13 +300,13 @@
   --altum-color-danger-tint-text: var(--altum-color-danger-bg-hover);
   --altum-color-button-border-danger-tinted: color-mix(in srgb, var(--altum-color-danger-bg-solid) 28%, transparent);
 
-  /* Семантика статусов — те же hue, chroma ближе к slate, не Tailwind-500. */
-  --altum-color-status-info: color-mix(in srgb, var(--altum-g-color-blue-500) 58%, var(--altum-g-color-slate-600));
-  --altum-color-status-success: color-mix(in srgb, var(--altum-g-color-emerald-500) 55%, var(--altum-g-color-slate-600));
-  --altum-color-status-success-strong: color-mix(in srgb, var(--altum-g-color-green-600) 68%, var(--altum-g-color-slate-700));
-  --altum-color-status-warning: color-mix(in srgb, var(--altum-g-color-amber-500) 58%, var(--altum-g-color-slate-600));
-  --altum-color-status-warning-strong: color-mix(in srgb, var(--altum-g-color-amber-600) 68%, var(--altum-g-color-slate-700));
-  --altum-color-status-error: color-mix(in srgb, var(--altum-g-color-red-700) 62%, var(--altum-g-color-slate-600));
+  /* Статусы тёмные: заголовок и иконка ≥ 4.5:1 на белом и на 12% tint. */
+  --altum-color-status-info: #1d4ed8;
+  --altum-color-status-success: #047857;
+  --altum-color-status-success-strong: #065f46;
+  --altum-color-status-warning: #92400e;
+  --altum-color-status-warning-strong: #7c2d12;
+  --altum-color-status-error: #9f1239;
   --altum-color-chart-4: color-mix(in srgb, var(--altum-g-color-violet-500) 52%, var(--altum-g-color-slate-600));
   --altum-color-chart-5: color-mix(in srgb, var(--altum-g-color-teal-500) 52%, var(--altum-g-color-slate-600));
 
@@ -322,9 +327,10 @@
   /* Контролы формы */
   --altum-color-input-bg: var(--altum-g-color-white);
   --altum-color-input-text: var(--altum-g-color-slate-900);
-  --altum-color-input-border: var(--altum-g-color-slate-300);
-  --altum-color-input-border-focus: var(--altum-g-color-slate-600);
-  --altum-color-muted: var(--altum-g-color-slate-500);
+  --altum-color-input-border: var(--altum-g-color-slate-400);
+  /* Primary, на полшага светлее кнопки — рамка поля не сливается с CTA. */
+  --altum-color-input-border-focus: color-mix(in srgb, var(--altum-color-brand) 88%, var(--altum-g-color-slate-500));
+  --altum-color-muted: #334155;
   --altum-color-input-bg-readonly: var(--altum-g-color-slate-50);
   --altum-color-input-border-readonly: var(--altum-g-color-slate-400);
   --altum-color-input-label-readonly: var(--altum-g-color-slate-500);
@@ -348,8 +354,9 @@
   --altum-color-upload-border: var(--altum-g-color-slate-300);
   --altum-color-bg: var(--altum-g-color-slate-50);
   --altum-color-text: var(--altum-g-color-slate-900);
-  /* Плейсхолдер держит массу около AA относительно фона зоны (было 72% — слишком мягко с muted-лейблами). */
-  --altum-color-input-placeholder: var(--altum-color-muted);
+  /* Плейсхолдер слабее лейбла и не равен ему. */
+  --altum-color-input-placeholder: #5c6b7e;
+  --altum-color-chart-neutral: #64748b;
 
   /* Сортируемый список */
   --altum-sortable-item-bg: var(--altum-color-surface);
@@ -462,6 +469,10 @@
   --altum-g-color-brand: #4e6480;
   --altum-g-color-brand-hover: #5d7694;
   --altum-g-color-brand-active: #41536b;
+  --altum-color-disabled-bg: #2a2a2e;
+  --altum-color-disabled-fg: #c5c9d1;
+  --altum-color-disabled-border: #3a3a40;
+  --altum-color-chart-neutral: #94a3b8;
   --altum-color-brand: var(--altum-g-color-brand);
   --altum-color-brand-hover: var(--altum-g-color-brand-hover);
   --altum-color-brand-active: var(--altum-g-color-brand-active);
@@ -527,12 +538,14 @@
   --altum-color-button-border-danger-tinted: color-mix(in srgb, var(--altum-color-status-error) 30%, transparent);
 
   /* Семантика — пыль без серой каши. Info не twin ссылки; warning не громче KPI. */
-  --altum-color-status-info: #5b8cba;
-  --altum-color-status-success: #53b689;
-  --altum-color-status-success-strong: #53b689;
-  --altum-color-status-warning: #c4a05e;
-  --altum-color-status-warning-strong: #c4a05e;
-  --altum-color-status-error: #cf7379;
+  --altum-color-status-info: #93c5fd;
+  --altum-color-status-success: #6ee7b7;
+  --altum-color-status-success-strong: #6ee7b7;
+  --altum-color-status-warning: #fdba74;
+  --altum-color-status-warning-strong: #fdba74;
+  --altum-color-status-error: #fda4af;
+  /* Текст на пастельной заливке Badge. Светлая тема оставляет белый brand-text. */
+  --altum-badge-on-fill: #141416;
   --altum-color-chart-4: #8b82b0;
   --altum-color-chart-5: #5a9e96;
   /* Доли mix для status.module.css. Пигмент выше, поверхность не дублируется на каждый статус. */
@@ -564,7 +577,8 @@
   --altum-color-input-bg: var(--altum-color-surface-hover);
   --altum-color-input-text: #f1f5f9;
   --altum-color-input-border: color-mix(in srgb, #ffffff 17%, transparent);
-  --altum-color-input-border-focus: #6b7f98;
+  /* Фокус и ховер рамки — primary, чуть светлее кнопки, не полный hover и не белёсый slate. */
+  --altum-color-input-border-focus: color-mix(in srgb, var(--altum-color-brand) 75%, var(--altum-color-brand-hover));
   /* Кольцо Tab: светлая hairline, не steel-заливка (иначе focus на primary не статусный).
      Outline 2px / offset 2px; кнопка — тот же зазор и та же масса stroke. */
   --altum-focus-ring-color: rgba(248, 250, 252, 0.72);
@@ -598,16 +612,17 @@
   --altum-color-upload-bg: var(--altum-color-surface);
   --altum-color-upload-border: color-mix(in srgb, #ffffff 22%, transparent);
   --altum-color-bg: #141416;
-  --altum-color-tooltip-bg: #303033;
-  --altum-color-tooltip-fg: var(--altum-g-color-slate-50);
+  /* Инверсия без вспышки: slate-300, не почти белый slate-50. */
+  --altum-color-tooltip-bg: var(--altum-g-color-slate-300);
+  --altum-color-tooltip-fg: var(--altum-g-color-slate-800);
   --altum-color-text: #f8fafc;
-  --altum-color-input-placeholder: var(--altum-color-type-muted);
+  --altum-color-input-placeholder: #8b909a;
   --altum-overlay-close-fg: var(--altum-color-muted);
   --altum-overlay-close-bg: transparent;
   --altum-overlay-close-bg-hover: var(--altum-color-option-hover);
   /* Secondary — лёгкий steel, без тёплого drift charcoal. */
-  --altum-color-button-secondary-bg: color-mix(in srgb, var(--altum-g-color-brand) 12%, var(--altum-color-surface));
-  --altum-color-button-secondary-bg-hover: color-mix(in srgb, var(--altum-g-color-brand) 18%, var(--altum-color-surface-hover));
+  --altum-color-button-secondary-bg: var(--altum-color-surface-elevated);
+  --altum-color-button-secondary-bg-hover: var(--altum-color-surface-hover);
   --altum-color-button-secondary-bg-active: var(--altum-color-surface-active);
 }
 

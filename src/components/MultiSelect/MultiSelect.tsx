@@ -10,6 +10,7 @@ import {Chip} from '../Chip/Chip';
 import {useControlledState} from '../../hooks/useControlledState';
 import {useLocale} from '../../locales/localeContext';
 import {getFormControlState} from '../../core/utils/form';
+import {cn} from '../../core/utils/cn';
 import {findListboxOption, getListboxOptionText} from '../../core/utils/listboxOptions';
 import {ruSlice as ru_select} from '../../locales/slices/select.ru';
 import selectField from '../../styles/selectField.module.css';
@@ -24,6 +25,7 @@ const localeFallback = {
 /**
  * Multiple-выбор с chips в триггере: декоратор над `Select`
  * (`selectionMode="multiple"`, chips через `inputProps.children`).
+ * Чип внутри поля компактный: хром остаётся на высоте контрола.
  *
  * @component
  * @example
@@ -110,11 +112,12 @@ export const MultiSelect = ({
 			prefix={prefix}
 			error={error}
 			description={description}
-			className={className}
+			className={cn(styles.field, className)}
 			id={providedId}
 			aria-label={ariaLabel}
 			placeholder={placeholder}
 			inputProps={{
+				className: cn(selectField.trigger, styles.trigger),
 				children: (
 					<>
 						<span className={selectField.triggerSizer} aria-hidden='true'>
@@ -153,6 +156,7 @@ export const MultiSelect = ({
 											<Chip
 												key={option.value}
 												variant='secondary'
+												size='sm'
 												className={styles.chip}
 												value={option.value}
 												removeLabel={t('select.removeItem', {label: chipLabel})}
