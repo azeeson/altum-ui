@@ -1,5 +1,5 @@
 .alert {
-  --altum-alert-bg-amt: calc(var(--altum-status-bg-hover-amt, 18%) * 0.65);
+  --altum-alert-bg-amt: 16%;
 
   position: relative;
 
@@ -52,13 +52,11 @@
   &[data-variant='warning'] {
     --altum-status-fill: var(--altum-color-status-warning);
     --altum-status-fg: var(--altum-color-status-warning-strong);
-    --altum-alert-bg-amt: calc(var(--altum-status-warning-bg-hover-amt, 20%) * 0.65);
   }
 
   &[data-variant='error'] {
     --altum-status-fill: var(--altum-color-status-error);
     --altum-status-fg: var(--altum-status-fill);
-    --altum-alert-bg-amt: calc(var(--altum-status-danger-bg-hover-amt, 18%) * 0.65);
   }
 
   & .icon {
@@ -86,6 +84,29 @@
     flex-wrap: wrap;
     align-items: flex-start;
     gap: var(--altum-g-space-2);
+  }
+
+  /* Кнопки слота и крестик берут пигмент алерта, не chrome страницы и оверлея. */
+  & .actions button {
+    --altum-btn-border: color-mix(in srgb, var(--altum-status-fill) 42%, var(--altum-color-border));
+    --altum-btn-text: var(--altum-status-fg, var(--altum-color-text));
+    --altum-btn-text-hover: var(--altum-status-fg, var(--altum-color-text));
+    --altum-btn-bg: color-mix(in srgb, var(--altum-status-fill) 14%, var(--altum-color-surface));
+    --altum-btn-bg-hover: color-mix(in srgb, var(--altum-status-fill) 28%, var(--altum-color-surface));
+    --altum-btn-bg-active: color-mix(in srgb, var(--altum-status-fill) 40%, var(--altum-color-surface));
+    --altum-btn-shadow: 0 0 0 0 transparent;
+    --altum-btn-focus-ring: var(--altum-status-fill);
+    --altum-btn-font-size: var(--altum-g-font-size-xs);
+  }
+
+  & .dismiss.dismiss {
+    --altum-overlay-close-fg: var(--altum-status-fg, var(--altum-color-text));
+    --altum-overlay-close-fg-hover: var(--altum-status-fg, var(--altum-color-text));
+    --altum-overlay-close-bg-hover: color-mix(in srgb, var(--altum-status-fill) 18%, transparent);
+    --altum-overlay-close-size: 24px;
+    --altum-overlay-close-icon-size: 14px;
+
+    margin-top: var(--altum-control-inset);
   }
 
   &[data-size='sm'] {

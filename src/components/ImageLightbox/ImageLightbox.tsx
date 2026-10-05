@@ -4,7 +4,7 @@ export type {ImageLightboxProps} from './ImageLightbox.types';
 import type {KeyboardEvent} from 'react';
 import {Overlay} from '../Overlay/Overlay';
 import {ImageGallery} from '../ImageGallery/ImageGallery';
-import {OverlayCloseControl} from '../Button/overlayCloseControl';
+import {CloseControl} from '../internal/CloseControl/CloseControl';
 import {cn} from '../../core/utils/cn';
 import styles from './ImageLightbox.module.css';
 import overlayScrim from '../../styles/overlayScrim.module.css';
@@ -69,7 +69,7 @@ export function ImageLightbox({
 				className={cn(utilities.fCenter, styles.stage, className)}
 				onKeyDown={onStageKeyDown}
 			>
-				<OverlayCloseControl
+				<CloseControl
 					className={styles.close}
 					aria-label={t('imageLightbox.close')}
 					onClick={() => onOpenChange(false)}

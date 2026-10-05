@@ -151,11 +151,6 @@ export const componentCatalog = [
 		description: 'Список описаний (key–value) для карточки сущности и read-only настроек.',
 	},
 	{
-		name: 'DialogLayout',
-		bytes: 655,
-		description: 'Поверхность диалога: контент в Box, крестик в правом верхнем углу поверх него.',
-	},
-	{
 		name: 'DonutChart',
 		bytes: 3919,
 		description: 'Кольцевая (donut) диаграмма без внешних зависимостей.',
@@ -537,4 +532,4 @@ export const componentCatalog = [
 	},
 ] as const;
 
-export const componentCatalogBytes = 446162;
+export const componentCatalogBytes = 445507;

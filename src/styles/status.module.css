@@ -1,6 +1,6 @@
 /*
  * Поверхность статуса — один расчёт из пигмента.
- * Light: 11% / 34% / 18% / 46% на transparent. Warning чуть плотнее.
+ * Light: 16% / 34% / 18% / 46% на transparent. Warning той же плотности.
  * Dark переопределяет доли и базу mix на `.dark`.
  */
 
@@ -8,7 +8,7 @@
 .info,
 .warning,
 .error {
-  --altum-status-bg: color-mix(in srgb, var(--altum-status-fill) var(--altum-status-bg-amt, 11%), var(--altum-status-bg-base, transparent));
+  --altum-status-bg: color-mix(in srgb, var(--altum-status-fill) var(--altum-status-bg-amt, 16%), var(--altum-status-bg-base, transparent));
   --altum-status-border: color-mix(in srgb, var(--altum-status-fill) var(--altum-status-border-amt, 34%), transparent);
   --altum-status-bg-hover: color-mix(in srgb, var(--altum-status-fill) var(--altum-status-bg-hover-amt, 18%), var(--altum-status-bg-base, transparent));
   --altum-status-border-hover: color-mix(in srgb, var(--altum-status-fill) var(--altum-status-border-hover-amt, 46%), transparent);
@@ -30,7 +30,7 @@
   --altum-status-fill: var(--altum-color-status-warning);
   --altum-status-strong: var(--altum-color-status-warning-strong);
   --altum-status-fg: var(--altum-status-strong);
-  --altum-status-bg-amt: var(--altum-status-warning-bg-amt, 12%);
+  --altum-status-bg-amt: var(--altum-status-warning-bg-amt, 16%);
   --altum-status-border-amt: var(--altum-status-warning-border-amt, 36%);
   --altum-status-bg-hover-amt: var(--altum-status-warning-bg-hover-amt, 20%);
   --altum-status-border-hover-amt: var(--altum-status-warning-border-hover-amt, 48%);

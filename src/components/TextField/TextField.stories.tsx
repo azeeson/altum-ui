@@ -68,7 +68,7 @@ export const Sizes: Story<TextFieldProps> = {
 					<Inline
 						key={size}
 						gap='sm'
-						align='center'
+						align='end'
 					>
 						<TextField
 							label={`Размер ${size}`}
@@ -94,7 +94,7 @@ export const LabelPlacement: Story<TextFieldProps> = {
 		const [withoutLabel, setWithoutLabel] = useState('');
 		return (
 			<Stack gap='md'>
-				<Inline gap='sm' align='center'>
+				<Inline gap='sm' align='end'>
 					<TextField
 						label='Поиск'
 						size='md'
@@ -106,7 +106,7 @@ export const LabelPlacement: Story<TextFieldProps> = {
 						Найти
 					</Button>
 				</Inline>
-				<Inline gap='sm' align='center'>
+				<Inline gap='sm' align='end'>
 					<TextField
 						aria-label='Поиск'
 						placeholder='Введите запрос'

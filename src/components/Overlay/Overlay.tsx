@@ -1,4 +1,4 @@
-import {useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type SyntheticEvent} from 'react';
+import {createContext, useEffect, useLayoutEffect, useRef, useState, type RefObject, type MouseEvent, type SyntheticEvent, useContext,} from 'react';
 import {createPortal} from 'react-dom';
 import {cn} from '../../core/utils/cn';
 import {uRef} from '../../core/utils/bundle';
@@ -15,6 +15,8 @@ export type {
 	OverlaySheetProps,
 	OverlayProps,
 } from './Overlay.types';
+
+const PortalNode = createContext<RefObject<HTMLElement> | null>(null)
 
 /** Куда вынести слой: тема предка, иначе `document.body`. */
 function overlayPortalParent(from: HTMLElement | null): HTMLElement | null {
@@ -57,6 +59,7 @@ export function Overlay(props: OverlayProps) {
 	} = props;
 	const nodeRef = useRef<HTMLElement | null>(null);
 	const anchorRef = useRef<HTMLSpanElement>(null);
+	const context = useContext(PortalNode) 
 	const [portalParent, setPortalParent] = useState<HTMLElement | null>(null);
 	const onOpenChangeRef = useRef(onOpenChange);
 	onOpenChangeRef.current = onOpenChange;
@@ -67,8 +70,8 @@ export function Overlay(props: OverlayProps) {
 
 	useLayoutEffect(() => {
 		if (portalParent) return;
-		setPortalParent(overlayPortalParent(anchorRef.current));
-	}, [portalParent]);
+		setPortalParent(overlayPortalParent(context?.current || anchorRef.current));
+	}, [portalParent, context]);
 
 	useLayoutEffect(() => {
 		const node = nodeRef.current;
@@ -135,31 +138,33 @@ export function Overlay(props: OverlayProps) {
 			{children}
 		</div>
 	) : (
-		<dialog
-			ref={uRef(rootRef, nodeRef)}
-			className={cn(styles.scrim, hostClassName)}
-			data-kind={variant}
-			data-side={side}
-			onCancel={handleCancel}
-			onClick={handleLightDismiss}
-			role={role}
-			aria-label={ariaLabel}
-			aria-labelledby={ariaLabelledBy}
-			aria-describedby={ariaDescribedBy}
-		>
-			<div
-				className={cn(
-					styles.panel,
-					variant === 'modal' && overlayTransition.fadeScale,
-					className,
-				)}
-				style={style}
+		<PortalNode.Provider value={nodeRef}>
+			<dialog
+				ref={uRef(rootRef, nodeRef)}
+				className={cn(styles.scrim, hostClassName)}
 				data-kind={variant}
 				data-side={side}
+				onCancel={handleCancel}
+				onClick={handleLightDismiss}
+				role={role}
+				aria-label={ariaLabel}
+				aria-labelledby={ariaLabelledBy}
+				aria-describedby={ariaDescribedBy}
 			>
-				{children}
-			</div>
-		</dialog>
+				<div
+					className={cn(
+						styles.panel,
+						variant === 'modal' && overlayTransition.fadeScale,
+						className,
+					)}
+					style={style}
+					data-kind={variant}
+					data-side={side}
+				>
+					{children}
+				</div>
+			</dialog>
+		</PortalNode.Provider>
 	);
 
 	return (

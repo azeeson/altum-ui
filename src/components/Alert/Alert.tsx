@@ -7,7 +7,7 @@ export type {
 
 import type {ComponentType} from 'react';
 
-import {OverlayCloseControl} from '../Button/overlayCloseControl';
+import {CloseControl} from '../internal/CloseControl/CloseControl';
 import {Title} from '../Title/Title';
 import {IconCheckmark} from '../../icons/icons/IconCheckmark';
 import {IconInformation} from '../../icons/icons/IconInformation';
@@ -111,7 +111,8 @@ export function Alert({
 				)}
 			</div>
 			{onClose != null && (
-				<OverlayCloseControl
+				<CloseControl
+					className={styles.dismiss}
 					aria-label={closeLabel}
 					onClick={onClose}
 				/>

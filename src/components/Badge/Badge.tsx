@@ -45,8 +45,10 @@ export const Badge = ({
 	const isOverlay = children != null && positionProp !== 'standalone';
 	const showMark = label !== undefined || dot;
 	const glyph = badgeGlyph(label, dot, max);
+	const numeric = dot || typeof label === 'number';
 	const markProps = {
 		'data-variant': variant !== 'error' ? variant : undefined,
+		'data-count': numeric ? '' as const : undefined,
 		'data-size': size !== 'md' ? size : undefined,
 		'data-dot': dot ? '' as const : undefined,
 		'data-position': isOverlay ? 'overlay' as const : undefined,

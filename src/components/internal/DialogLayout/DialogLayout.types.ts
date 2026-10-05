@@ -1,4 +1,4 @@
-import type {BoxProps} from '../Box/Box.types';
+import type {BoxProps} from '../../Box/Box.types';
 
 /**
  * Поверхность диалога: `Box` и кнопка закрытия поверх содержимого.

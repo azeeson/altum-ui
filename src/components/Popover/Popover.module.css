@@ -81,6 +81,7 @@
 .sized {
   transition-property: opacity, transform;
 
+  /* Запрошенная сторона — запас, пока flip ещё не измерен. */
   &[data-side='bottom'] {
     transform-origin: top center;
   }
@@ -97,29 +98,50 @@
     transform-origin: center left;
   }
 
+  /* Фактическая сторона после position-try, в том числе с другой стороны якоря. */
+  &[data-placed='bottom'] {
+    transform-origin: top center;
+  }
+
+  &[data-placed='top'] {
+    transform-origin: bottom center;
+  }
+
+  &[data-placed='left'] {
+    transform-origin: center right;
+  }
+
+  &[data-placed='right'] {
+    transform-origin: center left;
+  }
+
   &:popover-open {
     transform: scale(1);
   }
 
-  &[data-side='bottom']:popover-open {
-    @starting-style {
-      transform: scaleY(0.85);
-    }
-  }
-
+  &[data-side='bottom']:popover-open,
   &[data-side='top']:popover-open {
     @starting-style {
       transform: scaleY(0.85);
     }
   }
 
-  &[data-side='left']:popover-open {
+  &[data-side='left']:popover-open,
+  &[data-side='right']:popover-open {
     @starting-style {
       transform: scaleX(0.85);
     }
   }
 
-  &[data-side='right']:popover-open {
+  &[data-placed='bottom']:popover-open,
+  &[data-placed='top']:popover-open {
+    @starting-style {
+      transform: scaleY(0.85);
+    }
+  }
+
+  &[data-placed='left']:popover-open,
+  &[data-placed='right']:popover-open {
     @starting-style {
       transform: scaleX(0.85);
     }
@@ -132,7 +154,8 @@
     transition: none;
   }
 
-  .sized:popover-open {
+  .sized:popover-open,
+  .sized[data-placed]:popover-open {
     @starting-style {
       transform: none;
     }

@@ -156,6 +156,17 @@ export const Rating = ({value, max = 5, onChange}: RatingProps) => {
 
 **Ликвидированы и не возвращать:** `As`, `Type`, `FieldPopup`.
 
+### 3.9. Роль `src/components/internal/`
+
+Готовые узлы с собственным видом, из которых собраны публичные компоненты. Сами они не API.
+
+- Не экспортируются из `src/index.ts`.
+- Нет сторис: `.storybook/main.js` исключает `src/components/internal/**`. Каталог About берёт только имена из `src/index.ts`.
+- Импорт только внутри библиотеки: `../internal/<Name>/<Name>`.
+- Папка как у публичного компонента, без `*.stories.*`.
+
+`src/base/` — примитивы без своего хрома. `internal/` — узлы, которые не отдаём потребителю: `CloseControl`, `DialogLayout`.
+
 ---
 
 ## 4. Слои наследования
@@ -183,7 +194,7 @@ export const Rating = ({value, max = 5, onChange}: RatingProps) => {
 | **ToggleControlBase** | Checkbox, Radio, Switch |
 | **SelectionGroup** | RadioGroup, SegmentedControl, Tabs; ColorSwatchGroup через `customRenderOption` |
 | **Flex** (base) | Stack, Inline, Split, ControlRow / LayoutItem |
-| **Box** | Card, Item, DialogLayout, chrome Modal/Sheet/Popover где нужна поверхность |
+| **Box** | Card, Item, DialogLayout (`internal`), chrome Modal/Sheet/Popover где нужна поверхность |
 | **Media** | Avatar; AvatarGroup — раскладка поверх Avatar |
 | **ChartBase / ChartCartesian** | BarChart, LineChart; DonutChart → ChartBase + ChartLegend |
 | **Collapse** | Accordion (`<details>` / `name` или grid `0fr → 1fr`) |
@@ -442,7 +453,7 @@ className={cn(overlayTransition.fadeScale, styles.anchor)}
 | Overflow Measure | ResizeObserver допустим для variable chips |
 | Menu context | координаты курсора на панели (`top`/`left`), открытие после жеста (light-dismiss race) |
 | Sheet handle | `.sheet[data-handle]::before`, не отдельный GrabHandle |
-| Крестик оверлея | внутренний close-control + `overlayClose` + `IconCross` |
+| Крестик оверлея | `CloseControl` (`src/components/internal/CloseControl`) + `overlayClose` + `IconCross` |
 
 ---
 
@@ -453,7 +464,7 @@ className={cn(overlayTransition.fadeScale, styles.anchor)}
 | `As` / `Type` / `FieldPopup` | локальный `as`, доноры |
 | `GrabHandle` | `::before` в Sheet CSS |
 | `Backdrop` (для модалок) | `<dialog>::backdrop` |
-| `OverlayCloseButton` (публичный) | внутренний close-control |
+| `OverlayCloseButton` (публичный) | `CloseControl` |
 | `DropdownPopup` (компонент) | тип API-ref |
 | `createIcon` | `(p) => <IconBase d={…} />` |
 | Стек фокуса своим порталом вместо `<dialog>` | native top layer; узел слоя всё же вынесен из обёртки |
@@ -559,7 +570,9 @@ className={cn(overlayTransition.fadeScale, styles.anchor)}
 
 Генератор: `npm run scaffold -- Имя`. Корневой баррель импортирует из папки. `"sideEffects": false` в `package.json` с учётом политики CSS-инжекта сборки.
 
-Эталон облегчения хрома — **Modal**: `DialogLayout` + `Layout` + `Header` + `ControlRow`; свой CSS — только уникальная геометрия.
+Папка `src/components/internal/` — тот же состав, без `*.stories.*` и без строки в `src/index.ts`. Storybook эту папку не показывает.
+
+Эталон облегчения хрома — **Modal**: внутренний `DialogLayout` + `Layout` + `Header` + `ControlRow`; свой CSS — только уникальная геометрия.
 
 ---
 

@@ -61,8 +61,7 @@
   }
 
   &:is([data-disabled], :disabled) {
-    /* Чуть темнее общего disabled-fg: заливка бледная, подпись должна читаться как неактивная. */
-    color: color-mix(in srgb, var(--altum-color-disabled-fg) 72%, var(--altum-g-color-slate-800));
+    color: var(--altum-color-disabled-fg);
 
     cursor: not-allowed;
 
@@ -139,9 +138,11 @@
   &[data-variant='tinted'] {
     --altum-btn-border: var(--altum-field-group-stroke, var(--altum-color-button-tinted-border));
     --altum-btn-text: var(--altum-color-button-tinted-text);
+    --altum-btn-text-hover: var(--altum-color-button-tinted-text-hover, var(--altum-color-button-tinted-text));
     --altum-btn-bg: var(--altum-color-button-tinted-bg);
     --altum-btn-bg-hover: var(--altum-color-button-tinted-bg-hover);
     --altum-btn-bg-active: var(--altum-color-button-tinted-bg-active);
+    --altum-btn-shadow: var(--altum-field-group-shadow, none);
   }
 
   &[data-variant='secondary'] {

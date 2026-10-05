@@ -107,7 +107,7 @@ export function FieldBaseIcon({
 }
 
 /**
- * Текстовое поле с floating-лейблом (внутри chrome; на `sm` лейбл над полем), prefix/postfix,
+ * Текстовое поле с floating-лейблом внутри chrome на всех размерах, prefix/postfix,
  * очисткой и состояниями ошибки.
  * `as` меняет control: `input` (по умолчанию), `textarea`, либо хост `button` / `div`.
  *

@@ -320,11 +320,12 @@ const SidebarItem = ({
 			{(badge != null || badgeDot) && (
 				<span className={styles.menuBadge}>
 					<Badge
+						className={styles.count}
 						label={badge}
 						dot={badgeDot}
 						size='sm'
 						position='standalone'
-						variant='primary'
+						variant='secondary'
 					/>
 				</span>
 			)}

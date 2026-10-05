@@ -17,7 +17,7 @@ export type {
 import type {CSSProperties} from 'react';
 import {createContext, useContext} from 'react';
 import {Box} from '../Box/Box';
-import {OverlayCloseControl} from '../Button/overlayCloseControl';
+import {CloseControl} from '../internal/CloseControl/CloseControl';
 import {Layout} from '../Layout/Layout';
 import {Overlay} from '../Overlay/Overlay';
 import {toCssSize} from '../../core/utils/cssSize';
@@ -57,7 +57,7 @@ const SheetHeader = ({
 	const onClose = useContext(SheetCloseContext);
 	const showClose = showCloseProp ?? (rightControls == null);
 	const closeControl = showClose && onClose != null ? (
-		<OverlayCloseControl onClick={onClose} />
+		<CloseControl onClick={onClose} />
 	) : null;
 	const end = (rightControls || showClose) ? (
 		<>

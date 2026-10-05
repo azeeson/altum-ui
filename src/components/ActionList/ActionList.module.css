@@ -37,8 +37,6 @@
     flex: 1 1 auto;
 
     min-height: 0;
-
-    padding: var(--altum-g-space-2);
   }
 
   /* Класс пункта задаёт display и перебивает UA-правило [hidden]. */

@@ -12,11 +12,11 @@ import type {ButtonGroupVariant} from '../ButtonGroup/ButtonGroup.types';
 import {cn} from '../../core/utils/cn';
 import styles from './SegmentedControl.module.css';
 
-/** `pill` / `secondary` → скруглённый трек; `plain` → ghost. */
+/** `pill` / `secondary` / `primary` → нейтральная плашка, не заливка CTA. `plain` → ghost. */
 function trackSurfaceVariant(
 	variant: NonNullable<SegmentedControlProps['variant']>,
 ): ButtonGroupVariant {
-	if (variant === 'pill' || variant === 'secondary') return 'pill';
+	if (variant === 'pill' || variant === 'secondary' || variant === 'primary') return 'pill';
 	if (variant === 'plain') return 'ghost';
 	return variant;
 }

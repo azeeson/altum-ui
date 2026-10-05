@@ -15,7 +15,7 @@ import {
 	type PointerEvent as ReactPointerEvent,
 } from 'react';
 import {Button} from '../Button/Button';
-import {DialogLayout} from '../DialogLayout/DialogLayout';
+import {DialogLayout} from '../internal/DialogLayout/DialogLayout';
 import {Overlay} from '../Overlay/Overlay';
 import {Text} from '../Text/Text';
 import {Title} from '../Title/Title';

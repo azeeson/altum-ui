@@ -26,6 +26,7 @@ export type ChipMode = 'chip' | 'tag' | 'toggle';
  * Свойства `Chip`.
  */
 export interface ChipProps extends Omit<ComponentPropsWithoutRef<'span'>, 'onClick'> {
+	/** @default 'secondary' */
 	variant?: ChipVariant;
 	/** Размер. @default 'md' */
 	size?: ControlSize;

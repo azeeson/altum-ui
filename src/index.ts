@@ -488,8 +488,6 @@ export type {
 	PageProps,
 } from './components/Container';
 
-export {DialogLayout} from './components/DialogLayout';
-export type {DialogLayoutProps} from './components/DialogLayout';
 export {Modal} from './components/Modal';
 export type {
 	ModalProps,

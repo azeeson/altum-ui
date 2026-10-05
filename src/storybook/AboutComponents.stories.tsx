@@ -42,7 +42,6 @@ const ICONS: Record<string, FC<IconProps>> = {
 	DateRangeField: icons.IconCalendar,
 	DayStripCalendar: icons.IconCalendar,
 	DescriptionList: icons.IconViewList,
-	DialogLayout: icons.IconBrowser,
 	DonutChart: icons.IconGraphPie,
 	Dropdown: icons.IconChevronDown,
 	EmptyState: icons.IconInbox,

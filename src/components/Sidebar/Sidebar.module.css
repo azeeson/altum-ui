@@ -29,6 +29,10 @@
       padding-left: var(--altum-g-space-2);
     }
 
+    & .sidebarMenu {
+      padding-top: calc(var(--altum-control-height-sm) + var(--altum-g-space-4));
+    }
+
     & .sidebarHeader,
     & .groupLabel,
     & .sidebarFooter,
@@ -79,17 +83,17 @@
    */
   & .edgeToggle {
     position: absolute;
-    top: var(--altum-g-space-4);
-    right: calc(var(--altum-control-height-sm) / -2);
+    top: var(--altum-g-space-3);
+    right: var(--altum-g-space-3);
     z-index: var(--altum-g-z-raised-above);
 
     & button {
       --altum-btn-border: var(--altum-color-border);
-      --altum-btn-text: var(--altum-color-brand);
-      --altum-btn-text-hover: var(--altum-color-brand);
-      --altum-btn-bg: var(--altum-color-surface-elevated);
-      --altum-btn-bg-hover: var(--altum-color-surface-elevated);
-      --altum-btn-bg-active: var(--altum-color-surface-elevated);
+      --altum-btn-text: var(--altum-color-text-secondary);
+      --altum-btn-text-hover: var(--altum-color-text);
+      --altum-btn-bg: var(--altum-color-surface);
+      --altum-btn-bg-hover: var(--altum-color-option-hover);
+      --altum-btn-bg-active: var(--altum-color-surface-active);
       --altum-btn-shadow: var(--altum-shadow-surface);
     }
   }
@@ -101,6 +105,7 @@
     align-items: center;
 
     padding: var(--altum-g-space-4) var(--altum-g-space-5);
+    padding-right: calc(var(--altum-control-height-sm) + var(--altum-g-space-5));
 
     border-bottom: 1px solid var(--altum-color-border);
 
@@ -151,9 +156,9 @@
     }
 
     &[aria-current='page'] {
-      color: var(--altum-color-brand-tint-text);
-      background-color: var(--altum-color-brand-tint);
-      box-shadow: inset 3px 0 0 var(--altum-color-brand);
+      color: var(--altum-color-selection-plate-fg);
+      background-color: var(--altum-color-selection-plate-bg);
+      box-shadow: var(--altum-color-selection-plate-shadow);
     }
 
     &:disabled {
@@ -195,6 +200,21 @@
 
   & .menuBadge {
     flex-shrink: 0;
+  }
+
+  & .count[data-variant] {
+    min-width: 0;
+    height: auto;
+
+    padding: 0;
+
+    border-color: transparent;
+
+    font-weight: var(--altum-g-font-weight-medium);
+
+    color: var(--altum-color-muted);
+    background-color: transparent;
+    box-shadow: none;
   }
 
   & .group {

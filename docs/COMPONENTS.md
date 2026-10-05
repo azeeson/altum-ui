@@ -59,7 +59,7 @@
 
 | Компонент | Описание |
 |-----------|----------|
-| **TextField** | Примитив поля: chrome + `as` (`input` / `textarea` / `button` / `div`). `label` — floating-лейбл внутри chrome (на `sm` — над полем, значение не перекрывается); без `label` — `aria-label` / `placeholder`. Длинная форма: внешний **FieldLabel**. `description` — подсказка или слот под chrome. `keepPlaceholder` — не скрывать placeholder при фокусе пустого поля. |
+| **TextField** | Примитив поля: chrome + `as` (`input` / `textarea` / `button` / `div`). `label` — floating-лейбл внутри chrome на всех `size`; без `label` — `aria-label` / `placeholder`. Длинная форма: внешний **FieldLabel**. `description` — подсказка или слот под chrome. `keepPlaceholder` — не скрывать placeholder при фокусе пустого поля. |
 | **PasswordField** | Пароль на базе TextField: показать/скрыть, опциональный индикатор сложности. |
 | **SearchField** | Обёртка над `TextField` с иконкой поиска (`onClear` от TextField). Без `label` — тулбарный вид. |
 | **TextareaField** | Многострочное поле на **TextField** `as="textarea"`; авто-рост высоты. |
@@ -93,12 +93,11 @@
 
 | Компонент | Описание |
 |-----------|----------|
-| **DialogLayout** | Поверхность `Box` с крестиком в правом верхнем углу поверх контента. `onClose`, `showClose`. |
-| **Modal** | Составной диалог: корень — **`DialogLayout`**, шапка — **`Header`** внутри **`Layout.Header`**, тело и футер — **`Layout`**. `Header` / `Header.Title` / `Header.Subtitle` / `Header.Tabs` / `Body` / `Footer`. Ряд действий — **`ControlRow`** внутри `Footer`. `open` / `onOpenChange`, `showClose`, `size` `sm` / `md` / `lg` на корне. |
+| **Modal** | Составной диалог: шапка — **`Header`** внутри **`Layout.Header`**, тело и футер — **`Layout`**. Крестик поверх контента. `Header` / `Header.Title` / `Header.Subtitle` / `Header.Tabs` / `Body` / `Footer`. Ряд действий — **`ControlRow`** внутри `Footer`. `open` / `onOpenChange`, `showClose`, `size` `sm` / `md` / `lg` на корне. |
 | **ConfirmDialog** | Готовый диалог на **`Modal`**: отмена + подтверждение, `confirmLabel`, `secondaryAction`, `status="danger"`, `onOpenChange`. |
 | **Sheet** | Панель: поверхность **`Box`**, шапка / тело / футер — **`Layout`**. `Header` / `Body` / `Footer`. Заголовок — **`Title`**. Крестик — `showClose` на `Header`. `mode` / `direction` / `showHandle`. Слой — нативный `<dialog>`. |
 | **ImageLightbox** | Полноэкранный просмотр; `open` / `onOpenChange`. |
-| **Dropdown** | Список или меню у кнопки, на базе **`Popover`** (`popover="auto"`). Якорь — `trigger`. Выбор пункта закрывает панель, клик снаружи и Escape — браузер. Стрелки — у списка внутри. `align`, `widthMode`, `triggerMode` `toggle` \| `combobox`. На узком экране та же панель — нижняя шторка на CSS. Узел — `rootRef`. Форма и календарь — **`Popover`**. |
+| **Dropdown** | Список или меню у кнопки, на базе **`Popover`** (`popover="auto"`). Якорь — `trigger`. Выбор пункта закрывает панель, клик снаружи и Escape — браузер. Стрелки — у списка внутри. `align`, `widthMode`, `triggerMode` `toggle` \| `combobox`. На узком экране та же панель — нижняя шторка на CSS. Анимация открытия идёт от фактической стороны, в том числе когда панель переворачивается из‑за нехватки места. Узел — `rootRef`. Форма и календарь — **`Popover`**. |
 | **Menu** | Меню действий: клик по `trigger` (**`Dropdown`** + **`ActionList`**) или `trigger="context"` (ПКМ / Shift+F10 у курсора). Пункты — **`ActionListItem`** (`id`) и `{ type: 'separator' }`, как в **`Listbox`**. Программный показ — `popupRef`. |
 | **Tooltip** | Текстовая подсказка. Ховер и клавиатурный фокус — CSS (`:hover`, `:focus-visible`), позиция — CSS Anchor. Пузырь — `popover="manual"` в top layer, `overflow` предка не режет. Клик мышью не оставляет подсказку. `side`, `openDelay` / `closeDelay` как задержки CSS, без JS-таймера. |
 | **Popover** | Немодальная панель: текст, форма, фильтры, календарь. Открытие — `popovertarget`, закрытие по клику снаружи и Escape — `popover="auto"`. Клик внутри не закрывает, фокус не запирается. Якорь — `trigger`. Позиция — CSS Anchor (`side` / `align`, `positionArea()`). Подсказки — **Tooltip**. |
@@ -193,7 +192,7 @@
 | Компонент | Описание |
 |-----------|----------|
 | **ImageGallery** | Галерея: `images`, chrome `default` \| `none`, `showNav` / `showThumbnails` / `showCounter`. |
-| **ImageCrop** | Обрезка изображения. Корень — **`DialogLayout`**, шапка и кнопки — разметка компонента, заголовок — **`Title`**. |
+| **ImageCrop** | Обрезка изображения. Шапка и кнопки — разметка компонента, заголовок — **`Title`**. |
 | **FileList** | Список загрузок на **`Item`**: progress / retry / remove через `FileList.Item`. |
 | **Attachment** | Карточка файла: `Item` + статус загрузки (`idle` / `uploading` / `error` / `done`). Действия в слоте — icon-only **`Button`**. |
 

@@ -1,14 +1,14 @@
 import type {DialogLayoutProps} from './DialogLayout.types';
 export type {DialogLayoutProps} from './DialogLayout.types';
 
-import {Box} from '../Box/Box';
-import {OverlayCloseControl} from '../Button/overlayCloseControl';
-import {cn} from '../../core/utils/cn';
+import {Box} from '../../Box/Box';
+import {CloseControl} from '../CloseControl/CloseControl';
+import {cn} from '../../../core/utils/cn';
 import styles from './DialogLayout.module.css';
 
 /**
  * Поверхность диалога: контент в `Box`, крестик в правом верхнем углу поверх него.
- * Кнопка вне потока и не сдвигает содержимое.
+ * Кнопка вне потока и не сдвигает содержимое. Внутренний узел — не экспорт библиотеки.
  *
  * @component
  * @example
@@ -33,7 +33,7 @@ export const DialogLayout = ({
 		>
 			{children}
 			{showClose && onClose != null && (
-				<OverlayCloseControl
+				<CloseControl
 					className={styles.close}
 					aria-label={closeLabel}
 					onClick={onClose}

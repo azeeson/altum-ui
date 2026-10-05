@@ -260,10 +260,10 @@ export const WithActions: Story<AlertProps> = {
 				title='Требуется действие'
 				actions={(
 					<>
-						<Button size='sm' variant='secondary'>
+						<Button size='sm' variant='primary'>
 							Позже
 						</Button>
-						<Button size='sm'>
+						<Button size='sm' variant='secondary'>
 							Исправить
 						</Button>
 					</>

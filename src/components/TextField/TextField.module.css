@@ -12,6 +12,8 @@
   --altum-field-label-color: var(--altum-field-label);
   --altum-field-label-font-size: var(--altum-g-font-size-sm);
   --altum-field-label-line-height: var(--altum-g-line-height-sm);
+  /* Поднятый лейбл не ниже 12px: 14×0.857 и 16×0.78. sm — без сжатия. */
+  --altum-field-label-scale: calc(12 / 14);
   --altum-field-affix-inset: var(--altum-g-space-2);
   --altum-field-affix-size: calc(var(--altum-field-size-height) - 2px - 2 * var(--altum-field-affix-inset));
   --altum-field-affix-gap: var(--altum-g-space-2);
@@ -45,6 +47,7 @@
     --altum-field-size-height: var(--altum-control-height-sm);
     --altum-field-label-font-size: var(--altum-g-font-size-xs);
     --altum-field-label-line-height: var(--altum-g-line-height-xs);
+    --altum-field-label-scale: 1;
   }
 
   &[data-size='lg'] {
@@ -55,6 +58,7 @@
     --altum-field-size-height: var(--altum-control-height-lg);
     --altum-field-label-font-size: var(--altum-g-font-size-base);
     --altum-field-label-line-height: var(--altum-g-line-height-base);
+    --altum-field-label-scale: 0.78;
   }
 
   /* Floating label: токены подъёма / вертикальный pad. */
@@ -65,7 +69,7 @@
   }
 
   &[data-field-label][data-size='sm'] {
-    --altum-field-label-raised-top: calc(var(--altum-g-space-1) - 1px);
+    --altum-field-label-raised-top: var(--altum-control-inset);
     --altum-field-pad-top: var(--altum-field-pad-top-sm);
     --altum-field-pad-bottom: var(--altum-field-pad-bottom-sm);
   }
@@ -85,6 +89,7 @@
 
   &[data-error] {
     --altum-field-control-border: var(--altum-color-status-error);
+    --altum-field-control-bg: color-mix(in srgb, var(--altum-color-status-error) 8%, var(--altum-color-field-bg));
     --altum-field-label-color: var(--altum-color-status-error);
 
     &:hover:not([data-disabled]):not([data-readonly]) {
@@ -156,38 +161,20 @@
   transition: var(--altum-transition-smooth);
 }
 
-/* Пустое без фокуса — лейбл по центру; focus / value / open — вверх. sm — лейбл снаружи, значение не перекрывается. */
+/* Пустое без фокуса — лейбл по центру; focus / value / open — вверх, на всех размерах. */
 .root:is(
   :focus-within,
   [data-has-value],
   [data-active],
   :has([aria-expanded='true']),
   :has(:is(input, textarea):not(:placeholder-shown))
-)[data-field-label]:not([data-size='sm']) .label {
+)[data-field-label] .label {
   top: var(--altum-field-label-raised-top);
   right: auto;
 
-  max-width: calc((100% - 2 * var(--altum-field-padding-inline)) / 0.78);
+  max-width: calc((100% - 2 * var(--altum-field-padding-inline)) / var(--altum-field-label-scale));
 
-  transform: translate3d(0, 0, 0) scale(0.78);
-}
-
-.root[data-size='sm'][data-field-label] {
-  --altum-field-pad-top: 0;
-  --altum-field-pad-bottom: 0;
-
-  padding-top: calc(var(--altum-g-font-size-xs) * var(--altum-g-line-height-xs) + var(--altum-g-space-1));
-
-  & .label {
-    top: auto;
-    right: 0;
-    bottom: calc(100% + var(--altum-g-space-1));
-    left: 0;
-
-    max-width: 100%;
-
-    transform: none;
-  }
+  transform: translate3d(0, 0, 0) scale(var(--altum-field-label-scale));
 }
 
 .chrome {
@@ -327,7 +314,7 @@
   :has([aria-expanded='true']),
   :has(:is(input, textarea):not(:placeholder-shown))
 )[data-field-label] .chrome:has(.prefix) .label {
-  max-width: calc((100% - var(--altum-field-padding-inline)) / 0.78);
+  max-width: calc((100% - var(--altum-field-padding-inline)) / var(--altum-field-label-scale));
 }
 
 .root:is(
@@ -337,7 +324,7 @@
   :has([aria-expanded='true']),
   :has(:is(input, textarea):not(:placeholder-shown))
 )[data-field-label] .chrome:has(.prefix):has(.postfix) .label {
-  max-width: calc(100% / 0.78);
+  max-width: calc(100% / var(--altum-field-label-scale));
 }
 
 .root[data-field-label] :is(.controlSurface, .controlOverlay) {

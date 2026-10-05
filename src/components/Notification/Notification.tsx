@@ -23,7 +23,7 @@ import {
 	type ReactNode,
 } from 'react';
 import {Button} from '../Button/Button';
-import {OverlayCloseControl} from '../Button/overlayCloseControl';
+import {CloseControl} from '../internal/CloseControl/CloseControl';
 import {ProgressCircle} from '../Progress/Progress';
 import styles from './Notification.module.css';
 import {cn} from '../../core/utils/cn';
@@ -168,7 +168,7 @@ function NotificationCard({
 						aria-hidden
 					/>
 				) : null}
-				<OverlayCloseControl
+				<CloseControl
 					className={cn(styles.close, showTimer && styles.closePending)}
 					data-notification-close=''
 				/>

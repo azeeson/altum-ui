@@ -33,7 +33,7 @@ const localeFallback = {
  * <Chip mode="tag" variant="success">Готово</Chip>
  */
 export const Chip = ({
-	variant = 'primary',
+	variant = 'secondary',
 	size = 'md',
 	mode = 'chip',
 	children,

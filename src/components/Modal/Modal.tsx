@@ -16,7 +16,7 @@ export type {
 import {cn} from '../../core/utils/cn';
 import {useLocale} from '../../locales/localeContext';
 import {ruSlice as ru_modal} from '../../locales/slices/modal.ru';
-import {DialogLayout} from '../DialogLayout/DialogLayout';
+import {DialogLayout} from '../internal/DialogLayout/DialogLayout';
 import {Header} from '../Header/Header';
 import {Layout} from '../Layout/Layout';
 import {Overlay} from '../Overlay/Overlay';

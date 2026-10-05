@@ -40,20 +40,22 @@
   }
 
   &[data-variant='primary'] {
-    --altum-fg-item: var(--altum-color-brand-text);
+    --altum-fg-item: var(--altum-color-brand);
     --altum-fg-item-on: var(--altum-color-brand-text);
-    --altum-bg-item-hover: color-mix(in srgb, var(--altum-g-color-black) 16%, var(--altum-color-brand));
-    --altum-bg-thumb: var(--altum-color-brand-active);
-    --altum-bg-thumb-shadow: inset 0 0 0 1px var(--altum-color-brand-border);
+    --altum-bg-item-hover: color-mix(in srgb, var(--altum-color-brand) 12%, transparent);
+    --altum-bg-thumb: var(--altum-color-brand);
+    --altum-bg-thumb-shadow: var(--altum-color-selection-thumb-shadow);
 
-    border: 1px solid var(--altum-field-group-stroke, transparent);
+    border: 1px solid var(--altum-field-group-stroke, var(--altum-color-button-border-tinted));
 
-    background-color: var(--altum-color-brand);
-    box-shadow: var(--altum-field-group-shadow, var(--altum-shadow-brand));
+    background-color: var(--altum-color-brand-tint);
+    box-shadow: none;
   }
 
   &[data-variant='tinted'] {
-    --altum-bg-item-hover: color-mix(in srgb, var(--altum-color-brand) 28%, transparent);
+    --altum-fg-item: var(--altum-color-button-tinted-text);
+    --altum-fg-item-on: var(--altum-color-button-tinted-text-hover, var(--altum-color-button-tinted-text));
+    --altum-bg-item-hover: var(--altum-color-button-tinted-bg-hover);
     --altum-bg-thumb: var(--altum-color-button-tinted-bg-active);
     --altum-bg-thumb-shadow: inset 0 0 0 1px var(--altum-color-button-tinted-border);
 
@@ -63,16 +65,17 @@
     box-shadow: none;
   }
 
-  /* `pill` — алиас скруглённого трека (SegmentedControl default). */
   &[data-variant='secondary'],
   &[data-variant='pill'] {
-    --altum-bg-item-hover: color-mix(in srgb, var(--altum-color-text-secondary) 12%, transparent);
-    --altum-bg-thumb: color-mix(in srgb, var(--altum-color-text-secondary) 18%, var(--altum-color-surface));
+    --altum-fg-item-on: var(--altum-color-selection-thumb-fg);
+    --altum-bg-item-hover: color-mix(in srgb, var(--altum-color-text-secondary) 8%, transparent);
+    --altum-bg-thumb: var(--altum-color-selection-thumb-bg);
+    --altum-bg-thumb-shadow: var(--altum-color-selection-thumb-shadow);
 
-    border: 1px solid var(--altum-field-group-stroke, var(--altum-color-button-secondary-border));
+    border: 1px solid var(--altum-field-group-stroke, transparent);
 
-    background-color: var(--altum-color-button-secondary-bg);
-    box-shadow: var(--altum-field-group-shadow, none);
+    background-color: var(--altum-color-selection-plate-bg);
+    box-shadow: none;
   }
 
   &[data-variant='ghost'] {

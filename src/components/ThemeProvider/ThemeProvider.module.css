@@ -12,24 +12,24 @@
   --altum-g-font-weight-semibold: 600;
   --altum-g-font-weight-bold: 700;
 
-  /* Монотонная шкала, ничего ниже 12px. xs не меньше 2xs. */
+  /* Системный UI: 12 / 13 / 14 / 16 / 18 / 20 / 22 / 28. Тело 14. Ниже 12px нет. */
   --altum-g-font-size-3xs: 12px;
   --altum-g-line-height-3xs: 1.2;
   --altum-g-font-size-2xs: 12px;
-  --altum-g-line-height-2xs: 1.2;
+  --altum-g-line-height-2xs: 1.3;
   --altum-g-font-size-xs: 12px;
   --altum-g-line-height-xs: 1.35;
-  --altum-g-font-size-sm: 14px;
-  --altum-g-line-height-sm: 1.35;
+  --altum-g-font-size-sm: 13px;
+  --altum-g-line-height-sm: 1.4;
   --altum-g-font-size-base: 14px;
   --altum-g-line-height-base: 1.45;
   --altum-g-font-size-lg: 16px;
   --altum-g-line-height-lg: 1.4;
-  --altum-g-font-size-xl: 20px;
+  --altum-g-font-size-xl: 18px;
   --altum-g-line-height-xl: 1.35;
   --altum-g-font-size-2xl: 20px;
-  --altum-g-font-size-3xl: 24px;
-  --altum-g-font-size-4xl: 32px;
+  --altum-g-font-size-3xl: 22px;
+  --altum-g-font-size-4xl: 28px;
 
   /* Цветовые примитивы — семантика ниже читает их, а не сырой HEX. */
   --altum-g-color-white: #ffffff;
@@ -57,7 +57,7 @@
   --altum-g-color-amber-600: #d97706;
   --altum-g-color-violet-500: #8b5cf6;
   --altum-g-color-teal-500: #14b8a6;
-  /* Primary — прежний steel (slate-600), не индиго. */
+  /* Primary — steel (slate-600). Оттенок не сдвигаем. */
   --altum-g-color-brand: var(--altum-g-color-slate-600);
   --altum-g-color-brand-hover: var(--altum-g-color-slate-700);
   --altum-g-color-brand-active: var(--altum-g-color-slate-800);
@@ -105,10 +105,10 @@
   --altum-button-focus-inner: 1px;
   --altum-button-focus-outer: 3px;
   --altum-opacity-disabled: 0.55;
-  /* Disabled — отдельная заливка, не opacity поверх accent (иначе CTA ≈ disabled). */
-  --altum-color-disabled-bg: #e8edf3;
-  --altum-color-disabled-fg: #475569;
-  --altum-color-disabled-border: #d5dde6;
+  /* Disabled — заливка как secondary, текст slate-400. Контраст нарочно ниже AA: контрол мёртвый. */
+  --altum-color-disabled-bg: var(--altum-g-color-white);
+  --altum-color-disabled-fg: #94a3b8;
+  --altum-color-disabled-border: #e2e8f0;
   /* У отключённых полей контент остаётся читаемее. */
   --altum-field-disabled-opacity: 0.8;
   --altum-overlay-close-size: 28px;
@@ -123,12 +123,12 @@
    * Вертикальные отступы плавающего лейбла (оптические; документированные исключения из чистых пар 4pt).
    * Считаются из --altum-space-* + --altum-control-inset, чтобы оставаться на лестнице токенов.
    */
-  --altum-field-pad-top-sm: calc(var(--altum-g-space-3) + var(--altum-control-inset));
-  --altum-field-pad-bottom-sm: calc(var(--altum-g-space-1) + var(--altum-control-inset));
-  --altum-field-pad-top-md: var(--altum-g-space-5);
-  --altum-field-pad-bottom-md: var(--altum-g-space-2);
-  --altum-field-pad-top-lg: var(--altum-g-space-6);
-  --altum-field-pad-bottom-lg: calc(var(--altum-g-space-2) + var(--altum-control-inset));
+  --altum-field-pad-top-sm: calc(var(--altum-g-space-4) + var(--altum-control-inset));
+  --altum-field-pad-bottom-sm: var(--altum-control-inset);
+  --altum-field-pad-top-md: calc(var(--altum-g-space-3) + var(--altum-control-inset));
+  --altum-field-pad-bottom-md: var(--altum-g-space-1);
+  --altum-field-pad-top-lg: calc(var(--altum-g-space-3) + var(--altum-control-inset));
+  --altum-field-pad-bottom-lg: calc(var(--altum-g-space-1) + var(--altum-control-inset));
   /* Общая типографика легенды и подсказки. */
   --altum-form-legend-size: var(--altum-g-font-size-base);
   --altum-form-legend-weight: var(--altum-g-font-weight-semibold);
@@ -273,7 +273,7 @@
   --altum-color-surface-elevated: var(--altum-g-color-white);
   --altum-color-surface-hover: var(--altum-g-color-slate-50);
   --altum-color-surface-active: var(--altum-g-color-slate-100);
-  --altum-color-text-secondary: #334155;
+  --altum-color-text-secondary: #475569;
   /* Рамки панелей совпадают с рамками полей (slate-200). */
   --altum-color-border: var(--altum-g-color-slate-200);
   --altum-shadow-surface: 0 1px 2px rgba(15, 23, 42, 0.08), 0 10px 28px rgba(15, 23, 42, 0.14);
@@ -286,6 +286,13 @@
   --altum-color-danger-text: var(--altum-g-color-white);
   --altum-color-danger-shadow: 0 1px 2px rgba(185, 28, 28, 0.12);
 
+  /* Danger tinted — видимая кнопка, не пыль цвета холста. */
+  --altum-color-danger-tint-bg: color-mix(in srgb, var(--altum-color-danger-bg-solid) 18%, var(--altum-color-surface));
+  --altum-color-danger-tint-bg-hover: color-mix(in srgb, var(--altum-color-danger-bg-solid) 26%, var(--altum-color-surface));
+  --altum-color-danger-tint-bg-active: color-mix(in srgb, var(--altum-color-danger-bg-solid) 34%, var(--altum-color-surface));
+  --altum-color-danger-tint-text: var(--altum-color-danger-bg-hover);
+  --altum-color-button-border-danger-tinted: color-mix(in srgb, var(--altum-color-danger-bg-solid) 48%, transparent);
+
   /* Опасность, вторичный — та же пыль, что Alert, не сырой red-50/100 */
   --altum-color-danger-bg-secondary: var(--altum-g-color-white);
   --altum-color-danger-bg-secondary-hover: color-mix(in srgb, var(--altum-color-status-error) 12%, transparent);
@@ -293,14 +300,7 @@
   --altum-color-danger-text-secondary-hover: color-mix(in srgb, var(--altum-color-status-error) 82%, var(--altum-color-input-text));
   --altum-color-danger-shadow-secondary: 0 1px 2px rgba(0, 0, 0, 0.02);
 
-  /* Danger tinted — как prm-tint, от акцента опасности */
-  --altum-color-danger-tint-bg: color-mix(in srgb, var(--altum-color-danger-bg-solid) 12%, transparent);
-  --altum-color-danger-tint-bg-hover: color-mix(in srgb, var(--altum-color-danger-bg-solid) 18%, transparent);
-  --altum-color-danger-tint-bg-active: color-mix(in srgb, var(--altum-color-danger-bg-solid) 24%, transparent);
-  --altum-color-danger-tint-text: var(--altum-color-danger-bg-hover);
-  --altum-color-button-border-danger-tinted: color-mix(in srgb, var(--altum-color-danger-bg-solid) 28%, transparent);
-
-  /* Статусы тёмные: заголовок и иконка ≥ 4.5:1 на белом и на 12% tint. */
+  /* Статусы: тёмный пигмент для текста. Поверхность — 16% mix, не сплошная заливка. */
   --altum-color-status-info: #1d4ed8;
   --altum-color-status-success: #047857;
   --altum-color-status-success-strong: #065f46;
@@ -330,7 +330,7 @@
   --altum-color-input-border: var(--altum-g-color-slate-400);
   /* Primary, на полшага светлее кнопки — рамка поля не сливается с CTA. */
   --altum-color-input-border-focus: color-mix(in srgb, var(--altum-color-brand) 88%, var(--altum-g-color-slate-500));
-  --altum-color-muted: #334155;
+  --altum-color-muted: #64748b;
   --altum-color-input-bg-readonly: var(--altum-g-color-slate-50);
   --altum-color-input-border-readonly: var(--altum-g-color-slate-400);
   --altum-color-input-label-readonly: var(--altum-g-color-slate-500);
@@ -355,7 +355,7 @@
   --altum-color-bg: var(--altum-g-color-slate-50);
   --altum-color-text: var(--altum-g-color-slate-900);
   /* Плейсхолдер слабее лейбла и не равен ему. */
-  --altum-color-input-placeholder: #5c6b7e;
+  --altum-color-input-placeholder: #94a3b8;
   --altum-color-chart-neutral: #64748b;
 
   /* Сортируемый список */
@@ -391,11 +391,13 @@
   --altum-color-button-secondary-text: var(--altum-color-text-secondary);
   --altum-color-button-secondary-shadow: var(--altum-shadow-brand);
 
-  --altum-color-button-tinted-bg: var(--altum-color-brand-tint);
-  --altum-color-button-tinted-bg-hover: var(--altum-color-brand-tint-hover);
-  --altum-color-button-tinted-bg-active: var(--altum-color-brand-tint-active);
-  --altum-color-button-tinted-border: var(--altum-color-button-border-tinted);
-  --altum-color-button-tinted-text: var(--altum-color-brand-tint-text);
+  /* Кнопка tinted — тихая сталь между сплошным primary и белой secondary. */
+  --altum-color-button-tinted-bg: color-mix(in srgb, var(--altum-color-brand) 32%, var(--altum-color-surface));
+  --altum-color-button-tinted-bg-hover: color-mix(in srgb, var(--altum-color-brand) 42%, var(--altum-color-surface));
+  --altum-color-button-tinted-bg-active: color-mix(in srgb, var(--altum-color-brand) 52%, var(--altum-color-surface));
+  --altum-color-button-tinted-border: color-mix(in srgb, var(--altum-color-brand) 48%, var(--altum-color-border));
+  --altum-color-button-tinted-text: var(--altum-color-brand);
+  --altum-color-button-tinted-text-hover: var(--altum-color-brand-active);
 
   --altum-color-button-ghost-hover-bg: var(--altum-color-option-hover);
   /* Pressed — плотнее hover, тот же charcoal/slate, без mix с input-text (даёт чужой серый). */
@@ -410,11 +412,12 @@
   --altum-color-chip-secondary-bg-hover: color-mix(in srgb, var(--altum-color-text-secondary) 20%, transparent);
   --altum-color-chip-secondary-border-hover: color-mix(in srgb, var(--altum-color-border) 70%, var(--altum-color-text-secondary));
 
-  --altum-color-chip-tinted-bg: var(--altum-color-brand-tint);
-  --altum-color-chip-tinted-border: var(--altum-color-brand-tint-border);
-  --altum-color-chip-tinted-text: var(--altum-color-brand-tint-text);
-  --altum-color-chip-tinted-bg-hover: var(--altum-color-brand-tint-hover);
-  --altum-color-chip-tinted-border-hover: color-mix(in srgb, var(--altum-color-brand-tint-text) 35%, transparent);
+  /* Чип легче кнопки: тот же steel, меньший вес. */
+  --altum-color-chip-tinted-bg: color-mix(in srgb, var(--altum-color-brand) 18%, var(--altum-color-surface));
+  --altum-color-chip-tinted-border: color-mix(in srgb, var(--altum-color-brand) 28%, var(--altum-color-border));
+  --altum-color-chip-tinted-text: var(--altum-color-brand);
+  --altum-color-chip-tinted-bg-hover: color-mix(in srgb, var(--altum-color-brand) 26%, var(--altum-color-surface));
+  --altum-color-chip-tinted-border-hover: color-mix(in srgb, var(--altum-color-brand) 36%, var(--altum-color-border));
 
   /* Общий выбранный chrome — brand (exclusive) vs neutral (мягкий). */
   --altum-color-selection-fill: var(--altum-color-brand);
@@ -424,6 +427,19 @@
   --altum-color-selection-neutral-border: color-mix(in srgb, var(--altum-color-text-secondary) 45%, var(--altum-color-border));
   /* Белый thumb на сером колодце — iOS / Linear. */
   --altum-color-selection-neutral-slider: var(--altum-color-surface);
+  /* Плашка выбора на белой поверхности: плотнее slate-100, иначе текущий пункт теряется. Не акцент. */
+  --altum-color-selection-plate-bg: var(--altum-g-color-slate-200);
+  --altum-color-selection-plate-fg: var(--altum-color-text);
+  --altum-color-selection-plate-border: color-mix(in srgb, var(--altum-g-color-slate-900) 8%, var(--altum-color-border));
+  --altum-color-selection-plate-shadow:
+    0 1px 2px color-mix(in srgb, var(--altum-g-color-slate-900) 10%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--altum-g-color-slate-900) 6%, transparent);
+  /* Бегунок на сером треке. */
+  --altum-color-selection-thumb-bg: var(--altum-color-surface);
+  --altum-color-selection-thumb-fg: var(--altum-color-text);
+  --altum-color-selection-thumb-shadow:
+    0 1px 2px color-mix(in srgb, var(--altum-g-color-slate-900) 14%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--altum-g-color-slate-900) 8%, transparent);
 
   --altum-color-segmented-primary-slider-bg: var(--altum-color-selection-fill-emphasis);
   --altum-color-segmented-ghost-slider-bg: var(--altum-color-selection-neutral-slider);
@@ -464,14 +480,13 @@
 .light {}
 
 .themeProvider[data-theme='dark'] {/* --- ТЁМНАЯ ТЕМА --- */
-  /* Canvas → surface → overlay: нейтральный charcoal в климате steel CTA
-     (без фиолетового B-канала). Primary — плотный steel, не мытый #6b7f98. */
+  /* Тот же steel, плотнее, чтобы заливка CTA читалась на charcoal. */
   --altum-g-color-brand: #4e6480;
   --altum-g-color-brand-hover: #5d7694;
   --altum-g-color-brand-active: #41536b;
-  --altum-color-disabled-bg: #2a2a2e;
-  --altum-color-disabled-fg: #c5c9d1;
-  --altum-color-disabled-border: #3a3a40;
+  --altum-color-disabled-bg: #1f1f22;
+  --altum-color-disabled-fg: #6e6e78;
+  --altum-color-disabled-border: #2e2e32;
   --altum-color-chart-neutral: #94a3b8;
   --altum-color-brand: var(--altum-g-color-brand);
   --altum-color-brand-hover: var(--altum-g-color-brand-hover);
@@ -487,12 +502,23 @@
   --altum-color-selection-neutral-fill: color-mix(in srgb, var(--altum-color-text-secondary) 22%, transparent);
   --altum-color-selection-neutral-border: color-mix(in srgb, var(--altum-color-text-secondary) 45%, var(--altum-color-border));
   --altum-color-selection-neutral-slider: color-mix(in srgb, var(--altum-color-brand-text) 11%, var(--altum-color-surface-elevated));
+  --altum-color-selection-plate-bg: #2a2a2e;
+  --altum-color-selection-plate-fg: var(--altum-color-text);
+  --altum-color-selection-plate-border: color-mix(in srgb, #ffffff 10%, transparent);
+  --altum-color-selection-plate-shadow:
+    0 1px 2px color-mix(in srgb, var(--altum-g-color-black) 35%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, #ffffff 8%, transparent);
+  --altum-color-selection-thumb-bg: var(--altum-color-surface-elevated);
+  --altum-color-selection-thumb-fg: var(--altum-color-text);
+  --altum-color-selection-thumb-shadow:
+    0 1px 2px color-mix(in srgb, var(--altum-g-color-black) 40%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, #ffffff 10%, transparent);
   --altum-color-segmented-ghost-slider-bg: var(--altum-color-selection-neutral-slider);
   --altum-color-segmented-slider-shadow:
     0 1px 1px color-mix(in srgb, var(--altum-g-color-black) 28%, transparent),
     inset 0 0 0 1px color-mix(in srgb, var(--altum-g-color-white) 7%, transparent);
 
-  /* Tinted — пыль CTA на surface. Mix brand на нейтральном charcoal держит steel без оливы. */
+  /* Tinted — mix brand на surface. */
   --altum-color-brand-tint: color-mix(in srgb, var(--altum-g-color-brand) 26%, var(--altum-color-surface));
   --altum-color-brand-tint-hover: color-mix(in srgb, var(--altum-g-color-brand) 34%, var(--altum-color-surface));
   --altum-color-brand-tint-active: color-mix(in srgb, var(--altum-g-color-black) 16%, var(--altum-color-brand-tint-hover));
@@ -502,7 +528,14 @@
   /* Рамки кнопок — тёмная тема */
   --altum-color-button-border-primary: rgba(255, 255, 255, 0.22);
   --altum-color-button-border-secondary: color-mix(in srgb, #ffffff 10%, var(--altum-color-surface));
-  --altum-color-button-border-tinted: color-mix(in srgb, var(--altum-g-color-brand) 36%, transparent);
+  --altum-color-button-border-tinted: color-mix(in srgb, var(--altum-g-color-brand) 45%, transparent);
+  --altum-color-button-tinted-bg: color-mix(in srgb, var(--altum-color-brand) 36%, var(--altum-color-surface));
+  --altum-color-button-tinted-bg-hover: color-mix(in srgb, var(--altum-color-brand) 48%, var(--altum-color-surface));
+  --altum-color-button-tinted-bg-active: color-mix(in srgb, var(--altum-color-brand) 60%, var(--altum-color-surface));
+  --altum-color-button-tinted-border: color-mix(in srgb, var(--altum-color-brand) 45%, transparent);
+  --altum-color-button-tinted-text: var(--altum-g-color-slate-50);
+  --altum-color-button-tinted-text-hover: var(--altum-g-color-slate-50);
+  --altum-color-chip-tinted-text: var(--altum-color-brand-tint-text);
   --altum-color-button-border-danger: rgba(255, 255, 255, 0.05);
   --altum-color-button-border-danger-secondary: color-mix(in srgb, var(--altum-color-status-error) 34%, var(--altum-color-surface));
 
@@ -587,11 +620,11 @@
   --altum-button-focus-outer: 4px;
   --altum-color-link-color: #9aafc4;
   --altum-color-link-color-hover: #c8d3e4;
-  --altum-color-muted: #A8A8B3;
-  --altum-field-label: #A8A8B3;
+  --altum-color-muted: #8b909a;
+  --altum-field-label: #8b909a;
   /* Лестница Text: secondary (светлее) → muted/лейбл → tertiary → type-muted. */
-  --altum-color-type-tertiary: #8C8C99;
-  --altum-color-type-muted: #8C8C99;
+  --altum-color-type-tertiary: #8b909a;
+  --altum-color-type-muted: #8b909a;
   --altum-color-input-bg-readonly: var(--altum-color-surface);
   --altum-color-input-border-readonly: #475569;
   --altum-color-input-label-readonly: #A8A8B3;

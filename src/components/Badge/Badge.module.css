@@ -27,7 +27,7 @@
 
   padding: 0 var(--altum-badge-pad);
 
-  border: 2px solid var(--altum-color-surface);
+  border: 2px solid color-mix(in srgb, var(--altum-status-fill) 28%, var(--altum-color-border));
   border-radius: var(--altum-g-radius-pill);
 
   font-size: var(--altum-badge-font-size);
@@ -35,8 +35,9 @@
   line-height: 1;
   vertical-align: middle;
 
-  color: var(--altum-badge-on-fill, var(--altum-color-brand-text));
-  background-color: var(--altum-status-fill);
+  /* Дефолт — error, атрибут не пишется. Тот же мягкий рецепт, что у success / info / warning. */
+  color: var(--altum-status-fg, var(--altum-status-fill));
+  background-color: color-mix(in srgb, var(--altum-status-fill) 16%, var(--altum-color-surface));
 
   translate: 0 var(--altum-badge-digit-nudge);
 
@@ -47,6 +48,20 @@
     z-index: var(--altum-g-z-local);
 
     transform: translate(40%, -40%);
+  }
+
+  /* Цифра и точка — сплошной пигмент. Слово статуса (в том числе error) — мягкая заливка выше. */
+  &[data-count]:not(
+    [data-variant='success'],
+    [data-variant='info'],
+    [data-variant='warning'],
+    [data-variant='primary'],
+    [data-variant='secondary']
+  ) {
+    border-color: var(--altum-color-surface);
+
+    color: var(--altum-badge-on-fill, var(--altum-color-brand-text));
+    background-color: var(--altum-status-fill);
   }
 
   &[data-size='sm'] {
@@ -118,9 +133,20 @@
     [data-variant='warning'],
     [data-variant='error']
   ) {
+    border-color: color-mix(in srgb, var(--altum-status-fill) 28%, var(--altum-color-border));
+
+    color: var(--altum-status-fg, var(--altum-status-fill));
+    background-color: color-mix(in srgb, var(--altum-status-fill) 16%, var(--altum-color-surface));
+  }
+
+  &[data-dot]:is(
+    [data-variant='success'],
+    [data-variant='info'],
+    [data-variant='warning'],
+    [data-variant='error']
+  ) {
     border-color: var(--altum-color-surface);
 
-    color: var(--altum-badge-on-fill, var(--altum-color-brand-text));
     background-color: var(--altum-status-fill);
   }
 }
