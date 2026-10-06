@@ -1,9 +1,30 @@
+import {registerHooks} from 'node:module';
 import {defineConfig, devices} from '@playwright/test';
 
 const STORYBOOK_PORT = 6007;
 
+/**
+ * Баррель SelectionGroup тянет CSS Modules. Загрузчик тестов уже транспилирует TS
+ * и не понимает `.css` — подменяем такие модули пустым экспортом.
+ */
+registerHooks({
+	load(url, context, nextLoad) {
+		if (url.split('?')[0].endsWith('.css')) {
+			return {
+				format: 'module',
+				source: 'export default {};\n',
+				shortCircuit: true,
+			};
+		}
+		return nextLoad(url, context);
+	},
+});
+
 export default defineConfig({
 	testDir: './tests',
+	build: {
+		external: ['**/*.css'],
+	},
 	fullyParallel: true,
 	forbidOnly: !!process.env.CI,
 	retries: process.env.CI ? 2 : 0,

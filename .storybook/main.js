@@ -3,8 +3,6 @@ const path = require('path');
 module.exports = {
   stories: [
     '../src/**/*.stories.@(js|jsx|ts|tsx)',
-    // Внутренние узлы библиотеки: не сторис и не публичный API.
-    '!../src/components/internal/**',
   ],
   staticDirs: [{ from: path.join(__dirname, 'public'), to: '/' }],
   addons: [

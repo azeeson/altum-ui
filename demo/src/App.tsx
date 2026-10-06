@@ -12,6 +12,7 @@ import {
 	ControlRow,
 	Inline,
 	Layout,
+	Link,
 	LocaleProvider,
 	Modal,
 	NotificationProvider,
@@ -66,6 +67,9 @@ function ThemeToolbar() {
 					</code>
 					).
 				</Text>
+				<Link href='/layers.html' size='sm'>
+					Слои: Sheet, Tooltip и форма в Modal
+				</Link>
 			</Stack>
 			<SegmentedControl
 				aria-label='Тема'

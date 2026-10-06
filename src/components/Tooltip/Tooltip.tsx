@@ -78,7 +78,9 @@ function renderTrigger(
  * Текстовая подсказка при наведении или фокусе.
  * Пузырь — `popover="manual"` в top layer, его не режет `overflow` предка.
  * Показ — CSS `:hover` и `:has(:focus-visible)`. Позиция — CSS Anchor Positioning.
- * Popover открыт с маунта, видимость решает CSS. Стрелка после flip берётся из фактической стороны пузыря.
+ * Popover открыт с маунта, видимость решает CSS. Если триггер внутри закрытого диалога,
+ * пузырь переоткрывается на `toggle`, чтобы якорь посчитался уже по видимой кнопке.
+ * Стрелка после flip берётся из фактической стороны пузыря.
  *
  * Триггер: render-prop `(props, ref) => …` или любой children (оборачивается в `span`).
  *
@@ -128,6 +130,17 @@ export const Tooltip = ({
 			setArrow((current) => (current === next ? current : next));
 		};
 
+		// Показ с маунта, пока `<dialog>` ещё закрыт, якорит пузырь в пустоту.
+		// `toggle` приходит, когда предок уже открыт — тогда якорь есть, и popover считают заново.
+		const dialog = host.closest('dialog');
+		const reshow = (event: Event) => {
+			if ((event as ToggleEvent).newState !== 'open') return;
+			hidePopover(bubble);
+			showPopover(bubble);
+			sync();
+		};
+		dialog?.addEventListener('toggle', reshow);
+
 		sync();
 		const frame = requestAnimationFrame(sync);
 		const observer = new ResizeObserver(sync);
@@ -137,6 +150,7 @@ export const Tooltip = ({
 		return () => {
 			cancelAnimationFrame(frame);
 			observer.disconnect();
+			dialog?.removeEventListener('toggle', reshow);
 			window.removeEventListener('resize', sync);
 			window.removeEventListener('scroll', sync, true);
 			hidePopover(bubble);

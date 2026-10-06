@@ -14,7 +14,7 @@
 
 Мы принципиально отвергаем тяжёлые внешние headless-библиотеки (Radix UI, Floating UI, Framer Motion, Zag.js, Downshift, Tailwind, shadcn). В современной веб-платформе нужные примитивы уже реализованы браузером:
 
-- **Top Layer и диалоги:** `<dialog>` + `.showModal()` / `.show()` вместо JS focus-trap. Узел слоя — портал в ближайший `[data-theme]` или `document.body`, чтобы стили обёртки не попадали в содержимое.
+- **Top Layer и диалоги:** `<dialog>` + `.showModal()` / `.show()` вместо JS focus-trap. Узел слоя — портал в открытый `<dialog>`, иначе в ближайший `[data-theme]` или `document.body`, чтобы стили обёртки не попадали в содержимое и панель не уходила под модалку.
 - **Всплывающие окна без JS:** Popover API (`popover="auto"` / `popover="manual"`) с light dismiss и `Escape`.
 - **Позиционирование на GPU:** CSS Anchor Positioning (`position-anchor`, `position-area`, `position-try-fallbacks`) вместо `getBoundingClientRect`-библиотек.
 - **Аппаратные переходы присутствия:** `@starting-style`, `transition-behavior: allow-discrete`, `overlay: auto`.

@@ -43,6 +43,12 @@ export default defineConfig({
 	build: {
 		outDir: path.join(libRoot, 'dist-demo'),
 		emptyOutDir: true,
+		rollupOptions: {
+			input: {
+				main: path.join(root, 'index.html'),
+				layers: path.join(root, 'layers.html'),
+			},
+		},
 	},
 	optimizeDeps: {
 		exclude: ['altum'],

@@ -16,11 +16,17 @@ export type {
 	OverlayProps,
 } from './Overlay.types';
 
-const PortalNode = createContext<RefObject<HTMLElement> | null>(null)
+const PortalNode = createContext<RefObject<HTMLElement | null> | null>(null)
 
-/** Куда вынести слой: тема предка, иначе `document.body`. */
+/**
+ * Куда вынести слой.
+ * Открытый `<dialog>` — сюда же: popover с `document.body` оказывается под модалкой.
+ * Иначе ближайший `[data-theme]` (не `<html>`), иначе `document.body`.
+ */
 function overlayPortalParent(from: HTMLElement | null): HTMLElement | null {
 	if (typeof document === 'undefined') return null;
+	const dialog = from?.closest('dialog');
+	if (dialog) return dialog;
 	const themed = from?.closest('[data-theme]');
 	if (themed instanceof HTMLElement && themed.tagName !== 'HTML') return themed;
 	return document.body;
@@ -28,8 +34,9 @@ function overlayPortalParent(from: HTMLElement | null): HTMLElement | null {
 
 /**
  * Слепой донор Top Layer: нативный `<dialog>` (`showModal`) или `popover="auto"`.
- * Узел слоя — портал в ближайший `[data-theme]` или в `document.body`: стили обёртки
- * не наследуются содержимым, токены темы остаются.
+ * Узел слоя — портал в открытый `<dialog>`, иначе в ближайший `[data-theme]` или в `document.body`:
+ * стили обёртки не наследуются содержимым, токены темы остаются. Внутри диалога панель
+ * не уходит под модалку.
  * Фокус, Escape и scroll lock у modal/sheet — браузер (`showModal`); отдельный FocusTrap не нужен.
  * Без иконок закрытия, шапок и Box — поверхность и chrome у потребителей (`Modal`, `Sheet`, `Popover`, …).
  * Floating: `open` опционален — без него показ через `popovertarget` / `showPopover`.
@@ -59,8 +66,8 @@ export function Overlay(props: OverlayProps) {
 	} = props;
 	const nodeRef = useRef<HTMLElement | null>(null);
 	const anchorRef = useRef<HTMLSpanElement>(null);
-	const context = useContext(PortalNode) 
-	const [portalParent, setPortalParent] = useState<HTMLElement | null>(null);
+	const contextNode = useContext(PortalNode) 
+	const [portalParent, setPortalParent] = useState<HTMLElement | null>(() => contextNode?.current ?? null);
 	const onOpenChangeRef = useRef(onOpenChange);
 	onOpenChangeRef.current = onOpenChange;
 	const side = props.variant === 'sheet' ? (props.side ?? 'bottom') : undefined;
@@ -70,8 +77,8 @@ export function Overlay(props: OverlayProps) {
 
 	useLayoutEffect(() => {
 		if (portalParent) return;
-		setPortalParent(overlayPortalParent(context?.current || anchorRef.current));
-	}, [portalParent, context]);
+		setPortalParent(contextNode?.current || overlayPortalParent(anchorRef.current));
+	}, [portalParent, contextNode]);
 
 	useLayoutEffect(() => {
 		const node = nodeRef.current;

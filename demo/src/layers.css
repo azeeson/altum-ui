@@ -1,0 +1,70 @@
+.lead {
+	max-width: 42rem;
+}
+
+.clip {
+	overflow: hidden;
+
+	box-sizing: border-box;
+	max-width: 100%;
+
+	border: 1px solid var(--altum-color-border);
+	border-radius: var(--altum-g-radius);
+
+	background: var(--altum-color-surface);
+}
+
+.clipShort {
+	height: 96px;
+}
+
+.clipField {
+	overflow: hidden;
+
+	max-height: 76px;
+}
+
+.clipRow {
+	width: min(100%, 260px);
+}
+
+.clipInner {
+	display: flex;
+
+	flex-direction: column;
+	gap: var(--altum-g-space-3);
+
+	padding: var(--altum-g-space-3);
+}
+
+.clipRowInner {
+	display: flex;
+
+	gap: var(--altum-g-space-2);
+
+	width: max-content;
+
+	padding: var(--altum-g-space-3);
+}
+
+.formClip {
+	overflow: hidden;
+
+	padding: var(--altum-g-space-3);
+
+	border: 1px solid var(--altum-color-border);
+	border-radius: var(--altum-g-radius);
+}
+
+.hintRow {
+	display: flex;
+
+	align-items: center;
+	gap: var(--altum-g-space-2);
+}
+
+.grow {
+	flex: 1 1 auto;
+
+	min-width: 0;
+}
